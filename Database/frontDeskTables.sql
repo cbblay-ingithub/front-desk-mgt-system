@@ -33,7 +33,7 @@ CREATE TABLE Visitors(
 INSERT INTO Visitors (Name, Email, Phone, IDType, IDNumber)VALUES
     ('Jane Fosu', 'jane.fosu@gmail.com', '055-111-2222', 'Student ID', '119708777'),
     ('Kwame Boateng', 'kwame.boat@gmail.com', '053-123-2962', 'Student ID', '119704701'),
-    ('Abena Banson', 'banson657@gmail.com', '020-034-3932', 'Ghana Card', 'GHA719708777'),
+    ('Abena Banson', 'banson657@gmail.com', '020-034-3932', 'Ghana Card', 'GHA817665745'),
    ('Suleman Adams', 'sule.adams@gmail.com', '055-067-2032', 'Ghana Card', 'GHA719708777')
 ;
 
