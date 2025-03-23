@@ -34,7 +34,7 @@ INSERT INTO Visitors (Name, Email, Phone, IDType, IDNumber)VALUES
     ('Jane Fosu', 'jane.fosu@gmail.com', '055-111-2222', 'Student ID', '119708777'),
     ('Kwame Boateng', 'kwame.boat@gmail.com', '053-123-2962', 'Student ID', '119704701'),
     ('Abena Banson', 'banson657@gmail.com', '020-034-3932', 'Ghana Card', 'GHA719708777'),
-   ('Suleman Adams', 'sule.adams@gmail.com', '055-067-2032', 'Ghana Card', 'GHA719708777'),
+   ('Suleman Adams', 'sule.adams@gmail.com', '055-067-2032', 'Ghana Card', 'GHA719708777')
 ;
 
 
@@ -148,7 +148,7 @@ CREATE TABLE Lost_And_Found(
     Description VARCHAR(255) NOT NULL,  -- Description of the item
     CategoryID INT,	-- Category of the item.
     Location  VARCHAR(100) NOT NULL,	-- location the item was found.
-    Status ENUM('lost', 'found', 'claimed', 'disposed') NOT NULL,	-Status of the item.
+    Status ENUM('lost', 'found', 'claimed', 'disposed') NOT NULL,	-- Status of the item.
     PhotoPath VARCHAR(255),		-- paths to item images.
     ClaimedBy VARCHAR(100),	-- Name of claimant.
     ContactInfo VARCHAR(100),	-- Contact of claimant.
@@ -241,7 +241,7 @@ WHERE Role = 'Host';
 -- II. This returns all upcoming appointments
 SELECT a.AppointmentTime, v.Name AS VisitorName, u.Name AS HostName
 FROM Appointments a
-JOIN Visitor v ON a.VisitorID = v.VisitorID
+JOIN Visitors v ON a.VisitorID = v.VisitorID
 JOIN Users u ON a.HostID = u.UserID
 WHERE Status = 'Upcoming';
 
@@ -252,5 +252,5 @@ WHERE Status = 'found';
 
 -- IV. This lists all visitors who have reported or claimed items
 SELECT DISTINCT v.VisitorID, v.Name, v.Email, v.Phone
-FROM Visitor v
+FROM Visitors v
 JOIN Visitor_Items vi ON v.VisitorID = vi.VisitorID;
