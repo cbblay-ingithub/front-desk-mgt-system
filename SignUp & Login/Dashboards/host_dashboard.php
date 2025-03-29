@@ -8,6 +8,24 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.6.13/flatpickr.min.css">
     <style>
+        body {
+            min-height: 100vh;
+            display: flex;
+        }
+        .sidebar {
+            width: 250px;
+            background-color: #343a40;
+            padding-top: 1rem;
+        }
+        .sidebar a {
+            color: #fff;
+            padding: 12px 20px;
+            display: block;
+            text-decoration: none;
+        }
+        .sidebar a:hover {
+            background-color: #495057;
+        }
         .appointment-card {
             transition: all 0.3s ease;
         }
@@ -49,7 +67,10 @@ require_once 'appointments.php';
 // Get all appointments for the host
 $appointments = getHostAppointments($hostId);
 ?>
-
+<div class="sidebar">
+    <h4 class="text-white text-center">Host Panel</h4>
+    <a href="host_dashboard.php">Manage Appointments</a>
+</div>
 <div class="container py-5">
     <div class="row mb-4">
         <div class="col-md-8">

@@ -113,6 +113,47 @@ function scheduleAppointment($appointmentTime, $hostId, $visitorId): array
 }
 
 /**
+ * Create a new visitor
+ *
+ * @param string $name Visitor name
+ * @param string $email Visitor email
+ * @param string|null $phone Visitor phone (optional)
+ * @return array Response with visitor ID or error
+ */
+function createVisitor($name, $email, $phone = null): array
+{
+    global $conn;
+
+    // Validate inputs
+    if (empty($name) || empty($email)) {
+        return ["status" => "error", "message" => "Name and email are required"];
+    }
+
+    // Check if visitor with same email already exists
+    $sql = "SELECT VisitorID FROM visitors WHERE Email = ?";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("s", $email);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    if ($result->num_rows > 0) {
+        $existingVisitor = $result->fetch_assoc();
+        return ["status" => "existing", "message" => "Visitor already exists", "visitorId" => $existingVisitor['VisitorID']];
+    }
+
+    // Insert new visitor
+    $sql = "INSERT INTO visitors (Name, Email, Phone) VALUES (?, ?, ?)";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("sss", $name, $email, $phone);
+
+    if ($stmt->execute()) {
+        $visitorId = $conn->insert_id;
+        return ["status" => "success", "message" => "Visitor created successfully", "visitorId" => $visitorId];
+    } else {
+        return ["status" => "error", "message" => "Failed to create visitor: " . $conn->error];
+    }
+}
+/**
  * Reschedule an existing appointment
  *
  * @param int $appointmentId Appointment ID
@@ -293,10 +334,31 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $action = $_POST['action'] ?? '';
 
     switch ($action) {
-        case 'schedule'://processes scheduling
+        case 'schedule':
             $appointmentTime = $_POST['appointmentTime'];
             $hostId = $_POST['hostId'];
-            $visitorId = $_POST['visitorId'];
+
+            // Check if creating a new visitor or using existing one
+            if (!empty($_POST['newVisitorName'])) {
+                // Create new visitor first
+                $visitorResult = createVisitor(
+                    $_POST['newVisitorName'],
+                    $_POST['newVisitorEmail'],
+                    $_POST['newVisitorPhone'] ?? null
+                );
+
+                if ($visitorResult['status'] === 'error') {
+                    echo json_encode($visitorResult);
+                    break;
+                }
+
+                // Use the new or existing visitor ID
+                $visitorId = $visitorResult['visitorId'];
+            } else {
+                // Use selected existing visitor
+                $visitorId = $_POST['visitorId'];
+            }
+
             echo json_encode(scheduleAppointment($appointmentTime, $hostId, $visitorId));
             break;
 
