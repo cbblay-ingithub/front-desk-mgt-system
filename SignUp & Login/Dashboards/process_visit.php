@@ -1,7 +1,7 @@
 <?php
 global $conn;
 session_start();
-require_once '../SignUp & Login/dbConfig.php';
+require_once '../dbConfig.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $action = $_POST['action'];

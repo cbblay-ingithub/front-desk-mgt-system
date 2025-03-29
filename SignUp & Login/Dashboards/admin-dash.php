@@ -1,5 +1,5 @@
 <?php
-require_once '../SignUp & Login/dbConfig.php'; // includes DB connection
+require_once '../dbConfig.php'; // includes DB connection
 
 $page = isset($_GET['page']) ? $_GET['page'] : 'user_management';
 

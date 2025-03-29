@@ -29,6 +29,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
     $stmt->bind_param("sssss", $name, $email, $phone, $role, $passwordHash);
 
+    //Redirection to Log-in page
     if ($stmt->execute()) {
         echo "Successful registration ! You can now <a href='Auth.html'>Log in</a>.";
     } else {

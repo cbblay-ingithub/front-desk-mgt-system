@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once '../SignUp & Login/dbConfig.php';
+require_once '../dbConfig.php';
 
 global $conn;
 // Fetch visitors

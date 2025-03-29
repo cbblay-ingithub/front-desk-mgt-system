@@ -1,5 +1,5 @@
 <?php
-require_once '../SignUp & Login/dbConfig.php';
+require_once '../dbConfig.php';
 global $conn;
 
 //Allows for adding new users

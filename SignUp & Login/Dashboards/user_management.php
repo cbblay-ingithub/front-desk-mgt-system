@@ -1,5 +1,5 @@
 <?php
-require_once '../SignUp & Login/dbConfig.php';
+require_once '../dbConfig.php';
 global $conn;
 
 //Retrieves data in the users table
@@ -33,7 +33,7 @@ $conn->close();
         .sidebar a:hover {
             background-color: #495057;
         }
-        .main-content {
+        .content {
             flex-grow: 1;
             padding: 2rem;
             background-color: #f8f9fa;
@@ -43,13 +43,13 @@ $conn->close();
 <body>
 <div class="sidebar">
     <h4 class="text-white text-center">Admin Panel</h4>
-    <a href="admin_dashboard.php?page=user_management">User Management</a>
+    <a href="user_management.php?page=user_management">User Management</a>
     <a href="admin_dashboard.php?page=appointments">View Appointments</a>
     <a href="admin_dashboard.php?page=helpdesk">View Help Desk Tickets</a>
     <a href="admin_dashboard.php?page=lost_found">View Lost & Found</a>
 </div>
 
-<div class="main-content">
+<div class="content">
     <h2 class="mb-4">User Management</h2>
     <div class="table-responsive">
         <table class="table table-bordered table-hover align-middle">

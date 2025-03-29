@@ -16,7 +16,9 @@ CREATE TABLE Visitors(
     Email VARCHAR(100) NOT NULL UNIQUE,	-- Visitor’s Email
     Phone VARCHAR(15),	-- Visitor’s Phone number
     IDType VARCHAR(100),	-- The type of ID the Visitor presents.
-    IDNumber VARCHAR(25)	-- Visitor’s ID number
+    IDNumber VARCHAR(25),	-- Visitor’s ID number
+    Status VARCHAR(25),     -- Status of Visit
+    Visit_Purpose VARCHAR(100) NOT NULL 	-- Purpose of Visit
 );
 
 
