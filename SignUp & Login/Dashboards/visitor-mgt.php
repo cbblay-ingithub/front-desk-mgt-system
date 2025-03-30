@@ -16,6 +16,7 @@ while ($row = $result->fetch_assoc()) {
 <head>
     <title>Front Desk Dashboard</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         body { min-height: 100vh; display: flex; }
         .sidebar {
@@ -43,6 +44,9 @@ while ($row = $result->fetch_assoc()) {
 <div class="sidebar">
     <h4 class="text-white text-center">Front Desk Panel</h4>
     <a href="#" data-bs-toggle="modal" data-bs-target="#checkInModal">Check In Visitor</a>
+    <a href="host_dashboard.php" class="active"><i class="fas fa-calendar-check me-2"></i>View Appointments</a>
+    <a href="helpdesk.php">View Help Desk Tickets</a>
+    <a href="lost_found.php">View Lost & Found</a>
 </div>
 
 <div class="main-content">

@@ -79,7 +79,7 @@ $appointments = getHostAppointments($hostId);
     <h4 class="text-white text-center">Host Panel</h4>
     <a href="dashboard.php"><i class="fas fa-tachometer-alt me-2"></i> Dashboard</a>
     <a href="host_dashboard.php" class="active"><i class="fas fa-calendar-check me-2"></i> Manage Appointments</a>
-    <a href="logout.php"><i class="fas fa-sign-out-alt me-2"></i> Logout</a>
+    <a href="../Logout.php"><i class="fas fa-sign-out-alt me-2"></i> Logout</a>
 </div>
 
 <!-- Main Content -->

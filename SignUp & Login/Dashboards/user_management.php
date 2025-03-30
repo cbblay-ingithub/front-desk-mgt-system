@@ -14,6 +14,7 @@ $conn->close();
 <head>
     <title>User Management</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         body {
             display: flex;
@@ -43,10 +44,11 @@ $conn->close();
 <body>
 <div class="sidebar">
     <h4 class="text-white text-center">Admin Panel</h4>
-    <a href="user_management.php?page=user_management">User Management</a>
-    <a href="admin_dashboard.php?page=appointments">View Appointments</a>
+    <a href="user_management.php?page=user_management"><i class='far fa-address-card' ></i> User Management</a>
     <a href="admin_dashboard.php?page=helpdesk">View Help Desk Tickets</a>
     <a href="admin_dashboard.php?page=lost_found">View Lost & Found</a>
+    <a href="settings.php"><i class="fas fa-cog me-2"></i> Settings</a>
+    <a href="../Logout.php"><i class="fas fa-sign-out-alt me-2"></i> Logout</a>
 </div>
 
 <div class="content">
