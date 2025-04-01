@@ -43,10 +43,12 @@ while ($row = $result->fetch_assoc()) {
 <body>
 <div class="sidebar">
     <h4 class="text-white text-center">Front Desk Panel</h4>
-    <a href="#" data-bs-toggle="modal" data-bs-target="#checkInModal">Check In Visitor</a>
-    <a href="host_dashboard.php" class="active"><i class="fas fa-calendar-check me-2"></i>View Appointments</a>
-    <a href="helpdesk.php">View Help Desk Tickets</a>
-    <a href="lost_found.php">View Lost & Found</a>
+    <a href="frontdesk_dashboard.php"><i class="fas fa-tachometer-alt me-2"></i> Dashboard</a>
+    <a href="#" data-bs-toggle="modal" data-bs-target="#checkInModal"><i class="fas fa-users me-2"></i>Manage Visitors</a>
+    <a href="FD_frontend_dash.php" class="active"><i class="fas fa-calendar-check me-2"></i> Appointments</a>
+    <a href="helpdesk.php"><i class="fas fa-ticket"></i> Help Desk Tickets</a>
+    <a href="lost_found.php"><i class="fa-solid fa-suitcase"></i> View Lost & Found</a>
+    <a href="../Logout.php"><i class="fas fa-sign-out-alt me-2"></i> Logout</a>
 </div>
 
 <div class="main-content">
