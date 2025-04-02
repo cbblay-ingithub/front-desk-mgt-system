@@ -1,0 +1,118 @@
+[01-Apr-2025 19:32:04 Europe/Berlin] PHP Fatal error:  Uncaught mysqli_sql_exception: Unknown column 'CheckInTime' in 'field list' in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\SignUp & Login\Dashboards\front_desk_appointments.php:240
+Stack trace:
+#0 C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\SignUp & Login\Dashboards\front_desk_appointments.php(240): mysqli->prepare('UPDATE appointm...')
+#1 {main}
+  thrown in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\SignUp & Login\Dashboards\front_desk_appointments.php on line 240
+[01-Apr-2025 19:32:22 Europe/Berlin] PHP Fatal error:  Uncaught mysqli_sql_exception: Unknown column 'CheckInTime' in 'field list' in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\SignUp & Login\Dashboards\front_desk_appointments.php:240
+Stack trace:
+#0 C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\SignUp & Login\Dashboards\front_desk_appointments.php(240): mysqli->prepare('UPDATE appointm...')
+#1 {main}
+  thrown in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\SignUp & Login\Dashboards\front_desk_appointments.php on line 240
+[18-Apr-2025 19:22:13 Europe/Berlin] PHP Warning:  Undefined array key "CheckInTime" in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\SignUp & Login\Dashboards\FD_frontend_dash.php on line 741
+[18-Apr-2025 19:22:13 Europe/Berlin] PHP Stack trace:
+[18-Apr-2025 19:22:13 Europe/Berlin] PHP   1. {main}() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\SignUp & Login\Dashboards\FD_frontend_dash.php:0
+[18-Apr-2025 19:22:13 Europe/Berlin] PHP Warning:  Undefined array key "SessionEndTime" in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\SignUp & Login\Dashboards\FD_frontend_dash.php on line 742
+[18-Apr-2025 19:22:13 Europe/Berlin] PHP Stack trace:
+[18-Apr-2025 19:22:13 Europe/Berlin] PHP   1. {main}() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\SignUp & Login\Dashboards\FD_frontend_dash.php:0
+[18-Apr-2025 19:22:13 Europe/Berlin] PHP Warning:  Undefined array key "CheckInTime" in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\SignUp & Login\Dashboards\FD_frontend_dash.php on line 741
+[18-Apr-2025 19:22:13 Europe/Berlin] PHP Stack trace:
+[18-Apr-2025 19:22:13 Europe/Berlin] PHP   1. {main}() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\SignUp & Login\Dashboards\FD_frontend_dash.php:0
+[18-Apr-2025 19:22:13 Europe/Berlin] PHP Warning:  Undefined array key "SessionEndTime" in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\SignUp & Login\Dashboards\FD_frontend_dash.php on line 742
+[18-Apr-2025 19:22:13 Europe/Berlin] PHP Stack trace:
+[18-Apr-2025 19:22:13 Europe/Berlin] PHP   1. {main}() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\SignUp & Login\Dashboards\FD_frontend_dash.php:0
+[18-Apr-2025 19:22:13 Europe/Berlin] PHP Warning:  Undefined array key "CheckInTime" in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\SignUp & Login\Dashboards\FD_frontend_dash.php on line 741
+[18-Apr-2025 19:22:13 Europe/Berlin] PHP Stack trace:
+[18-Apr-2025 19:22:13 Europe/Berlin] PHP   1. {main}() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\SignUp & Login\Dashboards\FD_frontend_dash.php:0
+[18-Apr-2025 19:22:13 Europe/Berlin] PHP Warning:  Undefined array key "SessionEndTime" in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\SignUp & Login\Dashboards\FD_frontend_dash.php on line 742
+[18-Apr-2025 19:22:13 Europe/Berlin] PHP Stack trace:
+[18-Apr-2025 19:22:13 Europe/Berlin] PHP   1. {main}() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\SignUp & Login\Dashboards\FD_frontend_dash.php:0
+[18-Apr-2025 19:22:13 Europe/Berlin] PHP Warning:  Undefined array key "CheckInTime" in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\SignUp & Login\Dashboards\FD_frontend_dash.php on line 741
+[18-Apr-2025 19:22:13 Europe/Berlin] PHP Stack trace:
+[18-Apr-2025 19:22:13 Europe/Berlin] PHP   1. {main}() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\SignUp & Login\Dashboards\FD_frontend_dash.php:0
+[18-Apr-2025 19:22:13 Europe/Berlin] PHP Warning:  Undefined array key "SessionEndTime" in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\SignUp & Login\Dashboards\FD_frontend_dash.php on line 742
+[18-Apr-2025 19:22:13 Europe/Berlin] PHP Stack trace:
+[18-Apr-2025 19:22:13 Europe/Berlin] PHP   1. {main}() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\SignUp & Login\Dashboards\FD_frontend_dash.php:0
+[18-Apr-2025 19:22:13 Europe/Berlin] PHP Warning:  Undefined array key "CheckInTime" in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\SignUp & Login\Dashboards\FD_frontend_dash.php on line 741
+[18-Apr-2025 19:22:13 Europe/Berlin] PHP Stack trace:
+[18-Apr-2025 19:22:13 Europe/Berlin] PHP   1. {main}() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\SignUp & Login\Dashboards\FD_frontend_dash.php:0
+[18-Apr-2025 19:22:13 Europe/Berlin] PHP Warning:  Undefined array key "SessionEndTime" in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\SignUp & Login\Dashboards\FD_frontend_dash.php on line 742
+[18-Apr-2025 19:22:13 Europe/Berlin] PHP Stack trace:
+[18-Apr-2025 19:22:13 Europe/Berlin] PHP   1. {main}() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\SignUp & Login\Dashboards\FD_frontend_dash.php:0
+[18-Apr-2025 19:22:13 Europe/Berlin] PHP Warning:  Undefined array key "CheckInTime" in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\SignUp & Login\Dashboards\FD_frontend_dash.php on line 741
+[18-Apr-2025 19:22:13 Europe/Berlin] PHP Stack trace:
+[18-Apr-2025 19:22:13 Europe/Berlin] PHP   1. {main}() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\SignUp & Login\Dashboards\FD_frontend_dash.php:0
+[18-Apr-2025 19:22:13 Europe/Berlin] PHP Warning:  Undefined array key "SessionEndTime" in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\SignUp & Login\Dashboards\FD_frontend_dash.php on line 742
+[18-Apr-2025 19:22:13 Europe/Berlin] PHP Stack trace:
+[18-Apr-2025 19:22:13 Europe/Berlin] PHP   1. {main}() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\SignUp & Login\Dashboards\FD_frontend_dash.php:0
+[18-Apr-2025 19:22:13 Europe/Berlin] PHP Warning:  Undefined array key "CheckInTime" in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\SignUp & Login\Dashboards\FD_frontend_dash.php on line 741
+[18-Apr-2025 19:22:13 Europe/Berlin] PHP Stack trace:
+[18-Apr-2025 19:22:13 Europe/Berlin] PHP   1. {main}() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\SignUp & Login\Dashboards\FD_frontend_dash.php:0
+[18-Apr-2025 19:22:13 Europe/Berlin] PHP Warning:  Undefined array key "SessionEndTime" in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\SignUp & Login\Dashboards\FD_frontend_dash.php on line 742
+[18-Apr-2025 19:22:13 Europe/Berlin] PHP Stack trace:
+[18-Apr-2025 19:22:13 Europe/Berlin] PHP   1. {main}() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\SignUp & Login\Dashboards\FD_frontend_dash.php:0
+[18-Apr-2025 19:22:13 Europe/Berlin] PHP Warning:  Undefined array key "CheckInTime" in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\SignUp & Login\Dashboards\FD_frontend_dash.php on line 741
+[18-Apr-2025 19:22:13 Europe/Berlin] PHP Stack trace:
+[18-Apr-2025 19:22:13 Europe/Berlin] PHP   1. {main}() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\SignUp & Login\Dashboards\FD_frontend_dash.php:0
+[18-Apr-2025 19:22:13 Europe/Berlin] PHP Warning:  Undefined array key "SessionEndTime" in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\SignUp & Login\Dashboards\FD_frontend_dash.php on line 742
+[18-Apr-2025 19:22:13 Europe/Berlin] PHP Stack trace:
+[18-Apr-2025 19:22:13 Europe/Berlin] PHP   1. {main}() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\SignUp & Login\Dashboards\FD_frontend_dash.php:0
+[18-Apr-2025 19:22:13 Europe/Berlin] PHP Warning:  Undefined array key "CheckInTime" in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\SignUp & Login\Dashboards\FD_frontend_dash.php on line 741
+[18-Apr-2025 19:22:13 Europe/Berlin] PHP Stack trace:
+[18-Apr-2025 19:22:13 Europe/Berlin] PHP   1. {main}() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\SignUp & Login\Dashboards\FD_frontend_dash.php:0
+[18-Apr-2025 19:22:13 Europe/Berlin] PHP Warning:  Undefined array key "SessionEndTime" in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\SignUp & Login\Dashboards\FD_frontend_dash.php on line 742
+[18-Apr-2025 19:22:13 Europe/Berlin] PHP Stack trace:
+[18-Apr-2025 19:22:13 Europe/Berlin] PHP   1. {main}() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\SignUp & Login\Dashboards\FD_frontend_dash.php:0
+[18-Apr-2025 19:28:24 Europe/Berlin] PHP Warning:  Undefined array key "CheckInTime" in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\SignUp & Login\Dashboards\FD_frontend_dash.php on line 741
+[18-Apr-2025 19:28:24 Europe/Berlin] PHP Stack trace:
+[18-Apr-2025 19:28:24 Europe/Berlin] PHP   1. {main}() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\SignUp & Login\Dashboards\FD_frontend_dash.php:0
+[18-Apr-2025 19:28:24 Europe/Berlin] PHP Warning:  Undefined array key "SessionEndTime" in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\SignUp & Login\Dashboards\FD_frontend_dash.php on line 742
+[18-Apr-2025 19:28:24 Europe/Berlin] PHP Stack trace:
+[18-Apr-2025 19:28:24 Europe/Berlin] PHP   1. {main}() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\SignUp & Login\Dashboards\FD_frontend_dash.php:0
+[18-Apr-2025 19:28:24 Europe/Berlin] PHP Warning:  Undefined array key "CheckInTime" in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\SignUp & Login\Dashboards\FD_frontend_dash.php on line 741
+[18-Apr-2025 19:28:24 Europe/Berlin] PHP Stack trace:
+[18-Apr-2025 19:28:24 Europe/Berlin] PHP   1. {main}() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\SignUp & Login\Dashboards\FD_frontend_dash.php:0
+[18-Apr-2025 19:28:24 Europe/Berlin] PHP Warning:  Undefined array key "SessionEndTime" in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\SignUp & Login\Dashboards\FD_frontend_dash.php on line 742
+[18-Apr-2025 19:28:24 Europe/Berlin] PHP Stack trace:
+[18-Apr-2025 19:28:24 Europe/Berlin] PHP   1. {main}() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\SignUp & Login\Dashboards\FD_frontend_dash.php:0
+[18-Apr-2025 19:28:24 Europe/Berlin] PHP Warning:  Undefined array key "CheckInTime" in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\SignUp & Login\Dashboards\FD_frontend_dash.php on line 741
+[18-Apr-2025 19:28:24 Europe/Berlin] PHP Stack trace:
+[18-Apr-2025 19:28:24 Europe/Berlin] PHP   1. {main}() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\SignUp & Login\Dashboards\FD_frontend_dash.php:0
+[18-Apr-2025 19:28:24 Europe/Berlin] PHP Warning:  Undefined array key "SessionEndTime" in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\SignUp & Login\Dashboards\FD_frontend_dash.php on line 742
+[18-Apr-2025 19:28:24 Europe/Berlin] PHP Stack trace:
+[18-Apr-2025 19:28:24 Europe/Berlin] PHP   1. {main}() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\SignUp & Login\Dashboards\FD_frontend_dash.php:0
+[18-Apr-2025 19:28:24 Europe/Berlin] PHP Warning:  Undefined array key "CheckInTime" in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\SignUp & Login\Dashboards\FD_frontend_dash.php on line 741
+[18-Apr-2025 19:28:24 Europe/Berlin] PHP Stack trace:
+[18-Apr-2025 19:28:24 Europe/Berlin] PHP   1. {main}() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\SignUp & Login\Dashboards\FD_frontend_dash.php:0
+[18-Apr-2025 19:28:24 Europe/Berlin] PHP Warning:  Undefined array key "SessionEndTime" in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\SignUp & Login\Dashboards\FD_frontend_dash.php on line 742
+[18-Apr-2025 19:28:24 Europe/Berlin] PHP Stack trace:
+[18-Apr-2025 19:28:24 Europe/Berlin] PHP   1. {main}() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\SignUp & Login\Dashboards\FD_frontend_dash.php:0
+[18-Apr-2025 19:28:24 Europe/Berlin] PHP Warning:  Undefined array key "CheckInTime" in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\SignUp & Login\Dashboards\FD_frontend_dash.php on line 741
+[18-Apr-2025 19:28:24 Europe/Berlin] PHP Stack trace:
+[18-Apr-2025 19:28:24 Europe/Berlin] PHP   1. {main}() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\SignUp & Login\Dashboards\FD_frontend_dash.php:0
+[18-Apr-2025 19:28:24 Europe/Berlin] PHP Warning:  Undefined array key "SessionEndTime" in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\SignUp & Login\Dashboards\FD_frontend_dash.php on line 742
+[18-Apr-2025 19:28:24 Europe/Berlin] PHP Stack trace:
+[18-Apr-2025 19:28:24 Europe/Berlin] PHP   1. {main}() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\SignUp & Login\Dashboards\FD_frontend_dash.php:0
+[18-Apr-2025 19:28:24 Europe/Berlin] PHP Warning:  Undefined array key "CheckInTime" in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\SignUp & Login\Dashboards\FD_frontend_dash.php on line 741
+[18-Apr-2025 19:28:24 Europe/Berlin] PHP Stack trace:
+[18-Apr-2025 19:28:24 Europe/Berlin] PHP   1. {main}() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\SignUp & Login\Dashboards\FD_frontend_dash.php:0
+[18-Apr-2025 19:28:24 Europe/Berlin] PHP Warning:  Undefined array key "SessionEndTime" in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\SignUp & Login\Dashboards\FD_frontend_dash.php on line 742
+[18-Apr-2025 19:28:24 Europe/Berlin] PHP Stack trace:
+[18-Apr-2025 19:28:24 Europe/Berlin] PHP   1. {main}() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\SignUp & Login\Dashboards\FD_frontend_dash.php:0
+[18-Apr-2025 19:28:24 Europe/Berlin] PHP Warning:  Undefined array key "CheckInTime" in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\SignUp & Login\Dashboards\FD_frontend_dash.php on line 741
+[18-Apr-2025 19:28:24 Europe/Berlin] PHP Stack trace:
+[18-Apr-2025 19:28:24 Europe/Berlin] PHP   1. {main}() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\SignUp & Login\Dashboards\FD_frontend_dash.php:0
+[18-Apr-2025 19:28:24 Europe/Berlin] PHP Warning:  Undefined array key "SessionEndTime" in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\SignUp & Login\Dashboards\FD_frontend_dash.php on line 742
+[18-Apr-2025 19:28:24 Europe/Berlin] PHP Stack trace:
+[18-Apr-2025 19:28:24 Europe/Berlin] PHP   1. {main}() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\SignUp & Login\Dashboards\FD_frontend_dash.php:0
+[18-Apr-2025 19:28:24 Europe/Berlin] PHP Warning:  Undefined array key "CheckInTime" in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\SignUp & Login\Dashboards\FD_frontend_dash.php on line 741
+[18-Apr-2025 19:28:24 Europe/Berlin] PHP Stack trace:
+[18-Apr-2025 19:28:24 Europe/Berlin] PHP   1. {main}() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\SignUp & Login\Dashboards\FD_frontend_dash.php:0
+[18-Apr-2025 19:28:24 Europe/Berlin] PHP Warning:  Undefined array key "SessionEndTime" in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\SignUp & Login\Dashboards\FD_frontend_dash.php on line 742
+[18-Apr-2025 19:28:24 Europe/Berlin] PHP Stack trace:
+[18-Apr-2025 19:28:24 Europe/Berlin] PHP   1. {main}() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\SignUp & Login\Dashboards\FD_frontend_dash.php:0
+[18-Apr-2025 19:28:24 Europe/Berlin] PHP Warning:  Undefined array key "CheckInTime" in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\SignUp & Login\Dashboards\FD_frontend_dash.php on line 741
+[18-Apr-2025 19:28:24 Europe/Berlin] PHP Stack trace:
+[18-Apr-2025 19:28:24 Europe/Berlin] PHP   1. {main}() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\SignUp & Login\Dashboards\FD_frontend_dash.php:0
+[18-Apr-2025 19:28:24 Europe/Berlin] PHP Warning:  Undefined array key "SessionEndTime" in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\SignUp & Login\Dashboards\FD_frontend_dash.php on line 742
+[18-Apr-2025 19:28:24 Europe/Berlin] PHP Stack trace:
+[18-Apr-2025 19:28:24 Europe/Berlin] PHP   1. {main}() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\SignUp & Login\Dashboards\FD_frontend_dash.php:0

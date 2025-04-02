@@ -1,0 +1,14 @@
+{
+  "name": "vendor_name/front-desk-mgt-system",
+  "description": "description",
+  "minimum-stability": "stable",
+  "license": "proprietary",
+  "authors": [
+    {
+      "name": "cyrus",
+      "email": "email@example.com"
+    }
+  ],
+  "require": {
+  }
+}
