@@ -824,17 +824,26 @@ session_start();
 
             // AJAX request to schedule appointment
             $.ajax({
-                url: 'FD_frontend_dash.php',
+                url: 'front_desk_appointments.php',
                 type: 'POST',
                 data: formData,
                 success: function(response) {
-                    if (response.success) {
-                        // Close modal and reload page
-                        $('#scheduleModal').modal('hide');
-                        alert('Appointment scheduled successfully!');
-                        location.reload();
-                    } else {
-                        alert('Error: ' + response.message);
+                    try {
+                        // Try to parse the response if it's not already an object
+                        const result = (typeof response === 'string') ? JSON.parse(response) : response;
+
+                        if (result.success) {
+                            // Close modal and reload page
+                            $('#scheduleModal').modal('hide');
+                            alert('Appointment scheduled successfully!');
+                            location.reload();
+                        } else {
+                            alert('Error: ' + (result.message || 'An unknown error occurred'));
+                        }
+                    } catch (e) {
+                        console.error("Error parsing response:", e);
+                        console.log("Response:", response);
+                        alert('An error occurred while processing the server response.');
                     }
                 },
                 error: function(jqXHR, textStatus, errorThrown) {
@@ -844,7 +853,6 @@ session_start();
                 }
             });
         });
-
         // Reschedule appointment
         $('#rescheduleBtn').click(function() {
             // Validate form
@@ -858,7 +866,7 @@ session_start();
 
             // AJAX request to reschedule appointment
             $.ajax({
-                url: 'FD_frontend_dash.php',
+                url: 'front_desk_appointments.php',
                 type: 'POST',
                 data: formData,
                 success: function(response) {
@@ -877,40 +885,51 @@ session_start();
             });
         });
 
-        // Handle check-in button click
+        // Modified check-in button handler
         $(document).on('click', '.check-in-btn, .check-in-modal-btn', function() {
             const appointmentId = $(this).data('id');
 
             if (confirm('Are you sure you want to check in this visitor?')) {
                 $.ajax({
-                    url: 'FD_frontend_dash.php',
+                    url: 'front_desk_appointments.php', // Changed URL to point directly to the handler
                     type: 'POST',
                     data: {
                         action: 'checkIn',
                         appointmentId: appointmentId
                     },
                     success: function(response) {
-                        if (response.success) {
-                            alert('Visitor checked in successfully!');
-                            location.reload();
-                        } else {
-                            alert('Error: ' + response.message);
+                        // Improved response handling
+                        console.log("Response received:", response); // For debugging
+                        try {
+                            // Try to parse the response if it's not already an object
+                            const result = (typeof response === 'string') ? JSON.parse(response) : response;
+
+                            if (result.success) {
+                                alert('Visitor checked in successfully!');
+                                location.reload();
+                            } else {
+                                alert('Error: ' + (result.message || 'Unknown error occurred'));
+                            }
+                        } catch (e) {
+                            console.error("Error parsing response:", e);
+                            alert('An error occurred while processing the server response.');
                         }
                     },
-                    error: function() {
-                        alert('An error occurred. Please try again.');
+                    error: function(xhr, status, error) {
+                        console.error("AJAX error:", status, error);
+                        console.log("Response text:", xhr.responseText);
+                        alert('An error occurred. Please check the console for details.');
                     }
                 });
             }
         });
-
         // Handle complete session button click
         $(document).on('click', '.complete-session-btn, .complete-modal-btn', function() {
             const appointmentId = $(this).data('id');
 
             if (confirm('Are you sure you want to complete this appointment?')) {
                 $.ajax({
-                    url: 'FD_frontend_dash.php',
+                    url: 'front_desk_appointments.php',
                     type: 'POST',
                     data: {
                         action: 'completeSession',
@@ -937,7 +956,7 @@ session_start();
 
             if (confirm('Are you sure you want to cancel this appointment?')) {
                 $.ajax({
-                    url: 'FD_frontend_dash.php',
+                    url: 'front_desk_appointments.php',
                     type: 'POST',
                     data: {
                         action: 'cancelAppointment',
@@ -986,7 +1005,7 @@ session_start();
 
             // Get appointment details
             $.ajax({
-                url: 'FD_frontend_dash.php',
+                url: 'front_desk_appointments.php',
                 type: 'POST',
                 data: {
                     action: 'getAppointmentDetails',

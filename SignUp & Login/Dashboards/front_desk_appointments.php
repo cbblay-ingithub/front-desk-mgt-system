@@ -1,4 +1,13 @@
 <?php
+// Prevent PHP errors from being displayed in the output
+error_reporting(E_ALL);
+ini_set('display_errors', 0); // Don't display errors
+ini_set('log_errors', 1); // Log errors instead
+ini_set('error_log', dirname(__FILE__) . '/php_errors.log');
+
+// Start buffering output to catch any unwanted output before JSON
+ob_start();
+
 global $conn;
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
@@ -83,6 +92,26 @@ function getAllHosts() {
 
     return $hosts;
 }
+// Function to check if the host has a conflicting appointment
+function checkSchedulingConflict($hostId, $appointmentTime) {
+    global $conn;
+
+    // Allow some flexibility with a 15-minute buffer before and after appointments
+    $startTime = date('Y-m-d H:i:s', strtotime($appointmentTime) - (15 * 60)); // 15 minutes before
+    $endTime = date('Y-m-d H:i:s', strtotime($appointmentTime) + (15 * 60));   // 15 minutes after
+
+    $sql = "SELECT AppointmentID FROM appointments 
+            WHERE HostID = ? 
+            AND AppointmentTime BETWEEN ? AND ? 
+            AND Status IN ('Upcoming', 'Ongoing')";
+
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("iss", $hostId, $startTime, $endTime);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    return $result->num_rows > 0;
+}
 
 // AJAX handling
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -151,6 +180,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $notes = $_POST['appointmentNotes'] ?? '';
             $isNewVisitor = $_POST['isNewVisitor'] ?? '0';
 
+            // Check for scheduling conflicts
+            if (checkSchedulingConflict($hostId, $appointmentTime)) {
+                echo json_encode(['success' => false, 'message' => 'The selected host already has an appointment scheduled at this time. Please choose a different time.']);
+                break;
+            }
+
             // Begin transaction
             $conn->begin_transaction();
 
@@ -204,15 +239,45 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $newTime = $_POST['newTime'];
             $rescheduleReason = $_POST['rescheduleReason'] ?? '';
 
-            // Update appointment
-            $sql = "UPDATE appointments SET AppointmentTime = ? WHERE AppointmentID = ?";
+            // Get the host ID for this appointment
+            $sql = "SELECT HostID FROM appointments WHERE AppointmentID = ?";
             $stmt = $conn->prepare($sql);
-            $stmt->bind_param("si", $newTime, $appointmentId);
+            $stmt->bind_param("i", $appointmentId);
+            $stmt->execute();
+            $result = $stmt->get_result();
 
-            if ($stmt->execute()) {
-                echo json_encode(['success' => true]);
+            if ($result->num_rows > 0) {
+                $hostId = $result->fetch_assoc()['HostID'];
+
+                // Check for scheduling conflicts, excluding the current appointment
+                $sql = "SELECT AppointmentID FROM appointments 
+                WHERE HostID = ? 
+                AND AppointmentTime = ? 
+                AND Status IN ('Upcoming', 'Ongoing')
+                AND AppointmentID != ?";
+
+                $stmt = $conn->prepare($sql);
+                $stmt->bind_param("isi", $hostId, $newTime, $appointmentId);
+                $stmt->execute();
+                $conflictResult = $stmt->get_result();
+
+                if ($conflictResult->num_rows > 0) {
+                    echo json_encode(['success' => false, 'message' => 'The selected host already has an appointment scheduled at this time. Please choose a different time.']);
+                    break;
+                }
+
+                // Update appointment
+                $sql = "UPDATE appointments SET AppointmentTime = ? WHERE AppointmentID = ?";
+                $stmt = $conn->prepare($sql);
+                $stmt->bind_param("si", $newTime, $appointmentId);
+
+                if ($stmt->execute()) {
+                    echo json_encode(['success' => true]);
+                } else {
+                    echo json_encode(['success' => false, 'message' => 'Failed to reschedule appointment']);
+                }
             } else {
-                echo json_encode(['success' => false, 'message' => 'Failed to reschedule appointment']);
+                echo json_encode(['success' => false, 'message' => 'Appointment not found']);
             }
             break;
 
@@ -232,9 +297,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $stmt->bind_param("ssi", $status, $checkInTime, $appointmentId);
 
             if ($stmt->execute()) {
-                echo json_encode(['success' => true]);
+                echo json_encode(['success' => true, 'message' => 'Visitor checked in successfully']);
             } else {
-                echo json_encode(['success' => false, 'message' => 'Failed to check in visitor']);
+                echo json_encode(['success' => false, 'message' => 'Failed to check in visitor: ' . $conn->error]);
             }
             break;
 
