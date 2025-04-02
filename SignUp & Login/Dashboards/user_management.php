@@ -44,9 +44,10 @@ $conn->close();
 <body>
 <div class="sidebar">
     <h4 class="text-white text-center">Admin Panel</h4>
-    <a href="user_management.php?page=user_management"><i class='far fa-address-card' ></i> User Management</a>
-    <a href="admin_dashboard.php?page=helpdesk">View Help Desk Tickets</a>
-    <a href="admin_dashboard.php?page=lost_found">View Lost & Found</a>
+    <a href="dashboard.php"><i class="fas fa-tachometer-alt me-2"></i> Dashboard</a>
+    <a href="user_management.php"><i class='far fa-address-card' ></i> User Management</a>
+    <a href="helpdesk.php"><i class="fas fa-ticket"></i> Help Desk Tickets</a>
+    <a href="lost_found.php"><i class="fa-solid fa-suitcase"></i> View Lost & Found</a>
     <a href="settings.php"><i class="fas fa-cog me-2"></i> Settings</a>
     <a href="../Logout.php"><i class="fas fa-sign-out-alt me-2"></i> Logout</a>
 </div>

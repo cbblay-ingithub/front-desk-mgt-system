@@ -606,38 +606,49 @@ session_start();
             filterAppointments();
         });
 
+// Handle search functionality
+        $('#searchInput').on('keyup', function() {
+            filterAppointments();
+        });
 
         function filterAppointments() {
             const searchTerm = $('#searchInput').val().toLowerCase();
             const hostFilter = $('#hostFilter').val();
-            const statusFilter = $('.filter-btn.active').data('filter');
+            const statusFilter = $('.filter-btn.active').data('filter') || 'all';
             const today = new Date().toISOString().split('T')[0];
 
             $('.appointment-item').each(function() {
                 let show = true;
 
-                // Apply search filter
-                if (searchTerm && $(this).data('search').indexOf(searchTerm) === -1) {
-                    show = false;
+                // Apply search filter - improve the search logic
+                if (searchTerm) {
+                    // Get the search data from the data attribute
+                    const searchData = $(this).data('search').toString().toLowerCase();
+                    // Check if the search term is contained in the search data
+                    if (searchData.indexOf(searchTerm) === -1) {
+                        show = false;
+                    }
                 }
 
                 // Apply host filter
-                if (hostFilter) {
-                    const hostName = $('#hostFilter option:selected').data('host-name');
-                    if ($(this).data('host-id') !== hostFilter && $(this).data('host') !== hostName) {
+                if (hostFilter && show) {
+                    if ($(this).data('host-id').toString() !== hostFilter.toString()) {
                         show = false;
                     }
                 }
 
                 // Apply status filter
-                if (statusFilter === 'today') {
-                    if ($(this).data('date') !== today) {
+                if (show && statusFilter !== 'all') {
+                    if (statusFilter === 'today') {
+                        if ($(this).data('date') !== today) {
+                            show = false;
+                        }
+                    } else if ($(this).data('status') !== statusFilter) {
                         show = false;
                     }
-                } else if (statusFilter !== 'all' && $(this).data('status') !== statusFilter) {
-                    show = false;
                 }
 
+                // Show or hide based on filters
                 $(this).toggle(show);
             });
 
@@ -651,7 +662,6 @@ session_start();
                 $('#noResultsMessage').remove();
             }
         }
-
         // Calendar functionality
         let currentDate = new Date();
 
