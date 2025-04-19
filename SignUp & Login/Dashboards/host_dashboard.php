@@ -42,7 +42,7 @@
             background-color: #dc3545;
         }
         .status-badge-Ongoing {
-            background-color: #00FFFF;
+            background-color: #66b2b2;
         }
         .status-badge-Upcoming {
             background-color: #FFB343;

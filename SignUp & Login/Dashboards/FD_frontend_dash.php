@@ -64,7 +64,7 @@ session_start();
             background-color: #dc3545;
         }
         .status-badge-Ongoing {
-            background-color: #00BFFF;
+            background-color: #66b2b2;
         }
         .status-badge-Upcoming {
             background-color: #FFB343;
@@ -123,11 +123,11 @@ session_start();
         }
         .calendar-appointment.Upcoming {
             background-color: #cff4fc;
-            border-left: 3px solid #0dcaf0;
+            border-left: 3px solid #FFB343;
         }
         .calendar-appointment.Ongoing {
             background-color: #fff3cd;
-            border-left: 3px solid #ffc107;
+            border-left: 3px solid #66b2b2;
         }
         .calendar-appointment.Completed {
             background-color: #d1e7dd;
@@ -519,6 +519,7 @@ session_start();
 <script src="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.6.13/flatpickr.min.js"></script>
 <script>
     $(document).ready(function() {
+        const appointmentsData = {};
         // Initialize datetime pickers
         flatpickr("#appointmentDateTime", {
             enableTime: true,
@@ -728,23 +729,40 @@ session_start();
             });
         }
 
-        // Function to get appointments for a specific date
+        <?php foreach ($appointments as $appointment): ?>
+        appointmentsData[<?= $appointment['AppointmentID'] ?>] = {
+            id: <?= $appointment['AppointmentID'] ?>,
+            status: '<?= $appointment['Status'] ?>',
+            visitorName: '<?= htmlspecialchars($appointment['VisitorName'], ENT_QUOTES) ?>',
+            visitorEmail: '<?= htmlspecialchars($appointment['VisitorEmail'], ENT_QUOTES) ?>',
+            hostName: '<?= htmlspecialchars($appointment['HostName'], ENT_QUOTES) ?>',
+            date: '<?= date('Y-m-d', strtotime($appointment['AppointmentTime'])) ?>',
+            time: '<?= date('h:i A', strtotime($appointment['AppointmentTime'])) ?>',
+            checkInTime: <?= $appointment['CheckInTime'] ? "'" . date('Y-m-d H:i:s', strtotime($appointment['CheckInTime'])) . "'" : 'null' ?>,
+            sessionEndTime: <?= $appointment['SessionEndTime'] ? "'" . date('Y-m-d H:i:s', strtotime($appointment['SessionEndTime'])) . "'" : 'null' ?>
+        };
+        <?php endforeach; ?>
+
+
+        // Then use this data to generate calendar appointments
         function getAppointmentsForDate(dateStr) {
             const appointments = [];
 
-            $('.appointment-item').each(function() {
-                if ($(this).data('date') === dateStr) {
-                    const $card = $(this).find('.card');
-                    const id = $card.find('.check-in-btn, .complete-session-btn, .reschedule-btn').data('id');
-                    const status = $(this).data('status');
-                    const visitorName = $card.find('.card-title').text().trim();
-                    const time = $card.find('.far.fa-clock').parent().text().trim();
+            // Iterate through appointmentsData instead of DOM elements
+            Object.values(appointmentsData).forEach(appointment => {
+                if (appointment.date === dateStr) {
 
+                // For completed appointments, show the session end time
+                if (appointment.status === 'Completed' && appointment.sessionEndTime) {
+                    const endTime = new Date(appointment.sessionEndTime);
+                    const formattedEndTime = endTime.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+                    displayTime = `${appointment.time} - ${formattedEndTime}`;
+                }
                     appointments.push({
-                        id: id,
-                        status: status,
-                        visitorName: visitorName,
-                        time: time
+                        id: appointment.id,
+                        status: appointment.status,
+                        visitorName: appointment.visitorName,
+                        time: appointment.time
                     });
                 }
             });
@@ -768,7 +786,7 @@ session_start();
         function showAppointmentDetails(appointmentId) {
             // AJAX call to get appointment details
             $.ajax({
-                url: 'FD_frontend_dash.php',
+                url: 'front_desk_appointments.php',
                 type: 'POST',
                 data: {
                     action: 'getAppointmentDetails',
@@ -777,18 +795,50 @@ session_start();
                 success: function(response) {
                     if (response) {
                         let detailsHTML = `
-                            <div class="mb-3">
-                                <h5>${response.Name}</h5>
-                                <p><i class="far fa-envelope me-2"></i> ${response.Email}</p>
-                                <p><i class="fas fa-phone me-2"></i> ${response.Phone || 'N/A'}</p>
-                            </div>
-                            <div class="mb-3">
-                                <p><strong>Host:</strong> ${response.Name}</p>
-                                <p><strong>Date:</strong> ${new Date(response.AppointmentTime).toLocaleDateString()}</p>
-                                <p><strong>Time:</strong> ${new Date(response.AppointmentTime).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</p>
-                                <p><strong>Status:</strong> <span class="badge status-badge-${response.Status}">${response.Status}</span></p>
+                    <div class="mb-3">
+                        <h5>${response.VisitorName}</h5>
+                        <p><i class="far fa-envelope me-2"></i> ${response.VisitorEmail}</p>
+                        <p><i class="fas fa-phone me-2"></i> ${response.VisitorPhone || 'N/A'}</p>
+                    </div>
+                    <div class="mb-3">
+                        <p><strong>Host:</strong> ${response.HostName}</p>
+                        <p><strong>Scheduled Date:</strong> ${new Date(response.AppointmentTime).toLocaleDateString()}</p>
+                        <p><strong>Scheduled Time:</strong> ${new Date(response.AppointmentTime).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</p>
+                        <p><strong>Status:</strong> <span class="badge status-badge-${response.Status}">${response.Status}</span></p>`;
 
-                        `;
+                        // For completed appointments, prominently show the session duration
+                        if (response.Status === 'Completed' && response.CheckInTime && response.SessionEndTime) {
+                            const checkInTime = new Date(response.CheckInTime);
+                            const sessionEndTime = new Date(response.SessionEndTime);
+
+                            // Calculate duration in minutes
+                            const durationMs = sessionEndTime - checkInTime;
+                            const durationMins = Math.round(durationMs / 60000);
+                            const hours = Math.floor(durationMins / 60);
+                            const minutes = durationMins % 60;
+
+                            let durationText = '';
+                            if (hours > 0) {
+                                durationText = `${hours} hour${hours > 1 ? 's' : ''}`;
+                                if (minutes > 0) {
+                                    durationText += ` ${minutes} minute${minutes > 1 ? 's' : ''}`;
+                                }
+                            } else {
+                                durationText = `${minutes} minute${minutes > 1 ? 's' : ''}`;
+                            }
+
+                            detailsHTML += `
+                        <div class="alert alert-success mt-3">
+                            <h6><i class="fas fa-clock me-2"></i> Session Duration: ${durationText}</h6>
+                            <p class="mb-0">Check-in: ${checkInTime.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</p>
+                            <p class="mb-0">Session End: ${sessionEndTime.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</p>
+                        </div>`;
+                        }
+
+                        detailsHTML += `
+                    ${response.CheckInTime && !response.SessionEndTime ? `<p><strong>Check-in Time:</strong> ${new Date(response.CheckInTime).toLocaleString()}</p>` : ''}
+                    ${response.CheckOutTime ? `<p><strong>Building Check-out:</strong> ${new Date(response.CheckOutTime).toLocaleString()}</p>` : ''}
+                </div>`;
 
                         $('#appointmentDetails').html(detailsHTML);
 

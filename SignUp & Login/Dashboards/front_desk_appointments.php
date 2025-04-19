@@ -312,11 +312,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             $appointmentId = $_POST['appointmentId'];
             $status = 'Completed';
-            $checkOutTime = date('Y-m-d H:i:s');
+            $sessionEndTime = date('Y-m-d H:i:s');  // Current time when host ends the session
 
-            $sql = "UPDATE appointments SET Status = ?, CheckOutTime = ? WHERE AppointmentID = ?";
+            $sql = "UPDATE appointments SET Status = ?, SessionEndTime = ? WHERE AppointmentID = ?";
             $stmt = $conn->prepare($sql);
-            $stmt->bind_param("ssi", $status, $checkOutTime, $appointmentId);
+            $stmt->bind_param("ssi", $status, $sessionEndTime, $appointmentId);
 
             if ($stmt->execute()) {
                 echo json_encode(['success' => true]);
