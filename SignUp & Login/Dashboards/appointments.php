@@ -77,6 +77,8 @@ function startAppointment($appointmentId): array
  * @param int $visitorId Visitor ID
  * @return array Response with status and message
  */
+require_once 'emails.php';
+require_once 'mailTemplates.php';
 function scheduleAppointment($appointmentTime, $hostId, $visitorId): array
 {
     global $conn;
@@ -106,8 +108,26 @@ function scheduleAppointment($appointmentTime, $hostId, $visitorId): array
     $stmt->bind_param("sii", $appointmentTime, $hostId, $visitorId);
 
     if ($stmt->execute()) {
+        // Get visitor and host information for the email
+        $visitorInfo = getVisitorById($visitorId);
+        $hostInfo = getHostById($hostId);
+
+        // Send confirmation email
+        if ($visitorInfo && $hostInfo) {
+            $emailBody = getScheduledEmailTemplate(
+                $visitorInfo['Name'],
+                $hostInfo['Name'],
+                $appointmentTime
+            );
+
+            sendAppointmentEmail(
+                $visitorInfo['Email'],
+                'Appointment Confirmation',
+                $emailBody
+            );
+        }
         return ["status" => "success", "message" => "Appointment scheduled successfully", "id" => $conn->insert_id];
-    } else {
+    } else{
         return ["status" => "error", "message" => "Failed to schedule appointment: " . $conn->error];
     }
 }
@@ -164,6 +184,10 @@ function rescheduleAppointment($appointmentId, $newTime): array
 {
     global $conn;
 
+    // Get the old appointment time before updating
+    $oldAppointmentInfo = getAppointmentById($appointmentId);
+    $oldTime = $oldAppointmentInfo['AppointmentTime'];
+
     // Validate new time
     $currentTime = date('Y-m-d H:i:s');
     if ($newTime <= $currentTime) {
@@ -201,6 +225,28 @@ function rescheduleAppointment($appointmentId, $newTime): array
     $stmt->bind_param("si", $newTime, $appointmentId);
 
     if ($stmt->execute()) {
+        // Get visitor and host information
+        $visitorId = $oldAppointmentInfo['VisitorID'];
+        $hostId = $oldAppointmentInfo['HostID'];
+
+        $visitorInfo = getVisitorById($visitorId);
+        $hostInfo = getHostById($hostId);
+
+        // Send rescheduled email
+        if ($visitorInfo && $hostInfo) {
+            $emailBody = getRescheduledEmailTemplate(
+                $visitorInfo['Name'],
+                $hostInfo['Name'],
+                $oldTime,
+                $newTime
+            );
+
+            sendAppointmentEmail(
+                $visitorInfo['Email'],
+                'Appointment Rescheduled',
+                $emailBody
+            );
+    }
         return ["status" => "success", "message" => "Appointment rescheduled successfully"];
     } else {
         return ["status" => "error", "message" => "Failed to reschedule appointment: " . $conn->error];
@@ -216,6 +262,9 @@ function rescheduleAppointment($appointmentId, $newTime): array
 function cancelAppointment($appointmentId): array
 {
     global $conn;
+
+    // Get appointment info before cancellation
+    $appointmentInfo = getAppointmentById($appointmentId);
 
     // Check if appointment exists and is not already cancelled
     $sql = "SELECT Status FROM appointments WHERE AppointmentID = ?";
@@ -239,6 +288,27 @@ function cancelAppointment($appointmentId): array
     $stmt->bind_param("i", $appointmentId);
 
     if ($stmt->execute()) {
+        // Get visitor and host information
+        $visitorId = $appointmentInfo['VisitorID'];
+        $hostId = $appointmentInfo['HostID'];
+
+        $visitorInfo = getVisitorById($visitorId);
+        $hostInfo = getHostById($hostId);
+
+        // Send cancellation email
+        if ($visitorInfo && $hostInfo) {
+            $emailBody = getCancelledEmailTemplate(
+                $visitorInfo['Name'],
+                $hostInfo['Name'],
+                $appointmentInfo['AppointmentTime']
+            );
+
+            sendAppointmentEmail(
+                $visitorInfo['Email'],
+                'Appointment Cancelled',
+                $emailBody
+            );
+    }
         return ["status" => "success", "message" => "Appointment cancelled successfully"];
     } else {
         return ["status" => "error", "message" => "Failed to cancel appointment: " . $conn->error];
@@ -328,6 +398,39 @@ function getAppointmentById($appointmentId) {
     return $result->fetch_assoc();
 }
 
+// Helper function to get visitor information by ID
+    function getVisitorById($visitorId) {
+        global $conn;
+
+        $sql = "SELECT * FROM visitors WHERE VisitorID = ?";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("i", $visitorId);
+        $stmt->execute();
+        $result = $stmt->get_result();
+
+        if ($result->num_rows === 0) {
+            return null;
+        }
+
+        return $result->fetch_assoc();
+    }
+
+// Helper function to get host information by ID
+    function getHostById($hostId) {
+        global $conn;
+
+        $sql = "SELECT * FROM users WHERE userID = ? AND role = 'Host'";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("i", $hostId);
+        $stmt->execute();
+        $result = $stmt->get_result();
+
+        if ($result->num_rows === 0) {
+            return null;
+        }
+
+        return $result->fetch_assoc();
+    }
 // Handle AJAX requests
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     header('Content-Type: application/json');
@@ -397,4 +500,4 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             break;
     }
     exit;
-}
+  }
