@@ -48,6 +48,7 @@ $conn->close();
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Help Desk System</title>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
         <link rel="stylesheet" href="help_desk.css">
@@ -56,7 +57,7 @@ $conn->close();
 <div class="layout">
 <div class="sidebar">
     <h4 class="text-white text-center">Support Staff Panel</h4>
-    <a href="frontdesk_dashboard.php"><i class="fas fa-tachometer-alt me-2"></i> Dashboard</a>
+    <a href="HD_analytics.php"><i class="fas fa-tachometer-alt me-2"></i> Dashboard</a>
     <a href="help_desk.php"><i class="fas fa-ticket"></i> Manage Tickets</a>
     <a href="../Logout.php"><i class="fas fa-sign-out-alt me-2"></i> Logout</a>
 </div>
@@ -110,7 +111,7 @@ $conn->close();
                         <td><?php echo date('M d, Y H:i', strtotime($ticket['CreatedDate'])); ?></td>
                         <td>
                             <button class="action-btn view-btn" data-id="<?php echo $ticket['TicketID']; ?>">View</button>
-                            <button class="action-btn print-btn" data-id="<?php echo $ticket['TicketID']; ?>">Print</button>
+                            <button class="action-btn print-btn" data-id="<?php echo $ticket['TicketID']; ?>">Print</i></button>
                         </td>
                     </tr>
                 <?php endforeach; ?>

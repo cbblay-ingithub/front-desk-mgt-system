@@ -43,7 +43,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     header("Location: Dashboards/visitor-mgt.php");
                     break;
                 case 'Support Staff':
-                    header("Location: staff_dashboard.php");
+                    header("Location: Dashboards/help_desk.php");
                     break;
                 default:
                     // Handle unknown roles
