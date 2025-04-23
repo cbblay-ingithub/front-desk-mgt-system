@@ -32,85 +32,110 @@ session_start();
     <style>
         body {
             min-height: 100vh;
+            margin: 0;
             display: flex;
+            flex-direction: row;
         }
+
         .sidebar {
             width: 250px;
+            flex-shrink: 0; /* Prevent sidebar from shrinking */
             background-color: #343a40;
             padding-top: 1rem;
         }
+
         .sidebar a {
             color: #fff;
             padding: 12px 20px;
             display: block;
             text-decoration: none;
         }
+
         .sidebar a:hover {
             background-color: #495057;
         }
+
         .main-content {
             flex-grow: 1;
             padding: 2rem;
             background-color: #f8f9fa;
+            overflow-x: auto;
         }
+
         .appointment-card {
             transition: all 0.3s ease;
         }
+
         .appointment-card:hover {
             transform: translateY(-5px);
             box-shadow: 0 10px 20px rgba(0,0,0,0.1);
         }
+
         .status-badge-Cancelled {
             background-color: #dc3545;
         }
+
         .status-badge-Ongoing {
             background-color: #66b2b2;
         }
+
         .status-badge-Upcoming {
             background-color: #FFB343;
         }
+
         .status-badge-Completed {
             background-color: #198754;
         }
+
         .action-buttons {
             display: flex;
             gap: 10px;
         }
+
         .search-form {
             margin-bottom: 20px;
         }
+
         .stats-card {
             border-left: 4px solid;
             margin-bottom: 20px;
         }
+
         .stats-card.primary {
             border-left-color: #0d6efd;
         }
+
         .stats-card.success {
             border-left-color: #198754;
         }
+
         .stats-card.warning {
             border-left-color: #ffc107;
         }
+
         .stats-card.danger {
             border-left-color: #dc3545;
         }
+
         .calendar-view {
             background-color: white;
             border-radius: 0.5rem;
             padding: 1rem;
             box-shadow: 0 0.125rem 0.25rem rgba(0,0,0,0.075);
         }
+
         .calendar-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 1rem;
         }
+
         .calendar-day {
             height: 100px;
             overflow-y: auto;
         }
+
         .calendar-appointment {
             padding: 2px 5px;
             margin-bottom: 2px;
@@ -121,26 +146,32 @@ session_start();
             text-overflow: ellipsis;
             cursor: pointer;
         }
+
         .calendar-appointment.Upcoming {
             background-color: #cff4fc;
             border-left: 3px solid #FFB343;
         }
+
         .calendar-appointment.Ongoing {
             background-color: #fff3cd;
             border-left: 3px solid #66b2b2;
         }
+
         .calendar-appointment.Completed {
             background-color: #d1e7dd;
             border-left: 3px solid #198754;
         }
+
         .calendar-appointment.Cancelled {
             background-color: #f8d7da;
             border-left: 3px solid #dc3545;
         }
+
         .host-filter {
             margin-bottom: 20px;
         }
     </style>
+
 </head>
 <body>
 
