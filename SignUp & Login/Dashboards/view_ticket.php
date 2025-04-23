@@ -1,5 +1,5 @@
 <?php
-// Generate HTML for ticket details view or print
+//  ticket details for view or print
 function generateTicketDetailsHTML($ticketDetail) {
     ob_start();
     ?>

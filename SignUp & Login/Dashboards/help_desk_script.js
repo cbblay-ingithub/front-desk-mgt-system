@@ -55,28 +55,40 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 function fetchTicketDetails(ticketId, action) {
-    // Use AJAX to fetch the ticket details
-    fetch(`index.php?view_ticket=${ticketId}`)
-        .then(response => response.text())
-        .then(html => {
-            const parser = new DOMParser();
-            const doc = parser.parseFromString(html, 'text/html');
+    if (action === 'view') {
+        // Show the modal first
+        document.getElementById('viewTicketModal').style.display = 'block';
+        document.getElementById('ticketDetails').innerHTML = '<div class="loading">Loading ticket details...</div>';
 
-            if (action === 'view') {
-                // Extract ticket details from the HTML response
-                const ticketDetailElement = doc.querySelector('#ticketDetails');
-                if (ticketDetailElement) {
-                    document.getElementById('ticketDetails').innerHTML = ticketDetailElement.innerHTML;
-                    document.getElementById('viewTicketModal').style.display = 'block';
+        // Fetch the ticket details
+        fetch(`ticket_ajax.php?action=get_ticket_details&ticket_id=${ticketId}`)
+            .then(response => response.json())
+            .then(data => {
+                if(data.success) {
+                    document.getElementById('ticketDetails').innerHTML = data.html;
+                } else {
+                    document.getElementById('ticketDetails').innerHTML =
+                        `<div class="error">Error: ${data.message}</div>`;
                 }
-            } else if (action === 'print') {
-                // Extract print layout from the HTML response
-                const printLayoutElement = doc.querySelector('#printLayout');
-                if (printLayoutElement) {
-                    document.getElementById('printLayout').innerHTML = printLayoutElement.innerHTML;
+            })
+            .catch(error => {
+                document.getElementById('ticketDetails').innerHTML =
+                    `<div class="error">Error: ${error.message}</div>`;
+            });
+    } else if (action === 'print') {
+        fetch(`ticket_ajax.php?action=get_ticket_print&ticket_id=${ticketId}`)
+            .then(response => response.json())
+            .then(data => {
+                if(data.success) {
+                    const printDiv = document.getElementById('printLayout');
+                    printDiv.innerHTML = data.html;
                     window.print();
+                } else {
+                    alert(`Error: ${data.message}`);
                 }
-            }
-        })
-        .catch(error => console.error('Error fetching ticket details:', error));
+            })
+            .catch(error => {
+                alert(`Error: ${error.message}`);
+            });
+    }
 }

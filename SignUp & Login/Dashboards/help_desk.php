@@ -28,6 +28,14 @@ if (isset($_GET['view_ticket']) && is_numeric($_GET['view_ticket'])) {
     if ($ticketDetail) {
         $ticketDetailsHTML = generateTicketDetailsHTML($ticketDetail);
         $ticketPrintHTML = generateTicketPrintHTML($ticketDetail);
+
+        // If action is print, trigger print dialog
+        if (isset($_GET['action']) && $_GET['action'] == 'print') {
+            echo "<script>window.onload = function() { window.print(); }</script>";
+        } else {
+            // Show the view modal
+            echo "<script>window.onload = function() { document.getElementById('viewTicketModal').style.display = 'block'; }</script>";
+        }
     }
 }
 
@@ -40,9 +48,18 @@ $conn->close();
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Help Desk System</title>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
         <link rel="stylesheet" href="help_desk.css">
     </head>
 <body>
+<div class="layout">
+<div class="sidebar">
+    <h4 class="text-white text-center">Support Staff Panel</h4>
+    <a href="frontdesk_dashboard.php"><i class="fas fa-tachometer-alt me-2"></i> Dashboard</a>
+    <a href="help_desk.php"><i class="fas fa-ticket"></i> Manage Tickets</a>
+    <a href="../Logout.php"><i class="fas fa-sign-out-alt me-2"></i> Logout</a>
+</div>
     <div class="container">
         <header>
             <h1>Help Desk System</h1>
@@ -101,6 +118,7 @@ $conn->close();
             </tbody>
         </table>
     </div>
+</div>
 
     <!-- Create Ticket Modal -->
     <div id="createTicketModal" class="modal">
