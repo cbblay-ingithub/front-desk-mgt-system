@@ -1,0 +1,348 @@
+:root {
+    --primary-color: #1a73e8;
+    --secondary-color: #4285f4;
+    --success-color: #34a853;
+    --danger-color: #ea4335;
+    --warning-color: #fbbc05;
+    --light-gray: #f8f9fa;
+    --dark-gray: #5f6368;
+    --border-color: #dadce0;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    line-height: 1.6;
+    color: #333;
+    background-color: #f5f5f5;
+    padding: 20px;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+}
+
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+h1 {
+    color: var(--primary-color);
+    font-size: 24px;
+}
+
+button {
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.3s;
+}
+
+button:hover {
+    background-color: var(--secondary-color);
+}
+
+.ticket-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+.ticket-table th, .ticket-table td {
+    padding: 12px 15px;
+    text-align: left;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.ticket-table th {
+    background-color: var(--light-gray);
+    font-weight: 600;
+}
+
+.ticket-table tr:hover {
+    background-color: rgba(0, 0, 0, 0.02);
+}
+
+.priority-low {
+    color: var(--dark-gray);
+    background-color: #e8f0fe;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+}
+
+.priority-medium {
+    color: #806102;
+    background-color: #fef7e0;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+}
+
+.priority-high {
+    color: #b06000;
+    background-color: #feefe0;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+}
+
+.priority-critical {
+    color: #b00020;
+    background-color: #fdeded;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+}
+
+.status-open {
+    color: var(--primary-color);
+    background-color: #e8f0fe;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+}
+
+.status-in-progress {
+    color: #806102;
+    background-color: #fef7e0;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+}
+
+.status-pending {
+    color: #b06000;
+    background-color: #feefe0;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+}
+
+.status-resolved {
+    color: var(--success-color);
+    background-color: #e6f4ea;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+}
+
+.status-closed {
+    color: var(--dark-gray);
+    background-color: var(--light-gray);
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+}
+
+.action-btn {
+    background-color: transparent;
+    color: var(--primary-color);
+    border: 1px solid var(--primary-color);
+    padding: 4px 8px;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-right: 5px;
+    font-size: 12px;
+}
+
+.action-btn:hover {
+    background-color: var(--light-gray);
+}
+
+/* Modal styles */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+.modal-content {
+    background-color: #fff;
+    margin: 50px auto;
+    padding: 20px;
+    border-radius: 8px;
+    width: 80%;
+    max-width: 800px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    max-height: 80vh;
+    overflow-y: auto;
+}
+
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.close:hover {
+    color: black;
+}
+
+/* Form styles */
+.form-group {
+    margin-bottom: 15px;
+}
+
+label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 600;
+}
+
+input, select, textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+textarea {
+    height: 100px;
+    resize: vertical;
+}
+
+.form-row {
+    display: flex;
+    gap: 15px;
+}
+
+.form-row .form-group {
+    flex: 1;
+}
+
+.submit-btn {
+    background-color: var(--success-color);
+    margin-top: 10px;
+}
+
+.submit-btn:hover {
+    background-color: #2d9249;
+}
+
+/* Print styles */
+.print-layout {
+    display: none;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    padding: 20px;
+}
+
+@media print {
+    body * {
+        visibility: hidden;
+    }
+    .print-layout, .print-layout * {
+        visibility: visible;
+    }
+    .print-layout {
+        display: block;
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+    }
+}
+
+.print-header {
+    text-align: center;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #333;
+}
+
+.print-section {
+    margin-bottom: 15px;
+}
+
+.print-row {
+    display: flex;
+    margin-bottom: 10px;
+}
+
+.print-label {
+    font-weight: bold;
+    width: 150px;
+}
+
+.print-value {
+    flex: 1;
+}
+
+.print-description {
+    margin-top: 20px;
+    margin-bottom: 20px;
+    padding: 15px;
+    border: 1px solid #ddd;
+    background-color: #f9f9f9;
+}
+
+.print-footer {
+    margin-top: 30px;
+    padding-top: 10px;
+    border-top: 1px solid #ddd;
+    font-size: 12px;
+    text-align: center;
+    color: #666;
+}
+
+/* Alert message styles */
+.alert {
+    padding: 15px;
+    margin-bottom: 20px;
+    border-radius: 4px;
+}
+
+.alert-success {
+    background-color: #e6f4ea;
+    color: var(--success-color);
+    border: 1px solid #c6e7d4;
+}
+
+.alert-error {
+    background-color: #fdeded;
+    color: var(--danger-color);
+    border: 1px solid #f8d7da;
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+    .form-row {
+        flex-direction: column;
+        gap: 0;
+    }
+
+    .container {
+        padding: 10px;
+    }
+
+    .ticket-table th, .ticket-table td {
+        padding: 8px;
+    }
+}
