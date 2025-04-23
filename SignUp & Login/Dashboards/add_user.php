@@ -46,9 +46,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <div class="mb-3">
         <label class="form-label">Role</label>
         <select name="role" class="form-select">
-            <option>Admin</option>
-            <option>Staff</option>
-            <option>User</option>
+            <option value="Admin">Admin</option>
+            <option value="Front Desk Staff">Front Desk Staff</option>
+            <option value="Host">Host</option>
+            <option value="Support Staff">Support Staff</option>
         </select>
     </div>
     <button class="btn btn-success">Add User</button>
