@@ -354,6 +354,7 @@ textarea {
     border: 1px solid #f8d7da;
 }
 
+
 /* Responsive styles */
 @media (max-width: 768px) {
     .form-row {
