@@ -1,6 +1,12 @@
 <?php
 // Include database connection
 require_once '../dbConfig.php';
+error_reporting(E_ALL);
+ini_set('display_errors', 0);
+
+// Include email functionality
+require_once __DIR__ . '/emails.php';
+require_once __DIR__ . '/mailTemplates.php';
 
 /**
  * Get all appointments for a specific host based on the host's ID
@@ -77,8 +83,6 @@ function startAppointment($appointmentId): array
  * @param int $visitorId Visitor ID
  * @return array Response with status and message
  */
-require_once 'emails.php';
-require_once 'mailTemplates.php';
 function scheduleAppointment($appointmentTime, $hostId, $visitorId): array
 {
     global $conn;
@@ -246,7 +250,7 @@ function rescheduleAppointment($appointmentId, $newTime): array
                 'Appointment Rescheduled',
                 $emailBody
             );
-    }
+        }
         return ["status" => "success", "message" => "Appointment rescheduled successfully"];
     } else {
         return ["status" => "error", "message" => "Failed to reschedule appointment: " . $conn->error];
@@ -308,7 +312,7 @@ function cancelAppointment($appointmentId): array
                 'Appointment Cancelled',
                 $emailBody
             );
-    }
+        }
         return ["status" => "success", "message" => "Appointment cancelled successfully"];
     } else {
         return ["status" => "error", "message" => "Failed to cancel appointment: " . $conn->error];
@@ -399,105 +403,111 @@ function getAppointmentById($appointmentId) {
 }
 
 // Helper function to get visitor information by ID
-    function getVisitorById($visitorId) {
-        global $conn;
+function getVisitorById($visitorId) {
+    global $conn;
 
-        $sql = "SELECT * FROM visitors WHERE VisitorID = ?";
-        $stmt = $conn->prepare($sql);
-        $stmt->bind_param("i", $visitorId);
-        $stmt->execute();
-        $result = $stmt->get_result();
+    $sql = "SELECT * FROM visitors WHERE VisitorID = ?";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("i", $visitorId);
+    $stmt->execute();
+    $result = $stmt->get_result();
 
-        if ($result->num_rows === 0) {
-            return null;
-        }
-
-        return $result->fetch_assoc();
+    if ($result->num_rows === 0) {
+        return null;
     }
+
+    return $result->fetch_assoc();
+}
 
 // Helper function to get host information by ID
-    function getHostById($hostId) {
-        global $conn;
+function getHostById($hostId) {
+    global $conn;
 
-        $sql = "SELECT * FROM users WHERE userID = ? AND role = 'Host'";
-        $stmt = $conn->prepare($sql);
-        $stmt->bind_param("i", $hostId);
-        $stmt->execute();
-        $result = $stmt->get_result();
+    $sql = "SELECT * FROM users WHERE userID = ? AND role = 'Host'";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("i", $hostId);
+    $stmt->execute();
+    $result = $stmt->get_result();
 
-        if ($result->num_rows === 0) {
-            return null;
-        }
-
-        return $result->fetch_assoc();
+    if ($result->num_rows === 0) {
+        return null;
     }
+
+    return $result->fetch_assoc();
+}
+
 // Handle AJAX requests
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    ob_clean(); // This clears any previous output
     header('Content-Type: application/json');
     $action = $_POST['action'] ?? '';
 
-    switch ($action) {
-        case 'schedule':
-            $appointmentTime = $_POST['appointmentTime'];
-            $hostId = $_POST['hostId'];
+    try {
+        switch ($action) {
+            case 'schedule':
+                $appointmentTime = $_POST['appointmentTime'];
+                $hostId = $_POST['hostId'];
 
-            // Check if creating a new visitor or using existing one
-            if (!empty($_POST['newVisitorName'])) {
-                // Create new visitor first
-                $visitorResult = createVisitor(
-                    $_POST['newVisitorName'],
-                    $_POST['newVisitorEmail'],
-                    $_POST['newVisitorPhone'] ?? null
-                );
+                // Check if creating a new visitor or using existing one
+                if (!empty($_POST['newVisitorName'])) {
+                    // Create new visitor first
+                    $visitorResult = createVisitor(
+                        $_POST['newVisitorName'],
+                        $_POST['newVisitorEmail'],
+                        $_POST['newVisitorPhone'] ?? null
+                    );
 
-                if ($visitorResult['status'] === 'error') {
-                    echo json_encode($visitorResult);
-                    break;
+                    if ($visitorResult['status'] === 'error') {
+                        echo json_encode($visitorResult);
+                        break;
+                    }
+
+                    // Use the new or existing visitor ID
+                    $visitorId = $visitorResult['visitorId'];
+                } else {
+                    // Use selected existing visitor
+                    $visitorId = $_POST['visitorId'];
                 }
 
-                // Use the new or existing visitor ID
-                $visitorId = $visitorResult['visitorId'];
-            } else {
-                // Use selected existing visitor
-                $visitorId = $_POST['visitorId'];
-            }
+                echo json_encode(scheduleAppointment($appointmentTime, $hostId, $visitorId));
+                break;
 
-            echo json_encode(scheduleAppointment($appointmentTime, $hostId, $visitorId));
-            break;
+            case 'reschedule':
+                $appointmentId = $_POST['appointmentId'];
+                $newTime = $_POST['newTime'];
+                echo json_encode(rescheduleAppointment($appointmentId, $newTime));
+                break;
 
-        case 'reschedule'://processes rescheduling
-            $appointmentId = $_POST['appointmentId'];
-            $newTime = $_POST['newTime'];
-            echo json_encode(rescheduleAppointment($appointmentId, $newTime));
-            break;
+            case 'cancel':
+                $appointmentId = $_POST['appointmentId'];
+                echo json_encode(cancelAppointment($appointmentId));
+                break;
 
-        case 'cancel'://processes cancellation
-            $appointmentId = $_POST['appointmentId'];
-            echo json_encode(cancelAppointment($appointmentId));
-            break;
+            case 'startSession':
+                $appointmentId = $_POST['appointmentId'];
+                echo json_encode(startAppointment($appointmentId));
+                break;
 
-        case 'startSession'://processes the start session function
-            $appointmentId = $_POST['appointmentId'];
-            echo json_encode(startAppointment($appointmentId));
-            break;
+            case 'endSession':
+                $appointmentId = $_POST['appointmentId'];
+                echo json_encode(endAppointment($appointmentId));
+                break;
 
-        case 'endSession'://processes the end session function
-            $appointmentId = $_POST['appointmentId'];
-            echo json_encode(endAppointment($appointmentId));
-            break;
+            case 'getAppointment':
+                $appointmentId = $_POST['appointmentId'];
+                echo json_encode(getAppointmentById($appointmentId));
+                break;
 
-        case 'getAppointment':
-            $appointmentId = $_POST['appointmentId'];
-            echo json_encode(getAppointmentById($appointmentId));
-            break;
+            case 'getVisitors':
+                echo json_encode(getVisitorsList());
+                break;
 
-        case 'getVisitors':
-            echo json_encode(getVisitorsList());
-            break;
-
-        default:
-            echo json_encode(["status" => "error", "message" => "Invalid action"]);
-            break;
+            default:
+                echo json_encode(["status" => "error", "message" => "Invalid action"]);
+                break;
+        }
+    } catch (Exception $e) {
+        echo json_encode(["status" => "error", "message" => "Server error: " . $e->getMessage()]);
     }
     exit;
-  }
+}
