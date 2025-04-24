@@ -68,7 +68,7 @@ if (!isset($_SESSION['userID']) || $_SESSION['role'] !== 'Host') {
 }
 
 $hostId = $_SESSION['userID'];
-require_once 'appointments.php';
+require_once __DIR__ . '/appointments.php';
 
 // Get all appointments for the host
 $appointments = getHostAppointments($hostId);
@@ -361,16 +361,19 @@ $appointments = getHostAppointments($hostId);
                 url: 'appointments.php',
                 type: 'POST',
                 data: formData,
+                dataType: 'json',
                 success: function(response) {
                     if (response.status === 'success') {
                         alert(response.message);
                         location.reload(); // Refresh to show new appointment
                     } else {
-                        alert(response.message);
+                        alert(response.message || "Unknown error occurred");
                     }
                 },
-                error: function() {
-                    alert('An error occurred. Please try again.');
+                error: function(xhr, status, error) {
+                    console.error("AJAX Error:", status, error);
+                    console.log("Response text:", xhr.responseText);
+                    alert('An error occurred. Check console.');
                 }
             });
         });
@@ -387,16 +390,19 @@ $appointments = getHostAppointments($hostId);
                         action: 'startSession',
                         appointmentId: appointmentId
                     },
+                    dataType: 'json',
                     success: function(response) {
                         if (response.status === 'success') {
                             alert(response.message);
                             location.reload(); // Refresh to show updated status
                         } else {
-                            alert(response.message);
+                            alert(response.message || "Unknown error occurred");
                         }
                     },
-                    error: function() {
-                        alert('Error! Please try again.');
+                    error: function(xhr, status, error) {
+                        console.error("AJAX Error:", status, error);
+                        console.log("Response text:", xhr.responseText);
+                        alert('An error occurred. Check console.');
                     }
                 });
             }
@@ -432,16 +438,19 @@ $appointments = getHostAppointments($hostId);
                 url: 'appointments.php',
                 type: 'POST',
                 data: formData,
+                dataType: 'json',
                 success: function(response) {
                     if (response.status === 'success') {
                         alert(response.message);
                         location.reload(); // Refresh to show updated appointment
                     } else {
-                        alert(response.message);
+                        alert(response.message || "Unknown error occurred");
                     }
                 },
-                error: function() {
-                    alert('Error! Please try again.');
+                error: function(xhr, status, error) {
+                    console.error("AJAX Error:", status, error);
+                    console.log("Response text:", xhr.responseText);
+                    alert('An error occurred. Check console.');
                 }
             });
         });
@@ -458,16 +467,19 @@ $appointments = getHostAppointments($hostId);
                         action: 'endSession',
                         appointmentId: appointmentId
                     },
+                    dataType: 'json',
                     success: function(response) {
                         if (response.status === 'success') {
                             alert(response.message);
                             location.reload(); // Refresh to show updated status
                         } else {
-                            alert(response.message);
+                            alert(response.message || "Unknown error occurred");
                         }
                     },
-                    error: function() {
-                        alert('Error! Please try again.');
+                    error: function(xhr, status, error) {
+                        console.error("AJAX Error:", status, error);
+                        console.log("Response text:", xhr.responseText);
+                        alert('An error occurred. Check console.');
                     }
                 });
             }
@@ -485,16 +497,19 @@ $appointments = getHostAppointments($hostId);
                         action: 'cancel',
                         appointmentId: appointmentId
                     },
+                    dataType: 'json',
                     success: function(response) {
                         if (response.status === 'success') {
                             alert(response.message);
                             location.reload(); // Refresh to show cancelled status
                         } else {
-                            alert(response.message);
+                            alert(response.message || "Unknown error occurred");
                         }
                     },
-                    error: function() {
-                        alert('Error! Please try again.');
+                    error: function(xhr, status, error) {
+                        console.error("AJAX Error:", status, error);
+                        console.log("Response text:", xhr.responseText);
+                        alert('An error occurred. Check console.');
                     }
                 });
             }
