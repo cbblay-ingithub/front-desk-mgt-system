@@ -1,62 +1,146 @@
-// emailTemplates.php
 <?php
+/**
+ * Email template for appointment scheduling
+ *
+ * @param string $visitorName Visitor's name
+ * @param string $hostName Host's name
+ * @param string $appointmentTime Date and time of the appointment
+ * @return string HTML email body
+ */
+function getScheduledEmailTemplate($visitorName, $hostName, $appointmentTime): string
+{
+    // Format the date for better readability
+    $formattedDateTime = date('l, F j, Y \a\t g:i A', strtotime($appointmentTime));
 
-function getScheduledEmailTemplate($visitorName, $hostName, $appointmentTime) {
-    $formattedDate = date('l, F j, Y', strtotime($appointmentTime));
-    $formattedTime = date('g:i A', strtotime($appointmentTime));
-
-    return "
+    return <<<HTML
+    <!DOCTYPE html>
     <html>
-    <body>
-        <h2>Appointment Confirmation</h2>
-        <p>Dear $visitorName,</p>
-        <p>Your appointment with $hostName has been scheduled for:</p>
-        <p><strong>Date:</strong> $formattedDate<br>
-        <strong>Time:</strong> $formattedTime</p>
-        <p>If you need to cancel or reschedule, please contact us as soon as possible.</p>
-        <p>Thank you,<br>
-        Appointment Management System</p>
+    <head>
+        <meta charset="UTF-8">
+        <title>Appointment Confirmation</title>
+    </head>
+    <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
+        <div style="max-width: 600px; margin: 0 auto; padding: 20px;">
+            <div style="text-align: center; padding: 20px 0;">
+                <h2 style="color: #2a5885;">Appointment Confirmation</h2>
+            </div>
+            
+            <div style="padding: 20px; background-color: #f9f9f9; border-radius: 5px;">
+                <p>Dear $visitorName,</p>
+                
+                <p>Your appointment with $hostName has been successfully scheduled for:</p>
+                
+                <p style="font-weight: bold; font-size: 16px; text-align: center; padding: 15px; background-color: #e8f4fd; border-radius: 5px;">
+                    $formattedDateTime
+                </p>
+                
+                <p>Please make sure to arrive on time. If you need to reschedule or cancel, please contact us as soon as possible.</p>
+                
+                <p>Thank you for choosing our services.</p>
+                
+                <p>Best regards,<br>
+                Hightel Consult Team</p>
+            </div>
+        </div>
     </body>
     </html>
-    ";
+    HTML;
 }
 
-function getRescheduledEmailTemplate($visitorName, $hostName, $oldTime, $newTime) {
-    $oldFormattedDate = date('l, F j, Y', strtotime($oldTime));
-    $oldFormattedTime = date('g:i A', strtotime($oldTime));
-    $newFormattedDate = date('l, F j, Y', strtotime($newTime));
-    $newFormattedTime = date('g:i A', strtotime($newTime));
+/**
+ * Email template for rescheduled appointments
+ *
+ * @param string $visitorName Visitor's name
+ * @param string $hostName Host's name
+ * @param string $oldTime Original appointment time
+ * @param string $newTime New appointment time
+ * @return string HTML email body
+ */
+function getRescheduledEmailTemplate($visitorName, $hostName, $oldTime, $newTime): string
+{
+    // Format dates for better readability
+    $formattedOldTime = date('l, F j, Y \a\t g:i A', strtotime($oldTime));
+    $formattedNewTime = date('l, F j, Y \a\t g:i A', strtotime($newTime));
 
-    return "
+    return <<<HTML
+    <!DOCTYPE html>
     <html>
-    <body>
-        <h2>Appointment Rescheduled</h2>
-        <p>Dear $visitorName,</p>
-        <p>Your appointment with $hostName has been rescheduled:</p>
-        <p><strong>From:</strong> $oldFormattedDate at $oldFormattedTime<br>
-        <strong>To:</strong> $newFormattedDate at $newFormattedTime</p>
-        <p>If this new time doesn't work for you, please contact us as soon as possible.</p>
-        <p>Thank you,<br>
-        Appointment Management System</p>
+    <head>
+        <meta charset="UTF-8">
+        <title>Appointment Rescheduled</title>
+    </head>
+    <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
+        <div style="max-width: 600px; margin: 0 auto; padding: 20px;">
+            <div style="text-align: center; padding: 20px 0;">
+                <h2 style="color: #e67e22;">Appointment Rescheduled</h2>
+            </div>
+            
+            <div style="padding: 20px; background-color: #f9f9f9; border-radius: 5px;">
+                <p>Dear $visitorName,</p>
+                
+                <p>Your appointment with $hostName has been rescheduled.</p>
+                
+                <div style="margin: 20px 0; padding: 15px; background-color: #fef5e7; border-radius: 5px;">
+                    <p style="margin: 5px 0;"><strong>Previous date and time:</strong></p>
+                    <p style="margin: 5px 0; text-decoration: line-through;">$formattedOldTime</p>
+                    
+                    <p style="margin: 15px 0 5px;"><strong>New date and time:</strong></p>
+                    <p style="margin: 5px 0; font-weight: bold;">$formattedNewTime</p>
+                </div>
+                
+                <p>If this new time doesn't work for you, please contact us as soon as possible to make alternative arrangements.</p>
+                
+                <p>Thank you for your understanding.</p>
+                
+                <p>Best regards,<br>
+                Hightel Consult Team</p>
+            </div>
+        </div>
     </body>
     </html>
-    ";
+    HTML;
 }
 
-function getCancelledEmailTemplate($visitorName, $hostName, $appointmentTime) {
-    $formattedDate = date('l, F j, Y', strtotime($appointmentTime));
-    $formattedTime = date('g:i A', strtotime($appointmentTime));
+/**
+ * Email template for cancelled appointments
+ *
+ * @param string $visitorName Visitor's name
+ * @param string $hostName Host's name
+ * @param string $appointmentTime Original appointment time
+ * @return string HTML email body
+ */
+function getCancelledEmailTemplate($visitorName, $hostName, $appointmentTime): string
+{
+    // Format the date for better readability
+    $formattedDateTime = date('l, F j, Y \a\t g:i A', strtotime($appointmentTime));
 
-    return "
+    return <<<HTML
+    <!DOCTYPE html>
     <html>
-    <body>
-        <h2>Appointment Cancelled</h2>
-        <p>Dear $visitorName,</p>
-        <p>Your appointment with $hostName scheduled for $formattedDate at $formattedTime has been cancelled.</p>
-        <p>If you would like to schedule a new appointment, please contact us.</p>
-        <p>Thank you,<br>
-        Appointment Management System</p>
+    <head>
+        <meta charset="UTF-8">
+        <title>Appointment Cancelled</title>
+    </head>
+    <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
+        <div style="max-width: 600px; margin: 0 auto; padding: 20px;">
+            <div style="text-align: center; padding: 20px 0;">
+                <h2 style="color: #c0392b;">Appointment Cancelled</h2>
+            </div>
+            
+            <div style="padding: 20px; background-color: #f9f9f9; border-radius: 5px;">
+                <p>Dear $visitorName,</p>
+                
+                <p>We regret to inform you that your appointment with $hostName scheduled for <strong>$formattedDateTime</strong> has been cancelled.</p>
+                
+                <p>If you would like to reschedule, please contact us at your earliest convenience.</p>
+                
+                <p>We apologize for any inconvenience this may cause.</p>
+                
+                <p>Best regards,<br>
+                Hightel Consult Team</p>
+            </div>
+        </div>
     </body>
     </html>
-    ";
+    HTML;
 }

@@ -1,36 +1,59 @@
-
 <?php
+// Require PHPMailer
+require_once __DIR__ . '/../../vendor/autoload.php';
+
+// Email functionality for appointment system
+
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
-require 'vendor/autoload.php';
 
-function sendAppointmentEmail($recipient, $subject, $body) {
-    $mail = new PHPMailer(true);
 
+/**
+ * Send an email notification for appointment actions
+ *
+ * @param string $to Recipient email address
+ * @param string $subject Email subject
+ * @param string $body Email body content (HTML)
+ * @param string $altBody Plain text alternative (optional)
+ * @return bool True if email sent successfully, false otherwise
+ */
+function sendAppointmentEmail($to, $subject, $body, $altBody = '')
+{
     try {
+        // Create a new PHPMailer instance
+        $mail = new PHPMailer(true);
+
         // Server settings
         $mail->isSMTP();
-        $mail->Host = 'smtp.gmail.com';
+        $mail->Host = 'smtp.dreamhost.com';
         $mail->SMTPAuth = true;
-        $mail->Username = 'gatekeeper.fds6@gmail.com';
-        $mail->Password = 'your-password';
-        $mail->SMTPSecure = 'tls';
-        $mail->Port = 587;
+        $mail->Username = 'project@hightelconsult.com';
+        $mail->Password = 'a@eaSwRQnQHU33xU';
+        $mail->SMTPSecure = 'ssl';
+        $mail->Port = 465;
 
-        // Recipients
-        $mail->setFrom('your-system@example.com', 'Appointment System');
-        $mail->addAddress($recipient);
+        // Sender and recipient
+        $mail->setFrom('project@hightelconsult.com', 'Hightel Consult');
+        $mail->addAddress($to);
 
         // Content
         $mail->isHTML(true);
         $mail->Subject = $subject;
         $mail->Body = $body;
 
+        // Set plain text alternative if provided, otherwise generate from HTML
+        if (empty($altBody)) {
+            $altBody = strip_tags($body);
+        }
+        $mail->AltBody = $altBody;
+
+        // Send the email
         $mail->send();
         return true;
     } catch (Exception $e) {
-        error_log("Email could not be sent. Mailer Error: {$mail->ErrorInfo}");
+        // Log error
+        error_log("Email sending failed: " . $mail->ErrorInfo);
         return false;
     }
 }
