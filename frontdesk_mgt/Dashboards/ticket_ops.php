@@ -1,6 +1,6 @@
 <?php
 // Ticket operations for the Help Desk System
-
+require_once 'notif_functions.php'; //includes notification functions
 // Process ticket creation form submission
 function createTicket($conn) {
     $message = null;
@@ -41,10 +41,13 @@ function createTicket($conn) {
 
         $stmt->bind_param($types, ...$params);
 
+        // Bind parameters and execute (adjust as per your implementation)
         if ($stmt->execute()) {
+            $newTicketId = $conn->insert_id;
+            error_log("Ticket created: #$newTicketId at " . date('Y-m-d H:i:s') . " with action: " . $_POST['action'] . " and POST data: " . json_encode($_POST));
             $message = "Ticket created successfully!";
         } else {
-            $error = "Error creating ticket: " . $conn->error;
+            $error = "Error creating ticket.";
         }
         $stmt->close();
     }
@@ -73,6 +76,12 @@ function processTicketOperation($conn) {
 
         if ($stmt->execute()) {
             $message = "Ticket #$ticketId has been assigned and marked as in-progress!";
+
+            // Create notification for assigned user
+            createNotification($conn, $assignedTo, $ticketId, 'assignment', [
+                'assigned_by' => $_SESSION['user_id'],
+                'assigned_by_name' => $_SESSION['username'] ?? 'System'
+            ]);
         } else {
             $error = "Error assigning ticket: " . $conn->error;
         }
@@ -91,6 +100,22 @@ function processTicketOperation($conn) {
 
         if ($stmt->execute()) {
             $message = "Ticket #$ticketId has been resolved!";
+
+            // Get the creator of the ticket
+            $creatorQuery = "SELECT CreatedBy FROM Help_Desk WHERE TicketID = ?";
+            $creatorStmt = $conn->prepare($creatorQuery);
+            $creatorStmt->bind_param("i", $ticketId);
+            $creatorStmt->execute();
+            $result = $creatorStmt->get_result();
+            if ($row = $result->fetch_assoc()) {
+                // Notify the ticket creator
+                createNotification($conn, $row['CreatedBy'], $ticketId, 'resolution', [
+                    'resolved_by' => $_SESSION['user_id'],
+                    'resolved_by_name' => $_SESSION['username'] ?? 'System',
+                    'resolution' => $resolution
+                ]);
+            }
+            $creatorStmt->close();
         } else {
             $error = "Error resolving ticket: " . $conn->error;
         }
@@ -108,6 +133,31 @@ function processTicketOperation($conn) {
 
         if ($stmt->execute()) {
             $message = "Ticket #$ticketId has been closed!";
+
+            // Get relevant users (creator and assignee if any)
+            $usersQuery = "SELECT CreatedBy, AssignedTo FROM Help_Desk WHERE TicketID = ?";
+            $usersStmt = $conn->prepare($usersQuery);
+            $usersStmt->bind_param("i", $ticketId);
+            $usersStmt->execute();
+            $result = $usersStmt->get_result();
+            if ($row = $result->fetch_assoc()) {
+                // Notify creator (if they're not the one closing the ticket)
+                if ($row['CreatedBy'] != $_SESSION['user_id']) {
+                    createNotification($conn, $row['CreatedBy'], $ticketId, 'closure', [
+                        'closed_by' => $_SESSION['user_id'],
+                        'closed_by_name' => $_SESSION['username'] ?? 'System'
+                    ]);
+                }
+
+                // Notify assignee (if any and if they're not the one closing the ticket)
+                if ($row['AssignedTo'] && $row['AssignedTo'] != $_SESSION['user_id']) {
+                    createNotification($conn, $row['AssignedTo'], $ticketId, 'closure', [
+                        'closed_by' => $_SESSION['user_id'],
+                        'closed_by_name' => $_SESSION['username'] ?? 'System'
+                    ]);
+                }
+            }
+            $usersStmt->close();
         } else {
             $error = "Error closing ticket: " . $conn->error;
         }
@@ -118,17 +168,45 @@ function processTicketOperation($conn) {
 }
 
 // Check for tickets older than 7 days that need to be auto-closed
+// Modify autoCloseOldTickets function
 function autoCloseOldTickets($conn) {
-    // Find tickets that are not closed and older than 7 days
-    $sql = "UPDATE Help_Desk 
-            SET Status = 'closed', 
-                LastUpdated = NOW(), 
-                ResolutionNotes = CONCAT(IFNULL(ResolutionNotes, ''), ' [Auto-closed after 7 days of inactivity]')
-            WHERE Status != 'closed' 
-            AND DATEDIFF(NOW(), IFNULL(LastUpdated, CreatedDate)) > 7";
+    // First, identify tickets that will be auto-closed
+    $findSql = "SELECT TicketID, CreatedBy, AssignedTo FROM Help_Desk 
+                WHERE Status != 'closed' 
+                AND DATEDIFF(NOW(), IFNULL(LastUpdated, CreatedDate)) > 7";
+    $result = $conn->query($findSql);
 
-    if ($conn->query($sql)) {
+    $ticketsToClose = [];
+    while ($row = $result->fetch_assoc()) {
+        $ticketsToClose[] = $row;
+    }
+
+    // Now update the tickets
+    $updateSql = "UPDATE Help_Desk 
+                SET Status = 'closed', 
+                    LastUpdated = NOW(), 
+                    ResolutionNotes = CONCAT(IFNULL(ResolutionNotes, ''), ' [Auto-closed after 7 days of inactivity]')
+                WHERE Status != 'closed' 
+                AND DATEDIFF(NOW(), IFNULL(LastUpdated, CreatedDate)) > 7";
+
+    if ($conn->query($updateSql)) {
         $rowsAffected = $conn->affected_rows;
+
+        // Send notifications for auto-closed tickets
+        foreach ($ticketsToClose as $ticket) {
+            // Notify ticket creator
+            createNotification($conn, $ticket['CreatedBy'], $ticket['TicketID'], 'auto_closure', [
+                'reason' => 'Inactivity for more than 7 days'
+            ]);
+
+            // Notify assignee if assigned
+            if ($ticket['AssignedTo']) {
+                createNotification($conn, $ticket['AssignedTo'], $ticket['TicketID'], 'auto_closure', [
+                    'reason' => 'Inactivity for more than 7 days'
+                ]);
+            }
+        }
+
         if ($rowsAffected > 0) {
             return "$rowsAffected ticket(s) were automatically closed due to inactivity.";
         }
@@ -143,7 +221,6 @@ function generateAssignTicketModalHTML($ticketId, $users) {
         <div class="modal-content">
             <span class="close">&times;</span>
             <h2>Assign Ticket #' . $ticketId . '</h2>
-            <!-- Remove the action attribute completely -->
             <form id="assignTicketForm">
                 <input type="hidden" name="action" value="assign_ticket">
                 <input type="hidden" name="ticket_id" value="' . $ticketId . '">
@@ -167,7 +244,6 @@ function generateAssignTicketModalHTML($ticketId, $users) {
 
     return $html;
 }
-
 // Function to create the Resolve Ticket modal HTML
 function generateResolveTicketModalHTML($ticketId) {
     return '

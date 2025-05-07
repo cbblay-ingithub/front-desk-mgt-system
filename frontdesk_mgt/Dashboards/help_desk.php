@@ -67,6 +67,7 @@ $conn->close();
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="help_desk.css">
+    <link rel="stylesheet" href="notification.css">
     <style>
         /* Dropdown menu styles */
         .dropdown {
@@ -110,7 +111,7 @@ $conn->close();
         }
     </style>
 </head>
-<body>
+<body data-user-id="<?php echo $_SESSION['user_id'] ?? ''; ?>">
 <div class="layout">
     <div class="sidebar">
         <h4 class="text-white text-center">Support Staff Panel</h4>
@@ -157,7 +158,16 @@ $conn->close();
             <?php else: ?>
                 <?php foreach ($tickets as $ticket): ?>
                     <tr>
-                        <td><?php echo htmlspecialchars(substr($ticket['Description'], 0, 50)) . (strlen($ticket['Description']) > 50 ? '...' : ''); ?></td>
+                        <td>
+                            <?php
+                            // Shortened description logic - 30 characters with ellipsis
+                            $description = htmlspecialchars($ticket['Description']);
+                            $maxLength = 25;
+                            echo strlen($description) > $maxLength
+                                ? substr($description, 0, $maxLength) . '...'
+                                : $description;
+                            ?>
+                        </td>
                         <td><?php echo htmlspecialchars($ticket['CreatedByName']); ?></td>
                         <td><?php echo $ticket['AssignedToName'] ? htmlspecialchars($ticket['AssignedToName']) : 'Not assigned'; ?></td>
                         <td><?php echo $ticket['CategoryName'] ? htmlspecialchars($ticket['CategoryName']) : 'Uncategorized'; ?></td>
@@ -280,7 +290,24 @@ $conn->close();
         <?php echo $ticketPrintHTML; ?>
     <?php endif; ?>
 </div>
-
+<!-- Notification System -->
+<div class="notification-wrapper">
+    <div class="notification-bell" id="notificationBell">
+        <i class="fas fa-bell"></i>
+        <span class="notification-count" id="notificationCount">0</span>
+    </div>
+    <div class="notification-panel" id="notificationPanel">
+        <div class="notification-header">
+            <h3>Notifications</h3>
+            <button id="markAllReadBtn" class="mark-all-read">Mark All Read</button>
+        </div>
+        <div class="notification-list" id="notificationList">
+            <!-- Notifications will be inserted here -->
+            <div class="empty-notification">No notifications</div>
+        </div>
+    </div>
+</div>
+<script src="notification.js"></script>
 <script>
     // Get all dropdown toggle buttons
     const dropdownToggles = document.querySelectorAll('.dropdown-toggle');
@@ -327,7 +354,7 @@ $conn->close();
         });
     });
 
-    /// Assign ticket action
+    // Assign ticket action
     document.querySelectorAll('.edit-ticket').forEach(btn => {
         btn.addEventListener('click', function() {
             const ticketId = this.getAttribute('data-id');

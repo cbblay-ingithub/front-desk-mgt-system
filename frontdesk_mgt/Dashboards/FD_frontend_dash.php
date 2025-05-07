@@ -29,6 +29,7 @@ session_start();
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.6.13/flatpickr.min.css">
+    <link rel ="stylesheet" href ="notification.css">
     <style>
         body {
             min-height: 100vh;
@@ -184,6 +185,8 @@ session_start();
     <a href="helpdesk.php"><i class="fas fa-ticket"></i> Help Desk Tickets</a>
     <a href="lost_found.php"><i class="fa-solid fa-suitcase"></i> View Lost & Found</a>
     <a href="../Logout.php"><i class="fas fa-sign-out-alt me-2"></i> Logout</a>
+
+
 </div>
 
 <!-- Main Content -->
@@ -543,11 +546,81 @@ session_start();
         </div>
     </div>
 </div>
+<!-- Visitor Check-In Modal -->
+<div class="modal fade" id="visitorCheckInModal" tabindex="-1" aria-labelledby="visitorCheckInModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="visitorCheckInModalLabel">Check-In Visitor</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="visitorCheckInForm">
+                    <input type="hidden" name="action" value="checkInWithDetails">
+                    <input type="hidden" name="appointmentId" id="checkInAppointmentId">
+                    <input type="hidden" name="visitorId" id="checkInVisitorId">
+
+                    <div class="mb-3">
+                        <p><strong>Visitor:</strong> <span id="checkInVisitorName"></span></p>
+                        <p><strong>Email:</strong> <span id="checkInVisitorEmail"></span></p>
+                        <p><strong>Host:</strong> <span id="checkInHostName"></span></p>
+                        <p><strong>Appointment Time:</strong> <span id="checkInAppointmentTime"></span></p>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="visitorIDType" class="form-label">ID Type</label>
+                        <select class="form-select" id="visitorIDType" name="idType" required>
+                            <option value="">-- Select ID Type --</option>
+                            <option value="National ID">National ID</option>
+                            <option value="Passport">Passport</option>
+                            <option value="Driver's License">Driver's License</option>
+                            <option value="Employee ID">Employee ID</option>
+                            <option value="Student ID">Student ID</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="visitorIDNumber" class="form-label">ID Number</label>
+                        <input type="text" class="form-control" id="visitorIDNumber" name="idNumber" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="visitPurpose" class="form-label">Purpose of Visit</label>
+                        <textarea class="form-control" id="visitPurpose" name="visitPurpose" rows="2" required></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-success" id="completeCheckInBtn">Complete Check-In</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Notification System -->
+<div class="notification-wrapper">
+    <div class="notification-bell" id="notificationBell">
+        <i class="fas fa-bell"></i>
+        <span class="notification-count" id="notificationCount">0</span>
+    </div>
+    <div class="notification-panel" id="notificationPanel">
+        <div class="notification-header">
+            <h3>Notifications</h3>
+            <button id="markAllReadBtn" class="mark-all-read">Mark All Read</button>
+        </div>
+        <div class="notification-list" id="notificationList">
+            <!-- Notifications will be inserted here -->
+            <div class="empty-notification">No notifications</div>
+        </div>
+    </div>
+</div>
 
 <!-- JavaScript Dependencies -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.6.13/flatpickr.min.js"></script>
+<script src="notification.js"></script>
 <script>
     $(document).ready(function() {
         const appointmentsData = {};
@@ -977,70 +1050,83 @@ session_start();
         });
 
         // Modified check-in button handler
+        // Modified check-in button handler to open the modal instead of direct check-in
         $(document).on('click', '.check-in-btn, .check-in-modal-btn', function() {
             const appointmentId = $(this).data('id');
 
-            if (confirm('Are you sure you want to check in this visitor?')) {
-                $.ajax({
-                    url: 'front_desk_appointments.php', // Changed URL to point directly to the handler
-                    type: 'POST',
-                    data: {
-                        action: 'checkIn',
-                        appointmentId: appointmentId
-                    },
-                    success: function(response) {
-                        // Improved response handling
-                        console.log("Response received:", response); // For debugging
-                        try {
-                            // Try to parse the response if it's not already an object
-                            const result = (typeof response === 'string') ? JSON.parse(response) : response;
+            // Get appointment details to fill the modal
+            $.ajax({
+                url: 'front_desk_appointments.php',
+                type: 'POST',
+                data: {
+                    action: 'getAppointmentDetails',
+                    appointmentId: appointmentId
+                },
+                success: function(response) {
+                    if (response) {
+                        // Populate the modal with visitor info
+                        $('#checkInAppointmentId').val(appointmentId);
+                        $('#checkInVisitorId').val(response.VisitorID);
+                        $('#checkInVisitorName').text(response.VisitorName);
+                        $('#checkInVisitorEmail').text(response.VisitorEmail);
+                        $('#checkInHostName').text(response.HostName);
+                        $('#checkInAppointmentTime').text(new Date(response.AppointmentTime).toLocaleString());
 
-                            if (result.success) {
-                                alert('Visitor checked in successfully!');
-                                location.reload();
-                            } else {
-                                alert('Error: ' + (result.message || 'Unknown error occurred'));
-                            }
-                        } catch (e) {
-                            console.error("Error parsing response:", e);
-                            alert('An error occurred while processing the server response.');
-                        }
-                    },
-                    error: function(xhr, status, error) {
-                        console.error("AJAX error:", status, error);
-                        console.log("Response text:", xhr.responseText);
-                        alert('An error occurred. Please check the console for details.');
+                        // Show the modal
+                        $('#visitorCheckInModal').modal('show');
+                    } else {
+                        alert('Error: Could not retrieve appointment details');
                     }
-                });
-            }
+                },
+                error: function() {
+                    alert('An error occurred. Please try again.');
+                }
+            });
         });
-        // Handle complete session button click
-        $(document).on('click', '.complete-session-btn, .complete-modal-btn', function() {
-            const appointmentId = $(this).data('id');
 
-            if (confirm('Are you sure you want to complete this appointment?')) {
-                $.ajax({
-                    url: 'front_desk_appointments.php',
-                    type: 'POST',
-                    data: {
-                        action: 'completeSession',
-                        appointmentId: appointmentId
-                    },
-                    success: function(response) {
-                        if (response.success) {
-                            alert('Appointment completed successfully!');
+// Handle the "Complete Check-In" button click
+        $('#completeCheckInBtn').click(function() {
+            // Validate form
+            if (!$('#visitorCheckInForm')[0].checkValidity()) {
+                $('#visitorCheckInForm')[0].reportValidity();
+                return;
+            }
+
+            // Get form data
+            const formData = $('#visitorCheckInForm').serialize();
+
+            // AJAX request to process check-in with visitor details
+            $.ajax({
+                url: 'front_desk_appointments.php',
+                type: 'POST',
+                data: formData,
+                dataType:'json',
+                success: function(response) {
+                    try {
+                        // Try to parse the response if it's not already an object
+                        const result = (typeof response === 'string') ? JSON.parse(response) : response;
+
+                        if (result.success) {
+                            // Close modal and reload page
+                            $('#visitorCheckInModal').modal('hide');
+                            alert('Visitor checked in successfully!');
                             location.reload();
                         } else {
-                            alert('Error: ' + response.message);
+                            alert('Error: ' + (result.message || 'An unknown error occurred'));
                         }
-                    },
-                    error: function() {
-                        alert('An error occurred. Please try again.');
+                    } catch (e) {
+                        console.error("Error parsing response:", e);
+                        console.log("Response:", response);
+                        alert('An error occurred while processing the server response.');
                     }
-                });
-            }
+                },
+                error: function(jqXHR, textStatus, errorThrown) {
+                    console.error("AJAX error:", textStatus, errorThrown);
+                    console.log("Response text:", jqXHR.responseText);
+                    alert('An error occurred. Please check the console for details.');
+                }
+            });
         });
-
         // Handle cancel button click
         $(document).on('click', '.cancel-btn, .cancel-modal-btn', function() {
             const appointmentId = $(this).data('id');

@@ -17,6 +17,7 @@ while ($row = $result->fetch_assoc()) {
     <title>Front Desk Dashboard</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="notification.css">
     <style>
         body { min-height: 100vh; display: flex; }
         .sidebar {
@@ -139,7 +140,24 @@ while ($row = $result->fetch_assoc()) {
         </form>
     </div>
 </div>
-
+<!-- Notification System -->
+<div class="notification-wrapper">
+    <div class="notification-bell" id="notificationBell">
+        <i class="fas fa-bell"></i>
+        <span class="notification-count" id="notificationCount">0</span>
+    </div>
+    <div class="notification-panel" id="notificationPanel">
+        <div class="notification-header">
+            <h3>Notifications</h3>
+            <button id="markAllReadBtn" class="mark-all-read">Mark All Read</button>
+        </div>
+        <div class="notification-list" id="notificationList">
+            <!-- Notifications will be inserted here -->
+            <div class="empty-notification">No notifications</div>
+        </div>
+    </div>
+</div>
+<script src="notification.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

@@ -114,8 +114,21 @@ CREATE TABLE Help_Desk(
     FOREIGN KEY (AssignedTo) REFERENCES Users(UserID) ON DELETE SET NULL,
     FOREIGN KEY (CategoryID) REFERENCES TicketCategories (CategoryID)
 );
+-- 11. Notifications table
+CREATE TABLE Notifications (
+   NotificationID   INT AUTO_INCREMENT PRIMARY KEY,
+   UserID           INT NOT NULL,            -- who gets alerted
+   TicketID         INT NOT NULL,
+   Type             ENUM('assignment','info_request') NOT NULL,
+   Payload          JSON NOT NULL,           -- e.g. { "from":57, "message":"…" }
+   IsRead           BOOLEAN DEFAULT FALSE,
+   CreatedAt        TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+   FOREIGN KEY (UserID)   REFERENCES Users(UserID),
+   FOREIGN KEY (TicketID) REFERENCES Help_Desk(TicketID)
+);
 
--- 10. Student-Visitor Junction table
+
+-- 11. Student-Visitor Junction table
 CREATE TABLE Student_Visitor ( 
     StudentID INT,	-- ID of the Student
     VisitorID INT,	-- ID of the Visitor
@@ -124,7 +137,7 @@ CREATE TABLE Student_Visitor (
     FOREIGN KEY (VisitorID) REFERENCES Visitors(VisitorID) ON DELETE CASCADE
 );
 
--- 11. Visitor-Items Junction table
+-- 12. Visitor-Items Junction table
 CREATE TABLE Visitor_Items ( 
     VisitorID INT,		-- ID of the Student
     ItemID INT, 		-- ID of the Visitor
