@@ -2,6 +2,24 @@
 <project version="4">
   <component name="VcsDirectoryMappings">
     <mapping directory="" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/vendor/cboden/ratchet" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/vendor/evenement/evenement" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/vendor/guzzlehttp/psr7" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/vendor/phpmailer/phpmailer" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/vendor/psr/http-factory" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/vendor/psr/http-message" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/vendor/ralouphie/getallheaders" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/vendor/ratchet/rfc6455" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/vendor/react/cache" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/vendor/react/dns" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/vendor/react/event-loop" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/vendor/react/promise" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/vendor/react/socket" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/vendor/react/stream" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/vendor/symfony/deprecation-contracts" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/vendor/symfony/http-foundation" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/vendor/symfony/polyfill-mbstring" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/vendor/symfony/polyfill-php83" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/vendor/symfony/routing" vcs="Git" />
   </component>
 </project>

@@ -265,4 +265,3 @@ function generateResolveTicketModalHTML($ticketId) {
         </div>
     </div>';
 }
-?>

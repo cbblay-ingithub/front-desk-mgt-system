@@ -3,18 +3,39 @@
 
 // Get users for dropdown
 function getUsers($conn) {
-    $users = [];
-    $sql = "SELECT UserID, Name  FROM users ORDER BY Name";
+    $sql = "SELECT UserID, Name FROM users";
     $result = $conn->query($sql);
-
-    if ($result->num_rows > 0) {
-        while($row = $result->fetch_assoc()) {
-            $users[$row["UserID"]] = $row["Name"];
-        }
+    $users = [];
+    while ($row = $result->fetch_assoc()) {
+        $users[$row['UserID']] = $row['Name'];
     }
     return $users;
 }
 
+// Fetch logged-in user's name by UserID
+function getLoggedInUserName($conn, $userId) {
+    if (!$conn) {
+        error_log("getLoggedInUserName: Database connection is null");
+        return "Database Error";
+    }
+    $sql = "SELECT Name FROM users WHERE UserID = ?";
+    $stmt = $conn->prepare($sql);
+    if (!$stmt) {
+        error_log("getLoggedInUserName: Prepare failed: " . $conn->error);
+        return "Database Error";
+    }
+    $stmt->bind_param("i", $userId);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    if ($result->num_rows > 0) {
+        $row = $result->fetch_assoc();
+        $stmt->close();
+        return $row['Name'];
+    }
+    error_log("getLoggedInUserName: No user found for UserID: $userId");
+    $stmt->close();
+    return "User Not Found";
+}
 // Get categories for dropdown
 function getCategories($conn) {
     $categories = [];
