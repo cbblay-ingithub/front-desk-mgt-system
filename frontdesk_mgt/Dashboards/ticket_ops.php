@@ -1,6 +1,7 @@
 <?php
 // Ticket operations for the Help Desk System
 require_once 'notif_functions.php'; //includes notification functions
+
 // Process ticket creation form submission
 function createTicket($conn) {
     $message = null;
@@ -93,8 +94,14 @@ function processTicketOperation($conn) {
         $ticketId = $_POST['ticket_id'];
         $resolution = $_POST['resolution'];
 
-        // Update ticket status to "resolved"
-        $sql = "UPDATE Help_Desk SET Status = 'resolved', ResolutionNotes = ?, ResolvedDate = NOW() WHERE TicketID = ?";
+        // Update ticket status to "resolved", set ResolvedDate, and calculate TimeSpent
+        // TimeSpent is the difference in minutes between CreatedDate and now (ResolvedDate)
+        $sql = "UPDATE Help_Desk 
+            SET Status = 'resolved', 
+                ResolutionNotes = ?, 
+                ResolvedDate = NOW(), 
+                TimeSpent = TIMESTAMPDIFF(MINUTE, CreatedDate, NOW()) 
+            WHERE TicketID = ?";
         $stmt = $conn->prepare($sql);
         $stmt->bind_param("si", $resolution, $ticketId);
 
@@ -265,3 +272,4 @@ function generateResolveTicketModalHTML($ticketId) {
         </div>
     </div>';
 }
+?>

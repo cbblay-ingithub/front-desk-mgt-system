@@ -44,7 +44,17 @@ function generateTicketDetailsHTML($ticketDetail) {
         </div>
         <div class="form-group">
             <label>Time Spent:</label>
-            <p><?php echo $ticketDetail['TimeSpent'] ? $ticketDetail['TimeSpent'] . ' minutes' : 'Not recorded'; ?></p>
+            <p>
+                <?php
+                if ($ticketDetail['TimeSpent']) {
+                    $hours = floor($ticketDetail['TimeSpent'] / 60);
+                    $minutes = $ticketDetail['TimeSpent'] % 60;
+                    echo $hours . ' hours ' . $minutes . ' minutes';
+                } else {
+                    echo 'Not recorded';
+                }
+                ?>
+            </p>
         </div>
     </div>
 
@@ -66,7 +76,6 @@ function generateTicketDetailsHTML($ticketDetail) {
     <?php
     return ob_get_clean();
 }
-
 // Generate HTML for ticket print layout
 function generateTicketPrintHTML($ticketDetail) {
     ob_start();

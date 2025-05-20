@@ -92,7 +92,8 @@ function getTicketDetails($conn, $ticketID) {
     $sql = "SELECT t.*, 
             u1.Name as CreatedByName,
             u2.Name as AssignedToName,
-            c.CategoryName
+            c.CategoryName,
+            IF(t.Status = 'resolved', TIMESTAMPDIFF(MINUTE, t.CreatedDate, t.ResolvedDate), NULL) as TimeSpent
             FROM Help_Desk t
             LEFT JOIN Users u1 ON t.CreatedBy = u1.UserID
             LEFT JOIN Users u2 ON t.AssignedTo = u2.UserID
