@@ -303,6 +303,54 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
             break;
 
+        case 'checkInWithDetails':
+            if (!isset($_POST['appointmentId']) || !isset($_POST['visitorId']) ||
+                !isset($_POST['idType']) || !isset($_POST['idNumber']) || !isset($_POST['visitPurpose'])) {
+                echo json_encode(['success' => false, 'message' => 'Missing required fields']);
+                break;
+            }
+
+            $appointmentId = $_POST['appointmentId'];
+            $visitorId = $_POST['visitorId'];
+            $idType = $_POST['idType'];
+            $idNumber = $_POST['idNumber'];
+            $visitPurpose = $_POST['visitPurpose'];
+
+            $sql = "SELECT HostID FROM appointments WHERE AppointmentID = ?";
+            $stmt = $conn->prepare($sql);
+            $stmt->bind_param("i", $appointmentId);
+            $stmt->execute();
+            $result = $stmt->get_result();
+            if ($result->num_rows == 0) {
+                echo json_encode(['success' => false, 'message' => 'Appointment not found']);
+                break;
+            }
+            $hostId = $result->fetch_assoc()['HostID'];
+
+            $conn->begin_transaction();
+            try {
+                // Update visitor details
+                $sql = "UPDATE visitors SET IDType = ?, IDNumber = ? WHERE VisitorID = ?";
+                $stmt = $conn->prepare($sql);
+                $stmt->bind_param("ssi", $idType, $idNumber, $visitorId);
+                $stmt->execute();
+
+                // Log check-in
+                $checkInTime = date('Y-m-d H:i:s');
+                $sql = "INSERT INTO visitor_Logs (CheckInTime, HostID, VisitorID, Visit_Purpose) 
+                VALUES (?, ?, ?, ?)";
+                $stmt = $conn->prepare($sql);
+                $stmt->bind_param("siis", $checkInTime, $hostId, $visitorId, $visitPurpose);
+                $stmt->execute();
+
+                $conn->commit();
+                echo json_encode(['success' => true, 'message' => 'Visitor checked in successfully']);
+            } catch (Exception $e) {
+                $conn->rollback();
+                echo json_encode(['success' => false, 'message' => 'Check-in failed: ' . $e->getMessage()]);
+            }
+            break;
+
         case 'completeSession':
             // Complete an appointment
             if (!isset($_POST['appointmentId'])) {

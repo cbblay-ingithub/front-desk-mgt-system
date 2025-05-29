@@ -15,13 +15,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $visit_purpose = $_POST['visit_purpose'];
         $hostID = $_SESSION['user_id'];
 
-        // Insert into visitors table
-        $stmt = $conn->prepare("INSERT INTO visitors (Name, Email, Phone, IDType, IDNumber, Status, Visit_Purpose) VALUES (?, ?, ?, ?, ?, 'Checked In', ?)");
-        $stmt->bind_param("ssssss", $name, $email, $phone, $idType, $idNumber, $visit_purpose);
+        // Check if visitor already exists by email
+        $stmt = $conn->prepare("SELECT VisitorID FROM visitors WHERE Email = ?");
+        $stmt->bind_param("s", $email);
         $stmt->execute();
-        $visitorID = $stmt->insert_id;
+        $result = $stmt->get_result();
 
-        // Insert into Visitor_Logs table
+        if ($result->num_rows > 0) {
+            // Visitor exists, retrieve their ID and update details
+            $visitorID = $result->fetch_assoc()['VisitorID'];
+            $updateStmt = $conn->prepare("UPDATE visitors SET Name = ?, Phone = ?, IDType = ?, IDNumber = ?, Visit_Purpose = ? WHERE VisitorID = ?");
+            $updateStmt->bind_param("sssssi", $name, $phone, $idType, $idNumber, $visit_purpose, $visitorID);
+            $updateStmt->execute();
+        } else {
+            // Insert new visitor (no Status column needed, see Step 3)
+            $insertStmt = $conn->prepare("INSERT INTO visitors (Name, Email, Phone, IDType, IDNumber, Visit_Purpose) VALUES (?, ?, ?, ?, ?, ?)");
+            $insertStmt->bind_param("ssssss", $name, $email, $phone, $idType, $idNumber, $visit_purpose);
+            $insertStmt->execute();
+            $visitorID = $insertStmt->insert_id;
+        }
+
+        // Insert into Visitor_Logs
         $logStmt = $conn->prepare("INSERT INTO visitor_Logs (CheckInTime, HostID, VisitorID, Visit_Purpose) VALUES (NOW(), ?, ?, ?)");
         $logStmt->bind_param("iis", $hostID, $visitorID, $visit_purpose);
         $logStmt->execute();
@@ -30,11 +44,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     } elseif ($action === 'check_out') {
         $visitorID = $_POST['visitor_id'];
-
-        // Update visitor status
-        $stmt = $conn->prepare("UPDATE visitors SET Status = 'Checked Out' WHERE VisitorID = ?");
-        $stmt->bind_param("i", $visitorID);
-        $stmt->execute();
 
         // Update Visitor_Logs with checkout time
         $logUpdate = $conn->prepare("UPDATE visitor_Logs SET CheckOutTime = NOW() WHERE VisitorID = ? AND CheckOutTime IS NULL ORDER BY CheckInTime DESC LIMIT 1");

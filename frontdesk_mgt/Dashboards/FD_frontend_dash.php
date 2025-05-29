@@ -1083,46 +1083,40 @@ session_start();
             });
         });
 
-// Handle the "Complete Check-In" button click
+// Handle "Complete Check-In" button click
         $('#completeCheckInBtn').click(function() {
-            // Validate form
             if (!$('#visitorCheckInForm')[0].checkValidity()) {
                 $('#visitorCheckInForm')[0].reportValidity();
                 return;
             }
 
-            // Get form data
             const formData = $('#visitorCheckInForm').serialize();
 
-            // AJAX request to process check-in with visitor details
             $.ajax({
                 url: 'front_desk_appointments.php',
                 type: 'POST',
                 data: formData,
-                dataType:'json',
+                dataType: 'json',
                 success: function(response) {
-                    try {
-                        // Try to parse the response if it's not already an object
-                        const result = (typeof response === 'string') ? JSON.parse(response) : response;
+                    if (response.success) {
+                        $('#visitorCheckInModal').modal('hide');
+                        alert('Visitor checked in successfully!');
 
-                        if (result.success) {
-                            // Close modal and reload page
-                            $('#visitorCheckInModal').modal('hide');
-                            alert('Visitor checked in successfully!');
-                            location.reload();
-                        } else {
-                            alert('Error: ' + (result.message || 'An unknown error occurred'));
-                        }
-                    } catch (e) {
-                        console.error("Error parsing response:", e);
-                        console.log("Response:", response);
-                        alert('An error occurred while processing the server response.');
+                        const appointmentId = $('#checkInAppointmentId').val();
+                        const appointmentCard = $(`.appointment-item[data-id="${appointmentId}"]`);
+                        appointmentCard.find('.status-badge-Upcoming')
+                            .removeClass('status-badge-Upcoming')
+                            .addClass('status-badge-Ongoing')
+                            .text('Ongoing');
+                        appointmentCard.find('.action-buttons')
+                            .html('<button class="btn btn-sm btn-outline-warning complete-session-btn" data-id="' + appointmentId + '"><i class="fas fa-check-double me-1"></i> Complete</button>');
+                    } else {
+                        alert('Error: ' + (response.message || 'Unknown error'));
                     }
                 },
                 error: function(jqXHR, textStatus, errorThrown) {
-                    console.error("AJAX error:", textStatus, errorThrown);
-                    console.log("Response text:", jqXHR.responseText);
-                    alert('An error occurred. Please check the console for details.');
+                    console.error('AJAX error:', textStatus, errorThrown);
+                    alert('An error occurred during check-in.');
                 }
             });
         });

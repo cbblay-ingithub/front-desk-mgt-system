@@ -4,8 +4,13 @@ require_once '../dbConfig.php';
 
 global $conn;
 // Fetch visitors
+$sql = "SELECT v.*, 
+        (SELECT COUNT(*) FROM visitor_Logs vl 
+         WHERE vl.VisitorID = v.VisitorID 
+         AND vl.CheckOutTime IS NULL) AS is_checked_in 
+        FROM visitors v";
 $visitors = [];
-$result = $conn->query("SELECT * FROM visitors");
+$result = $conn->query($sql);
 while ($row = $result->fetch_assoc()) {
     $visitors[] = $row;
 }
@@ -85,13 +90,13 @@ while ($row = $result->fetch_assoc()) {
                     <td><?= htmlspecialchars($v['Phone']) ?></td>
                     <td><?= htmlspecialchars($v['IDType']) ?></td>
                     <td><?= htmlspecialchars($v['IDNumber']) ?></td>
-                    <td><?= isset($v['Status']) ? $v['Status'] : 'Not Checked In' ?></td>
+                    <td><?= $v['is_checked_in'] > 0 ? 'Checked In' : 'Not Checked In' ?></td>
                     <td>
-                        <!-- Check Out button only if Status is "Checked In" -->
-                        <?php if ((isset($v['Status']) ? $v['Status'] : '') === 'Checked In'): ?>
+                        <?php if ($v['is_checked_in'] > 0): ?>
                             <form method="POST" action="process_visit.php" class="d-inline">
+                                <input type="hidden" name="action" value="check_out">
                                 <input type="hidden" name="visitor_id" value="<?= $v['VisitorID'] ?>">
-                                <button name="action" value="check_out" class="btn btn-danger btn-sm">Check Out</button>
+                                <button type="submit" class="btn btn-danger btn-sm">Check Out</button>
                             </form>
                         <?php endif; ?>
                     </td>
