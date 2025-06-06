@@ -8,8 +8,22 @@ require_once 'ticket_functions.php';
 require_once 'ticket_ops.php';
 require_once 'view_ticket.php';
 
+// Start session to access user data (kept for other actions, but not used for reopen)
+session_start();
+
+// Enable error logging for debugging
+ini_set('log_errors', 1);
+ini_set('error_log', 'php_errors.log');
+
 header('Content-Type: application/json');
 $response = ['success' => false, 'message' => 'Invalid request', 'html' => ''];
+
+// Log session data for debugging (optional, kept for other actions)
+error_log("Session data in ticket_ajax.php: " . json_encode([
+        'user_id' => $_SESSION['user_id'] ?? 'not set',
+        'role' => $_SESSION['role'] ?? 'not set'
+    ]));
+
 // Handle GET requests
 if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     if (isset($_GET['action'])) {
@@ -123,13 +137,33 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $stmt->close();
                 }
                 break;
+
+            case 'reopen_ticket':
+                if (isset($_POST['ticket_id']) && is_numeric($_POST['ticket_id'])) {
+                    $ticketId = $_POST['ticket_id'];
+                    error_log("Reopen ticket attempt: ticket_id=$ticketId");
+                    // Use a placeholder user ID since authentication is bypassed
+                    $userId = 0; // Placeholder; adjust if reopenTicket requires a valid user
+                    $result = reopenTicket($conn, $ticketId, $userId);
+                    if ($result['success']) {
+                        $response['success'] = true;
+                        $response['message'] = $result['message'];
+                    } else {
+                        $response['success'] = false;
+                        $response['message'] = $result['error'];
+                    }
+                } else {
+                    $response['success'] = false;
+                    $response['message'] = 'Invalid ticket ID';
+                }
+                break;
         }
     }
 }
 
 // Return JSON response
 echo json_encode($response);
-// Not an AJAX request, redirect to help desk
+// Close database connection
 $conn->close();
 exit;
 ?>

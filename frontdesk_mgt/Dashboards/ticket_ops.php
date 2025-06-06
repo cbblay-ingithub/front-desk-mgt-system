@@ -129,12 +129,16 @@ function processTicketOperation($conn) {
         $stmt->close();
     }
 
-    // Process ticket closure
+// Process ticket closure
     if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['action']) && $_POST['action'] == 'close_ticket') {
         $ticketId = $_POST['ticket_id'];
 
-        // Update ticket status to "closed"
-        $sql = "UPDATE Help_Desk SET Status = 'closed', LastUpdated = NOW() WHERE TicketID = ?";
+        // Update ticket status to "closed" and set TimeSpent if not already set
+        $sql = "UPDATE Help_Desk 
+            SET Status = 'closed', 
+                LastUpdated = NOW(), 
+                TimeSpent = IF(TimeSpent IS NULL, TIMESTAMPDIFF(MINUTE, CreatedDate, NOW()), TimeSpent)
+            WHERE TicketID = ?";
         $stmt = $conn->prepare($sql);
         $stmt->bind_param("i", $ticketId);
 
@@ -148,15 +152,12 @@ function processTicketOperation($conn) {
             $usersStmt->execute();
             $result = $usersStmt->get_result();
             if ($row = $result->fetch_assoc()) {
-                // Notify creator (if they're not the one closing the ticket)
                 if ($row['CreatedBy'] != $_SESSION['user_id']) {
                     createNotification($conn, $row['CreatedBy'], $ticketId, 'closure', [
                         'closed_by' => $_SESSION['user_id'],
                         'closed_by_name' => $_SESSION['username'] ?? 'System'
                     ]);
                 }
-
-                // Notify assignee (if any and if they're not the one closing the ticket)
                 if ($row['AssignedTo'] && $row['AssignedTo'] != $_SESSION['user_id']) {
                     createNotification($conn, $row['AssignedTo'], $ticketId, 'closure', [
                         'closed_by' => $_SESSION['user_id'],
@@ -190,23 +191,21 @@ function autoCloseOldTickets($conn) {
 
     // Now update the tickets
     $updateSql = "UPDATE Help_Desk 
-                SET Status = 'closed', 
-                    LastUpdated = NOW(), 
-                    ResolutionNotes = CONCAT(IFNULL(ResolutionNotes, ''), ' [Auto-closed after 7 days of inactivity]')
-                WHERE Status != 'closed' 
-                AND DATEDIFF(NOW(), IFNULL(LastUpdated, CreatedDate)) > 7";
+                  SET Status = 'closed', 
+                      LastUpdated = NOW(), 
+                      ResolutionNotes = CONCAT(IFNULL(ResolutionNotes, ''), ' [Auto-closed after 7 days of inactivity]'),
+                      TimeSpent = IF(TimeSpent IS NULL, TIMESTAMPDIFF(MINUTE, CreatedDate, NOW()), TimeSpent)
+                  WHERE Status != 'closed' 
+                  AND DATEDIFF(NOW(), IFNULL(LastUpdated, CreatedDate)) > 7";
 
     if ($conn->query($updateSql)) {
         $rowsAffected = $conn->affected_rows;
 
         // Send notifications for auto-closed tickets
         foreach ($ticketsToClose as $ticket) {
-            // Notify ticket creator
             createNotification($conn, $ticket['CreatedBy'], $ticket['TicketID'], 'auto_closure', [
                 'reason' => 'Inactivity for more than 7 days'
             ]);
-
-            // Notify assignee if assigned
             if ($ticket['AssignedTo']) {
                 createNotification($conn, $ticket['AssignedTo'], $ticket['TicketID'], 'auto_closure', [
                     'reason' => 'Inactivity for more than 7 days'
@@ -271,5 +270,64 @@ function generateResolveTicketModalHTML($ticketId) {
             </form>
         </div>
     </div>';
+}
+// Function to reopen a closed ticket
+function reopenTicket($conn, $ticketId, $userId) {
+    // Check if the ticket exists and is closed
+    $sql = "SELECT Status FROM Help_Desk WHERE TicketID = ?";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("i", $ticketId);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    if ($row = $result->fetch_assoc()) {
+        if ($row['Status'] != 'closed') {
+            $stmt->close();
+            return ['success' => false, 'error' => 'Ticket is not closed'];
+        }
+    } else {
+        $stmt->close();
+        return ['success' => false, 'error' => 'Ticket not found'];
+    }
+    $stmt->close();
+
+    // Update ticket status to 'open' and log the reopening
+    $sql = "UPDATE Help_Desk 
+            SET Status = 'open', 
+                LastUpdated = NOW(), 
+                ResolutionNotes = CONCAT(IFNULL(ResolutionNotes, ''), ' [Reopened by user #$userId on ', NOW(), ']') 
+            WHERE TicketID = ?";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("i", $ticketId);
+
+    if ($stmt->execute()) {
+        // Notify creator and assignee
+        $usersQuery = "SELECT CreatedBy, AssignedTo FROM Help_Desk WHERE TicketID = ?";
+        $usersStmt = $conn->prepare($usersQuery);
+        $usersStmt->bind_param("i", $ticketId);
+        $usersStmt->execute();
+        $result = $usersStmt->get_result();
+
+        if ($row = $result->fetch_assoc()) {
+            // Assume getUserName function exists or replace with direct query if needed
+            $reopenerName = $_SESSION['username'] ?? "User #$userId";
+            createNotification($conn, $row['CreatedBy'], $ticketId, 'reopen', [
+                'reopened_by' => $userId,
+                'reopened_by_name' => $reopenerName
+            ]);
+            if ($row['AssignedTo']) {
+                createNotification($conn, $row['AssignedTo'], $ticketId, 'reopen', [
+                    'reopened_by' => $userId,
+                    'reopened_by_name' => $reopenerName
+                ]);
+            }
+        }
+        $usersStmt->close();
+        $stmt->close();
+        return ['success' => true, 'message' => 'Ticket reopened successfully'];
+    } else {
+        $stmt->close();
+        return ['success' => false, 'error' => 'Error reopening ticket: ' . $conn->error];
+    }
 }
 ?>

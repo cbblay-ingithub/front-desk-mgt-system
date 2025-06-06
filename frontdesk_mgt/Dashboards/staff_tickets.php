@@ -256,15 +256,21 @@ $conn->close();
                                         <a class="dropdown-item view-ticket" data-id="<?php echo $ticket['TicketID']; ?>">
                                             <i class="fas fa-eye me-2"></i> View
                                         </a>
-                                        <a class="dropdown-item edit-ticket" data-id="<?php echo $ticket['TicketID']; ?>">
-                                            <i class="fas fa-edit me-2"></i> Assign
-                                        </a>
-                                        <a class="dropdown-item resolve-ticket" data-id="<?php echo $ticket['TicketID']; ?>">
-                                            <i class="fas fa-check-circle me-2"></i> Resolve
-                                        </a>
-                                        <a class="dropdown-item close-ticket" data-id="<?php echo $ticket['TicketID']; ?>">
-                                            <i class="fas fa-times-circle me-2"></i> Close
-                                        </a>
+                                        <?php if ($ticket['Status'] != 'closed'): ?>
+                                            <a class="dropdown-item edit-ticket" data-id="<?php echo $ticket['TicketID']; ?>">
+                                                <i class="fas fa-edit me-2"></i> Assign
+                                            </a>
+                                            <a class="dropdown-item resolve-ticket" data-id="<?php echo $ticket['TicketID']; ?>">
+                                                <i class="fas fa-check-circle me-2"></i> Resolve
+                                            </a>
+                                            <a class="dropdown-item close-ticket" data-id="<?php echo $ticket['TicketID']; ?>">
+                                                <i class="fas fa-times-circle me-2"></i> Close
+                                            </a>
+                                        <?php else: ?>
+                                            <a class="dropdown-item reopen-ticket" data-id="<?php echo $ticket['TicketID']; ?>">
+                                                <i class="fas fa-undo me-2"></i> Reopen
+                                            </a>
+                                        <?php endif; ?>
                                     </div>
                                 </div>
                             </td>
@@ -593,6 +599,45 @@ $conn->close();
                         console.error('Error fetching resolve modal:', error);
                         alert('Error fetching resolve modal: ' + error.message);
                     });
+            });
+        });
+        // Reopen ticket action
+        document.querySelectorAll('.reopen-ticket').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const ticketId = this.getAttribute('data-id');
+                console.log('Attempting to reopen ticket ID:', ticketId);
+                if (confirm(`Are you sure you want to reopen ticket #${ticketId}?`)) {
+                    const formData = new FormData();
+                    formData.append('action', 'reopen_ticket');
+                    formData.append('ticket_id', ticketId);
+                    fetch('ticket_ajax.php', {
+                        method: 'POST',
+                        body: formData,
+                        credentials: 'same-origin' // Ensure cookies are sent, though not required
+                    })
+                        .then(response => {
+                            console.log('Reopen ticket response status:', response.status);
+                            if (!response.ok) {
+                                return response.text().then(text => {
+                                    throw new Error(`HTTP error ${response.status}: ${text}`);
+                                });
+                            }
+                            return response.json();
+                        })
+                        .then(data => {
+                            console.log('Reopen ticket response:', data);
+                            if (data.success) {
+                                alert(data.message);
+                                window.location.reload();
+                            } else {
+                                alert(data.message || 'Error reopening ticket');
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error reopening ticket:', error);
+                            alert('Error reopening ticket: ' + error.message);
+                        });
+                }
             });
         });
 

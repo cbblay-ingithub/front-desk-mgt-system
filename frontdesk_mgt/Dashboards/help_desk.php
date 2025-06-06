@@ -127,13 +127,13 @@ $conn->close();
 
         <?php if (isset($message)): ?>
             <div class="alert alert-success">
-                <?php echo $message; ?>
+                <?php echo htmlspecialchars($message); ?>
             </div>
         <?php endif; ?>
 
         <?php if (isset($error)): ?>
             <div class="alert alert-error">
-                <?php echo $error; ?>
+                <?php echo htmlspecialchars($error); ?>
             </div>
         <?php endif; ?>
 
@@ -153,51 +153,54 @@ $conn->close();
             <tbody>
             <?php if (empty($tickets)): ?>
                 <tr>
-                    <td colspan="9" style="text-align: center;">No tickets found</td>
+                    <td colspan="8" style="text-align: center;">No tickets found</td>
                 </tr>
             <?php else: ?>
                 <?php foreach ($tickets as $ticket): ?>
                     <tr>
                         <td>
                             <?php
-                            // Shortened description logic - 30 characters with ellipsis
                             $description = htmlspecialchars($ticket['Description']);
                             $maxLength = 25;
-                            echo strlen($description) > $maxLength
-                                ? substr($description, 0, $maxLength) . '...'
-                                : $description;
+                            echo strlen($description) > $maxLength ? substr($description, 0, 25) . '...' : $description;
                             ?>
                         </td>
                         <td><?php echo htmlspecialchars($ticket['CreatedByName']); ?></td>
                         <td><?php echo $ticket['AssignedToName'] ? htmlspecialchars($ticket['AssignedToName']) : 'Not assigned'; ?></td>
                         <td><?php echo $ticket['CategoryName'] ? htmlspecialchars($ticket['CategoryName']) : 'Uncategorized'; ?></td>
-                        <td><span class="priority-<?php echo $ticket['Priority']; ?>"><?php echo ucfirst($ticket['Priority']); ?></span></td>
-                        <td><span class="status-<?php echo $ticket['Status']; ?>"><?php echo ucfirst($ticket['Status']); ?></span></td>
+                        <td><span class="priority-<?php echo htmlspecialchars($ticket['Priority']); ?>"><?php echo ucfirst($ticket['Priority']); ?></span></td>
+                        <td><span class="status-<?php echo htmlspecialchars($ticket['Status']); ?>"><?php echo ucfirst($ticket['Status']); ?></span></td>
                         <td><?php echo date('M d, Y H:i', strtotime($ticket['CreatedDate'])); ?></td>
                         <td>
                             <div class="dropdown">
-                                <button class="dropdown-toggle" data-ticket-id="<?php echo $ticket['TicketID']; ?>">
+                                <button class="dropdown-toggle" data-ticket-id="<?php echo htmlspecialchars($ticket['TicketID']); ?>">
                                     <i class="fas fa-ellipsis-h"></i>
                                 </button>
                                 <div class="dropdown-menu">
-                                    <a class="dropdown-item view-ticket" data-id="<?php echo $ticket['TicketID']; ?>">
+                                    <a class="dropdown-item view-ticket" data-id="<?php echo htmlspecialchars($ticket['TicketID']); ?>">
                                         <i class="fas fa-eye me-2"></i> View
                                     </a>
-                                    <a class="dropdown-item print-ticket" data-id="<?php echo $ticket['TicketID']; ?>">
-                                        <i class="fas fa-print me-2"></i> Print
-                                    </a>
-                                    <a class="dropdown-item edit-ticket" data-id="<?php echo $ticket['TicketID']; ?>">
-                                        <i class="fas fa-edit me-2"></i> Assign
-                                    </a>
-                                    <a class="dropdown-item resolve-ticket" data-id="<?php echo $ticket['TicketID']; ?>">
-                                        <i class="fas fa-check-circle me-2"></i> Resolve
-                                    </a>
-                                    <a class="dropdown-item close-ticket" data-id="<?php echo $ticket['TicketID']; ?>">
-                                        <i class="fas fa-times-circle me-2"></i> Close
-                                    </a>
-                                    <a class="dropdown-item delete-ticket" data-id="<?php echo $ticket['TicketID']; ?>">
-                                        <i class="fas fa-trash-alt me-2"></i> Delete
-                                    </a>
+                                    <?php if ($ticket['Status'] == 'closed'): ?>
+                                        <a class="dropdown-item reopen-ticket" data-id="<?php echo htmlspecialchars($ticket['TicketID']); ?>">
+                                            <i class="fas fa-undo me-2"></i> Reopen
+                                        </a>
+                                    <?php else: ?>
+                                        <a class="dropdown-item print-ticket" data-id="<?php echo htmlspecialchars($ticket['TicketID']); ?>">
+                                            <i class="fas fa-print me-2"></i> Print
+                                        </a>
+                                        <a class="dropdown-item edit-ticket" data-id="<?php echo htmlspecialchars($ticket['TicketID']); ?>">
+                                            <i class="fas fa-edit me-2"></i> Assign
+                                        </a>
+                                        <a class="dropdown-item resolve-ticket" data-id="<?php echo htmlspecialchars($ticket['TicketID']); ?>">
+                                            <i class="fas fa-check-circle me-2"></i> Resolve
+                                        </a>
+                                        <a class="dropdown-item close-ticket" data-id="<?php echo htmlspecialchars($ticket['TicketID']); ?>">
+                                            <i class="fas fa-times-circle me-2"></i> Close
+                                        </a>
+                                        <a class="dropdown-item delete-ticket" data-id="<?php echo htmlspecialchars($ticket['TicketID']); ?>">
+                                            <i class="fas fa-trash-alt me-2"></i> Delete
+                                        </a>
+                                    <?php endif; ?>
                                 </div>
                             </div>
                         </td>
@@ -223,7 +226,7 @@ $conn->close();
                     <select id="created_by" name="created_by" required>
                         <option value="">Select User</option>
                         <?php foreach ($users as $id => $name): ?>
-                            <option value="<?php echo $id; ?>"><?php echo htmlspecialchars($name); ?></option>
+                            <option value="<?php echo htmlspecialchars($id); ?>"><?php echo htmlspecialchars($name); ?></option>
                         <?php endforeach; ?>
                     </select>
                 </div>
@@ -233,7 +236,7 @@ $conn->close();
                     <select id="assigned_to" name="assigned_to">
                         <option value="">Select User</option>
                         <?php foreach ($users as $id => $name): ?>
-                            <option value="<?php echo $id; ?>"><?php echo htmlspecialchars($name); ?></option>
+                            <option value="<?php echo htmlspecialchars($id); ?>"><?php echo htmlspecialchars($name); ?></option>
                         <?php endforeach; ?>
                     </select>
                 </div>
@@ -245,7 +248,7 @@ $conn->close();
                     <select id="category_id" name="category_id">
                         <option value="">Select Category</option>
                         <?php foreach ($categories as $id => $name): ?>
-                            <option value="<?php echo $id; ?>"><?php echo htmlspecialchars($name); ?></option>
+                            <option value="<?php echo htmlspecialchars($id); ?>"><?php echo htmlspecialchars($name); ?></option>
                         <?php endforeach; ?>
                     </select>
                 </div>
@@ -290,6 +293,7 @@ $conn->close();
         <?php echo $ticketPrintHTML; ?>
     <?php endif; ?>
 </div>
+
 <!-- Notification System -->
 <div class="notification-wrapper">
     <div class="notification-bell" id="notificationBell">
@@ -307,6 +311,7 @@ $conn->close();
         </div>
     </div>
 </div>
+
 <script src="notification.js"></script>
 <script>
     // Get all dropdown toggle buttons
@@ -316,14 +321,13 @@ $conn->close();
     dropdownToggles.forEach(toggle => {
         toggle.addEventListener('click', function(e) {
             e.stopPropagation();
-
+            console.log('Toggling dropdown for ticket ID:', this.getAttribute('data-ticket-id'));
             // Close all other open dropdowns
             document.querySelectorAll('.dropdown-menu.show').forEach(menu => {
                 if (menu !== this.nextElementSibling) {
                     menu.classList.remove('show');
                 }
             });
-
             // Toggle the dropdown menu
             this.nextElementSibling.classList.toggle('show');
         });
@@ -332,6 +336,7 @@ $conn->close();
     // Close dropdown when clicking outside
     document.addEventListener('click', function(e) {
         if (!e.target.closest('.dropdown')) {
+            console.log('Closing all dropdowns');
             document.querySelectorAll('.dropdown-menu.show').forEach(menu => {
                 menu.classList.remove('show');
             });
@@ -342,6 +347,7 @@ $conn->close();
     document.querySelectorAll('.view-ticket').forEach(btn => {
         btn.addEventListener('click', function() {
             const ticketId = this.getAttribute('data-id');
+            console.log('Viewing ticket ID:', ticketId);
             window.location.href = `help_desk.php?view_ticket=${ticketId}`;
         });
     });
@@ -350,6 +356,7 @@ $conn->close();
     document.querySelectorAll('.print-ticket').forEach(btn => {
         btn.addEventListener('click', function() {
             const ticketId = this.getAttribute('data-id');
+            console.log('Printing ticket ID:', ticketId);
             window.location.href = `help_desk.php?view_ticket=${ticketId}&action=print`;
         });
     });
@@ -358,108 +365,163 @@ $conn->close();
     document.querySelectorAll('.edit-ticket').forEach(btn => {
         btn.addEventListener('click', function() {
             const ticketId = this.getAttribute('data-id');
-            // Fetch the assign modal via AJAX
+            console.log('Fetching assign modal for ticket ID:', ticketId);
             fetch(`ticket_ajax.php?action=get_assign_modal&ticket_id=${ticketId}`)
-                .then(response => response.json())
+                .then(response => {
+                    console.log('Assign modal response status:', response.status);
+                    return response.json();
+                })
                 .then(data => {
+                    console.log('Assign modal data:', data);
                     if (data.success) {
-                        // Append the modal to the document
                         const modalContainer = document.createElement('div');
                         modalContainer.innerHTML = data.html;
                         document.body.appendChild(modalContainer);
-
-                        // Show the modal
-                        document.getElementById('assignTicketModal').style.display = 'block';
-
-                        // Add event listener to close button
+                        const assignModal = document.getElementById('assignTicketModal');
+                        assignModal.style.display = 'block';
                         document.querySelector('#assignTicketModal .close').addEventListener('click', function() {
-                            document.getElementById('assignTicketModal').style.display = 'none';
+                            console.log('Closing assign modal');
+                            assignModal.style.display = 'none';
                             modalContainer.remove();
                         });
-
-                        // Add form submission listener
                         const assignForm = document.querySelector('#assignTicketModal form');
                         if (assignForm) {
                             assignForm.addEventListener('submit', function(e) {
                                 e.preventDefault();
+                                console.log('Submitting assign form for ticket ID:', ticketId);
                                 const formData = new FormData(this);
-
                                 fetch('ticket_ajax.php', {
                                     method: 'POST',
                                     body: formData
                                 })
                                     .then(response => response.json())
                                     .then(data => {
+                                        console.log('Assign form response:', data);
                                         if (data.success) {
                                             alert(data.message);
-                                            document.getElementById('assignTicketModal').style.display = 'none';
+                                            assignModal.style.display = 'none';
                                             modalContainer.remove();
                                             window.location.reload();
                                         } else {
                                             alert(data.message || 'Error assigning ticket');
                                         }
+                                    })
+                                    .catch(error => {
+                                        console.error('Error submitting assign form:', error);
+                                        alert('Error assigning ticket: ' + error.message);
                                     });
                             });
                         }
                     } else {
                         alert(data.message || 'Error fetching assign modal');
                     }
+                })
+                .catch(error => {
+                    console.error('Error fetching assign modal:', error);
+                    alert('Error fetching assign modal: ' + error.message);
                 });
         });
     });
-
 
     // Resolve ticket action
     document.querySelectorAll('.resolve-ticket').forEach(btn => {
         btn.addEventListener('click', function() {
             const ticketId = this.getAttribute('data-id');
-            // Fetch the resolve modal via AJAX
+            console.log('Fetching resolve modal for ticket ID:', ticketId);
             fetch(`ticket_ajax.php?action=get_resolve_modal&ticket_id=${ticketId}`)
-                .then(response => response.json())
+                .then(response => {
+                    console.log('Resolve modal response status:', response.status);
+                    return response.json();
+                })
                 .then(data => {
+                    console.log('Resolve modal data:', data);
                     if (data.success) {
-                        // Append the modal to the document
                         const modalContainer = document.createElement('div');
                         modalContainer.innerHTML = data.html;
                         document.body.appendChild(modalContainer);
-
-                        // Show the modal
-                        document.getElementById('resolveTicketModal').style.display = 'block';
-
-                        // Add event listener to close button
+                        const resolveModal = document.getElementById('resolveTicketModal');
+                        resolveModal.style.display = 'block';
                         document.querySelector('#resolveTicketModal .close').addEventListener('click', function() {
-                            document.getElementById('resolveTicketModal').style.display = 'none';
+                            console.log('Closing resolve modal');
+                            resolveModal.style.display = 'none';
                             modalContainer.remove();
                         });
-
-                        // Add form submission listener
                         const resolveForm = document.querySelector('#resolveTicketModal form');
                         if (resolveForm) {
                             resolveForm.addEventListener('submit', function(e) {
                                 e.preventDefault();
+                                console.log('Submitting resolve form for ticket ID:', ticketId);
                                 const formData = new FormData(this);
-
                                 fetch('ticket_ajax.php', {
                                     method: 'POST',
                                     body: formData
                                 })
                                     .then(response => response.json())
                                     .then(data => {
+                                        console.log('Resolve form response:', data);
                                         if (data.success) {
                                             alert(data.message);
-                                            document.getElementById('resolveTicketModal').style.display = 'none';
+                                            resolveModal.style.display = 'none';
                                             modalContainer.remove();
                                             window.location.reload();
                                         } else {
                                             alert(data.message || 'Error resolving ticket');
                                         }
+                                    })
+                                    .catch(error => {
+                                        console.error('Error submitting resolve form:', error);
+                                        alert('Error resolving ticket: ' + error.message);
                                     });
                             });
                         }
                     } else {
                         alert(data.message || 'Error fetching resolve modal');
                     }
+                })
+                .catch(error => {
+                    console.error('Error fetching resolve modal:', error);
+                    alert('Error fetching resolve modal: ' + error.message);
                 });
+        });
+    });
+
+    // Reopen ticket action
+    document.querySelectorAll('.reopen-ticket').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const ticketId = this.getAttribute('data-id');
+            console.log('Attempting to reopen ticket ID:', ticketId);
+            if (confirm(`Are you sure you want to reopen ticket #${ticketId}?`)) {
+                const formData = new FormData();
+                formData.append('action', 'reopen_ticket');
+                formData.append('ticket_id', ticketId);
+                fetch('ticket_ajax.php', {
+                    method: 'POST',
+                    body: formData,
+                    credentials: 'same-origin'
+                })
+                    .then(response => {
+                        console.log('Reopen ticket response status:', response.status);
+                        if (!response.ok) {
+                            return response.text().then(text => {
+                                throw new Error(`HTTP error ${response.status}: ${text}`);
+                            });
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        console.log('Reopen ticket response:', data);
+                        if (data.success) {
+                            alert(data.message);
+                            window.location.reload();
+                        } else {
+                            alert(data.message || 'Error reopening ticket');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error reopening ticket:', error);
+                        alert('Error reopening ticket: ' + error.message);
+                    });
+            }
         });
     });
 
@@ -467,54 +529,71 @@ $conn->close();
     document.querySelectorAll('.close-ticket').forEach(btn => {
         btn.addEventListener('click', function() {
             const ticketId = this.getAttribute('data-id');
+            console.log('Attempting to close ticket ID:', ticketId);
             if (confirm(`Are you sure you want to close ticket #${ticketId}?`)) {
-                // Send AJAX request to close the ticket
                 const formData = new FormData();
                 formData.append('action', 'close_ticket');
                 formData.append('ticket_id', ticketId);
-
                 fetch('ticket_ajax.php', {
                     method: 'POST',
-                    body: formData
+                    body: formData,
+                    credentials: 'same-origin'
                 })
-                    .then(response => response.json())
+                    .then(response => {
+                        console.log('Close ticket response status:', response.status);
+                        if (!response.ok) {
+                            return response.text().then(text => {
+                                throw new Error(`HTTP error ${response.status}: ${text}`);
+                            });
+                        }
+                        return response.json();
+                    })
                     .then(data => {
+                        console.log('Close ticket response:', data);
                         if (data.success) {
                             alert(data.message);
-                            // Refresh the page to see updated ticket status
                             window.location.reload();
                         } else {
                             alert(data.message || 'Error closing ticket');
                         }
+                    })
+                    .catch(error => {
+                        console.error('Error closing ticket:', error);
+                        alert('Error closing ticket: ' + error.message);
                     });
             }
         });
     });
-    // Delete ticket action (placeholder - implement as needed)
+
+    // Delete ticket action
     document.querySelectorAll('.delete-ticket').forEach(btn => {
         btn.addEventListener('click', function() {
             const ticketId = this.getAttribute('data-id');
+            console.log('Attempting to delete ticket ID:', ticketId);
             if (confirm(`Are you sure you want to delete ticket #${ticketId}?`)) {
-                // Implement delete functionality
                 alert(`Delete ticket ${ticketId} - Implement this functionality`);
             }
         });
     });
 
-    // Original script functionality
+    // Create ticket modal
     document.getElementById('createTicketBtn').addEventListener('click', function() {
+        console.log('Opening create ticket modal');
         document.getElementById('createTicketModal').style.display = 'block';
     });
 
+    // Close modals
     document.querySelectorAll('.close').forEach(function(closeBtn) {
         closeBtn.addEventListener('click', function() {
+            console.log('Closing modal');
             this.closest('.modal').style.display = 'none';
         });
     });
 
-    // Close modal when clicking outside of it
+    // Close modal when clicking outside
     window.addEventListener('click', function(event) {
         if (event.target.classList.contains('modal')) {
+            console.log('Closing modal via outside click');
             event.target.style.display = 'none';
         }
     });
