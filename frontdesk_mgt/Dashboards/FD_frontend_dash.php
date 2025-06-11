@@ -1,23 +1,23 @@
 <?php
 // Start session to get current front desk user ID
 session_start();
-    $userID = $_SESSION['userID'] ?? null;
-    if (!$userID) {
-        // Redirect to login page or show error
-        header("Location: ../Auth.html");
-        exit;
-    }
+$userID = $_SESSION['userID'] ?? null;
+if (!$userID) {
+    // Redirect to login page or show error
+    header("Location: ../Auth.html");
+    exit;
+}
 
-    require_once 'front_desk_appointments.php';
+require_once 'front_desk_appointments.php';
+updateAppointmentStatuses();
+// Get all appointments
+$appointments = getAllAppointments();
 
-    // Get all appointments
-    $appointments = getAllAppointments();
+// Get statistics
+$stats = getAppointmentStats();
 
-    // Get statistics
-    $stats = getAppointmentStats();
-
-    // Get all hosts for dropdown
-    $hosts = getAllHosts();
+// Get all hosts for dropdown
+$hosts = getAllHosts();
 ?>
 
 <!DOCTYPE html>
@@ -29,7 +29,7 @@ session_start();
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.6.13/flatpickr.min.css">
-    <link rel ="stylesheet" href ="notification.css">
+    <link rel="stylesheet" href="notification.css">
     <style>
         body {
             min-height: 100vh;
@@ -81,11 +81,16 @@ session_start();
         }
 
         .status-badge-Upcoming {
-            background-color: #FFB343;
+            background-color: #9133ef;
         }
 
         .status-badge-Completed {
             background-color: #198754;
+        }
+
+        .status-badge-Overdue {
+            background-color: #ffc107;
+            color: #212529;
         }
 
         .action-buttons {
@@ -150,7 +155,7 @@ session_start();
 
         .calendar-appointment.Upcoming {
             background-color: #cff4fc;
-            border-left: 3px solid #FFB343;
+            border-left: 3px solid #9133ef;
         }
 
         .calendar-appointment.Ongoing {
@@ -168,11 +173,15 @@ session_start();
             border-left: 3px solid #dc3545;
         }
 
+        .calendar-appointment.Overdue {
+            background-color: #fff3cd;
+            border-left: 3px solid #ffc107;
+        }
+
         .host-filter {
             margin-bottom: 20px;
         }
     </style>
-
 </head>
 <body>
 
@@ -185,7 +194,6 @@ session_start();
     <a href="staff_tickets.php"><i class="fas fa-ticket"></i> Help Desk Tickets</a>
     <a href="lost_found.php"><i class="fa-solid fa-suitcase"></i> View Lost & Found</a>
     <a href="../Logout.php"><i class="fas fa-sign-out-alt me-2"></i> Logout</a>
-
 </div>
 
 <!-- Main Content -->
@@ -273,6 +281,23 @@ session_start();
                     </div>
                 </div>
             </div>
+            <div class="col-xl-3 col-md-6">
+                <div class="card stats-card warning">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col">
+                                <h5 class="card-title text-uppercase text-muted mb-0">Overdue</h5>
+                                <span class="h2 font-weight-bold mb-0"><?= $stats['overdue'] ?></span>
+                            </div>
+                            <div class="col-auto">
+                                <div class="icon icon-shape bg-warning text-white rounded-circle p-2">
+                                    <i class="fas fa-exclamation-triangle"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <!-- View Toggle Buttons -->
@@ -319,6 +344,7 @@ session_start();
                 <div class="btn-group" role="group">
                     <button type="button" class="btn btn-outline-primary filter-btn" data-filter="today">Today</button>
                     <button type="button" class="btn btn-outline-primary filter-btn" data-filter="Upcoming">Upcoming</button>
+                    <button type="button" class="btn btn-outline-primary filter-btn" data-filter="Overdue">Overdue</button>
                     <button type="button" class="btn btn-outline-primary filter-btn" data-filter="Ongoing">Ongoing</button>
                     <button type="button" class="btn btn-outline-primary filter-btn" data-filter="Completed">Completed</button>
                     <button type="button" class="btn btn-outline-primary filter-btn" data-filter="Cancelled">Cancelled</button>
@@ -359,30 +385,34 @@ session_start();
                                         <i class="fas fa-user-tie me-2"></i> <?= htmlspecialchars($appointment['HostName']) ?>
                                     </p>
 
-                                    <?php if ($appointment['Status'] !== 'Cancelled' && $appointment['Status'] !== 'Completed'): ?>
+                                    <?php if ($appointment['Status'] === 'Upcoming' || $appointment['Status'] === 'Overdue'): ?>
                                         <div class="action-buttons">
-                                            <?php if ($appointment['Status'] === 'Upcoming'): ?>
-                                                <button class="btn btn-sm btn-outline-success check-in-btn"
-                                                        data-id="<?= $appointment['AppointmentID'] ?>">
-                                                    <i class="fas fa-check-circle me-1"></i> Check In
-                                                </button>
-                                                <button class="btn btn-sm btn-outline-primary reschedule-btn"
-                                                        data-id="<?= $appointment['AppointmentID'] ?>"
-                                                        data-bs-toggle="modal"
-                                                        data-bs-target="#rescheduleModal">
-                                                    <i class="fas fa-calendar-alt me-1"></i> Reschedule
-                                                </button>
-                                                <button class="btn btn-sm btn-outline-danger cancel-btn"
-                                                        data-id="<?= $appointment['AppointmentID'] ?>">
-                                                    <i class="fas fa-times-circle me-1"></i> Cancel
-                                                </button>
-                                            <?php elseif ($appointment['Status'] === 'Ongoing'): ?>
-                                                <button class="btn btn-sm btn-outline-warning complete-session-btn"
-                                                        data-id="<?= $appointment['AppointmentID'] ?>">
-                                                    <i class="fas fa-check-double me-1"></i> Complete
-                                                </button>
-                                            <?php endif; ?>
+                                            <button class="btn btn-sm btn-outline-success check-in-btn"
+                                                    data-id="<?= $appointment['AppointmentID'] ?>">
+                                                <i class="fas fa-check-circle me-1"></i> Check In
+                                            </button>
+                                            <button class="btn btn-sm btn-outline-primary reschedule-btn"
+                                                    data-id="<?= $appointment['AppointmentID'] ?>"
+                                                    data-bs-toggle="modal"
+                                                    data-bs-target="#rescheduleModal">
+                                                <i class="fas fa-calendar-alt me-1"></i> Reschedule
+                                            </button>
+                                            <button class="btn btn-sm btn-outline-danger cancel-btn"
+                                                    data-id="<?= $appointment['AppointmentID'] ?>"
+                                                    data-bs-toggle="modal"
+                                                    data-bs-target="#cancelModal">
+                                                <i class="fas fa-times-circle me-1"></i> Cancel
+                                            </button>
                                         </div>
+                                    <?php elseif ($appointment['Status'] === 'Ongoing'): ?>
+                                        <button class="btn btn-sm btn-outline-warning complete-session-btn"
+                                                data-id="<?= $appointment['AppointmentID'] ?>">
+                                            <i class="fas fa-check-double me-1"></i> Complete
+                                        </button>
+                                    <?php endif; ?>
+
+                                    <?php if ($appointment['Status'] === 'Cancelled' && !empty($appointment['CancellationReason'])): ?>
+                                        <p class="text-muted mt-2">Cancellation Reason: <?= htmlspecialchars($appointment['CancellationReason']) ?></p>
                                     <?php endif; ?>
                                 </div>
                             </div>
@@ -450,7 +480,7 @@ session_start();
                         </div>
                         <div class="col-md-6">
                             <label for="appointmentDateTime" class="form-label">Appointment Date & Time</label>
-                            <input type="text" class="form-control" id="appointmentDateTime" name="appointmentTime" required>
+                            <input type="text" class="form-control" id="appointmentTime" name="appointmentTime" required>
                         </div>
                     </div>
 
@@ -505,12 +535,12 @@ session_start();
 
                     <div class="mb-3">
                         <p><strong>Visitor:</strong> <span id="rescheduleVisitorName"></span></p>
-                        <p><strong>Host:</strong> <span id="rescheduleHostName"></span></p>
+                        <p><strong>Host:</strong> <span id="rescheduleHostId"></span></p>
                     </div>
 
                     <div class="mb-3">
                         <label for="newDateTime" class="form-label">New Date & Time</label>
-                        <input type="text" class="form-control" id="newDateTime" name="newTime" required>
+                        <input type="text" class="form-control" id="newTime" name="newDateTime" required>
                     </div>
 
                     <div class="mb-3">
@@ -545,6 +575,7 @@ session_start();
         </div>
     </div>
 </div>
+
 <!-- Visitor Check-In Modal -->
 <div class="modal fade" id="visitorCheckInModal" tabindex="-1" aria-labelledby="visitorCheckInModalLabel" aria-hidden="true">
     <div class="modal-dialog">
@@ -597,6 +628,37 @@ session_start();
         </div>
     </div>
 </div>
+
+<!-- Cancellation Modal -->
+<div class="modal fade" id="cancelModal" tabindex="-1" aria-labelledby="cancelModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="cancelModalLabel">Cancel Appointment</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to cancel this appointment?</p>
+                <div class="mb-3">
+                    <label for="cancellationReason" class="form-label">Cancellation Reason</label>
+                    <select class="form-select" id="cancellationReason" required>
+                        <option value="">-- Select Reason --</option>
+                        <option value="Visitor Cancelled">Visitor Cancelled</option>
+                        <option value="Host Cancelled">Host Cancelled</option>
+                        <option value="Scheduling Conflict">Scheduling Conflict</option>
+                        <option value="Emergency">Emergency</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-danger" id="confirmCancelBtn">Cancel Appointment</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- Notification System -->
 <div class="notification-wrapper">
     <div class="notification-bell" id="notificationBell">
@@ -623,24 +685,10 @@ session_start();
 <script>
     $(document).ready(function() {
         const appointmentsData = {};
-        // Initialize datetime pickers
-        flatpickr("#appointmentDateTime", {
-            enableTime: true,
-            dateFormat: "Y-m-d H:i",
-            minDate: "today",
-            time_24hr: true
-        });
-
-        flatpickr("#newDateTime", {
-            enableTime: true,
-            dateFormat: "Y-m-d H:i",
-            minDate: "today",
-            time_24hr: true
-        });
 
         // Load visitors for dropdown
         $.ajax({
-            url: 'appointments.php',
+            url: 'front_desk_appointments.php', // Update to correct file
             type: 'POST',
             data: {
                 action: 'getVisitors'
@@ -656,27 +704,22 @@ session_start();
             }
         });
 
-        // Toggle new visitor fields when "Add New Visitor" is selected
+        // Toggle new visitor fields
         $('#visitorSelect').change(function() {
             if ($(this).val() === 'new') {
                 $('#newVisitorFields').show();
                 $('#isNewVisitor').val('1');
-                // Make new visitor fields required
                 $('#newVisitorName, #newVisitorEmail').prop('required', true);
-                // Make regular visitor select not required
                 $(this).prop('required', false);
             } else {
                 $('#newVisitorFields').hide();
                 $('#isNewVisitor').val('0');
-                // Make new visitor fields not required
                 $('#newVisitorName, #newVisitorEmail').prop('required', false);
-                // Make regular visitor select required if not "new"
                 $(this).prop('required', true);
             }
         });
 
-
-        // Toggle between list and calendar views
+        // Toggle views
         $('#listViewBtn').click(function() {
             $(this).addClass('active');
             $('#calendarViewBtn').removeClass('active');
@@ -692,26 +735,18 @@ session_start();
             renderCalendar(new Date());
         });
 
-        // Handle search functionality
+        // Search and filter handlers
         $('#searchInput').on('keyup', function() {
-            const searchTerm = $(this).val().toLowerCase();
             filterAppointments();
         });
 
-        // Handle host filter
         $('#hostFilter').on('change', function() {
             filterAppointments();
         });
 
-        // Handle filter buttons
         $('.filter-btn').click(function() {
             $('.filter-btn').removeClass('active');
             $(this).addClass('active');
-            filterAppointments();
-        });
-
-// Handle search functionality
-        $('#searchInput').on('keyup', function() {
             filterAppointments();
         });
 
@@ -724,24 +759,19 @@ session_start();
             $('.appointment-item').each(function() {
                 let show = true;
 
-                // Apply search filter - improve the search logic
                 if (searchTerm) {
-                    // Get the search data from the data attribute
                     const searchData = $(this).data('search').toString().toLowerCase();
-                    // Check if the search term is contained in the search data
                     if (searchData.indexOf(searchTerm) === -1) {
                         show = false;
                     }
                 }
 
-                // Apply host filter
                 if (hostFilter && show) {
                     if ($(this).data('host-id').toString() !== hostFilter.toString()) {
                         show = false;
                     }
                 }
 
-                // Apply status filter
                 if (show && statusFilter !== 'all') {
                     if (statusFilter === 'today') {
                         if ($(this).data('date') !== today) {
@@ -752,11 +782,9 @@ session_start();
                     }
                 }
 
-                // Show or hide based on filters
                 $(this).toggle(show);
             });
 
-            // Show message if no results
             const visibleItems = $('.appointment-item:visible').length;
             if (visibleItems === 0) {
                 if ($('#noResultsMessage').length === 0) {
@@ -766,6 +794,7 @@ session_start();
                 $('#noResultsMessage').remove();
             }
         }
+
         // Calendar functionality
         let currentDate = new Date();
 
@@ -773,46 +802,34 @@ session_start();
             const year = date.getFullYear();
             const month = date.getMonth();
 
-            // Update header
             $('#currentMonth').text(new Date(year, month, 1).toLocaleDateString('en-US', { month: 'long', year: 'numeric' }));
 
-            // Get first day of month and total days
             const firstDay = new Date(year, month, 1).getDay();
             const totalDays = new Date(year, month + 1, 0).getDate();
 
             let calendarHTML = '';
             let day = 1;
 
-            // Create calendar grid
             for (let i = 0; i < 6; i++) {
-                // Skip row if it goes beyond the month
                 if (day > totalDays) break;
 
                 calendarHTML += '<tr>';
 
                 for (let j = 0; j < 7; j++) {
                     if ((i === 0 && j < firstDay) || day > totalDays) {
-                        // Empty cell
                         calendarHTML += '<td></td>';
                     } else {
-                        // Format date for data attribute
-                        // Continued from previous code
                         const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-
-                        // Date cell
                         calendarHTML += `<td class="calendar-day" data-date="${dateStr}">`;
                         calendarHTML += `<div class="day-number">${day}</div>`;
 
-                        // Find appointments for this day
                         const appointments = getAppointmentsForDate(dateStr);
-
-                        // Add appointments to the cell
                         appointments.forEach(appointment => {
                             calendarHTML += `<div class="calendar-appointment ${appointment.status}"
-                                                 data-id="${appointment.id}"
-                                                 title="${appointment.visitorName} - ${appointment.time}">
-                                                 ${appointment.time} - ${appointment.visitorName}
-                                            </div>`;
+                                             data-id="${appointment.id}"
+                                             title="${appointment.visitorName} - ${appointment.time}">
+                                             ${appointment.time} - ${appointment.visitorName}
+                                        </div>`;
                         });
 
                         calendarHTML += '</td>';
@@ -825,7 +842,6 @@ session_start();
 
             $('#calendarBody').html(calendarHTML);
 
-            // Add click handler for appointments in calendar
             $('.calendar-appointment').click(function() {
                 const appointmentId = $(this).data('id');
                 showAppointmentDetails(appointmentId);
@@ -846,21 +862,10 @@ session_start();
         };
         <?php endforeach; ?>
 
-
-        // Then use this data to generate calendar appointments
         function getAppointmentsForDate(dateStr) {
             const appointments = [];
-
-            // Iterate through appointmentsData instead of DOM elements
             Object.values(appointmentsData).forEach(appointment => {
                 if (appointment.date === dateStr) {
-
-                // For completed appointments, show the session end time
-                if (appointment.status === 'Completed' && appointment.sessionEndTime) {
-                    const endTime = new Date(appointment.sessionEndTime);
-                    const formattedEndTime = endTime.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-                    displayTime = `${appointment.time} - ${formattedEndTime}`;
-                }
                     appointments.push({
                         id: appointment.id,
                         status: appointment.status,
@@ -869,25 +874,20 @@ session_start();
                     });
                 }
             });
-
             return appointments;
         }
 
-        // Previous month button
         $('#prevMonth').click(function() {
             currentDate.setMonth(currentDate.getMonth() - 1);
             renderCalendar(currentDate);
         });
 
-        // Next month button
         $('#nextMonth').click(function() {
             currentDate.setMonth(currentDate.getMonth() + 1);
             renderCalendar(currentDate);
         });
 
-        // Show appointment details when clicked in calendar
         function showAppointmentDetails(appointmentId) {
-            // AJAX call to get appointment details
             $.ajax({
                 url: 'front_desk_appointments.php',
                 type: 'POST',
@@ -907,29 +907,18 @@ session_start();
                         <p><strong>Host:</strong> ${response.HostName}</p>
                         <p><strong>Scheduled Date:</strong> ${new Date(response.AppointmentTime).toLocaleDateString()}</p>
                         <p><strong>Scheduled Time:</strong> ${new Date(response.AppointmentTime).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</p>
-                        <p><strong>Status:</strong> <span class="badge status-badge-${response.Status}">${response.Status}</span></p>`;
+                        <p><strong>Status:</strong> <span class="badge status-badge-${response.Status}">${response.Status}</span></p>
+                        ${response.CancellationReason ? `<p><strong>Cancellation Reason:</strong> ${response.CancellationReason}</p>` : ''}
+                    </div>`;
 
-                        // For completed appointments, prominently show the session duration
                         if (response.Status === 'Completed' && response.CheckInTime && response.SessionEndTime) {
                             const checkInTime = new Date(response.CheckInTime);
                             const sessionEndTime = new Date(response.SessionEndTime);
-
-                            // Calculate duration in minutes
                             const durationMs = sessionEndTime - checkInTime;
                             const durationMins = Math.round(durationMs / 60000);
                             const hours = Math.floor(durationMins / 60);
                             const minutes = durationMins % 60;
-
-                            let durationText = '';
-                            if (hours > 0) {
-                                durationText = `${hours} hour${hours > 1 ? 's' : ''}`;
-                                if (minutes > 0) {
-                                    durationText += ` ${minutes} minute${minutes > 1 ? 's' : ''}`;
-                                }
-                            } else {
-                                durationText = `${minutes} minute${minutes > 1 ? 's' : ''}`;
-                            }
-
+                            let durationText = hours > 0 ? `${hours} hour${hours > 1 ? 's' : ''} ${minutes} minute${minutes > 1 ? 's' : ''}` : `${minutes} minute${minutes > 1 ? 's' : ''}`;
                             detailsHTML += `
                         <div class="alert alert-success mt-3">
                             <h6><i class="fas fa-clock me-2"></i> Session Duration: ${durationText}</h6>
@@ -939,32 +928,29 @@ session_start();
                         }
 
                         detailsHTML += `
-                    ${response.CheckInTime && !response.SessionEndTime ? `<p><strong>Check-in Time:</strong> ${new Date(response.CheckInTime).toLocaleString()}</p>` : ''}
-                    ${response.CheckOutTime ? `<p><strong>Building Check-out:</strong> ${new Date(response.CheckOutTime).toLocaleString()}</p>` : ''}
-                </div>`;
+                    ${response.CheckInTime && !response.SessionEndTime ? `<p><strong>Check-in Time:</strong> ${new Date(response.CheckInTime).toLocaleString()}</p>` : ''}`;
 
                         $('#appointmentDetails').html(detailsHTML);
 
-                        // Add action buttons based on status
                         let buttonsHTML = '';
-                        if (response.Status === 'Upcoming') {
+                        if (response.Status === 'Upcoming' || response.Status === 'Overdue') {
                             buttonsHTML = `
-                                <button type="button" class="btn btn-success check-in-modal-btn" data-id="${appointmentId}">
-                                    <i class="fas fa-check-circle me-1"></i> Check In
-                                </button>
-                                <button type="button" class="btn btn-primary reschedule-modal-btn" data-id="${appointmentId}">
-                                    <i class="fas fa-calendar-alt me-1"></i> Reschedule
-                                </button>
-                                <button type="button" class="btn btn-danger cancel-modal-btn" data-id="${appointmentId}">
-                                    <i class="fas fa-times-circle me-1"></i> Cancel
-                                </button>
-                            `;
+                            <button type="button" class="btn btn-success check-in-modal-btn" data-id="${appointmentId}">
+                                <i class="fas fa-check-circle me-1"></i> Check In
+                            </button>
+                            <button type="button" class="btn btn-primary reschedule-modal-btn" data-id="${appointmentId}">
+                                <i class="fas fa-calendar-alt me-1"></i> Reschedule
+                            </button>
+                            <button type="button" class="btn btn-danger cancel-modal-btn" data-id="${appointmentId}" data-bs-toggle="modal" data-bs-target="#cancelModal">
+                                <i class="fas fa-times-circle me-1"></i> Cancel
+                            </button>
+                        `;
                         } else if (response.Status === 'Ongoing') {
                             buttonsHTML = `
-                                <button type="button" class="btn btn-warning complete-modal-btn" data-id="${appointmentId}">
-                                    <i class="fas fa-check-double me-1"></i> Complete
-                                </button>
-                            `;
+                            <button type="button" class="btn btn-warning complete-modal-btn" data-id="${appointmentId}">
+                                <i class="fas fa-check-double me-1"></i> Complete
+                            </button>
+                        `;
                         }
 
                         $('#detailsActionButtons').html(buttonsHTML);
@@ -974,67 +960,53 @@ session_start();
             });
         }
 
-        // Schedule new appointment
-        $('#scheduleBtn').click(function() {
-            // Validate form
-            if (!$('#scheduleForm')[0].checkValidity()) {
-                $('#scheduleForm')[0].reportValidity();
+        // New scheduleAppointment function
+        function scheduleAppointment() {
+            if (!document.querySelector('#scheduleForm').checkValidity()) {
+                document.querySelector('#scheduleForm').reportValidity();
                 return;
             }
 
-            // Get form data
-            const formData = $('#scheduleForm').serialize();
+            let formData = new FormData(document.querySelector('#scheduleForm'));
+            formData.append('action', 'schedule');
 
-            // AJAX request to schedule appointment
-            $.ajax({
-                url: 'front_desk_appointments.php',
-                type: 'POST',
-                data: formData,
-                success: function(response) {
-                    try {
-                        // Try to parse the response if it's not already an object
-                        const result = (typeof response === 'string') ? JSON.parse(response) : response;
-
-                        if (result.success) {
-                            // Close modal and reload page
-                            $('#scheduleModal').modal('hide');
-                            alert('Appointment scheduled successfully!');
-                            location.reload();
-                        } else {
-                            alert('Error: ' + (result.message || 'An unknown error occurred'));
-                        }
-                    } catch (e) {
-                        console.error("Error parsing response:", e);
-                        console.log("Response:", response);
-                        alert('An error occurred while processing the server response.');
+            fetch('front_desk_appointments.php', {
+                method: 'POST',
+                body: formData
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        $('#scheduleModal').modal('hide');
+                        alert('Appointment scheduled successfully!');
+                        location.reload(); // Refresh to show new appointment
+                    } else {
+                        alert('Error: ' + data.message);
                     }
-                },
-                error: function(jqXHR, textStatus, errorThrown) {
-                    console.error("AJAX error:", textStatus, errorThrown);
-                    console.log("Response text:", jqXHR.responseText);
-                    alert('An error occurred. Please check the console for details.');
-                }
-            });
+                })
+                .catch(error => {
+                    alert('An error occurred: ' + error.message);
+                });
+        }
+
+        // Bind scheduleAppointment to button
+        $('#scheduleBtn').click(function() {
+            scheduleAppointment();
         });
-        // Reschedule appointment
+
         $('#rescheduleBtn').click(function() {
-            // Validate form
             if (!$('#rescheduleForm')[0].checkValidity()) {
                 $('#rescheduleForm')[0].reportValidity();
                 return;
             }
 
-            // Get form data
             const formData = $('#rescheduleForm').serialize();
-
-            // AJAX request to reschedule appointment
             $.ajax({
                 url: 'front_desk_appointments.php',
                 type: 'POST',
                 data: formData,
                 success: function(response) {
                     if (response.success) {
-                        // Close modal and reload page
                         $('#rescheduleModal').modal('hide');
                         alert('Appointment rescheduled successfully!');
                         location.reload();
@@ -1048,12 +1020,8 @@ session_start();
             });
         });
 
-        // Modified check-in button handler
-        // Modified check-in button handler to open the modal instead of direct check-in
         $(document).on('click', '.check-in-btn, .check-in-modal-btn', function() {
             const appointmentId = $(this).data('id');
-
-            // Get appointment details to fill the modal
             $.ajax({
                 url: 'front_desk_appointments.php',
                 type: 'POST',
@@ -1063,15 +1031,12 @@ session_start();
                 },
                 success: function(response) {
                     if (response) {
-                        // Populate the modal with visitor info
                         $('#checkInAppointmentId').val(appointmentId);
                         $('#checkInVisitorId').val(response.VisitorID);
                         $('#checkInVisitorName').text(response.VisitorName);
                         $('#checkInVisitorEmail').text(response.VisitorEmail);
                         $('#checkInHostName').text(response.HostName);
                         $('#checkInAppointmentTime').text(new Date(response.AppointmentTime).toLocaleString());
-
-                        // Show the modal
                         $('#visitorCheckInModal').modal('show');
                     } else {
                         alert('Error: Could not retrieve appointment details');
@@ -1083,7 +1048,6 @@ session_start();
             });
         });
 
-// Handle "Complete Check-In" button click
         $('#completeCheckInBtn').click(function() {
             if (!$('#visitorCheckInForm')[0].checkValidity()) {
                 $('#visitorCheckInForm')[0].reportValidity();
@@ -1091,7 +1055,6 @@ session_start();
             }
 
             const formData = $('#visitorCheckInForm').serialize();
-
             $.ajax({
                 url: 'front_desk_appointments.php',
                 type: 'POST',
@@ -1101,57 +1064,57 @@ session_start();
                     if (response.success) {
                         $('#visitorCheckInModal').modal('hide');
                         alert('Visitor checked in successfully!');
-
-                        const appointmentId = $('#checkInAppointmentId').val();
-                        const appointmentCard = $(`.appointment-item[data-id="${appointmentId}"]`);
-                        appointmentCard.find('.status-badge-Upcoming')
-                            .removeClass('status-badge-Upcoming')
-                            .addClass('status-badge-Ongoing')
-                            .text('Ongoing');
-                        appointmentCard.find('.action-buttons')
-                            .html('<button class="btn btn-sm btn-outline-warning complete-session-btn" data-id="' + appointmentId + '"><i class="fas fa-check-double me-1"></i> Complete</button>');
+                        location.reload();
                     } else {
                         alert('Error: ' + (response.message || 'Unknown error'));
                     }
                 },
-                error: function(jqXHR, textStatus, errorThrown) {
-                    console.error('AJAX error:', textStatus, errorThrown);
+                error: function() {
                     alert('An error occurred during check-in.');
                 }
             });
         });
-        // Handle cancel button click
-        $(document).on('click', '.cancel-btn, .cancel-modal-btn', function() {
-            const appointmentId = $(this).data('id');
 
-            if (confirm('Are you sure you want to cancel this appointment?')) {
-                $.ajax({
-                    url: 'front_desk_appointments.php',
-                    type: 'POST',
-                    data: {
-                        action: 'cancelAppointment',
-                        appointmentId: appointmentId
-                    },
-                    success: function(response) {
-                        if (response.success) {
-                            alert('Appointment cancelled successfully!');
-                            location.reload();
-                        } else {
-                            alert('Error: ' + response.message);
-                        }
-                    },
-                    error: function() {
-                        alert('An error occurred. Please try again.');
-                    }
-                });
-            }
+        $('#cancelModal').on('show.bs.modal', function (event) {
+            var button = $(event.relatedTarget);
+            var appointmentId = button.data('id');
+            var modal = $(this);
+            modal.data('appointmentId', appointmentId);
         });
 
-        // Handle reschedule button click to populate modal
+        $('#confirmCancelBtn').click(function() {
+            var modal = $('#cancelModal');
+            var appointmentId = modal.data('appointmentId');
+            var reason = $('#cancellationReason').val();
+            if (!reason) {
+                alert('Please select a cancellation reason.');
+                return;
+            }
+            $.ajax({
+                url: 'front_desk_appointments.php',
+                type: 'POST',
+                data: {
+                    action: 'cancelAppointment',
+                    appointmentId: appointmentId,
+                    reason: reason
+                },
+                success: function(response) {
+                    if (response.success) {
+                        modal.modal('hide');
+                        alert('Appointment cancelled successfully!');
+                        location.reload();
+                    } else {
+                        alert('Error: ' + response.message);
+                    }
+                },
+                error: function() {
+                    alert('An error occurred. Please try again.');
+                }
+            });
+        });
+
         $(document).on('click', '.reschedule-btn', function() {
             const appointmentId = $(this).data('id');
-
-            // Get appointment details
             $.ajax({
                 url: 'front_desk_appointments.php',
                 type: 'POST',
@@ -1162,18 +1125,16 @@ session_start();
                 success: function(response) {
                     if (response) {
                         $('#rescheduleAppointmentId').val(appointmentId);
-                        $('#rescheduleVisitorName').text(response.Name);
-                        $('#rescheduleHostName').text(response.Name);
+                        $('#rescheduleVisitorName').text(response.VisitorName);
+                        $('#rescheduleHostName').text(response.HostName);
+                        $('#rescheduleHostId').val(response.HostID);
                     }
                 }
             });
         });
 
-        // Handle reschedule button from modal
         $(document).on('click', '.reschedule-modal-btn', function() {
             const appointmentId = $(this).data('id');
-
-            // Get appointment details
             $.ajax({
                 url: 'front_desk_appointments.php',
                 type: 'POST',
@@ -1185,12 +1146,106 @@ session_start();
                     if (response) {
                         $('#appointmentDetailsModal').modal('hide');
                         $('#rescheduleAppointmentId').val(appointmentId);
-                        $('#rescheduleVisitorName').text(response.Name);
-                        $('#rescheduleHostName').text(response.Name);
+                        $('#rescheduleVisitorName').text(response.VisitorName);
+                        $('#rescheduleHostName').text(response.HostName);
                         $('#rescheduleModal').modal('show');
                     }
                 }
             });
         });
     });
+
+    // Existing Flatpickr and checkAvailableSlots functions
+    document.addEventListener('DOMContentLoaded', function () {
+        flatpickr('#appointmentTime', {
+            enableTime: true,
+            dateFormat: 'Y-m-d H:i',
+            minDate: 'today',
+            time_24hr: false,
+            minuteIncrement: 15,
+            enable: [
+                function(date) {
+                    let hours = date.getHours();
+                    let minutes = date.getMinutes();
+                    return (
+                        (hours === 9 && minutes >= 30) ||
+                        (hours === 10) ||
+                        (hours === 11 && minutes <= 30) ||
+                        (hours === 13) ||
+                        (hours === 14) ||
+                        (hours === 15) ||
+                        (hours === 16 && minutes <= 30)
+                    );
+                }
+            ],
+            onChange: function(selectedDates, dateStr, instance) {
+                let hostId = document.querySelector('#hostSelect').value;
+                if (hostId && dateStr) {
+                    checkAvailableSlots(hostId, dateStr);
+                }
+            }
+        });
+    });
+
+    function checkAvailableSlots(hostId, appointmentTime) {
+        fetch('front_desk_appointments.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: `action=checkConflict&hostId=${hostId}&appointmentTime=${appointmentTime}`
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (!data.success) {
+                    alert(data.message);
+                }
+            });
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        flatpickr('#newTime', {
+            enableTime: true,
+            dateFormat: 'Y-m-d H:i',
+            minDate: 'today',
+            time_24hr: false,
+            minuteIncrement: 15,
+            enable: [
+                function(date) {
+                    let hours = date.getHours();
+                    let minutes = date.getMinutes();
+                    return (
+                        (hours === 9 && minutes >= 30) ||
+                        (hours === 10) ||
+                        (hours === 11 && minutes <= 30) ||
+                        (hours === 13) ||
+                        (hours === 14) ||
+                        (hours === 15) ||
+                        (hours === 16 && minutes <= 30)
+                    );
+                }
+            ],
+            onChange: function(selectedDates, dateStr, instance) {
+                let appointmentId = document.querySelector('#rescheduleAppointmentId').value;
+                let hostId = document.querySelector('#rescheduleHostId').value;// Note: Adjust if hostId is fetched differently
+                if (hostId && dateStr) {
+                    checkAvailableSlots(hostId, dateStr, appointmentId);
+                }
+            }
+        });
+    });
+
+    function checkAvailableSlots(hostId, appointmentTime, appointmentId) {
+        fetch('front_desk_appointments.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: `action=checkConflict&hostId=${hostId}&appointmentTime=${appointmentTime}&appointmentId=${appointmentId}`
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (!data.success) {
+                    alert(data.message);
+                }
+            });
+    }
 </script>
+</body>
+</html>

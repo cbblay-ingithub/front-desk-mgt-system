@@ -15,13 +15,32 @@ if (session_status() === PHP_SESSION_NONE) {
 
 require_once '../dbConfig.php';
 
+// Function to update appointment statuses automatically
+function updateAppointmentStatuses() {
+    global $conn;
+
+    // Set Upcoming appointments to Overdue if past their scheduled time
+    $sql = "UPDATE appointments 
+            SET Status = 'Overdue' 
+            WHERE Status = 'Upcoming' 
+            AND AppointmentTime < NOW()";
+    $conn->query($sql);
+
+    // Set Overdue appointments to Cancelled with No-Show if past the total window (30 minutes)
+    $sql = "UPDATE appointments 
+            SET Status = 'Cancelled', CancellationReason = 'No-Show' 
+            WHERE Status = 'Overdue' 
+            AND AppointmentTime < NOW() - INTERVAL 30 MINUTE";
+    $conn->query($sql);
+}
+
 // Function to get all appointments
 function getAllAppointments() {
     global $conn;
 
-    $sql = "SELECT a.AppointmentID, a.AppointmentTime, a.Status, 
+    $sql = "SELECT a.AppointmentID, a.AppointmentTime, a.Status, a.CancellationReason, 
                    v.VisitorID, v.Name AS VisitorName, v.Email AS VisitorEmail, v.Phone AS VisitorPhone, 
-                   u.UserID AS HostID ,u.Name AS HostName 
+                   u.UserID AS HostID, u.Name AS HostName 
             FROM appointments a
             JOIN visitors v ON a.VisitorID = v.VisitorID
             JOIN users u ON a.HostID = u.UserID
@@ -46,6 +65,7 @@ function getAppointmentStats() {
     $stats = [
         'total' => 0,
         'upcoming' => 0,
+        'overdue' => 0,
         'ongoing' => 0,
         'completed' => 0,
         'cancelled' => 0
@@ -63,6 +83,8 @@ function getAppointmentStats() {
 
             if ($status == 'Upcoming') {
                 $stats['upcoming'] = $count;
+            } elseif ($status == 'Overdue') {
+                $stats['overdue'] = $count;
             } elseif ($status == 'Ongoing') {
                 $stats['ongoing'] = $count;
             } elseif ($status == 'Completed') {
@@ -92,18 +114,29 @@ function getAllHosts() {
 
     return $hosts;
 }
+
+// Function to check if the appointment time is within allowed hours
+function isValidAppointmentTime($appointmentTime) {
+    $dt = new DateTime($appointmentTime);
+    $time = $dt->format('H:i:s');
+    if (($time >= '09:30:00' && $time <= '11:30:00') || ($time >= '13:00:00' && $time <= '16:30:00')) {
+        return true;
+    }
+    return false;
+}
+
 // Function to check if the host has a conflicting appointment
 function checkSchedulingConflict($hostId, $appointmentTime) {
     global $conn;
 
-    // Allow some flexibility with a 15-minute buffer before and after appointments
-    $startTime = date('Y-m-d H:i:s', strtotime($appointmentTime) - (15 * 60)); // 15 minutes before
-    $endTime = date('Y-m-d H:i:s', strtotime($appointmentTime) + (15 * 60));   // 15 minutes after
+    // Check for appointments within 45 minutes before or after the proposed time
+    $startTime = date('Y-m-d H:i:s', strtotime($appointmentTime) - (45 * 60));
+    $endTime = date('Y-m-d H:i:s', strtotime($appointmentTime) + (45 * 60));
 
     $sql = "SELECT AppointmentID FROM appointments 
             WHERE HostID = ? 
             AND AppointmentTime BETWEEN ? AND ? 
-            AND Status IN ('Upcoming', 'Ongoing')";
+            AND Status IN ('Upcoming', 'Overdue', 'Ongoing')";
 
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("iss", $hostId, $startTime, $endTime);
@@ -126,7 +159,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     switch ($action) {
         case 'getVisitors':
-            // Get all visitors
             $sql = "SELECT VisitorID, Name, Email FROM visitors ORDER BY Name";
             $result = $conn->query($sql);
             $visitors = [];
@@ -141,20 +173,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             break;
 
         case 'getAppointmentDetails':
-            // Get details for a specific appointment
             if (!isset($_POST['appointmentId'])) {
                 echo json_encode(['success' => false, 'message' => 'No appointment ID provided']);
                 break;
             }
 
             $appointmentId = $_POST['appointmentId'];
-            $sql = "SELECT a.AppointmentID, a.AppointmentTime, a.Status, 
+            $sql = "SELECT a.AppointmentID, a.AppointmentTime, a.Status, a.CancellationReason, 
                            v.VisitorID, v.Name AS VisitorName, v.Email AS VisitorEmail, v.Phone AS VisitorPhone, 
-                           u.userID, u.Name AS HostName 
+                           u.UserID, u.Name AS HostName 
                     FROM appointments a
                     JOIN visitors v ON a.VisitorID = v.VisitorID
-                    JOIN users u ON a.HostID = u.userID 
-                    WHERE a.AppointmentID = ?" ;
+                    JOIN users u ON a.HostID = u.UserID 
+                    WHERE a.AppointmentID = ?";
 
             $stmt = $conn->prepare($sql);
             $stmt->bind_param("i", $appointmentId);
@@ -169,7 +200,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             break;
 
         case 'schedule':
-            // Schedule a new appointment
             if (!isset($_POST['hostId']) || !isset($_POST['appointmentTime'])) {
                 echo json_encode(['success' => false, 'message' => 'Missing required fields']);
                 break;
@@ -177,59 +207,55 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             $hostId = $_POST['hostId'];
             $appointmentTime = $_POST['appointmentTime'];
-            $notes = $_POST['appointmentNotes'] ?? '';
             $isNewVisitor = $_POST['isNewVisitor'] ?? '0';
 
-            // Check for scheduling conflicts
-            if (checkSchedulingConflict($hostId, $appointmentTime)) {
-                echo json_encode(['success' => false, 'message' => 'The selected host already has an appointment scheduled at this time. Please choose a different time.']);
+            if (!isValidAppointmentTime($appointmentTime)) {
+                echo json_encode(['success' => false, 'message' => 'Appointment time is outside allowed hours (9:30 AM–11:30 AM or 1:00 PM–4:30 PM).']);
                 break;
             }
 
-            // Begin transaction
+            if (checkSchedulingConflict($hostId, $appointmentTime)) {
+                echo json_encode(['success' => false, 'message' => 'The selected host already has an appointment scheduled within 45 minutes of this time.']);
+                break;
+            }
+
             $conn->begin_transaction();
 
             try {
                 $visitorId = null;
 
                 if ($isNewVisitor == '1') {
-                    // Create new visitor
                     $newVisitorName = $_POST['newVisitorName'];
                     $newVisitorEmail = $_POST['newVisitorEmail'];
                     $newVisitorPhone = $_POST['newVisitorPhone'] ?? '';
 
-                    $sql = "INSERT INTO visitors (Name, Email, Phone) VALUES (?, ?,?)";
+                    $sql = "INSERT INTO visitors (Name, Email, Phone) VALUES (?, ?, ?)";
                     $stmt = $conn->prepare($sql);
                     $stmt->bind_param("sss", $newVisitorName, $newVisitorEmail, $newVisitorPhone);
                     $stmt->execute();
 
                     $visitorId = $conn->insert_id;
                 } else {
-                    // Use existing visitor
                     $visitorId = $_POST['visitorId'];
                 }
 
-                // Create appointment
                 $status = 'Upcoming';
-                $sql = "INSERT INTO appointments (VisitorID, HostID,AppointmentTime, Status) 
+                $sql = "INSERT INTO appointments (VisitorID, HostID, AppointmentTime, Status) 
                         VALUES (?, ?, ?, ?)";
                 $stmt = $conn->prepare($sql);
-                $stmt->bind_param("iiss", $visitorId, $hostId,$appointmentTime, $status);
+                $stmt->bind_param("iiss", $visitorId, $hostId, $appointmentTime, $status);
                 $stmt->execute();
 
-                // Commit transaction
                 $conn->commit();
 
                 echo json_encode(['success' => true]);
             } catch (Exception $e) {
-                // Rollback on error
                 $conn->rollback();
                 echo json_encode(['success' => false, 'message' => $e->getMessage()]);
             }
             break;
 
         case 'reschedule':
-            // Reschedule an appointment
             if (!isset($_POST['appointmentId']) || !isset($_POST['newTime'])) {
                 echo json_encode(['success' => false, 'message' => 'Missing required fields']);
                 break;
@@ -237,9 +263,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             $appointmentId = $_POST['appointmentId'];
             $newTime = $_POST['newTime'];
-            $rescheduleReason = $_POST['rescheduleReason'] ?? '';
 
-            // Get the host ID for this appointment
+            if (!isValidAppointmentTime($newTime)) {
+                echo json_encode(['success' => false, 'message' => 'New appointment time is outside allowed hours (9:30 AM–11:30 AM or 1:00 PM–4:30 PM).']);
+                break;
+            }
+
             $sql = "SELECT HostID FROM appointments WHERE AppointmentID = ?";
             $stmt = $conn->prepare($sql);
             $stmt->bind_param("i", $appointmentId);
@@ -249,25 +278,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if ($result->num_rows > 0) {
                 $hostId = $result->fetch_assoc()['HostID'];
 
-                // Check for scheduling conflicts, excluding the current appointment
-                $sql = "SELECT AppointmentID FROM appointments 
-                WHERE HostID = ? 
-                AND AppointmentTime = ? 
-                AND Status IN ('Upcoming', 'Ongoing')
-                AND AppointmentID != ?";
+                $startTime = date('Y-m-d H:i:s', strtotime($newTime) - (45 * 60));
+                $endTime = date('Y-m-d H:i:s', strtotime($newTime) + (45 * 60));
 
+                $sql = "SELECT AppointmentID FROM appointments 
+                        WHERE HostID = ? 
+                        AND AppointmentTime BETWEEN ? AND ? 
+                        AND Status IN ('Upcoming', 'Overdue', 'Ongoing')
+                        AND AppointmentID != ?";
                 $stmt = $conn->prepare($sql);
-                $stmt->bind_param("isi", $hostId, $newTime, $appointmentId);
+                $stmt->bind_param("issi", $hostId, $startTime, $endTime, $appointmentId);
                 $stmt->execute();
                 $conflictResult = $stmt->get_result();
 
                 if ($conflictResult->num_rows > 0) {
-                    echo json_encode(['success' => false, 'message' => 'The selected host already has an appointment scheduled at this time. Please choose a different time.']);
+                    echo json_encode(['success' => false, 'message' => 'The selected host already has an appointment scheduled within 45 minutes of this time.']);
                     break;
                 }
 
-                // Update appointment
-                $sql = "UPDATE appointments SET AppointmentTime = ? WHERE AppointmentID = ?";
+                $sql = "UPDATE appointments SET AppointmentTime = ?, Status = 'Upcoming' WHERE AppointmentID = ?";
                 $stmt = $conn->prepare($sql);
                 $stmt->bind_param("si", $newTime, $appointmentId);
 
@@ -282,7 +311,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             break;
 
         case 'checkIn':
-            // Check in a visitor
             if (!isset($_POST['appointmentId'])) {
                 echo json_encode(['success' => false, 'message' => 'No appointment ID provided']);
                 break;
@@ -329,18 +357,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             $conn->begin_transaction();
             try {
-                // Update visitor details
                 $sql = "UPDATE visitors SET IDType = ?, IDNumber = ? WHERE VisitorID = ?";
                 $stmt = $conn->prepare($sql);
                 $stmt->bind_param("ssi", $idType, $idNumber, $visitorId);
                 $stmt->execute();
 
-                // Log check-in
                 $checkInTime = date('Y-m-d H:i:s');
                 $sql = "INSERT INTO visitor_Logs (CheckInTime, HostID, VisitorID, Visit_Purpose) 
-                VALUES (?, ?, ?, ?)";
+                        VALUES (?, ?, ?, ?)";
                 $stmt = $conn->prepare($sql);
                 $stmt->bind_param("siis", $checkInTime, $hostId, $visitorId, $visitPurpose);
+                $stmt->execute();
+
+                $sql = "UPDATE appointments SET Status = 'Ongoing', CheckInTime = ? WHERE AppointmentID = ?";
+                $stmt = $conn->prepare($sql);
+                $stmt->bind_param("si", $checkInTime, $appointmentId);
                 $stmt->execute();
 
                 $conn->commit();
@@ -352,7 +383,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             break;
 
         case 'completeSession':
-            // Complete an appointment
             if (!isset($_POST['appointmentId'])) {
                 echo json_encode(['success' => false, 'message' => 'No appointment ID provided']);
                 break;
@@ -360,7 +390,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             $appointmentId = $_POST['appointmentId'];
             $status = 'Completed';
-            $sessionEndTime = date('Y-m-d H:i:s');  // Current time when host ends the session
+            $sessionEndTime = date('Y-m-d H:i:s');
 
             $sql = "UPDATE appointments SET Status = ?, SessionEndTime = ? WHERE AppointmentID = ?";
             $stmt = $conn->prepare($sql);
@@ -373,8 +403,42 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
             break;
 
+        case 'checkConflict':
+            if (!isset($_POST['hostId']) || !isset($_POST['appointmentTime'])) {
+                echo json_encode(['success' => false, 'message' => 'Missing hostId or appointmentTime']);
+                break;
+            }
+            $hostId = $_POST['hostId'];
+            $appointmentTime = $_POST['appointmentTime'];
+            $excludeAppointmentId = $_POST['appointmentId'] ?? null;
+
+            $startTime = date('Y-m-d H:i:s', strtotime($appointmentTime) - (45 * 60));
+            $endTime = date('Y-m-d H:i:s', strtotime($appointmentTime) + (45 * 60));
+
+            $sql = "SELECT AppointmentID FROM appointments 
+            WHERE HostID = ? 
+            AND AppointmentTime BETWEEN ? AND ? 
+            AND Status IN ('Upcoming', 'Overdue', 'Ongoing')";
+            if ($excludeAppointmentId) {
+                $sql .= " AND AppointmentID != ?";
+            }
+            $stmt = $conn->prepare($sql);
+            if ($excludeAppointmentId) {
+                $stmt->bind_param("issi", $hostId, $startTime, $endTime, $excludeAppointmentId);
+            } else {
+                $stmt->bind_param("iss", $hostId, $startTime, $endTime);
+            }
+            $stmt->execute();
+            $result = $stmt->get_result();
+
+            if ($result->num_rows > 0) {
+                echo json_encode(['success' => false, 'message' => 'Conflict: Host has another appointment within 45 minutes.']);
+            } else {
+                echo json_encode(['success' => true]);
+            }
+            break;
+
         case 'cancelAppointment':
-            // Cancel an appointment
             if (!isset($_POST['appointmentId'])) {
                 echo json_encode(['success' => false, 'message' => 'No appointment ID provided']);
                 break;
