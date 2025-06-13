@@ -181,6 +181,10 @@ $hosts = getAllHosts();
         .host-filter {
             margin-bottom: 20px;
         }
+        .flatpickr-calendar {
+            display: block !important;
+            z-index: 9999 !important;
+        }
     </style>
 </head>
 <body>
@@ -688,7 +692,7 @@ $hosts = getAllHosts();
 
         // Load visitors for dropdown
         $.ajax({
-            url: 'front_desk_appointments.php', // Update to correct file
+            url: 'front_desk_appointments.php',
             type: 'POST',
             data: {
                 action: 'getVisitors'
@@ -1155,29 +1159,15 @@ $hosts = getAllHosts();
         });
     });
 
-    // Existing Flatpickr and checkAvailableSlots functions
+    // Flatpickr Configuration
     document.addEventListener('DOMContentLoaded', function () {
+        // Initialize Flatpickr for scheduling new appointments
         flatpickr('#appointmentTime', {
             enableTime: true,
             dateFormat: 'Y-m-d H:i',
             minDate: 'today',
             time_24hr: false,
             minuteIncrement: 15,
-            enable: [
-                function(date) {
-                    let hours = date.getHours();
-                    let minutes = date.getMinutes();
-                    return (
-                        (hours === 9 && minutes >= 30) ||
-                        (hours === 10) ||
-                        (hours === 11 && minutes <= 30) ||
-                        (hours === 13) ||
-                        (hours === 14) ||
-                        (hours === 15) ||
-                        (hours === 16 && minutes <= 30)
-                    );
-                }
-            ],
             onChange: function(selectedDates, dateStr, instance) {
                 let hostId = document.querySelector('#hostSelect').value;
                 if (hostId && dateStr) {
@@ -1185,47 +1175,17 @@ $hosts = getAllHosts();
                 }
             }
         });
-    });
 
-    function checkAvailableSlots(hostId, appointmentTime) {
-        fetch('front_desk_appointments.php', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-            body: `action=checkConflict&hostId=${hostId}&appointmentTime=${appointmentTime}`
-        })
-            .then(response => response.json())
-            .then(data => {
-                if (!data.success) {
-                    alert(data.message);
-                }
-            });
-    }
-
-    document.addEventListener('DOMContentLoaded', function () {
+        // Initialize Flatpickr for rescheduling appointments
         flatpickr('#newTime', {
             enableTime: true,
             dateFormat: 'Y-m-d H:i',
             minDate: 'today',
             time_24hr: false,
             minuteIncrement: 15,
-            enable: [
-                function(date) {
-                    let hours = date.getHours();
-                    let minutes = date.getMinutes();
-                    return (
-                        (hours === 9 && minutes >= 30) ||
-                        (hours === 10) ||
-                        (hours === 11 && minutes <= 30) ||
-                        (hours === 13) ||
-                        (hours === 14) ||
-                        (hours === 15) ||
-                        (hours === 16 && minutes <= 30)
-                    );
-                }
-            ],
             onChange: function(selectedDates, dateStr, instance) {
                 let appointmentId = document.querySelector('#rescheduleAppointmentId').value;
-                let hostId = document.querySelector('#rescheduleHostId').value;// Note: Adjust if hostId is fetched differently
+                let hostId = document.querySelector('#rescheduleHostId').value;
                 if (hostId && dateStr) {
                     checkAvailableSlots(hostId, dateStr, appointmentId);
                 }
@@ -1233,7 +1193,7 @@ $hosts = getAllHosts();
         });
     });
 
-    function checkAvailableSlots(hostId, appointmentTime, appointmentId) {
+    function checkAvailableSlots(hostId, appointmentTime, appointmentId = null) {
         fetch('front_desk_appointments.php', {
             method: 'POST',
             headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -1242,7 +1202,9 @@ $hosts = getAllHosts();
             .then(response => response.json())
             .then(data => {
                 if (!data.success) {
-                    alert(data.message);
+                    alert(`Selected time is not available: ${data.message}`);
+                } else {
+                    console.log('Time is available');
                 }
             });
     }
