@@ -285,23 +285,6 @@ $hosts = getAllHosts();
                     </div>
                 </div>
             </div>
-            <div class="col-xl-3 col-md-6">
-                <div class="card stats-card warning">
-                    <div class="card-body">
-                        <div class="row">
-                            <div class="col">
-                                <h5 class="card-title text-uppercase text-muted mb-0">Overdue</h5>
-                                <span class="h2 font-weight-bold mb-0"><?= $stats['overdue'] ?></span>
-                            </div>
-                            <div class="col-auto">
-                                <div class="icon icon-shape bg-warning text-white rounded-circle p-2">
-                                    <i class="fas fa-exclamation-triangle"></i>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
         </div>
 
         <!-- View Toggle Buttons -->
