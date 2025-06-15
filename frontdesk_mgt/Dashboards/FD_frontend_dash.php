@@ -941,7 +941,7 @@ $hosts = getAllHosts();
                         `;
                         }
 
-                        $('#detailsActionButtons').html(buttonHTML);
+                        $('#detailsActionButtons').html(buttonsHTML);
                         $('#appointmentDetailsModal').modal('show');
                     }
                 }
