@@ -40,7 +40,7 @@ $hosts = getAllHosts();
 
         .sidebar {
             width: 250px;
-            flex-shrink: 0; /* Prevent sidebar from shrinking */
+            flex-shrink: 0;
             background-color: #343a40;
             padding-top: 1rem;
         }
@@ -519,15 +519,16 @@ $hosts = getAllHosts();
                 <form id="rescheduleForm">
                     <input type="hidden" name="action" value="reschedule">
                     <input type="hidden" name="appointmentId" id="rescheduleAppointmentId">
+                    <input type="hidden" name="hostId" id="rescheduleHostId">
 
                     <div class="mb-3">
                         <p><strong>Visitor:</strong> <span id="rescheduleVisitorName"></span></p>
-                        <p><strong>Host:</strong> <span id="rescheduleHostId"></span></p>
+                        <p><strong>Host:</strong> <span id="rescheduleHostName"></span></p>
                     </div>
 
                     <div class="mb-3">
-                        <label for="newDateTime" class="form-label">New Date & Time</label>
-                        <input type="text" class="form-control" id="newTime" name="newDateTime" required>
+                        <label for="newTime" class="form-label">New Date & Time</label>
+                        <input type="text" class="form-control" id="newTime" name="newTime" required>
                     </div>
 
                     <div class="mb-3">
@@ -940,7 +941,7 @@ $hosts = getAllHosts();
                         `;
                         }
 
-                        $('#detailsActionButtons').html(buttonsHTML);
+                        $('#detailsActionButtons').html(buttonHTML);
                         $('#appointmentDetailsModal').modal('show');
                     }
                 }
@@ -966,17 +967,17 @@ $hosts = getAllHosts();
                     if (data.success) {
                         $('#scheduleModal').modal('hide');
                         alert('Appointment scheduled successfully!');
-                        location.reload(); // Refresh to show new appointment
+                        location.reload();
                     } else {
                         alert('Error: ' + data.message);
                     }
                 })
                 .catch(error => {
-                    alert('An error occurred: ' + error.message);
+                    alert('Error: ' + error.message);
                 });
         }
 
-        // Bind scheduleAppointment to button
+        // Bind scheduleAppointment
         $('#scheduleBtn').click(function() {
             scheduleAppointment();
         });
@@ -987,7 +988,24 @@ $hosts = getAllHosts();
                 return;
             }
 
-            const formData = $('#rescheduleForm').serialize();
+            // Explicitly collect form data
+            const formData = {
+                action: 'reschedule',
+                appointmentId: $('#rescheduleAppointmentId').val(),
+                newTime: $('#newTime').val(),
+                hostId: $('#rescheduleHostId').val(),
+                rescheduleReason: $('#rescheduleReason').val()
+            };
+
+            // Log form data for debugging
+            console.log('Reschedule Form Data:', formData);
+
+            // Check if required fields are present
+            if (!formData.appointmentId || !formData.newTime) {
+                alert('Error: Required fields are missing. Please ensure appointment ID and new time are provided.');
+                return;
+            }
+
             $.ajax({
                 url: 'front_desk_appointments.php',
                 type: 'POST',
@@ -1001,7 +1019,8 @@ $hosts = getAllHosts();
                         alert('Error: ' + response.message);
                     }
                 },
-                error: function() {
+                error: function(xhr, status, error) {
+                    console.error('AJAX Error:', status, error);
                     alert('An error occurred. Please try again.');
                 }
             });
@@ -1062,7 +1081,7 @@ $hosts = getAllHosts();
             });
         });
 
-        $('#cancelModal').on('show.bs.modal', function (event) {
+        $('#cancelModal').on('show.bs.modal', function(event) {
             var button = $(event.relatedTarget);
             var appointmentId = button.data('id');
             var modal = $(this);
@@ -1115,6 +1134,7 @@ $hosts = getAllHosts();
                         $('#rescheduleVisitorName').text(response.VisitorName);
                         $('#rescheduleHostName').text(response.HostName);
                         $('#rescheduleHostId').val(response.HostID);
+                        $('#rescheduleModal').modal('show');
                     }
                 }
             });
@@ -1135,6 +1155,7 @@ $hosts = getAllHosts();
                         $('#rescheduleAppointmentId').val(appointmentId);
                         $('#rescheduleVisitorName').text(response.VisitorName);
                         $('#rescheduleHostName').text(response.HostName);
+                        $('#rescheduleHostId').val(response.HostID);
                         $('#rescheduleModal').modal('show');
                     }
                 }
@@ -1143,7 +1164,7 @@ $hosts = getAllHosts();
     });
 
     // Flatpickr Configuration
-    document.addEventListener('DOMContentLoaded', function () {
+    document.addEventListener('DOMContentLoaded', function() {
         // Initialize Flatpickr for scheduling new appointments
         flatpickr('#appointmentTime', {
             enableTime: true,
