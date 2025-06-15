@@ -1172,6 +1172,11 @@ $hosts = getAllHosts();
             minDate: 'today',
             time_24hr: false,
             minuteIncrement: 15,
+            disable: [
+                function(date) {
+                    return (date.getDay() === 0); // Disable Sundays (0 = Sunday)
+                }
+            ],
             onChange: function(selectedDates, dateStr, instance) {
                 let hostId = document.querySelector('#hostSelect').value;
                 if (hostId && dateStr) {
@@ -1187,6 +1192,11 @@ $hosts = getAllHosts();
             minDate: 'today',
             time_24hr: false,
             minuteIncrement: 15,
+            disable: [
+                function(date) {
+                    return (date.getDay() === 0); // Disable Sundays (0 = Sunday)
+                }
+            ],
             onChange: function(selectedDates, dateStr, instance) {
                 let appointmentId = document.querySelector('#rescheduleAppointmentId').value;
                 let hostId = document.querySelector('#rescheduleHostId').value;
