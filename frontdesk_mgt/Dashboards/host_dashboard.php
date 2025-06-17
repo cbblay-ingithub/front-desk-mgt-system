@@ -46,10 +46,14 @@
             background-color: #66b2b2;
         }
         .status-badge-Upcoming {
-            background-color: #FFB343;
+            background-color: #9133ef;
         }
         .status-badge-Completed {
             background-color: #198754;
+        }
+        .status-badge-Overdue {
+            background-color: #ffc107;
+            color: #212529;
         }
         .action-buttons {
             display: flex;
@@ -106,6 +110,7 @@ $appointments = getHostAppointments($hostId);
                 <div class="btn-group" role="group">
                     <button type="button" class="btn btn-outline-primary active filter-btn" data-filter="all">All</button>
                     <button type="button" class="btn btn-outline-primary filter-btn" data-filter="Upcoming">Upcoming</button>
+                    <button type="button" class="btn btn-outline-primary filter-btn" data-filter="Overdue">Overdue</button>
                     <button type="button" class="btn btn-outline-primary filter-btn" data-filter="Ongoing">Ongoing</button>
                     <button type="button" class="btn btn-outline-primary filter-btn" data-filter="Completed">Completed</button>
                     <button type="button" class="btn btn-outline-primary filter-btn" data-filter="Cancelled">Cancelled</button>
@@ -136,6 +141,9 @@ $appointments = getHostAppointments($hostId);
                                 <p class="card-text mb-3">
                                     <i class="far fa-clock me-2"></i> <?= date('h:i A', strtotime($appointment['AppointmentTime'])) ?>
                                 </p>
+                                <?php if ($appointment['Status'] == 'Cancelled'): ?>
+                                    <p><strong>Cancellation Reason:</strong> <?php echo htmlspecialchars($appointment['CancellationReason']); ?></p>
+                                <?php endif; ?>
 
                                 <?php if ($appointment['Status'] !== 'Cancelled'): ?>
                                     <div class="action-buttons">

@@ -320,7 +320,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $status = 'Ongoing';
             $checkInTime = date('Y-m-d H:i:s');
 
-            $sql = "UPDATE appointments SET Status = ?, CheckInTime = ? WHERE AppointmentID = ?";
+            $sql = "UPDATE appointments SET Status = ?, CheckInTime = NOW() WHERE AppointmentID = ?";
             $stmt = $conn->prepare($sql);
             $stmt->bind_param("ssi", $status, $checkInTime, $appointmentId);
 

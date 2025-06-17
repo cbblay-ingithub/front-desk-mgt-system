@@ -63,3 +63,10 @@ $cancelledTemplate = getCancelledEmailTemplate(
     '2025-05-01 14:30:00'
 );
 echo $cancelledTemplate;
+$cancelledByHostTemplate = getCancelledByHostEmailTemplate(
+    'John Doe',
+    'Dr. Smith',
+    '2025-05-01 14:30:00',
+    'Host Cancelled'
+);
+echo $cancelledByHostTemplate;

@@ -8,6 +8,40 @@ ini_set('display_errors', 0);
 require_once __DIR__ . '/emails.php';
 require_once __DIR__ . '/mailTemplates.php';
 
+// Update appointment statuses at the start of every request
+updateAppointmentStatuses();
+
+/**
+ * Update appointment statuses based on current time
+ */
+function updateAppointmentStatuses() {
+    global $conn;
+
+    $sql = "UPDATE appointments 
+            SET Status = 'Overdue' 
+            WHERE Status = 'Upcoming' 
+            AND AppointmentTime < NOW()";
+    $conn->query($sql);
+
+    $sql = "UPDATE appointments 
+            SET Status = 'Cancelled', CancellationReason = 'No-Show' 
+            WHERE Status = 'Overdue' 
+            AND AppointmentTime < NOW() - INTERVAL 30 MINUTE";
+    $conn->query($sql);
+}
+
+/**
+ * Check if the appointment time is within allowed hours (9:30 AM–11:30 AM or 1:00 PM–4:30 PM)
+ *
+ * @param string $appointmentTime DateTime of appointment
+ * @return bool True if within allowed hours, false otherwise
+ */
+function isValidAppointmentTime($appointmentTime) {
+    $dt = new DateTime($appointmentTime);
+    $time = $dt->format('H:i:s');
+    return (($time >= '09:30:00' && $time <= '11:30:00') || ($time >= '13:00:00' && $time <= '16:30:00'));
+}
+
 /**
  * Get all appointments for a specific host based on the host's ID
  *
@@ -48,7 +82,6 @@ function startAppointment($appointmentId): array
 {
     global $conn;
 
-    // Check if appointment exists and is in Upcoming status
     $sql = "SELECT Status FROM appointments WHERE AppointmentID = ?";
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("i", $appointmentId);
@@ -64,7 +97,6 @@ function startAppointment($appointmentId): array
         return ["status" => "error", "message" => "Only upcoming appointments can be started"];
     }
 
-    // Update appointment status to Ongoing
     $sql = "UPDATE appointments SET Status = 'Ongoing' WHERE AppointmentID = ?";
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("i", $appointmentId);
@@ -75,6 +107,7 @@ function startAppointment($appointmentId): array
         return ["status" => "error", "message" => "Failed to start session: " . $conn->error];
     }
 }
+
 /**
  * Schedule a new appointment
  *
@@ -87,36 +120,43 @@ function scheduleAppointment($appointmentTime, $hostId, $visitorId): array
 {
     global $conn;
 
-    // Validate appointment time (not in the past)
     $currentTime = date('Y-m-d H:i:s');
     if ($appointmentTime <= $currentTime) {
         return ["status" => "error", "message" => "Appointment time cannot be in the past"];
     }
 
-    // Check for existing appointments at same time for host
+    if (date('N', strtotime($appointmentTime)) == 7) {
+        return ["status" => "error", "message" => "Appointments cannot be scheduled on Sundays"];
+    }
+
+    if (!isValidAppointmentTime($appointmentTime)) {
+        return ["status" => "error", "message" => "Appointment time is outside allowed hours (9:30 AM–11:30 AM or 1:00 PM–4:30 PM)"];
+    }
+
+    $startTime = date('Y-m-d H:i:s', strtotime($appointmentTime) - (45 * 60));
+    $endTime = date('Y-m-d H:i:s', strtotime($appointmentTime) + (45 * 60));
     $sql = "SELECT COUNT(*) as count FROM appointments 
-            WHERE HostID = ? AND AppointmentTime = ? AND Status != 'Cancelled'";
+            WHERE HostID = ? 
+            AND AppointmentTime BETWEEN ? AND ? 
+            AND Status IN ('Upcoming', 'Overdue', 'Ongoing')";
     $stmt = $conn->prepare($sql);
-    $stmt->bind_param("is", $hostId, $appointmentTime);
+    $stmt->bind_param("iss", $hostId, $startTime, $endTime);
     $stmt->execute();
     $result = $stmt->get_result()->fetch_assoc();
 
     if ($result['count'] > 0) {
-        return ["status" => "error", "message" => "You already have an appointment scheduled at this time"];
+        return ["status" => "error", "message" => "You already have an appointment scheduled within 45 minutes of this time"];
     }
 
-    // Insert new appointment into the Appointments table
     $sql = "INSERT INTO appointments (AppointmentTime, Status, HostID, VisitorID) 
             VALUES (?, 'Upcoming', ?, ?)";
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("sii", $appointmentTime, $hostId, $visitorId);
 
     if ($stmt->execute()) {
-        // Get visitor and host information for the email
         $visitorInfo = getVisitorById($visitorId);
         $hostInfo = getHostById($hostId);
 
-        // Send confirmation email
         if ($visitorInfo && $hostInfo) {
             $emailBody = getScheduledEmailTemplate(
                 $visitorInfo['Name'],
@@ -131,7 +171,7 @@ function scheduleAppointment($appointmentTime, $hostId, $visitorId): array
             );
         }
         return ["status" => "success", "message" => "Appointment scheduled successfully", "id" => $conn->insert_id];
-    } else{
+    } else {
         return ["status" => "error", "message" => "Failed to schedule appointment: " . $conn->error];
     }
 }
@@ -148,12 +188,10 @@ function createVisitor($name, $email, $phone = null): array
 {
     global $conn;
 
-    // Validate inputs
     if (empty($name) || empty($email)) {
         return ["status" => "error", "message" => "Name and email are required"];
     }
 
-    // Check if visitor with same email already exists
     $sql = "SELECT VisitorID FROM visitors WHERE Email = ?";
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("s", $email);
@@ -165,7 +203,6 @@ function createVisitor($name, $email, $phone = null): array
         return ["status" => "existing", "message" => "Visitor already exists", "visitorId" => $existingVisitor['VisitorID']];
     }
 
-    // Insert new visitor
     $sql = "INSERT INTO visitors (Name, Email, Phone) VALUES (?, ?, ?)";
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("sss", $name, $email, $phone);
@@ -177,6 +214,7 @@ function createVisitor($name, $email, $phone = null): array
         return ["status" => "error", "message" => "Failed to create visitor: " . $conn->error];
     }
 }
+
 /**
  * Reschedule an existing appointment
  *
@@ -188,17 +226,22 @@ function rescheduleAppointment($appointmentId, $newTime): array
 {
     global $conn;
 
-    // Get the old appointment time before updating
     $oldAppointmentInfo = getAppointmentById($appointmentId);
     $oldTime = $oldAppointmentInfo['AppointmentTime'];
 
-    // Validate new time
     $currentTime = date('Y-m-d H:i:s');
     if ($newTime <= $currentTime) {
         return ["status" => "error", "message" => "New appointment time cannot be in the past"];
     }
 
-    // Check if appointment exists and is not cancelled
+    if (date('N', strtotime($newTime)) == 7) {
+        return ["status" => "error", "message" => "Appointments cannot be rescheduled to Sundays"];
+    }
+
+    if (!isValidAppointmentTime($newTime)) {
+        return ["status" => "error", "message" => "New appointment time is outside allowed hours (9:30 AM–11:30 AM or 1:00 PM–4:30 PM)"];
+    }
+
     $sql = "SELECT HostID FROM appointments WHERE AppointmentID = ? AND Status != 'Cancelled'";
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("i", $appointmentId);
@@ -211,32 +254,33 @@ function rescheduleAppointment($appointmentId, $newTime): array
 
     $hostId = $result->fetch_assoc()['HostID'];
 
-    // Check if host already has appointment at new time
+    $startTime = date('Y-m-d H:i:s', strtotime($newTime) - (45 * 60));
+    $endTime = date('Y-m-d H:i:s', strtotime($newTime) + (45 * 60));
     $sql = "SELECT COUNT(*) as count FROM appointments 
-            WHERE HostID = ? AND AppointmentTime = ? AND Status != 'Cancelled' AND AppointmentID != ?";
+            WHERE HostID = ? 
+            AND AppointmentTime BETWEEN ? AND ? 
+            AND Status IN ('Upcoming', 'Overdue', 'Ongoing') 
+            AND AppointmentID != ?";
     $stmt = $conn->prepare($sql);
-    $stmt->bind_param("isi", $hostId, $newTime, $appointmentId);
+    $stmt->bind_param("issi", $hostId, $startTime, $endTime, $appointmentId);
     $stmt->execute();
     $result = $stmt->get_result()->fetch_assoc();
 
     if ($result['count'] > 0) {
-        return ["status" => "error", "message" => "You already have another appointment at this time"];
+        return ["status" => "error", "message" => "You already have another appointment within 45 minutes of this time"];
     }
 
-    // Update appointment time
     $sql = "UPDATE appointments SET AppointmentTime = ? WHERE AppointmentID = ?";
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("si", $newTime, $appointmentId);
 
     if ($stmt->execute()) {
-        // Get visitor and host information
         $visitorId = $oldAppointmentInfo['VisitorID'];
         $hostId = $oldAppointmentInfo['HostID'];
 
         $visitorInfo = getVisitorById($visitorId);
         $hostInfo = getHostById($hostId);
 
-        // Send rescheduled email
         if ($visitorInfo && $hostInfo) {
             $emailBody = getRescheduledEmailTemplate(
                 $visitorInfo['Name'],
@@ -267,10 +311,8 @@ function cancelAppointment($appointmentId): array
 {
     global $conn;
 
-    // Get appointment info before cancellation
     $appointmentInfo = getAppointmentById($appointmentId);
 
-    // Check if appointment exists and is not already cancelled
     $sql = "SELECT Status FROM appointments WHERE AppointmentID = ?";
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("i", $appointmentId);
@@ -286,25 +328,25 @@ function cancelAppointment($appointmentId): array
         return ["status" => "error", "message" => "Appointment is already cancelled"];
     }
 
-    // Update appointment status
-    $sql = "UPDATE appointments SET Status = 'Cancelled' WHERE AppointmentID = ?";
+    // Set the cancellation reason to 'Host Cancelled' for host-initiated cancellations
+    $cancellationReason = 'Host Cancelled';
+    $sql = "UPDATE appointments SET Status = 'Cancelled', CancellationReason = ? WHERE AppointmentID = ?";
     $stmt = $conn->prepare($sql);
-    $stmt->bind_param("i", $appointmentId);
+    $stmt->bind_param("si", $cancellationReason, $appointmentId);
 
     if ($stmt->execute()) {
-        // Get visitor and host information
         $visitorId = $appointmentInfo['VisitorID'];
         $hostId = $appointmentInfo['HostID'];
 
         $visitorInfo = getVisitorById($visitorId);
         $hostInfo = getHostById($hostId);
 
-        // Send cancellation email
         if ($visitorInfo && $hostInfo) {
-            $emailBody = getCancelledEmailTemplate(
+            $emailBody = getCancelledByHostEmailTemplate(
                 $visitorInfo['Name'],
                 $hostInfo['Name'],
-                $appointmentInfo['AppointmentTime']
+                $appointmentInfo['AppointmentTime'],
+                $cancellationReason,
             );
 
             sendAppointmentEmail(
@@ -329,7 +371,6 @@ function endAppointment($appointmentId): array
 {
     global $conn;
 
-    // Check if appointment exists and is in Ongoing status
     $sql = "SELECT Status FROM appointments WHERE AppointmentID = ?";
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("i", $appointmentId);
@@ -345,7 +386,6 @@ function endAppointment($appointmentId): array
         return ["status" => "error", "message" => "Only ongoing sessions can be ended"];
     }
 
-    // Update appointment status to Completed
     $sql = "UPDATE appointments SET Status = 'Completed' WHERE AppointmentID = ?";
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("i", $appointmentId);
@@ -356,6 +396,7 @@ function endAppointment($appointmentId): array
         return ["status" => "error", "message" => "Failed to complete session: " . $conn->error];
     }
 }
+
 /**
  * Get visitor list for populating the appointment form
  *
@@ -438,7 +479,7 @@ function getHostById($hostId) {
 
 // Handle AJAX requests
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    ob_clean(); // This clears any previous output
+    ob_clean();
     header('Content-Type: application/json');
     $action = $_POST['action'] ?? '';
 
@@ -448,9 +489,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 $appointmentTime = $_POST['appointmentTime'];
                 $hostId = $_POST['hostId'];
 
-                // Check if creating a new visitor or using existing one
                 if (!empty($_POST['newVisitorName'])) {
-                    // Create new visitor first
                     $visitorResult = createVisitor(
                         $_POST['newVisitorName'],
                         $_POST['newVisitorEmail'],
@@ -462,10 +501,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         break;
                     }
 
-                    // Use the new or existing visitor ID
                     $visitorId = $visitorResult['visitorId'];
                 } else {
-                    // Use selected existing visitor
                     $visitorId = $_POST['visitorId'];
                 }
 
@@ -511,3 +548,4 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
     exit;
 }
+?>

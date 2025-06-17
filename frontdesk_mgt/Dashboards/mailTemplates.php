@@ -240,4 +240,47 @@ function getOverdueEmailTemplate($visitorName, $hostName, $appointmentTime): str
     </html>
     HTML;
 }
+/**
+ * Get the email template for a cancelled appointment
+ *
+ * @param string $visitorName Visitor's name
+ * @param string $hostName Host's name
+ * @param string $appointmentTime Appointment time
+ * @param string $CancellationReason Cancellation reason
+ * @return string Email body
+ */
+function getCancelledByHostEmailTemplate($visitorName, $hostName, $appointmentTime, $CancellationReason) {
+    return "
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <meta charset='UTF-8'>
+        <title>Appointment Cancelled</title>
+    </head>
+    <body style='font-family: Arial, sans-serif; line-height: 1.6; color: #333;'>
+        <div style='max-width: 600px; margin: 0 auto; padding: 20px;'>
+            <div style='text-align: center; padding: 20px 0;'>
+                <h2 style='color: #c0392b;'>Appointment Cancelled</h2>
+            </div>
+            
+            <div style='padding: 20px; background-color: #f9f9f9; border-radius: 5px;'>
+                <p>Dear $visitorName,</p>
+                
+                <p>We regret to inform you that your appointment with $hostName scheduled for <strong>$appointmentTime</strong> has been cancelled.</p>
+
+                <p ><strong>Reason:</strong> $CancellationReason</p>
+                
+                <p>If you would like to reschedule, please contact us at your earliest convenience.</p>
+                
+                <p>We apologize for any inconvenience this may cause.</p>
+                
+                <p>Best regards,<br>
+                Hightel Consult Team</p>
+            </div>
+        </div>
+    </body>
+    </html>
+    ";
+}
+
 ?>
