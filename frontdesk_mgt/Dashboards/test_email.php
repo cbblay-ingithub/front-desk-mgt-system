@@ -65,6 +65,7 @@ $cancelledTemplate = getCancelledEmailTemplate(
     '2025-05-01 14:30:00'
 );
 echo $cancelledTemplate;
+echo "<h3> Host Cancelled Email Template:</h3>";
 $cancelledByHostTemplate = getCancelledByHostEmailTemplate(
     'John Doe',
     'Dr. Smith',
@@ -90,6 +91,7 @@ $hostRescheduledTemplate = getHostRescheduledEmailTemplate(
     '2025-05-01 14:30:00',
 );
 echo $hostRescheduledTemplate;
+
 // Test cancelled host email template
 echo "<h3>Cancelled Email Template:</h3>";
 $hostCancelledTemplate = getHostCancelledEmailTemplate(
