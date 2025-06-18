@@ -282,5 +282,88 @@ function getCancelledByHostEmailTemplate($visitorName, $hostName, $appointmentTi
     </html>
     ";
 }
+/**
+ * Email template for hosts when an appointment is scheduled
+ */
+function getHostScheduledEmailTemplate($visitorName, $hostName, $appointmentTime): string {
+    $formattedDateTime = date('l, F j, Y \a\t g:i A', strtotime($appointmentTime));
+    return <<<HTML
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <meta charset="UTF-8">
+        <title>New Appointment Scheduled</title>
+    </head>
+    <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
+        <div style="max-width: 600px; margin: 0 auto; padding: 20px;">
+            <h2 style="color: #2a5885;">New Appointment Scheduled</h2>
+            <p>Dear $hostName,</p>
+            <p>You have a new appointment with $visitorName scheduled for:</p>
+            <p style="font-weight: bold; text-align: center; padding: 15px; background-color: #e8f4fd;">
+                $formattedDateTime
+            </p>
+            <p>Please prepare accordingly.</p>
+            <p>Best regards,<br>Hightel Consult Team</p>
+        </div>
+    </body>
+    </html>
+    HTML;
+}
+
+/**
+ * Email template for hosts when an appointment is rescheduled
+ */
+function getHostRescheduledEmailTemplate($visitorName, $hostName, $newTime): string {
+    $formattedNewTime = date('l, F j, Y \a\t g:i A', strtotime($newTime));
+    return <<<HTML
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <meta charset="UTF-8">
+        <title>Appointment Rescheduled</title>
+    </head>
+    <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
+        <div style="max-width: 600px; margin: 0 auto; padding: 20px;">
+            <h2 style="color: #e67e22;">Appointment Rescheduled</h2>
+            <p>Dear $hostName,</p>
+            <p>Your appointment with $visitorName has been rescheduled to:</p>
+            <p style="font-weight: bold; text-align: center; padding: 15px; background-color: #fef5e7;">
+                $formattedNewTime
+            </p>
+            <p>Please update your schedule.</p>
+            <p>Best regards,<br>Hightel Consult Team</p>
+        </div>
+    </body>
+    </html>
+    HTML;
+}
+
+/**
+ * Email template for hosts when an appointment is cancelled
+ */
+function getHostCancelledEmailTemplate($visitorName, $hostName, $appointmentTime, $CancellationReason): string {
+    $formattedDateTime = date('l, F j, Y \a\t g:i A', strtotime($appointmentTime));
+    return <<<HTML
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <meta charset="UTF-8">
+        <title>Appointment Cancelled</title>
+    </head>
+    <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
+        <div style="max-width: 600px; margin: 0 auto; padding: 20px;">
+            <h2 style="color: #c0392b;">Appointment Cancelled</h2>
+            <p>Dear $hostName,</p>
+            <p>Your appointment with $visitorName on $formattedDateTime has been cancelled.</p>
+            
+            <p ><strong>Reason:</strong> $CancellationReason</p>
+            
+            <p>Please adjust your schedule accordingly.</p>
+            <p>Best regards,<br>Hightel Consult Team</p>
+        </div>
+    </body>
+    </html>
+    HTML;
+}
 
 ?>

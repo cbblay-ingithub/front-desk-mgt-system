@@ -39,6 +39,7 @@ $rescheduledTemplate = getRescheduledEmailTemplate(
 );
 echo $rescheduledTemplate;
 
+// Test reminder email template
 echo "<h3>Reminder Email Template:</h3>";
 $reminderTemplate = getReminderEmailTemplate(
     'John Doe',
@@ -47,6 +48,7 @@ $reminderTemplate = getReminderEmailTemplate(
 );
 echo $reminderTemplate;
 
+// Test overdue email template
 echo "<h3>Overdue Email Template:</h3>";
 $overdueTemplate = getOverdueEmailTemplate(
     'John Doe',
@@ -70,3 +72,30 @@ $cancelledByHostTemplate = getCancelledByHostEmailTemplate(
     'Host Cancelled'
 );
 echo $cancelledByHostTemplate;
+
+// Test scheduled host email template
+echo "<h3>Scheduled Email Template:</h3>";
+$hostScheduledTemplate = getHostScheduledEmailTemplate(
+    'John Doe',
+    'Dr. Smith',
+    '2025-05-01 14:30:00',
+);
+echo $hostScheduledTemplate;
+
+// Test rescheduled host email template
+echo "<h3>Rescheduled Email Template:</h3>";
+$hostRescheduledTemplate = getHostRescheduledEmailTemplate(
+    'John Doe',
+    'Dr. Smith',
+    '2025-05-01 14:30:00',
+);
+echo $hostRescheduledTemplate;
+// Test cancelled host email template
+echo "<h3>Cancelled Email Template:</h3>";
+$hostCancelledTemplate = getHostCancelledEmailTemplate(
+    'John Doe',
+    'Dr. Smith',
+    '2025-05-01 14:30:00',
+    'Scheduling Conflict'
+);
+echo $hostCancelledTemplate;
