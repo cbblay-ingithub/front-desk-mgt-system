@@ -341,7 +341,7 @@ function getHostRescheduledEmailTemplate($visitorName, $hostName, $newTime): str
 /**
  * Email template for hosts when an appointment is cancelled
  */
-function getHostCancelledEmailTemplate($visitorName, $hostName, $appointmentTime, $CancellationReason): string {
+function getHostCancelledEmailTemplate($visitorName, $hostName, $appointmentTime): string {
     $formattedDateTime = date('l, F j, Y \a\t g:i A', strtotime($appointmentTime));
     return <<<HTML
     <!DOCTYPE html>
@@ -354,10 +354,7 @@ function getHostCancelledEmailTemplate($visitorName, $hostName, $appointmentTime
         <div style="max-width: 600px; margin: 0 auto; padding: 20px;">
             <h2 style="color: #c0392b;">Appointment Cancelled</h2>
             <p>Dear $hostName,</p>
-            <p>Your appointment with $visitorName on $formattedDateTime has been cancelled.</p>
-            
-            <p ><strong>Reason:</strong> $CancellationReason</p>
-            
+            <p>Your appointment with $visitorName on $formattedDateTime has been cancelled.</p>         
             <p>Please adjust your schedule accordingly.</p>
             <p>Best regards,<br>Hightel Consult Team</p>
         </div>

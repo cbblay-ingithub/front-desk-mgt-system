@@ -539,6 +539,55 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 echo json_encode(getVisitorsList());
                 break;
 
+            case 'sendHostEmail':
+                $appointmentId = $_POST['appointmentId'];
+                $appointmentInfo = getAppointmentById($appointmentId);
+                if ($appointmentInfo) {
+                    $hostInfo = getHostById($appointmentInfo['HostID']);
+                    $visitorInfo = getVisitorById($appointmentInfo['VisitorID']);
+                    if ($hostInfo && $visitorInfo) {
+                        // Determine the email template based on appointment status or context
+                        $status = $appointmentInfo['Status'];
+                        if ($status === 'Upcoming' && isset($_POST['type']) && $_POST['type'] === 'schedule') {
+                            $emailBody = getHostScheduledEmailTemplate(
+                                $visitorInfo['Name'],
+                                $hostInfo['Name'],
+                                $appointmentInfo['AppointmentTime']
+                            );
+                            $subject = 'New Appointment Scheduled';
+                        } elseif ($status === 'Upcoming' && isset($_POST['type']) && $_POST['type'] === 'reschedule') {
+                            $emailBody = getHostRescheduledEmailTemplate(
+                                $visitorInfo['Name'],
+                                $hostInfo['Name'],
+                                $appointmentInfo['AppointmentTime'] // New time
+                            );
+                            $subject = 'Appointment Rescheduled';
+                        } elseif ($status === 'Cancelled') {
+                            $emailBody = getHostCancelledEmailTemplate(
+                                $visitorInfo['Name'],
+                                $hostInfo['Name'],
+                                $appointmentInfo['AppointmentTime'],
+                            );
+                            $subject = 'Appointment Cancelled';
+                        } else {
+                            echo json_encode(["status" => "error", "message" => "No applicable email for this status"]);
+                            break;
+                        }
+                        error_log("Host email body: " . $emailBody);
+                        sendAppointmentEmail(
+                            $hostInfo['Email'],
+                            $subject,
+                            $emailBody
+                        );
+                        echo json_encode(["status" => "success", "message" => "Host notified successfully"]);
+                    } else {
+                        echo json_encode(["status" => "error", "message" => "Host or visitor info not found"]);
+                    }
+                } else {
+                    echo json_encode(["status" => "error", "message" => "Appointment not found"]);
+                }
+                break;
+
             default:
                 echo json_encode(["status" => "error", "message" => "Invalid action"]);
                 break;
