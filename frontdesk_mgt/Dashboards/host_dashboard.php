@@ -393,15 +393,6 @@ $appointments = getHostAppointments($hostId);
                 dataType: 'json',
                 success: function(response) {
                     if (response.status === 'success') {
-                        $.post('appointments.php', {
-                            action: 'sendHostEmail',
-                            appointmentId: response.id,
-                            type: 'schedule'
-                        }, function(hostResponse) {
-                            console.log('Host email response: ', hostResponse);
-                        }).fail(function() {
-                            console.error('Failed to send host email');
-                        });
                         alert(response.message);
                         location.reload(); // Refresh to show new appointment
 
@@ -482,11 +473,6 @@ $appointments = getHostAppointments($hostId);
                     if (response.status === 'success') {
                         alert(response.message);
                         location.reload(); // Refresh to show updated appointment
-                        $.post('appointments.php', {
-                            action: 'sendHostEmail',
-                            appointmentId: AppointmentId,
-                            type: 'reschedule'
-                        });
                     } else {
                         alert(response.message || "Unknown error occurred");
                     }
@@ -546,11 +532,6 @@ $appointments = getHostAppointments($hostId);
                         if (response.status === 'success') {
                             alert(response.message);
                             location.reload(); // Refresh to show cancelled status
-                            $.post('appointments.php', {
-                                action: 'sendHostEmail',
-                                appointmentId: appointmentId,
-                                type: 'cancel'
-                            });
                         } else {
                             alert(response.message || "Unknown error occurred");
                         }

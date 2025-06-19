@@ -163,11 +163,21 @@ function scheduleAppointment($appointmentTime, $hostId, $visitorId): array
                 $hostInfo['Name'],
                 $appointmentTime
             );
-
             sendAppointmentEmail(
                 $visitorInfo['Email'],
                 'Appointment Confirmation',
                 $emailBody
+            );
+
+            $hostEmailBody = getHostScheduledEmailTemplate(
+                $visitorInfo['Name'],
+                $hostInfo['Name'],
+                $appointmentTime
+            );
+            sendAppointmentEmail(
+                $hostInfo['Email'],
+                'New Appointment Scheduled',
+                $hostEmailBody
             );
         }
         return ["status" => "success", "message" => "Appointment scheduled successfully", "id" => $conn->insert_id];
@@ -288,11 +298,21 @@ function rescheduleAppointment($appointmentId, $newTime): array
                 $oldTime,
                 $newTime
             );
-
             sendAppointmentEmail(
                 $visitorInfo['Email'],
                 'Appointment Rescheduled',
                 $emailBody
+            );
+
+            $hostEmailBody = getHostRescheduledEmailTemplate(
+                $visitorInfo['Name'],
+                $hostInfo['Name'],
+                $newTime
+            );
+            sendAppointmentEmail(
+                $hostInfo['Email'],
+                'Appointment Rescheduled',
+                $hostEmailBody
             );
         }
         return ["status" => "success", "message" => "Appointment rescheduled successfully"];
@@ -346,13 +366,23 @@ function cancelAppointment($appointmentId): array
                 $visitorInfo['Name'],
                 $hostInfo['Name'],
                 $appointmentInfo['AppointmentTime'],
-                $cancellationReason,
+                $cancellationReason
             );
-
             sendAppointmentEmail(
                 $visitorInfo['Email'],
                 'Appointment Cancelled',
                 $emailBody
+            );
+
+            $hostEmailBody = getHostCancelledEmailTemplate(
+                $visitorInfo['Name'],
+                $hostInfo['Name'],
+                $appointmentInfo['AppointmentTime']
+            );
+            sendAppointmentEmail(
+                $hostInfo['Email'],
+                'Appointment Cancelled',
+                $hostEmailBody
             );
         }
         return ["status" => "success", "message" => "Appointment cancelled successfully"];
@@ -537,55 +567,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
             case 'getVisitors':
                 echo json_encode(getVisitorsList());
-                break;
-
-            case 'sendHostEmail':
-                $appointmentId = $_POST['appointmentId'];
-                $appointmentInfo = getAppointmentById($appointmentId);
-                if ($appointmentInfo) {
-                    $hostInfo = getHostById($appointmentInfo['HostID']);
-                    $visitorInfo = getVisitorById($appointmentInfo['VisitorID']);
-                    if ($hostInfo && $visitorInfo) {
-                        // Determine the email template based on appointment status or context
-                        $status = $appointmentInfo['Status'];
-                        if ($status === 'Upcoming' && isset($_POST['type']) && $_POST['type'] === 'schedule') {
-                            $emailBody = getHostScheduledEmailTemplate(
-                                $visitorInfo['Name'],
-                                $hostInfo['Name'],
-                                $appointmentInfo['AppointmentTime']
-                            );
-                            $subject = 'New Appointment Scheduled';
-                        } elseif ($status === 'Upcoming' && isset($_POST['type']) && $_POST['type'] === 'reschedule') {
-                            $emailBody = getHostRescheduledEmailTemplate(
-                                $visitorInfo['Name'],
-                                $hostInfo['Name'],
-                                $appointmentInfo['AppointmentTime'] // New time
-                            );
-                            $subject = 'Appointment Rescheduled';
-                        } elseif ($status === 'Cancelled') {
-                            $emailBody = getHostCancelledEmailTemplate(
-                                $visitorInfo['Name'],
-                                $hostInfo['Name'],
-                                $appointmentInfo['AppointmentTime'],
-                            );
-                            $subject = 'Appointment Cancelled';
-                        } else {
-                            echo json_encode(["status" => "error", "message" => "No applicable email for this status"]);
-                            break;
-                        }
-                        error_log("Host email body: " . $emailBody);
-                        sendAppointmentEmail(
-                            $hostInfo['Email'],
-                            $subject,
-                            $emailBody
-                        );
-                        echo json_encode(["status" => "success", "message" => "Host notified successfully"]);
-                    } else {
-                        echo json_encode(["status" => "error", "message" => "Host or visitor info not found"]);
-                    }
-                } else {
-                    echo json_encode(["status" => "error", "message" => "Appointment not found"]);
-                }
                 break;
 
             default:
