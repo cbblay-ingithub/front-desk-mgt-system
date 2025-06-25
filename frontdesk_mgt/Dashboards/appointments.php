@@ -9,7 +9,9 @@ require_once __DIR__ . '/emails.php';
 require_once __DIR__ . '/mailTemplates.php';
 
 // Update appointment statuses at the start of every request
-updateAppointmentStatuses();
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    updateAppointmentStatuses();
+}
 
 /**
  * Update appointment statuses based on current time
