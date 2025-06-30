@@ -1,5 +1,6 @@
 <?php
 // Start session to get current front desk user ID
+global $conn;
 session_start();
 $userID = $_SESSION['userID'] ?? null;
 if (!$userID) {
@@ -7,7 +8,15 @@ if (!$userID) {
     header("Location: ../Auth.html");
     exit;
 }
+if (isset($_SESSION['user_id'])) {
+    $conn->query("UPDATE users SET last_activity = NOW() 
+                 WHERE UserID = {$_SESSION['user_id']}");
 
+    // Log activity
+    $activity = "Visited " . basename($_SERVER['PHP_SELF']);
+    $conn->query("INSERT INTO user_activity_log (user_id, activity) 
+                 VALUES ({$_SESSION['user_id']}, '$activity')");
+}
 require_once 'front_desk_appointments.php';
 updateAppointmentStatuses();
 // Get all appointments

@@ -5,7 +5,11 @@ CREATE TABLE Users(
     Email VARCHAR(100) NOT NULL UNIQUE,	-- User’s Email
     Phone VARCHAR(15),	-- User’s Phone number
     Role VARCHAR(100),	-- User’s Role(Admin, Front desk staff, Hosts)
-    Password VARCHAR(255) NOT NULL	-- User’s Password
+    Password VARCHAR(255) NOT NULL,	-- User’s Password
+    status ENUM('active','inactive') NOT NULL DEFAULT 'active',
+    last_activity DATETIME,
+    login_count INT DEFAULT 0,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 
@@ -145,4 +149,15 @@ CREATE TABLE Visitor_Items (
     FOREIGN KEY (VisitorID) REFERENCES Visitors(VisitorID) ON DELETE CASCADE, 
     FOREIGN KEY (ItemID) REFERENCES Lost_And_Found(ItemID) ON DELETE CASCADE
 );
+
+-- 13. user_activity_log table
+CREATE TABLE user_activity_log (
+   id INT AUTO_INCREMENT PRIMARY KEY,
+   user_id INT,
+   activity VARCHAR(255),
+   activity_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+   FOREIGN KEY (user_id) REFERENCES users(UserID)
+);
+
+
 

@@ -52,8 +52,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             }
             exit;
 
+
             // You might want to redirect the user:
-            // exit;
         } else {
             echo "Incorrect password.";
         }
@@ -62,6 +62,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
     $stmt->close();
 }
-
+// After successful login
+$conn->query("UPDATE users SET 
+              last_activity = NOW(), 
+              login_count = login_count + 1 
+              WHERE UserID = $userID");
 $conn->close();
 
