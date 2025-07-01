@@ -1,14 +1,15 @@
 <?php
 require_once '../dbConfig.php';
 global $conn;
-if (isset($_SESSION['user_id'])) {
-    $conn->query("UPDATE users SET last_activity = NOW() 
-                 WHERE UserID = {$_SESSION['user_id']}");
+if (isset($_SESSION['userID'])) {
+    $stmt = $conn->prepare("UPDATE users SET last_activity = NOW() WHERE UserID = ?");
+    $stmt->bind_param("i", $_SESSION['userID']);
+    $stmt->execute();
 
-    // Log activity
     $activity = "Visited " . basename($_SERVER['PHP_SELF']);
-    $conn->query("INSERT INTO user_activity_log (user_id, activity) 
-                 VALUES ({$_SESSION['user_id']}, '$activity')");
+    $stmt = $conn->prepare("INSERT INTO user_activity_log (user_id, activity) VALUES (?, ?)");
+    $stmt->bind_param("is", $_SESSION['userID'], $activity);
+    $stmt->execute();
 }
 // Process bulk actions
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['bulk_action'])) {
@@ -224,8 +225,9 @@ $conn->close();
             </thead>
             <tbody>
             <?php foreach ($users as $user):
-                $isOnline = $user['last_activity'] &&
-                    time() - strtotime($user['last_activity']) < 300; // 5 minutes
+                $lastActivity = $user['last_activity'] ? strtotime($user['last_activity']) : 0;
+                $currentTime = time();
+                $isOnline = ($currentTime - $lastActivity) < 300; // 5 minutes
                 ?>
                 <tr>
                     <td><input type="checkbox" name="selected_users[]" value="<?= $user['UserID'] ?>"></td>

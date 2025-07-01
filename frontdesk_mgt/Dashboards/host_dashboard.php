@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -65,13 +65,25 @@
 
 <?php
 // Start session to get current host ID
+
 session_start();
+require_once '../dbConfig.php';
+global$conn;
 if (!isset($_SESSION['userID']) || $_SESSION['role'] !== 'Host') {
     // Redirect if not logged in as host
     header("Location: ../Auth.html");
     exit;
 }
+if (isset($_SESSION['userID'])) {
+    $stmt = $conn->prepare("UPDATE users SET last_activity = NOW() WHERE UserID = ?");
+    $stmt->bind_param("i", $_SESSION['userID']);
+    $stmt->execute();
 
+    $activity = "Visited " . basename($_SERVER['PHP_SELF']);
+    $stmt = $conn->prepare("INSERT INTO user_activity_log (user_id, activity) VALUES (?, ?)");
+    $stmt->bind_param("is", $_SESSION['userID'], $activity);
+    $stmt->execute();
+}
 $hostId = $_SESSION['userID'];
 require_once __DIR__ . '/appointments.php';
 

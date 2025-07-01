@@ -30,6 +30,16 @@ if ($result && $result->num_rows > 0) {
         $users[] = $row;
     }
 }
+if (isset($_SESSION['userID'])) {
+    $stmt = $conn->prepare("UPDATE users SET last_activity = NOW() WHERE UserID = ?");
+    $stmt->bind_param("i", $_SESSION['userID']);
+    $stmt->execute();
+
+    $activity = "Visited " . basename($_SERVER['PHP_SELF']);
+    $stmt = $conn->prepare("INSERT INTO user_activity_log (userID, activity) VALUES (?, ?)");
+    $stmt->bind_param("is", $_SESSION['userID'], $activity);
+    $stmt->execute();
+}
 $conn->close();
 
 include 'admin-dashboard.html';

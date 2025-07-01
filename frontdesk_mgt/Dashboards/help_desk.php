@@ -31,6 +31,16 @@ if (isset($opResult['message']) && $opResult['message']) {
 if (isset($opResult['error']) && $opResult['error']) {
     $error = $opResult['error'];
 }
+if (isset($_SESSION['userID'])) {
+    $stmt = $conn->prepare("UPDATE users SET last_activity = NOW() WHERE UserID = ?");
+    $stmt->bind_param("i", $_SESSION['userID']);
+    $stmt->execute();
+
+    $activity = "Visited " . basename($_SERVER['PHP_SELF']);
+    $stmt = $conn->prepare("INSERT INTO user_activity_log (userID, activity) VALUES (?, ?)");
+    $stmt->bind_param("is", $_SESSION['userID'], $activity);
+    $stmt->execute();
+}
 
 // Check for old tickets that need to be closed automatically
 $autoCloseMessage = autoCloseOldTickets($conn);
@@ -111,7 +121,7 @@ $conn->close();
         }
     </style>
 </head>
-<body data-user-id="<?php echo $_SESSION['user_id'] ?? ''; ?>">
+<body data-user-id="<?php echo $_SESSION['$userID'] ?? ''; ?>">
 <div class="layout">
     <div class="sidebar">
         <h4 class="text-white text-center">Support Staff Panel</h4>

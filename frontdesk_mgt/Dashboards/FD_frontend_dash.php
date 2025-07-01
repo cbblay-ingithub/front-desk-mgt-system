@@ -1,21 +1,24 @@
 <?php
 // Start session to get current front desk user ID
-global $conn;
+
 session_start();
+require_once '../dbConfig.php';
+global $conn;
 $userID = $_SESSION['userID'] ?? null;
 if (!$userID) {
     // Redirect to login page or show error
     header("Location: ../Auth.html");
     exit;
 }
-if (isset($_SESSION['user_id'])) {
-    $conn->query("UPDATE users SET last_activity = NOW() 
-                 WHERE UserID = {$_SESSION['user_id']}");
+if (isset($_SESSION['userID'])) {
+    $stmt = $conn->prepare("UPDATE users SET last_activity = NOW() WHERE UserID = ?");
+    $stmt->bind_param("i", $_SESSION['userID']);
+    $stmt->execute();
 
-    // Log activity
     $activity = "Visited " . basename($_SERVER['PHP_SELF']);
-    $conn->query("INSERT INTO user_activity_log (user_id, activity) 
-                 VALUES ({$_SESSION['user_id']}, '$activity')");
+    $stmt = $conn->prepare("INSERT INTO user_activity_log (user_id, activity) VALUES (?, ?)");
+    $stmt->bind_param("is", $_SESSION['userID'], $activity);
+    $stmt->execute();
 }
 require_once 'front_desk_appointments.php';
 updateAppointmentStatuses();
@@ -27,6 +30,7 @@ $stats = getAppointmentStats();
 
 // Get all hosts for dropdown
 $hosts = getAllHosts();
+
 ?>
 
 <!DOCTYPE html>
