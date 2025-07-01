@@ -25,7 +25,20 @@ if ($userId) {
 
     echo json_encode(['success' => true]);
 } else {
-    echo json_encode(['success' => false, 'error' => 'Invalid user ID']);
+    // Create new user (no user ID provided)
+    $hashedPassword = password_hash($data['password'], PASSWORD_DEFAULT);
+    $query = "INSERT INTO users (Name, Email, Phone, Role, Password, status) 
+              VALUES (?, ?, ?, ?, ?, ?)";
+    $stmt = $conn->prepare($query);
+    $stmt->bind_param("ssssss",
+        $data['name'], $data['email'], $data['phone'],
+        $data['role'], $hashedPassword, $data['status']);
+
+    if ($stmt->execute()) {
+        echo json_encode(['success' => true]);
+    } else {
+        echo json_encode(['success' => false, 'error' => 'Failed to create user']);
+    }
 }
 
 $conn->close();

@@ -421,10 +421,46 @@ $conn->close();
             const userName = $(this).data('name');
 
             if (confirm('Are you sure you want to delete ' + userName + '?')) {
-                $.post('delete_user.php', {id: userId}, function() {
-                    location.reload();
+                $.ajax({
+                    url: 'delete_user.php',
+                    type: 'POST',
+                    dataType: 'json',
+                    data: {id: userId},
+                    success: function(response) {
+                        if (response.success) {
+                            location.reload();
+                        } else {
+                            alert('Delete failed: ' + (response.error || 'Unknown error'));
+                        }
+                    },
+                    error: function() {
+                        alert('Request failed. Please try again.');
+                    }
                 });
             }
+        });
+        // Handle add user form submission
+        $('#addUserForm').on('submit', function(e) {
+            e.preventDefault();
+            const formData = $(this).serialize();
+
+            $.ajax({
+                type: 'POST',
+                url: 'save_user.php',
+                data: formData,
+                dataType: 'json',
+                success: function(response) {
+                    if (response.success) {
+                        $('#addUserModal').modal('hide');
+                        location.reload(); // Refresh to show new user
+                    } else {
+                        alert('Error adding user: ' + (response.error || 'Unknown error'));
+                    }
+                },
+                error: function() {
+                    alert('Error adding user. Please try again.');
+                }
+            });
         });
 
         // Handle edit form submission
