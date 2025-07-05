@@ -44,6 +44,7 @@ CREATE TABLE Appointments(
     AppointmentID INT PRIMARY KEY AUTO_INCREMENT, -- Identifier for Appointments
     AppointmentTime DATETIME NOT NULL	, -- Appointment time 
     Status ENUM('Cancelled', 'Ongoing', 'Upcoming') NOT NULL,	-- Appointment Status.
+    CheckInTime DATETIME NULL, -- Check-in Time
     HostID INT, 	-- Identifier for Host
     VisitorID INT,	-- Identifier for Visitor
     FOREIGN KEY(VisitorID) REFERENCES Visitors(VisitorID) ON DELETE CASCADE,

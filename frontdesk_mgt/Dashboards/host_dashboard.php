@@ -557,6 +557,11 @@ $appointments = getHostAppointments($hostId);
             }
         });
     });
+    $(document).ready(function() {
+        setInterval(function() {
+            $.post('update_activity.php');
+        }, 60000); // Update every 60 seconds
+    });
 </script>
 </body>
 </html>

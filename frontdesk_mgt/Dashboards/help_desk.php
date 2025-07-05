@@ -607,6 +607,11 @@ $conn->close();
             event.target.style.display = 'none';
         }
     });
+    $(document).ready(function() {
+        setInterval(function() {
+            $.post('update_activity.php');
+        }, 60000); // Update every 60 seconds
+    });
 </script>
 </body>
 </html>

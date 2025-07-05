@@ -4,6 +4,9 @@ require_once '../dbConfig.php'; // includes DB connection
 $page = isset($_GET['page']) ? $_GET['page'] : 'user_management';
 
 switch ($page) {
+    case 'dashboard':
+        include 'admin-dashboard.html';
+        break;
     case 'appointments':
         include 'appointments.php';
         break;

@@ -1,8 +1,19 @@
 <?php
+global $conn;
 require_once '../dbConfig.php';
+if (!isset($_GET['id'])) {
+    die("Error: No user ID provided.");
+}
 $userId = intval($_GET['id']);
 
-$user = $conn->query("SELECT * FROM users WHERE UserID = $userId")->fetch_assoc();
+// Use prepared statement
+$stmt = $conn->prepare("SELECT * FROM users WHERE UserID = ?");
+$stmt->bind_param("i", $userId);
+$stmt->execute();
+$user = $stmt->get_result()->fetch_assoc();
+
+if (!$user) die("User not found");
+
 $roles = $conn->query("SELECT DISTINCT Role FROM users")->fetch_all(MYSQLI_ASSOC);
 ?>
 
