@@ -1,39 +1,69 @@
 <?php
 require_once '../dbConfig.php';
 global $conn;
+session_start();
+
 if (isset($_SESSION['userID'])) {
     $stmt = $conn->prepare("UPDATE users SET last_activity = NOW() WHERE UserID = ?");
     $stmt->bind_param("i", $_SESSION['userID']);
     $stmt->execute();
 
+    // Only log activity for admins
     $activity = "Visited " . basename($_SERVER['PHP_SELF']);
     $stmt = $conn->prepare("INSERT INTO user_activity_log (user_id, activity) VALUES (?, ?)");
     $stmt->bind_param("is", $_SESSION['userID'], $activity);
     $stmt->execute();
 }
+
 // Process bulk actions
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['bulk_action'])) {
     if (!empty($_POST['selected_users'])) {
-        $userIds = implode(',', array_map('intval', $_POST['selected_users']));
+        $userIds = array_map('intval', $_POST['selected_users']);
+        $placeholders = implode(',', array_fill(0, count($userIds), '?'));
 
-        switch ($_POST['bulk_action']) {
-            case 'activate':
-                $conn->query("UPDATE users SET status='active' WHERE UserID IN ($userIds)");
-                break;
-            case 'deactivate':
-                $conn->query("UPDATE users SET status='inactive' WHERE UserID IN ($userIds)");
-                break;
-            case 'change_role':
-                if (!empty($_POST['new_role'])) {
-                    $newRole = $conn->real_escape_string($_POST['new_role']);
-                    $conn->query("UPDATE users SET Role='$newRole' WHERE UserID IN ($userIds)");
-                }
-                break;
-            case 'delete':
-                $conn->query("DELETE FROM users WHERE UserID IN ($userIds)");
-                break;
+        try {
+            switch ($_POST['bulk_action']) {
+                case 'activate':
+                    $stmt = $conn->prepare("UPDATE users SET status='active' WHERE UserID IN ($placeholders)");
+                    $stmt->bind_param(str_repeat('i', count($userIds)), ...$userIds);
+                    $stmt->execute();
+                    break;
+                case 'deactivate':
+                    $stmt = $conn->prepare("UPDATE users SET status='inactive' WHERE UserID IN ($placeholders)");
+                    $stmt->bind_param(str_repeat('i', count($userIds)), ...$userIds);
+                    $stmt->execute();
+                    break;
+                case 'delete':
+                    $stmt = $conn->prepare("DELETE FROM users WHERE UserID IN ($placeholders)");
+                    $stmt->bind_param(str_repeat('i', count($userIds)), ...$userIds);
+                    $stmt->execute();
+                    break;
+                case 'reset_metrics':
+                    $stmt = $conn->prepare("UPDATE users SET last_activity = NULL, last_login = NULL, 
+                                            last_logout = NULL, login_count = 0 
+                                            WHERE UserID IN ($placeholders)");
+                    $stmt->bind_param(str_repeat('i', count($userIds)), ...$userIds);
+                    $stmt->execute();
+                    $stmt = $conn->prepare("DELETE FROM user_activity_log WHERE user_id IN ($placeholders)");
+                    $stmt->bind_param(str_repeat('i', count($userIds)), ...$userIds);
+                    $stmt->execute();
+                    $stmt = $conn->prepare("DELETE FROM login_attempts WHERE user_id IN ($placeholders)");
+                    $stmt->bind_param(str_repeat('i', count($userIds)), ...$userIds);
+                    $stmt->execute();
+                    break;
+                default:
+                    echo json_encode(['success' => false, 'error' => 'Invalid bulk action']);
+                    exit;
+            }
+            echo json_encode(['success' => true, 'message' => 'Bulk action completed successfully']);
+        } catch (Exception $e) {
+            echo json_encode(['success' => false, 'error' => 'Database error: ' . $e->getMessage()]);
+            exit;
         }
+    } else {
+        echo json_encode(['success' => false, 'error' => 'No users selected']);
     }
+    exit;
 }
 
 // Get filter parameters
@@ -42,7 +72,8 @@ $statusFilter = $_GET['status'] ?? '';
 $searchTerm = $_GET['search'] ?? '';
 
 // Build query
-$sql = "SELECT UserID, Name, Email, Phone, Role, status, last_activity, login_count 
+$sql = "SELECT UserID, Name, Email, Phone, Role, status, last_activity, 
+               last_login, last_logout, login_count 
         FROM users WHERE 1=1";
 
 if ($roleFilter) $sql .= " AND Role='".$conn->real_escape_string($roleFilter)."'";
@@ -58,6 +89,52 @@ $users = $result ? $result->fetch_all(MYSQLI_ASSOC) : [];
 // Get distinct roles for filter dropdown
 $roles = $conn->query("SELECT DISTINCT Role FROM users")->fetch_all(MYSQLI_ASSOC);
 
+// Get failed login counts for all users in one query
+$userIds = array_column($users, 'UserID');
+$failedCounts = [];
+
+if (!empty($userIds)) {
+    $ids = implode(',', $userIds);
+    $sql = "SELECT user_id, COUNT(*) as failed_count 
+            FROM login_attempts 
+            WHERE user_id IN ($ids) AND success = 0 
+            GROUP BY user_id";
+
+    $result = $conn->query($sql);
+    if ($result) {
+        while ($row = $result->fetch_assoc()) {
+            $failedCounts[$row['user_id']] = $row['failed_count'];
+        }
+    }
+}
+
+// Function to determine online status
+function getUserOnlineStatus($user) {
+    // If user is inactive, they're offline
+    if ($user['status'] !== 'active') {
+        return 'inactive';
+    }
+    $lastActivity = $user['last_activity'] ? strtotime($user['last_activity']) : 0;
+    $lastLogin = $user['last_login'] ? strtotime($user['last_login']) : 0;
+    $lastLogout = $user['last_logout'] ? strtotime($user['last_logout']) : 0;
+    $currentTime = time();
+
+    // User is online if:
+    // 1. They have recent activity (last 5 minutes) AND
+    // 2. They have logged in at some point AND
+    // 3. They haven't logged out OR logged out before last login
+    if ($lastLogin > 0 &&
+        (!$lastLogout || $lastLogout < $lastLogin) &&
+        $lastActivity > 0 &&
+        ($currentTime - $lastActivity) < 300) {
+        return 'online';
+    }
+
+    // Fallback
+    return 'offline';
+}
+
+// Close connection after all DB operations
 $conn->close();
 ?>
 
@@ -100,6 +177,7 @@ $conn->close();
             margin-right: 5px;
         }
         .status-online { background-color: #28a745; }
+        .status-away { background-color: #ffc107; }
         .status-offline { background-color: #6c757d; }
         .status-inactive { background-color: #dc3545; }
         .user-activity {
@@ -112,14 +190,28 @@ $conn->close();
             border-radius: 5px;
             margin-bottom: 20px;
         }
+        .table-responsive {
+            overflow-x: auto;
+        }
+        .table th, .table td {
+            vertical-align: middle;
+        }
+        .status-text {
+            font-size: 0.8em;
+            font-weight: 500;
+        }
+        .status-online-text { color: #28a745; }
+        .status-away-text { color: #ffc107; }
+        .status-offline-text { color: #6c757d; }
+        .status-inactive-text { color: #dc3545; }
     </style>
 </head>
 <body>
 <div class="sidebar">
     <h4 class="text-white text-center">Admin Panel</h4>
-    <a href="dashboard.php"><i class="fas fa-tachometer-alt me-2"></i> Dashboard</a>
+    <a href="admin-dashboard.html"><i class="fas fa-tachometer-alt me-2"></i> Dashboard</a>
     <a href="user_management.php"><i class='far fa-address-card' ></i> User Management</a>
-    <a href="helpdesk.php"><i class="fas fa-ticket"></i> Help Desk Tickets</a>
+    <a href="helpdesk.php"><i class="fas fa-ticket"></i> Reporting</a>
     <a href="lost_found.php"><i class="fa-solid fa-suitcase"></i> View Lost & Found</a>
     <a href="settings.php"><i class="fas fa-cog me-2"></i> Settings</a>
     <a href="../Logout.php"><i class="fas fa-sign-out-alt me-2"></i> Logout</a>
@@ -172,117 +264,112 @@ $conn->close();
     </div>
 
     <!-- Bulk Actions -->
-    <form method="POST" class="bulk-actions">
-        <div class="row align-items-center">
-            <div class="col-auto">
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" id="selectAll">
-                    <label class="form-check-label" for="selectAll">Select All</label>
+    <!-- Bulk Actions and Users Table -->
+    <form id="bulkActionsForm" method="POST">
+        <div class="bulk-actions">
+            <div class="row align-items-center">
+                <div class="col-auto">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="selectAll">
+                        <label class="form-check-label" for="selectAll">Select All</label>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <select name="bulk_action" class="form-select" required>
+                        <option value="">Bulk Actions</option>
+                        <option value="activate">Activate Accounts</option>
+                        <option value="deactivate">Deactivate Accounts</option>
+                        <option value="delete">Delete Users</option>
+                        <option value="reset_metrics">Reset Metrics & Activities</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-warning">Apply</button>
                 </div>
             </div>
-
-            <div class="col-md-3">
-                <select name="bulk_action" class="form-select" required>
-                    <option value="">Bulk Actions</option>
-                    <option value="activate">Activate Accounts</option>
-                    <option value="deactivate">Deactivate Accounts</option>
-                    <option value="change_role">Change Role</option>
-                    <option value="delete">Delete Users</option>
-                </select>
-            </div>
-
-            <div class="col-md-3" id="roleSelection" style="display:none;">
-                <select name="new_role" class="form-select">
-                    <option value="">Select Role</option>
-                    <?php foreach ($roles as $role): ?>
-                        <option value="<?= $role['Role'] ?>"><?= htmlspecialchars($role['Role']) ?></option>
-                    <?php endforeach; ?>
-                </select>
-            </div>
-
-            <div class="col-md-2">
-                <button type="submit" class="btn btn-warning">Apply</button>
-            </div>
         </div>
-    </form>
 
-    <!-- Users Table -->
-    <div class="table-responsive">
-        <table class="table table-bordered table-hover align-middle">
-            <thead class="table-dark">
-            <tr>
-                <th width="30"><input type="checkbox" id="selectAllRows"></th>
-                <th>UserID</th>
-                <th>Name</th>
-                <th>Email</th>
-                <th>Phone</th>
-                <th>Role</th>
-                <th>Status</th>
-                <th>Last Activity</th>
-                <th>Logins</th>
-                <th>Actions</th>
-            </tr>
-            </thead>
-            <tbody>
-            <?php foreach ($users as $user):
-                $lastActivity = $user['last_activity'] ? strtotime($user['last_activity']) : 0;
-                $currentTime = time();
-                $isOnline = ($currentTime - $lastActivity) < 300; // 5 minutes
-                ?>
+        <div class="table-responsive">
+            <table class="table table-bordered table-hover align-middle">
+                <thead class="table-dark">
                 <tr>
-                    <td><input type="checkbox" name="selected_users[]" value="<?= $user['UserID'] ?>"></td>
-                    <td><?= htmlspecialchars($user['UserID']) ?></td>
-                    <td>
-                        <span class="status-badge <?=
-                        $user['status'] === 'inactive' ? 'status-inactive' :
-                            ($isOnline ? 'status-online' : 'status-offline')
-                        ?>"></span>
-                        <?= htmlspecialchars($user['Name']) ?>
-                    </td>
-                    <td><?= htmlspecialchars($user['Email']) ?></td>
-                    <td><?= htmlspecialchars($user['Phone']) ?></td>
-                    <td><?= htmlspecialchars($user['Role']) ?></td>
-                    <td>
+                    <th width="30"><input type="checkbox" id="selectAllRows"></th>
+                    <th>UserID</th>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Phone</th>
+                    <th>Role</th>
+                    <th>Status</th>
+                    <th>Online Status</th>
+                    <th>Last Activity</th>
+                    <th>Last Login</th>
+                    <th>Last Logout</th>
+                    <th>Actions</th>
+                </tr>
+                </thead>
+                <tbody>
+                <?php foreach ($users as $user):
+                    $onlineStatus = getUserOnlineStatus($user);
+                    $failedCount = $failedCounts[$user['UserID']] ?? 0;
+                    ?>
+                    <tr>
+                        <td><input type="checkbox" name="selected_users[]" value="<?= $user['UserID'] ?>"></td>
+                        <td><?= htmlspecialchars($user['UserID']) ?></td>
+                        <td>
+                            <span class="status-badge status-<?= $onlineStatus ?>"></span>
+                            <?= htmlspecialchars($user['Name']) ?>
+                        </td>
+                        <td><?= htmlspecialchars($user['Email']) ?></td>
+                        <td><?= htmlspecialchars($user['Phone']) ?></td>
+                        <td><?= htmlspecialchars($user['Role']) ?></td>
+                        <td>
                         <span class="badge bg-<?= $user['status'] === 'active' ? 'success' : 'danger' ?>">
                             <?= ucfirst($user['status']) ?>
                         </span>
-                    </td>
-                    <td>
-                        <?php if ($user['last_activity']): ?>
-                            <?= date('M d, Y H:i', strtotime($user['last_activity'])) ?>
-                            <small class="text-muted">
-                                (<?= $isOnline ? 'Online' : 'Offline' ?>)
-                            </small>
-                        <?php else: ?>
-                            Never
-                        <?php endif; ?>
-                    </td>
-                    <td><?= $user['login_count'] ?></td>
-                    <td>
-                        <button class="btn btn-sm btn-warning edit-user"
-                                data-id="<?= $user['UserID'] ?>"
-                                data-bs-toggle="modal"
-                                data-bs-target="#editUserModal">
-                            <i class="fas fa-edit"></i>
-                        </button>
-                        <button class="btn btn-sm btn-danger delete-user"
-                                data-id="<?= $user['UserID'] ?>"
-                                data-name="<?= htmlspecialchars($user['Name']) ?>">
-                            <i class="fas fa-trash"></i>
-                        </button>
-                        <button class="btn btn-sm btn-info view-activity"
-                                data-id="<?= $user['UserID'] ?>"
-                                data-bs-toggle="modal"
-                                data-bs-target="#activityModal">
-                            <i class="fas fa-history"></i>
-                        </button>
-                    </td>
-                </tr>
-            <?php endforeach; ?>
-            </tbody>
-        </table>
-    </div>
-</div>
+                        </td>
+                        <td>
+                        <span class="status-text status-<?= $onlineStatus ?>-text">
+                            <?= ucfirst($onlineStatus) ?>
+                        </span>
+                        </td>
+                        <td>
+                            <?php if ($user['last_activity']): ?>
+                                <?= date('M d, Y H:i', strtotime($user['last_activity'])) ?>
+                            <?php else: ?>
+                                Never
+                            <?php endif; ?>
+                        </td>
+                        <td>
+                            <?= $user['last_login'] ? date('M d, Y H:i', strtotime($user['last_login'])) : 'Never' ?>
+                        </td>
+                        <td>
+                            <?= $user['last_logout'] ? date('M d, Y H:i', strtotime($user['last_logout'])) : 'Never' ?>
+                        </td>
+                        <td>
+                            <button class="btn btn-sm btn-warning edit-user"
+                                    data-id="<?= $user['UserID'] ?>"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#editUserModal">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="btn btn-sm btn-danger delete-user"
+                                    data-id="<?= $user['UserID'] ?>"
+                                    data-name="<?= htmlspecialchars($user['Name']) ?>">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                            <button class="btn btn-sm btn-info view-activity"
+                                    data-id="<?= $user['UserID'] ?>"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#activityModal">
+                                <i class="fas fa-history"></i>
+                            </button>
+                        </td>
+                    </tr>
+                <?php endforeach; ?>
+                </tbody>
+            </table>
+        </div>
+    </form>
 
 <!-- Add User Modal -->
 <div class="modal fade" id="addUserModal" tabindex="-1">
@@ -387,13 +474,58 @@ $conn->close();
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script>
     $(document).ready(function() {
+        // Real-time status update for current admin
+        function updateAdminStatus() {
+            $.ajax({
+                url: 'update_activity.php',
+                type: 'GET',
+                success: function() {
+                    // Update only admin status indicator
+                    const adminRow = $(`tr:has(td:contains('<?= $_SESSION['userID'] ?? 0 ?>'))`);
+                    if(adminRow.length) {
+                        const badge = adminRow.find('.status-badge');
+                        const text = adminRow.find('.status-text');
+
+                        badge.removeClass('status-online status-offline status-away status-inactive');
+                        text.removeClass('status-online-text status-offline-text status-away-text status-inactive-text');
+
+                        badge.addClass('status-online');
+                        text.addClass('status-online-text').text('Online');
+                    }
+                }
+            });
+        }
+
+        // Update immediately and every minute
+        updateAdminStatus();
+        setInterval(updateAdminStatus, 60000);
+
+
         // Bulk actions role selection toggle
-        $('select[name="bulk_action"]').change(function() {
-            if ($(this).val() === 'change_role') {
-                $('#roleSelection').show();
-            } else {
-                $('#roleSelection').hide();
+        $('#bulkActionsForm').on('submit', function(e) {
+            e.preventDefault();
+            const formData = $(this).serialize();
+            if ($('input[name="selected_users[]"]:checked').length === 0) {
+                alert('Please select at least one user.');
+                return;
             }
+            $.ajax({
+                type: 'POST',
+                url: 'user_management.php',
+                data: formData,
+                dataType: 'json',
+                success: function(response) {
+                    if (response.success) {
+                        alert(response.message);
+                        location.reload(); // Refresh to show updated data
+                    } else {
+                        alert('Error: ' + response.error);
+                    }
+                },
+                error: function() {
+                    alert('Request failed. Please try again.');
+                }
+            });
         });
 
         // Select all checkboxes
@@ -441,6 +573,7 @@ $conn->close();
                 });
             }
         });
+
         // Handle add user form submission
         $('#addUserForm').on('submit', function(e) {
             e.preventDefault();

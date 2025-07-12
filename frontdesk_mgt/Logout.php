@@ -1,20 +1,31 @@
 <?php
-// logout.php - Handles user logout functionality
-
-// Start the session
 session_start();
+require_once 'dbConfig.php';
 
-// Clear all session variables
-$_SESSION = array();
+if (isset($_SESSION['userID'])) {
+    $userID = $_SESSION['userID'];
+    global $conn;
 
-// Destroy the session cookie
-if (ini_get("session.use_cookies")) {
-    $params = session_get_cookie_params();
-    setcookie(session_name(), '', time() - 42000,
-        $params["path"], $params["domain"],
-        $params["secure"], $params["httponly"]
-    );
+    // SINGLE UPDATE: Set logout timestamp
+    $updateStmt = $conn->prepare("UPDATE users SET 
+        last_logout = NOW(),
+        last_activity = NOW() 
+        WHERE UserID = ?");
+    $updateStmt->bind_param("i", $userID);
+    $updateStmt->execute();
+    $updateStmt->close();
+
+    // Record logout activity
+    $activity = "Logged out";
+    $stmt = $conn->prepare("INSERT INTO user_activity_log (user_id, activity) VALUES (?, ?)");
+    $stmt->bind_param("is", $userID, $activity);
+    $stmt->execute();
+    $stmt->close();
+
 }
+
+// Unset all session variables
+$_SESSION = array();
 
 // Destroy the session
 session_destroy();
