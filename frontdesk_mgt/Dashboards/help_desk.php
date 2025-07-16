@@ -608,9 +608,14 @@ $conn->close();
         }
     });
     $(document).ready(function() {
-        setInterval(function() {
-            $.post('update_activity.php');
-        }, 60000); // Update every 60 seconds
+        // Keep session alive and update activity
+        setInterval(() => {
+            fetch('update_activity.php')
+                .then(response => response.json())
+                .then(data => {
+                    if(!data.success) console.error('Activity update failed');
+                });
+        }, 60000);
     });
 </script>
 </body>

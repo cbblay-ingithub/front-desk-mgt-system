@@ -105,7 +105,7 @@ while ($row = $result->fetch_assoc()) {
             </tbody>
         </table>
     </div>
-    <form action="generate_visitor_logs.php" method="POST" class="mt-4 text-end">
+    <form action="generate_report.php" method="POST" class="mt-4 text-end">
         <button type="submit" class="btn btn-outline-dark btn-sm">Generate Visitor Logs</button>
     </form>
 
