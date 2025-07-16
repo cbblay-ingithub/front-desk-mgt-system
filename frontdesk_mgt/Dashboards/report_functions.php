@@ -5,22 +5,16 @@ global $conn;
 // Get Host Reports
 function getHostReports($startDate = null, $endDate = null) {
     global $conn;
-    $ticketConditions = [];
-
-    if ($startDate && $endDate) {
-        $ticketConditions[] = "CreatedDate BETWEEN '$startDate' AND '$endDate'";
-    }
-    $ticketConditions[] = "AssignedTo IN (SELECT UserID FROM Users WHERE Role = 'Host')";
-
-    // Create WHERE clause properly
-    $ticketWhere = "WHERE " . implode(' AND ', $ticketConditions);
-
-    // Appointment metrics
+    $where = "";
     $apptWhere = "";
+    $ticketWhere = "";
+
     if ($startDate && $endDate) {
         $apptWhere = "WHERE AppointmentTime BETWEEN '$startDate' AND '$endDate'";
+        $ticketWhere = "WHERE CreatedDate BETWEEN '$startDate' AND '$endDate'";
     }
 
+    // Appointment metrics
     $sql = "SELECT 
         COUNT(*) AS total_appointments,
         SUM(Status = 'Completed') AS completed,
@@ -33,11 +27,16 @@ function getHostReports($startDate = null, $endDate = null) {
     $appointmentMetrics = $result->fetch_assoc();
 
     // Helpdesk resolution rates
+    $where = "WHERE AssignedTo IN (SELECT UserID FROM Users WHERE Role = 'Host')";
+    if (!empty($ticketWhere)) {
+        $where = "$ticketWhere AND AssignedTo IN (SELECT UserID FROM Users WHERE Role = 'Host')";
+    }
+
     $sql = "SELECT 
-        COUNT(*) AS total_tickets,
-        SUM(Status = 'resolved') AS resolved
+    COUNT(*) AS total_tickets,
+    SUM(Status = 'resolved') AS resolved
     FROM Help_Desk
-    $ticketWhere";
+    $where";
 
     $result = $conn->query($sql);
     $resolutionRates = $result->fetch_assoc();
@@ -75,13 +74,6 @@ function getSupportReports($startDate = null, $endDate = null) {
         AVG(TIMESTAMPDIFF(HOUR, CreatedDate, ResolvedDate)) AS avg_resolution_hours
     FROM Help_Desk 
     WHERE Status = 'resolved'";
-
-    if ($startDate && $endDate) {
-        $sql = "SELECT 
-            AVG(TIMESTAMPDIFF(HOUR, CreatedDate, ResolvedDate)) AS avg_resolution_hours
-        FROM Help_Desk 
-        WHERE Status = 'resolved' AND CreatedDate BETWEEN '$startDate' AND '$endDate'";
-    }
 
     $result = $conn->query($sql);
     $resolutionTimes = $result->fetch_assoc();
@@ -130,16 +122,11 @@ function getFrontDeskReports($startDate = null, $endDate = null) {
     $schedulingMetrics = $result->fetch_assoc();
 
     // Visitor management
-    $visitorWhere = "";
-    if ($startDate && $endDate) {
-        $visitorWhere = "AND AppointmentTime BETWEEN '$startDate' AND '$endDate'";
-    }
-
     $sql = "SELECT 
         COUNT(*) AS visitors_checked_in,
         AVG(TIMESTAMPDIFF(MINUTE, AppointmentTime, CheckInTime)) AS avg_checkin_delay
     FROM Appointments
-    WHERE CheckInTime IS NOT NULL $visitorWhere";
+    WHERE CheckInTime IS NOT NULL";
 
     $result = $conn->query($sql);
     $visitorMetrics = $result->fetch_assoc();
