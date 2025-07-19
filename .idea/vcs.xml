@@ -5,6 +5,7 @@
     <mapping directory="$PROJECT_DIR$/vendor/cboden/ratchet" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/vendor/evenement/evenement" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/vendor/guzzlehttp/psr7" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/vendor/mpdf/mpdf" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/vendor/phpmailer/phpmailer" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/vendor/psr/http-factory" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/vendor/psr/http-message" vcs="Git" />
@@ -16,6 +17,7 @@
     <mapping directory="$PROJECT_DIR$/vendor/react/promise" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/vendor/react/socket" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/vendor/react/stream" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/vendor/setasign/fpdi" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/vendor/symfony/deprecation-contracts" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/vendor/symfony/http-foundation" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/vendor/symfony/polyfill-mbstring" vcs="Git" />
