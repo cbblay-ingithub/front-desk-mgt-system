@@ -213,7 +213,7 @@ if ($activeTab === 'host') {
                     <div class="report-header card-header">
                         <h3>Support Staff Reports</h3>
                         <form method="POST" action="generate_report.php" style="display: inline;">
-                            <input type="hidden" name="report_type" value="support">
+                            <input type="hidden" name="report_type" value="host">
                             <input type="hidden" name="start_date" value="<?= $startDate ?>">
                             <input type="hidden" name="end_date" value="<?= $endDate ?>">
                             <button type="submit" class="btn btn-light btn-sm">
@@ -269,7 +269,7 @@ if ($activeTab === 'host') {
                     <div class="report-header card-header">
                         <h3>Front Desk Reports</h3>
                         <form method="POST" action="generate_report.php" style="display: inline;">
-                            <input type="hidden" name="report_type" value="frontdesk">
+                            <input type="hidden" name="report_type" value="host">
                             <input type="hidden" name="start_date" value="<?= $startDate ?>">
                             <input type="hidden" name="end_date" value="<?= $endDate ?>">
                             <button type="submit" class="btn btn-light btn-sm">
