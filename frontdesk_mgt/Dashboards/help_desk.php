@@ -146,6 +146,30 @@ $conn->close();
                 <?php echo htmlspecialchars($error); ?>
             </div>
         <?php endif; ?>
+        <!-- Search and Filter -->
+        <div class="mb-3">
+            <input type="text" class="form-control mb-2" id="search" placeholder="Search tickets...">
+            <div class="row g-2">
+                <div class="col-md-3">
+                    <select class="form-select" id="status-filter">
+                        <option value="">All Statuses</option>
+                        <option value="open">Open</option>
+                        <option value="in-progress">In Progress</option>
+                        <option value="resolved">Resolved</option>
+                        <option value="closed">Closed</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <select class="form-select" id="priority-filter">
+                        <option value="">All Priorities</option>
+                        <option value="low">Low</option>
+                        <option value="medium">Medium</option>
+                        <option value="high">High</option>
+                        <option value="critical">Critical</option>
+                    </select>
+                </div>
+            </div>
+        </div>
 
         <table class="ticket-table">
             <thead>
@@ -324,6 +348,29 @@ $conn->close();
 
 <script src="notification.js"></script>
 <script>
+    // Basic client-side filtering
+    const search = document.getElementById('search');
+    const statusFilter = document.getElementById('status-filter');
+    const priorityFilter = document.getElementById('priority-filter');
+
+    function filterTickets() {
+        const searchTerm = search.value.toLowerCase();
+        const status = statusFilter.value;
+        const priority = priorityFilter.value;
+        document.querySelectorAll('.ticket-table tbody tr').forEach(row => {
+            const desc = row.cells[0].textContent.toLowerCase();
+            const rowStatus = row.cells[5].textContent.toLowerCase();
+            const rowPriority = row.cells[4].textContent.toLowerCase();
+            const matchesSearch = desc.includes(searchTerm);
+            const matchesStatus = !status || rowStatus.includes(status);
+            const matchesPriority = !priority || rowPriority.includes(priority);
+            row.style.display = matchesSearch && matchesStatus && matchesPriority ? '' : 'none';
+        });
+    }
+
+    search.addEventListener('input', filterTickets);
+    statusFilter.addEventListener('change', filterTickets);
+    priorityFilter.addEventListener('change', filterTickets);
     // Get all dropdown toggle buttons
     const dropdownToggles = document.querySelectorAll('.dropdown-toggle');
 
