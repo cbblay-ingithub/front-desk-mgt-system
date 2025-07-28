@@ -223,6 +223,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $hostId = $_POST['hostId'];
             $appointmentTime = $_POST['appointmentTime'];
             $isNewVisitor = $_POST['isNewVisitor'] ?? '0';
+            if (empty($_SESSION['userID'])) {
+                echo json_encode(['success' => false, 'message' => 'Front desk staff not authenticated']);
+                break;
+            }
+            $frontDeskId = (int)$_SESSION['userID'];
 
             // Check if the appointment is on a Sunday
             if (date('N', strtotime($appointmentTime)) == 7) {
@@ -261,10 +266,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 }
 
                 $status = 'Upcoming';
-                $sql = "INSERT INTO appointments (VisitorID, HostID, AppointmentTime, Status) 
-                        VALUES (?, ?, ?, ?)";
+                $sql = "INSERT INTO appointments (VisitorID, HostID, AppointmentTime, Status,ScheduledBy) 
+                        VALUES (?, ?, ?, ?, ?)";
                 $stmt = $conn->prepare($sql);
-                $stmt->bind_param("iiss", $visitorId, $hostId, $appointmentTime, $status);
+                $stmt->bind_param("iissi", $visitorId, $hostId, $appointmentTime, $status,$frontDeskId);
                 $stmt->execute();
 
                 $conn->commit();
