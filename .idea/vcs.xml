@@ -6,9 +6,14 @@
     <mapping directory="$PROJECT_DIR$/vendor/evenement/evenement" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/vendor/guzzlehttp/psr7" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/vendor/mpdf/mpdf" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/vendor/mpdf/psr-http-message-shim" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/vendor/mpdf/psr-log-aware-trait" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/vendor/myclabs/deep-copy" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/vendor/paragonie/random_compat" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/vendor/phpmailer/phpmailer" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/vendor/psr/http-factory" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/vendor/psr/http-message" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/vendor/psr/log" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/vendor/ralouphie/getallheaders" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/vendor/ratchet/rfc6455" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/vendor/react/cache" vcs="Git" />
