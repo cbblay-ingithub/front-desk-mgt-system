@@ -68,7 +68,15 @@ $conn->close();
 ?>
 
 <!DOCTYPE html>
-<html lang="en">
+<html
+        lang="en"
+        class="layout-navbar-fixed layout-menu-fixed layout-compact layout-menu-collapsed"
+        dir="ltr"
+        data-skin="default"
+        data-assets-path="../../assets/"
+        data-template="vertical-menu-template"
+        data-bs-theme="light"
+>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -77,6 +85,7 @@ $conn->close();
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="help_desk.css">
+    <link rel="stylesheet" href="sidebar.css">
     <link rel="stylesheet" href="notification.css">
     <style>
         /* Dropdown menu styles */
@@ -119,130 +128,174 @@ $conn->close();
         .dropdown-item:hover {
             background-color: #f8f9fa;
         }
+
+
     </style>
 </head>
-<body data-user-id="<?php echo $_SESSION['$userID'] ?? ''; ?>">
-<div class="layout">
-    <div class="sidebar">
-        <h4 class="text-white text-center">Support Staff Panel</h4>
-        <a href="HD_analytics.php"><i class="fas fa-tachometer-alt me-2"></i> Dashboard</a>
-        <a href="help_desk.php"><i class="fas fa-ticket"></i> Manage Tickets</a>
-        <a href="../Logout.php"><i class="fas fa-sign-out-alt me-2"></i> Logout</a>
-    </div>
-    <div class="container">
-        <header>
-            <h1>Help Desk</h1>
-            <button id="createTicketBtn">Create New Ticket</button>
-        </header>
+<div data-user-id="<?php echo $_SESSION['$userID'] ?? ''; ?>">
+    <div class="layout-wrapper layout-content-navbar">
+        <div class="layout-container">
+            <?php include 'sidebar.php'; ?>
+            <div class="layout-page">
+                <!-- Navbar -->
+                <nav class="layout-navbar container-xxl navbar-detached navbar navbar-expand-xl align-items-center bg-navbar-theme" id="layout-navbar">
+                    <div class="layout-menu-toggle navbar-nav align-items-xl-center me-4 me-xl-0 d-xl-none">
+                        <a class="nav-item nav-link px-0 me-xl-6" href="javascript:void(0)">
+                            <i class="icon-base bx bx-menu icon-md"></i>
+                        </a>
+                    </div>
 
-        <?php if (isset($message)): ?>
-            <div class="alert alert-success">
-                <?php echo htmlspecialchars($message); ?>
-            </div>
-        <?php endif; ?>
+                    <div class="navbar-nav-right d-flex align-items-center justify-content-end" id="navbar-collapse">
+                        <!-- Page Title -->
+                        <div class="navbar-nav align-items-center me-auto">
+                            <div class="nav-item">
+                                <h4 class="mb-0 fw-bold ms-2">Manage Tickets</h4>
+                            </div>
+                        </div>
 
-        <?php if (isset($error)): ?>
-            <div class="alert alert-error">
-                <?php echo htmlspecialchars($error); ?>
-            </div>
-        <?php endif; ?>
-        <!-- Search and Filter -->
-        <div class="mb-3">
-            <input type="text" class="form-control mb-2" id="search" placeholder="Search tickets...">
-            <div class="row g-2">
-                <div class="col-md-3">
-                    <select class="form-select" id="status-filter">
-                        <option value="">All Statuses</option>
-                        <option value="open">Open</option>
-                        <option value="in-progress">In Progress</option>
-                        <option value="resolved">Resolved</option>
-                        <option value="closed">Closed</option>
-                    </select>
-                </div>
-                <div class="col-md-3">
-                    <select class="form-select" id="priority-filter">
-                        <option value="">All Priorities</option>
-                        <option value="low">Low</option>
-                        <option value="medium">Medium</option>
-                        <option value="high">High</option>
-                        <option value="critical">Critical</option>
-                    </select>
-                </div>
-            </div>
-        </div>
+                        <!-- Create Ticket Button -->
+                        <div class="navbar-nav align-items-center me-3">
+                            <button id="createTicketBtn" class="btn btn-primary">
+                                <i class="fas fa-plus me-2"></i>Create New Ticket
+                            </button>
+                        </div>
+                        <!-- Search Button -->
+                        <div class="navbar-nav align-items-center me-3">
+                            <button id="searchToggle" class="btn btn-outline-secondary">
+                                <i class="fas fa-search"></i>
+                            </button>
+                        </div>
 
-        <table class="ticket-table">
-            <thead>
-            <tr>
-                <th>Description</th>
-                <th>Created By</th>
-                <th>Assigned To</th>
-                <th>Category</th>
-                <th>Priority</th>
-                <th>Status</th>
-                <th>Created Date</th>
-                <th>Actions</th>
-            </tr>
-            </thead>
-            <tbody>
-            <?php if (empty($tickets)): ?>
-                <tr>
-                    <td colspan="8" style="text-align: center;">No tickets found</td>
-                </tr>
-            <?php else: ?>
-                <?php foreach ($tickets as $ticket): ?>
-                    <tr>
-                        <td>
-                            <?php
-                            $description = htmlspecialchars($ticket['Description']);
-                            $maxLength = 25;
-                            echo strlen($description) > $maxLength ? substr($description, 0, 25) . '...' : $description;
-                            ?>
-                        </td>
-                        <td><?php echo htmlspecialchars($ticket['CreatedByName']); ?></td>
-                        <td><?php echo $ticket['AssignedToName'] ? htmlspecialchars($ticket['AssignedToName']) : 'Not assigned'; ?></td>
-                        <td><?php echo $ticket['CategoryName'] ? htmlspecialchars($ticket['CategoryName']) : 'Uncategorized'; ?></td>
-                        <td><span class="priority-<?php echo htmlspecialchars($ticket['Priority']); ?>"><?php echo ucfirst($ticket['Priority']); ?></span></td>
-                        <td><span class="status-<?php echo htmlspecialchars($ticket['Status']); ?>"><?php echo ucfirst($ticket['Status']); ?></span></td>
-                        <td><?php echo date('M d, Y H:i', strtotime($ticket['CreatedDate'])); ?></td>
-                        <td>
+                        <!-- Search Input (initially hidden) -->
+                        <div class="navbar-nav align-items-center me-3" id="searchContainer" style="display: none; width: 200px;">
+                            <input type="text" class="form-control" id="search" placeholder="Search tickets...">
+                        </div>
+
+                        <!-- Filter Button -->
+                        <div class="navbar-nav align-items-center me-3">
                             <div class="dropdown">
-                                <button class="dropdown-toggle" data-ticket-id="<?php echo htmlspecialchars($ticket['TicketID']); ?>">
-                                    <i class="fas fa-ellipsis-h"></i>
+                                <button class="btn btn-outline-secondary dropdown-toggle" type="button" id="filterDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="fas fa-filter"></i>
                                 </button>
-                                <div class="dropdown-menu">
-                                    <a class="dropdown-item view-ticket" data-id="<?php echo htmlspecialchars($ticket['TicketID']); ?>">
-                                        <i class="fas fa-eye me-2"></i> View
-                                    </a>
-                                    <?php if ($ticket['Status'] == 'closed'): ?>
-                                        <a class="dropdown-item reopen-ticket" data-id="<?php echo htmlspecialchars($ticket['TicketID']); ?>">
-                                            <i class="fas fa-undo me-2"></i> Reopen
-                                        </a>
-                                    <?php else: ?>
-                                        <a class="dropdown-item print-ticket" data-id="<?php echo htmlspecialchars($ticket['TicketID']); ?>">
-                                            <i class="fas fa-print me-2"></i> Print
-                                        </a>
-                                        <a class="dropdown-item edit-ticket" data-id="<?php echo htmlspecialchars($ticket['TicketID']); ?>">
-                                            <i class="fas fa-edit me-2"></i> Assign
-                                        </a>
-                                        <a class="dropdown-item resolve-ticket" data-id="<?php echo htmlspecialchars($ticket['TicketID']); ?>">
-                                            <i class="fas fa-check-circle me-2"></i> Resolve
-                                        </a>
-                                        <a class="dropdown-item close-ticket" data-id="<?php echo htmlspecialchars($ticket['TicketID']); ?>">
-                                            <i class="fas fa-times-circle me-2"></i> Close
-                                        </a>
-                                        <a class="dropdown-item delete-ticket" data-id="<?php echo htmlspecialchars($ticket['TicketID']); ?>">
-                                            <i class="fas fa-trash-alt me-2"></i> Delete
-                                        </a>
-                                    <?php endif; ?>
+                                <div class="dropdown-menu dropdown-menu-end" aria-labelledby="filterDropdown" style="width: 250px; padding: 10px;">
+                                    <h6 class="dropdown-header">Filter Tickets</h6>
+                                    <div class="px-3">
+                                        <div class="mb-3">
+                                            <label for="status-filter" class="form-label">Status</label>
+                                            <select class="form-select" id="status-filter">
+                                                <option value="">All Statuses</option>
+                                                <option value="open">Open</option>
+                                                <option value="in-progress">In Progress</option>
+                                                <option value="resolved">Resolved</option>
+                                                <option value="closed">Closed</option>
+                                            </select>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="priority-filter" class="form-label">Priority</label>
+                                            <select class="form-select" id="priority-filter">
+                                                <option value="">All Priorities</option>
+                                                <option value="low">Low</option>
+                                                <option value="medium">Medium</option>
+                                                <option value="high">High</option>
+                                                <option value="critical">Critical</option>
+                                            </select>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
-                        </td>
-                    </tr>
-                <?php endforeach; ?>
-            <?php endif; ?>
-            </tbody>
-        </table>
+                        </div>
+
+                        <!-- Notification bell and other navbar items can go here -->
+                        <div class="notification-wrapper">
+                            <div class="notification-bell" id="notificationBell">
+                                <i class="fas fa-bell"></i>
+                                <span class="notification-count" id="notificationCount">0</span>
+                            </div>
+                            <div class="notification-panel" id="notificationPanel">
+                                <!-- Notification content -->
+                            </div>
+                        </div>
+                    </div>
+                </nav>
+                    <div class="content-wrapper">
+                        <div class="container-xxl flex-grow-1 container-p-y">
+
+                            <table class="ticket-table">
+                                <thead>
+                                <tr>
+                                    <th>Description</th>
+                                    <th>Created By</th>
+                                    <th>Assigned To</th>
+                                    <th>Category</th>
+                                    <th>Priority</th>
+                                    <th>Status</th>
+                                    <th>Created Date</th>
+                                    <th>Actions</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <?php if (empty($tickets)): ?>
+                                    <tr>
+                                        <td colspan="8" style="text-align: center;">No tickets found</td>
+                                    </tr>
+                                <?php else: ?>
+                                    <?php foreach ($tickets as $ticket): ?>
+                                        <tr>
+                                            <td>
+                                                <?php
+                                                $description = htmlspecialchars($ticket['Description']);
+                                                $maxLength = 25;
+                                                echo strlen($description) > $maxLength ? substr($description, 0, 25) . '...' : $description;
+                                                ?>
+                                            </td>
+                                            <td><?php echo htmlspecialchars($ticket['CreatedByName']); ?></td>
+                                            <td><?php echo $ticket['AssignedToName'] ? htmlspecialchars($ticket['AssignedToName']) : 'Not assigned'; ?></td>
+                                            <td><?php echo $ticket['CategoryName'] ? htmlspecialchars($ticket['CategoryName']) : 'Uncategorized'; ?></td>
+                                            <td><span class="priority-<?php echo htmlspecialchars($ticket['Priority']); ?>"><?php echo ucfirst($ticket['Priority']); ?></span></td>
+                                            <td><span class="status-<?php echo htmlspecialchars($ticket['Status']); ?>"><?php echo ucfirst($ticket['Status']); ?></span></td>
+                                            <td><?php echo date('M d, Y H:i', strtotime($ticket['CreatedDate'])); ?></td>
+                                            <td>
+                                                <div class="dropdown">
+                                                    <button class="dropdown-toggle" data-ticket-id="<?php echo htmlspecialchars($ticket['TicketID']); ?>">
+                                                        <i class="fas fa-ellipsis-h"></i>
+                                                    </button>
+                                                    <div class="dropdown-menu">
+                                                        <a class="dropdown-item view-ticket" data-id="<?php echo htmlspecialchars($ticket['TicketID']); ?>">
+                                                            <i class="fas fa-eye me-2"></i> View
+                                                        </a>
+                                                        <?php if ($ticket['Status'] == 'closed'): ?>
+                                                            <a class="dropdown-item reopen-ticket" data-id="<?php echo htmlspecialchars($ticket['TicketID']); ?>">
+                                                                <i class="fas fa-undo me-2"></i> Reopen
+                                                            </a>
+                                                        <?php else: ?>
+                                                            <a class="dropdown-item print-ticket" data-id="<?php echo htmlspecialchars($ticket['TicketID']); ?>">
+                                                                <i class="fas fa-print me-2"></i> Print
+                                                            </a>
+                                                            <a class="dropdown-item edit-ticket" data-id="<?php echo htmlspecialchars($ticket['TicketID']); ?>">
+                                                                <i class="fas fa-edit me-2"></i> Assign
+                                                            </a>
+                                                            <a class="dropdown-item resolve-ticket" data-id="<?php echo htmlspecialchars($ticket['TicketID']); ?>">
+                                                                <i class="fas fa-check-circle me-2"></i> Resolve
+                                                            </a>
+                                                            <a class="dropdown-item close-ticket" data-id="<?php echo htmlspecialchars($ticket['TicketID']); ?>">
+                                                                <i class="fas fa-times-circle me-2"></i> Close
+                                                            </a>
+                                                            <a class="dropdown-item delete-ticket" data-id="<?php echo htmlspecialchars($ticket['TicketID']); ?>">
+                                                                <i class="fas fa-trash-alt me-2"></i> Delete
+                                                            </a>
+                                                        <?php endif; ?>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    <?php endforeach; ?>
+                                <?php endif; ?>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+        </div>
     </div>
 </div>
 
@@ -328,30 +381,30 @@ $conn->close();
     <?php endif; ?>
 </div>
 
-<!-- Notification System -->
-<div class="notification-wrapper">
-    <div class="notification-bell" id="notificationBell">
-        <i class="fas fa-bell"></i>
-        <span class="notification-count" id="notificationCount">0</span>
-    </div>
-    <div class="notification-panel" id="notificationPanel">
-        <div class="notification-header">
-            <h3>Notifications</h3>
-            <button id="markAllReadBtn" class="mark-all-read">Mark All Read</button>
-        </div>
-        <div class="notification-list" id="notificationList">
-            <!-- Notifications will be inserted here -->
-            <div class="empty-notification">No notifications</div>
-        </div>
-    </div>
-</div>
-
 <script src="notification.js"></script>
+<script src="../../Sneat/assets/vendor/js/helpers.js"></script>
+<script src="../../Sneat/assets/vendor/js/menu.js"></script>
+<script src="../../Sneat/assets/js/main.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script>
     // Basic client-side filtering
     const search = document.getElementById('search');
     const statusFilter = document.getElementById('status-filter');
     const priorityFilter = document.getElementById('priority-filter');
+
+    // Toggle search input visibility
+    document.getElementById('searchToggle').addEventListener('click', function() {
+        const searchContainer = document.getElementById('searchContainer');
+        searchContainer.style.display = searchContainer.style.display === 'none' ? 'block' : 'none';
+        if (searchContainer.style.display === 'block') {
+            document.getElementById('search').focus();
+        }
+    });
+    document.querySelectorAll('#status-filter, #priority-filter').forEach(select => {
+        select.addEventListener('click', function(e) {
+            e.stopPropagation();
+        });
+    });
 
     function filterTickets() {
         const searchTerm = search.value.toLowerCase();
@@ -375,20 +428,10 @@ $conn->close();
     const dropdownToggles = document.querySelectorAll('.dropdown-toggle');
 
     // Add click event listener to each toggle button
-    dropdownToggles.forEach(toggle => {
-        toggle.addEventListener('click', function(e) {
-            e.stopPropagation();
-            console.log('Toggling dropdown for ticket ID:', this.getAttribute('data-ticket-id'));
-            // Close all other open dropdowns
-            document.querySelectorAll('.dropdown-menu.show').forEach(menu => {
-                if (menu !== this.nextElementSibling) {
-                    menu.classList.remove('show');
-                }
-            });
-            // Toggle the dropdown menu
-            this.nextElementSibling.classList.toggle('show');
-        });
-    });
+    // Add event listeners to search and filters
+    document.getElementById('search').addEventListener('input', filterTickets);
+    document.getElementById('status-filter').addEventListener('change', filterTickets);
+    document.getElementById('priority-filter').addEventListener('change', filterTickets);
 
     // Close dropdown when clicking outside
     document.addEventListener('click', function(e) {
@@ -665,5 +708,4 @@ $conn->close();
         }, 60000);
     });
 </script>
-</body>
 </html>
