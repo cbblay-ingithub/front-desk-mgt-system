@@ -69,6 +69,13 @@ $appointments = getHostAppointments($hostId);
             min-width: 260px !important;
             max-width: 260px !important;
             flex: 0 0 260px !important;
+            position: fixed !important; /* Make sidebar fixed */
+            top: 0 !important;
+            left: 0 !important;
+            height: 100vh !important; /* Full viewport height */
+            overflow-y: auto !important; /* Allow sidebar internal scrolling if needed */
+            overflow-x: hidden !important;
+            z-index: 1000 !important; /* Ensure it stays on top */
         }
 
         .layout-menu-collapsed #layout-menu {
@@ -81,11 +88,16 @@ $appointments = getHostAppointments($hostId);
         .layout-content {
             flex: 1 1 auto;
             min-width: 0;
-            width: calc(100% - 260px);
+            margin-left: 260px !important; /* Push content away from fixed sidebar */
+            width: calc(100% - 260px) !important;
+            height: 100vh !important; /* Full viewport height */
+            overflow-y: auto !important; /* Make only main content scrollable */
+            overflow-x: hidden !important;
         }
 
         .layout-menu-collapsed .layout-content {
-            width: calc(100% - 78px);
+            margin-left: 78px !important; /* Adjust for collapsed sidebar */
+            width: calc(100% - 78px) !important;
         }
 
         #appointmentsList {
@@ -132,18 +144,17 @@ $appointments = getHostAppointments($hostId);
         }
 
         .layout-wrapper {
-            overflow-x: hidden;
+            overflow: hidden !important; /* Prevent wrapper scrolling */
+            height: 100vh !important; /* Fixed height */
         }
 
         .layout-container {
             display: flex;
             min-height: 100vh;
             width: 100%;
+            overflow: hidden !important; /* Prevent container scrolling */
         }
 
-        .layout-menu {
-            transition: width 0.3s ease, min-width 0.3s ease, max-width 0.3s ease;
-        }
 
         .no-transition {
             transition: none !important;
@@ -158,6 +169,47 @@ $appointments = getHostAppointments($hostId);
             padding-left: 1.5rem;
             padding-right: 1.5rem;
             max-width: none;
+        }
+        /* Ensure body and html don't have extra scrollbars */
+        html, body {
+            overflow-x: hidden !important;
+            overflow-y: hidden !important; /* Only main content should scroll */
+            height: 100vh !important;
+        }
+
+        /* Fix sidebar internal scrolling */
+        .menu-inner {
+            height: calc(100vh - 80px) !important; /* Account for header */
+            overflow-y: auto !important;
+            overflow-x: hidden !important;
+        }
+
+        /* Ensure sidebar header stays at top */
+        .app-brand {
+            position: sticky !important;
+            top: 0 !important;
+            background: inherit !important;
+            z-index: 1001 !important;
+        }
+
+        /* Fix content padding to prevent content from going behind sidebar */
+        .container-fluid.container-p-y {
+            padding-top: 1.5rem !important;
+            padding-bottom: 1.5rem !important;
+        }
+
+        /* Smooth transitions for sidebar collapse/expand */
+        .layout-menu {
+            transition: width 0.3s ease, min-width 0.3s ease, max-width 0.3s ease !important;
+        }
+
+        .layout-content {
+            transition: margin-left 0.3s ease, width 0.3s ease !important;
+        }
+
+        /* Disable transitions during filtering to prevent layout shifts */
+        .no-transition {
+            transition: none !important;
         }
 
     </style>
