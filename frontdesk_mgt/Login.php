@@ -4,7 +4,7 @@ session_start();
 require_once 'dbConfig.php';
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $email = trim($_POST["email"]);
+    $email = trim($_POST["email-username"]);
     $password = $_POST["password"];
     $ip = $_SERVER['REMOTE_ADDR'];
 
