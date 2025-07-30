@@ -1,3 +1,24 @@
+<?php
+session_start();
+require_once '../dbConfig.php';
+global $conn;
+if (!isset($_SESSION['userID']) || $_SESSION['role'] !== 'Host') {
+    header("Location: ../Auth.html");
+    exit;
+}
+if (isset($_SESSION['userID'])) {
+    $stmt = $conn->prepare("UPDATE users SET last_activity = NOW() WHERE UserID = ?");
+    $stmt->bind_param("i", $_SESSION['userID']);
+    $stmt->execute();
+    $activity = "Visited " . basename($_SERVER['PHP_SELF']);
+    $stmt = $conn->prepare("INSERT INTO user_activity_log (user_id, activity) VALUES (?, ?)");
+    $stmt->bind_param("is", $_SESSION['userID'], $activity);
+    $stmt->execute();
+}
+$hostId = $_SESSION['userID'];
+require_once __DIR__ . '/appointments.php';
+$appointments = getHostAppointments($hostId);
+?>
 <!DOCTYPE html>
 <html
       lang="en"
@@ -42,37 +63,111 @@
         html, body {
             overflow-x: hidden;
         }
+        /* Sidebar width fixes */
+        #layout-menu {
+            width: 260px !important;
+            min-width: 260px !important;
+            max-width: 260px !important;
+            flex: 0 0 260px !important;
+        }
+
+        .layout-menu-collapsed #layout-menu {
+            width: 78px !important;
+            min-width: 78px !important;
+            max-width: 78px !important;
+            flex: 0 0 78px !important;
+        }
+
+        .layout-content {
+            flex: 1 1 auto;
+            min-width: 0;
+            width: calc(100% - 260px);
+        }
+
+        .layout-menu-collapsed .layout-content {
+            width: calc(100% - 78px);
+        }
+
+        #appointmentsList {
+            min-height: 400px;
+            display: flex;
+            flex-wrap: wrap;
+            align-content: flex-start;
+        }
+
+        .appointment-item {
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+
+        /* Replace the existing #no-appointments-message CSS with this: */
+        #no-appointments-message {
+            width: 100%;
+            min-height: 300px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            /* Remove position: absolute and related positioning */
+            /* This keeps it in the normal document flow */
+            padding: 2rem 0;
+            margin: 0;
+        }
+
+        /* Ensure the appointments list container handles the message properly */
+        #appointmentsList {
+            min-height: 400px;
+            display: flex;
+            flex-wrap: wrap;
+            align-content: flex-start;
+            position: relative; /* Add this to contain any absolutely positioned children if needed */
+        }
+
+        /* Make sure the message doesn't interfere with other elements */
+        #no-appointments-message .d-flex {
+            pointer-events: none; /* Prevent blocking clicks on the icon and text */
+        }
+
+        #no-appointments-message .d-flex * {
+            pointer-events: auto; /* Allow interactions with child elements if needed */
+        }
+
+        .layout-wrapper {
+            overflow-x: hidden;
+        }
+
+        .layout-container {
+            display: flex;
+            min-height: 100vh;
+            width: 100%;
+        }
+
+        .layout-menu {
+            transition: width 0.3s ease, min-width 0.3s ease, max-width 0.3s ease;
+        }
+
+        .no-transition {
+            transition: none !important;
+        }
+
+        .row {
+            margin-left: 0;
+            margin-right: 0;
+        }
+
+        .container-fluid {
+            padding-left: 1.5rem;
+            padding-right: 1.5rem;
+            max-width: none;
+        }
 
     </style>
 </head>
 <body>
-<?php
-session_start();
-require_once '../dbConfig.php';
-global $conn;
-if (!isset($_SESSION['userID']) || $_SESSION['role'] !== 'Host') {
-    header("Location: ../Auth.html");
-    exit;
-}
-if (isset($_SESSION['userID'])) {
-    $stmt = $conn->prepare("UPDATE users SET last_activity = NOW() WHERE UserID = ?");
-    $stmt->bind_param("i", $_SESSION['userID']);
-    $stmt->execute();
-    $activity = "Visited " . basename($_SERVER['PHP_SELF']);
-    $stmt = $conn->prepare("INSERT INTO user_activity_log (user_id, activity) VALUES (?, ?)");
-    $stmt->bind_param("is", $_SESSION['userID'], $activity);
-    $stmt->execute();
-}
-$hostId = $_SESSION['userID'];
-require_once __DIR__ . '/appointments.php';
-$appointments = getHostAppointments($hostId);
-?>
-
 <div class="layout-wrapper layout-content-navbar">
     <div class="layout-container">
         <?php include 'host-sidebar.php'; ?>
         <div class="layout-content">
-            <div class="container-fluid flex-grow-1 container-p-y">
+            <div class="container-fluid container-p-y">
                 <div class="row mb-4">
                     <div class="col-md-8">
                         <h1 class="mb-3">Appointments</h1>
@@ -294,32 +389,70 @@ $appointments = getHostAppointments($hostId);
                 $(this).prop('required', true);
             }
         });
-        const layoutMenu = document.getElementById('layout-menu');
-        if (layoutMenu) {
-            layoutMenu.style.transition = 'none';
-        }
+        // Store original appointment count for reference
+        const totalAppointments = $('.appointment-item').length;
 
-// Modify your filter function to disable transitions during filtering
+        // Improved filter function
         $('.filter-btn').click(function() {
-            // Disable transitions
-            $('.layout-menu, .layout-content').css('transition', 'none');
+            // Prevent any layout transitions during filtering
+            $('.layout-menu, .layout-content, #layout-menu').addClass('no-transition');
 
-            // Your existing filter code
+            // Update active button
             $('.filter-btn').removeClass('active');
             $(this).addClass('active');
+
             const filter = $(this).data('filter');
 
-            if (filter === 'all') {
-                $('.appointment-item').show();
-            } else {
-                $('.appointment-item').hide();
-                $(`.appointment-item[data-status="${filter}"]`).show();
-            }
+            // Hide existing "no appointments" message
+            $('#no-appointments-message').remove();
 
-            // Re-enable transitions after a short delay
-            setTimeout(() => {
-                $('.layout-menu, .layout-content').css('transition', '');
-            }, 50);
+            // Filter appointments with smooth animation
+            $('.appointment-item').each(function() {
+                const $item = $(this);
+                const itemStatus = $item.data('status');
+
+                if (filter === 'all' || itemStatus === filter) {
+                    $item.fadeIn(300);
+                } else {
+                    $item.fadeOut(300);
+                }
+            });
+
+            // Check if any items will be visible after animation
+            setTimeout(function() {
+                let visibleItems;
+                if (filter === 'all') {
+                    visibleItems = $('.appointment-item');
+                } else {
+                    visibleItems = $(`.appointment-item[data-status="${filter}"]`);
+                }
+
+                if (visibleItems.length === 0) {
+                    // Create and show no appointments message
+                    const noAppointmentsHtml = `
+                <div id="no-appointments-message" class="col-12 text-center py-5" style="display: none;">
+                    <div class="d-flex flex-column align-items-center justify-content-center" style="min-height: 200px;">
+                        <i class="fas fa-calendar-times fa-3x text-muted mb-3"></i>
+                        <h4 class="text-muted mb-2">No ${filter === 'all' ? '' : filter.toLowerCase()} appointments found</h4>
+                        <p class="text-muted">
+                            ${filter === 'all'
+                        ? 'Schedule an appointment by clicking the button above'
+                        : `You currently have no ${filter.toLowerCase()} appointments`
+                    }
+                        </p>
+                    </div>
+                </div>
+            `;
+                    $('#appointmentsList').append(noAppointmentsHtml);
+                    $('#no-appointments-message').fadeIn(300);
+                }
+
+                // Re-enable transitions after filtering is complete
+                setTimeout(() => {
+                    $('.layout-menu, .layout-content, #layout-menu').removeClass('no-transition');
+                }, 100);
+
+            }, 350); // Wait for fade animations to complete
         });
         $('#scheduleBtn').click(function() {
             let valid = true;
@@ -471,12 +604,67 @@ $appointments = getHostAppointments($hostId);
                 menu.classList.toggle('layout-menu-collapsed');
             });
         });
-        // Initialize Sneat menu toggle
-        $('.layout-menu-toggle').on('click', function() {
-            $('html').toggleClass('layout-menu-collapsed');
-            const isCollapsed = $('html').hasClass('layout-menu-collapsed');
-            localStorage.setItem('layoutMenuCollapsed', isCollapsed);
+        // Improved menu toggle with explicit width control
+        $('.layout-menu-toggle').off('click').on('click', function() {
+            const $html = $('html');
+            const $sidebar = $('#layout-menu');
 
+            $html.toggleClass('layout-menu-collapsed');
+            const isCollapsed = $html.hasClass('layout-menu-collapsed');
+
+            // Explicitly set sidebar width
+            if (isCollapsed) {
+                $sidebar.css({
+                    'width': '78px',
+                    'min-width': '78px',
+                    'max-width': '78px'
+                });
+            } else {
+                $sidebar.css({
+                    'width': '260px',
+                    'min-width': '260px',
+                    'max-width': '260px'
+                });
+            }
+
+            localStorage.setItem('layoutMenuCollapsed', isCollapsed);
+        });
+
+// Initialize sidebar width on page load
+        const isCollapsed = localStorage.getItem('layoutMenuCollapsed') === 'true';
+        if (isCollapsed) {
+            $('html').addClass('layout-menu-collapsed');
+            $('#layout-menu').css({
+                'width': '78px',
+                'min-width': '78px',
+                'max-width': '78px'
+            });
+        } else {
+            $('#layout-menu').css({
+                'width': '260px',
+                'min-width': '260px',
+                'max-width': '260px'
+            });
+        }
+
+// Force sidebar width on window resize
+        $(window).resize(function() {
+            const $sidebar = $('#layout-menu');
+            const isCollapsed = $('html').hasClass('layout-menu-collapsed');
+
+            if (isCollapsed) {
+                $sidebar.css({
+                    'width': '78px',
+                    'min-width': '78px',
+                    'max-width': '78px'
+                });
+            } else {
+                $sidebar.css({
+                    'width': '260px',
+                    'min-width': '260px',
+                    'max-width': '260px'
+                });
+            }
         });
 
     });
