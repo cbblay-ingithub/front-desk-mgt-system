@@ -44,11 +44,6 @@ $appointments = getHostAppointments($hostId);
     <link rel="stylesheet" href="notification.css">
     <style>
         /* Custom colors using Sneat's CSS variables */
-        .status-badge-Cancelled { background-color: var(--bs-danger); color: #fff; }
-        .status-badge-Ongoing { background-color: var(--bs-info); color: #fff; }
-        .status-badge-Upcoming { background-color: var(--bs-primary); color: #fff; }
-        .status-badge-Completed { background-color: var(--bs-success); color: #fff; }
-        .status-badge-Overdue { background-color: var(--bs-warning); color: #212529; }
         .appointment-card {
             transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
@@ -253,16 +248,34 @@ $appointments = getHostAppointments($hostId);
     <div class="layout-container">
         <?php include 'host-sidebar.php'; ?>
         <div class="layout-content">
+            <nav class="layout-navbar container-xxl navbar-detached navbar navbar-expand-xl align-items-center bg-navbar-theme" id="layout-navbar">
+                <div class="layout-menu-toggle navbar-nav align-items-xl-center me-4 me-xl-0 d-xl-none">
+                    <a class="nav-item nav-link px-0 me-xl-6" href="javascript:void(0)">
+                        <i class="icon-base bx bx-menu icon-md"></i>
+                    </a>
+                </div>
+                <div class="navbar-nav-right d-flex align-items-center justify-content-end" id="navbar-collapse"">
+                <!--Page Title-->
+                <div class="navbar-nav align-items-center me-auto">
+                    <div class="nav-item">
+                        <h4 class="mb-0 fw-bold ms-2"> Manage Appointments</h4>
+                    </div>
+                </div>
+
+                <!--Schedule Appointment button-->
+                <div class="navbar-nav align-items-center me-3">
+                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#scheduleModal">
+                        <i class="fas fa-plus-circle me-2"></i> Schedule New Appointment
+                    </button>
+                </div>
+
+                </div>
+
+            </nav>
             <div class="container-fluid container-p-y">
                 <div class="row mb-4">
                     <div class="col-md-8">
-                        <h1 class="mb-3">Appointments</h1>
                         <p class="text-muted">Manage your upcoming, ongoing, and past appointments</p>
-                    </div>
-                    <div class="col-md-4 text-md-end">
-                        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#scheduleModal">
-                            <i class="fas fa-plus-circle me-2"></i> Schedule New Appointment
-                        </button>
                     </div>
                 </div>
                 <div class="row mb-4">
@@ -288,7 +301,18 @@ $appointments = getHostAppointments($hostId);
                             <div class="col-md-6 col-lg-4 mb-4 appointment-item" data-status="<?= $appointment['Status'] ?>">
                                 <div class="card appointment-card h-100">
                                     <div class="card-header d-flex justify-content-between align-items-center">
-                                        <span class="badge rounded-pill text-bg-<?= $appointment['Status'] ?>"><?= $appointment['Status'] ?></span>
+                                        <?php
+                                        // Map status to Bootstrap classes
+                                        $badgeClass = match($appointment['Status']) {
+                                            'Cancelled' => 'danger',
+                                            'Ongoing' => 'info',
+                                            'Upcoming' => 'primary',
+                                            'Completed' => 'success',
+                                            'Overdue' => 'warning',
+                                            default => 'secondary'
+                                        };
+                                        ?>
+                                        <span class="badge rounded-pill text-bg-<?= $badgeClass ?>"><?= $appointment['Status'] ?></span>
                                         <small><?= date('M d, Y', strtotime($appointment['AppointmentTime'])) ?></small>
                                     </div>
                                     <div class="card-body">
