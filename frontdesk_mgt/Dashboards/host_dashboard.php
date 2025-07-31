@@ -119,8 +119,6 @@ $appointments = getHostAppointments($hostId);
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            /* Remove position: absolute and related positioning */
-            /* This keeps it in the normal document flow */
             padding: 2rem 0;
             margin: 0;
         }
@@ -210,6 +208,42 @@ $appointments = getHostAppointments($hostId);
         /* Disable transitions during filtering to prevent layout shifts */
         .no-transition {
             transition: none !important;
+        }
+        .layout-menu-toggle {
+            background-color: rgba(255, 255, 255, 0.1) !important;
+            border: 1px solid rgba(255, 255, 255, 0.2) !important;
+            border-radius: 6px !important;
+            padding: 8px !important;
+            color: #fff !important;
+            transition: all 0.3s ease !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            width: 32px !important;
+            height: 32px !important;
+            min-width: 32px !important;
+        }
+
+        .layout-menu-toggle i {
+            font-size: 16px !important;
+            line-height: 1 !important;
+            opacity: 1 !important;
+            visibility: visible !important;
+            pointer-events: auto !important;
+            z-index: 1002 !important;
+        }
+        .layout-menu-collapsed #layout-menu .layout-menu-toggle {
+            animation: pulse-glow 2s infinite !important;
+            @keyframes pulse-glow {
+                0% {
+                    box-shadow: 0 0 5px rgba(255, 255, 255, 0.3);
+                }
+                50% {
+                    box-shadow: 0 0 15px rgba(255, 255, 255, 0.5), 0 0 25px rgba(255, 255, 255, 0.3);
+                }
+                100% {
+                    box-shadow: 0 0 5px rgba(255, 255, 255, 0.3);
+                }
         }
 
     </style>
@@ -646,77 +680,119 @@ $appointments = getHostAppointments($hostId);
                 });
             }
         });
-        document.addEventListener('DOMContentLoaded', function() {
-            // Initialize menu
-            const menuToggle = document.querySelector('.layout-menu-toggle');
-            const menu = document.querySelector('#layout-menu');
+        // enhance the toggle functionality
+        $(document).ready(function() {
+            // Function to update tooltip text
+            function updateTooltip() {
+                const $toggle = $('.layout-menu-toggle');
+                const isCollapsed = $('html').hasClass('layout-menu-collapsed');
 
-            menuToggle.addEventListener('click', function() {
-                menu.classList.toggle('layout-menu-expanded');
-                menu.classList.toggle('layout-menu-collapsed');
+                if (isCollapsed) {
+                    $toggle.attr('data-tooltip', 'Expand Menu');
+                    $toggle.attr('title', 'Expand Menu');
+                } else {
+                    $toggle.attr('data-tooltip', 'Collapse Menu');
+                    $toggle.attr('title', 'Collapse Menu');
+                }
+            }
+
+            // Enhanced menu toggle with better UX
+            $('.layout-menu-toggle').off('click').on('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+
+                const $html = $('html');
+                const $sidebar = $('#layout-menu');
+                const $toggle = $(this);
+
+                // Add a small loading state
+                $toggle.css('pointer-events', 'none');
+
+                $html.toggleClass('layout-menu-collapsed');
+                const isCollapsed = $html.hasClass('layout-menu-collapsed');
+
+                // Explicitly set sidebar width with smooth transition
+                if (isCollapsed) {
+                    $sidebar.css({
+                        'width': '78px',
+                        'min-width': '78px',
+                        'max-width': '78px'
+                    });
+                } else {
+                    $sidebar.css({
+                        'width': '260px',
+                        'min-width': '260px',
+                        'max-width': '260px'
+                    });
+                }
+
+                // Update tooltip
+                updateTooltip();
+
+                // Store preference
+                localStorage.setItem('layoutMenuCollapsed', isCollapsed);
+
+                // Re-enable clicking after animation
+                setTimeout(() => {
+                    $toggle.css('pointer-events', 'auto');
+                }, 300);
             });
-        });
-        // Improved menu toggle with explicit width control
-        $('.layout-menu-toggle').off('click').on('click', function() {
-            const $html = $('html');
-            const $sidebar = $('#layout-menu');
 
-            $html.toggleClass('layout-menu-collapsed');
-            const isCollapsed = $html.hasClass('layout-menu-collapsed');
-
-            // Explicitly set sidebar width
+            // Initialize on page load
+            const isCollapsed = localStorage.getItem('layoutMenuCollapsed') === 'true';
             if (isCollapsed) {
-                $sidebar.css({
+                $('html').addClass('layout-menu-collapsed');
+                $('#layout-menu').css({
                     'width': '78px',
                     'min-width': '78px',
                     'max-width': '78px'
                 });
             } else {
-                $sidebar.css({
+                $('#layout-menu').css({
                     'width': '260px',
                     'min-width': '260px',
                     'max-width': '260px'
                 });
             }
 
-            localStorage.setItem('layoutMenuCollapsed', isCollapsed);
+            // Set initial tooltip
+            updateTooltip();
+
+            // Handle window resize
+            $(window).resize(function() {
+                const $sidebar = $('#layout-menu');
+                const isCollapsed = $('html').hasClass('layout-menu-collapsed');
+
+                if (isCollapsed) {
+                    $sidebar.css({
+                        'width': '78px',
+                        'min-width': '78px',
+                        'max-width': '78px'
+                    });
+                } else {
+                    $sidebar.css({
+                        'width': '260px',
+                        'min-width': '260px',
+                        'max-width': '260px'
+                    });
+                }
+            });
+
+            // Add keyboard support for accessibility
+            $('.layout-menu-toggle').on('keydown', function(e) {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    $(this).trigger('click');
+                }
+            });
         });
 
-// Initialize sidebar width on page load
-        const isCollapsed = localStorage.getItem('layoutMenuCollapsed') === 'true';
-        if (isCollapsed) {
-            $('html').addClass('layout-menu-collapsed');
-            $('#layout-menu').css({
-                'width': '78px',
-                'min-width': '78px',
-                'max-width': '78px'
-            });
-        } else {
-            $('#layout-menu').css({
-                'width': '260px',
-                'min-width': '260px',
-                'max-width': '260px'
-            });
-        }
-
-// Force sidebar width on window resize
-        $(window).resize(function() {
-            const $sidebar = $('#layout-menu');
-            const isCollapsed = $('html').hasClass('layout-menu-collapsed');
-
-            if (isCollapsed) {
-                $sidebar.css({
-                    'width': '78px',
-                    'min-width': '78px',
-                    'max-width': '78px'
-                });
-            } else {
-                $sidebar.css({
-                    'width': '260px',
-                    'min-width': '260px',
-                    'max-width': '260px'
-                });
-            }
+// Add CSS class to body when sidebar is being toggled for additional styling
+        $(document).on('click', '.layout-menu-toggle', function() {
+            $('body').addClass('sidebar-toggling');
+            setTimeout(() => {
+                $('body').removeClass('sidebar-toggling');
+            }, 300);
         });
 
     });
