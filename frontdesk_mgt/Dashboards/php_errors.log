@@ -24342,3 +24342,5 @@ Stack trace:
 [28-Jul-2025 20:45:01 Europe/Berlin] PHP Warning:  Undefined array key "SessionEndTime" in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_frontend_dash.php on line 862
 [28-Jul-2025 20:45:01 Europe/Berlin] PHP Stack trace:
 [28-Jul-2025 20:45:01 Europe/Berlin] PHP   1. {main}() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_frontend_dash.php:0
+[31-Jul-2025 16:11:11 Europe/Berlin] Session data in ticket_ajax.php: {"user_id":"not set","role":"Support Staff"}
+[31-Jul-2025 16:11:16 Europe/Berlin] Session data in ticket_ajax.php: {"user_id":"not set","role":"Support Staff"}

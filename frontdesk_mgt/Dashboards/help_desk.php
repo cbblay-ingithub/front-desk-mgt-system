@@ -432,245 +432,310 @@ $conn->close();
     document.getElementById('status-filter').addEventListener('change', filterTickets);
     document.getElementById('priority-filter').addEventListener('change', filterTickets);
 
-    // Close dropdown when clicking outside
-    document.addEventListener('click', function(e) {
-        if (!e.target.closest('.dropdown')) {
-            console.log('Closing all dropdowns');
-            document.querySelectorAll('.dropdown-menu.show').forEach(menu => {
-                menu.classList.remove('show');
-            });
-        }
-    });
+    // Function to handle dropdown toggle
+    function toggleDropdown(button) {
+        const dropdown = button.closest('.dropdown');
+        const menu = dropdown.querySelector('.dropdown-menu');
 
-    // View ticket action
-    document.querySelectorAll('.view-ticket').forEach(btn => {
-        btn.addEventListener('click', function() {
-            const ticketId = this.getAttribute('data-id');
-            console.log('Viewing ticket ID:', ticketId);
-            window.location.href = `help_desk.php?view_ticket=${ticketId}`;
+        // Close all other dropdowns first
+        document.querySelectorAll('.dropdown-menu.show').forEach(otherMenu => {
+            if (otherMenu !== menu) {
+                otherMenu.classList.remove('show');
+            }
         });
-    });
 
-    // Print ticket action
-    document.querySelectorAll('.print-ticket').forEach(btn => {
-        btn.addEventListener('click', function() {
-            const ticketId = this.getAttribute('data-id');
-            console.log('Printing ticket ID:', ticketId);
-            window.location.href = `help_desk.php?view_ticket=${ticketId}&action=print`;
-        });
-    });
+        // Toggle current dropdown
+        menu.classList.toggle('show');
+    }
 
-    // Assign ticket action
-    document.querySelectorAll('.edit-ticket').forEach(btn => {
-        btn.addEventListener('click', function() {
-            const ticketId = this.getAttribute('data-id');
-            console.log('Fetching assign modal for ticket ID:', ticketId);
-            fetch(`ticket_ajax.php?action=get_assign_modal&ticket_id=${ticketId}`)
-                .then(response => {
-                    console.log('Assign modal response status:', response.status);
-                    return response.json();
-                })
-                .then(data => {
-                    console.log('Assign modal data:', data);
-                    if (data.success) {
-                        const modalContainer = document.createElement('div');
-                        modalContainer.innerHTML = data.html;
-                        document.body.appendChild(modalContainer);
-                        const assignModal = document.getElementById('assignTicketModal');
-                        assignModal.style.display = 'block';
-                        document.querySelector('#assignTicketModal .close').addEventListener('click', function() {
-                            console.log('Closing assign modal');
-                            assignModal.style.display = 'none';
-                            modalContainer.remove();
-                        });
-                        const assignForm = document.querySelector('#assignTicketModal form');
-                        if (assignForm) {
-                            assignForm.addEventListener('submit', function(e) {
-                                e.preventDefault();
-                                console.log('Submitting assign form for ticket ID:', ticketId);
-                                const formData = new FormData(this);
-                                fetch('ticket_ajax.php', {
-                                    method: 'POST',
-                                    body: formData
-                                })
-                                    .then(response => response.json())
-                                    .then(data => {
-                                        console.log('Assign form response:', data);
-                                        if (data.success) {
-                                            alert(data.message);
-                                            assignModal.style.display = 'none';
-                                            modalContainer.remove();
-                                            window.location.reload();
-                                        } else {
-                                            alert(data.message || 'Error assigning ticket');
-                                        }
-                                    })
-                                    .catch(error => {
-                                        console.error('Error submitting assign form:', error);
-                                        alert('Error assigning ticket: ' + error.message);
-                                    });
-                            });
-                        }
-                    } else {
-                        alert(data.message || 'Error fetching assign modal');
-                    }
-                })
-                .catch(error => {
-                    console.error('Error fetching assign modal:', error);
-                    alert('Error fetching assign modal: ' + error.message);
+    // Add event listeners to dropdown toggle buttons
+    document.addEventListener('DOMContentLoaded', function() {
+        // Handle dropdown toggles
+        document.addEventListener('click', function(e) {
+            const dropdownToggle = e.target.closest('.dropdown-toggle');
+
+            if (dropdownToggle) {
+                e.preventDefault();
+                e.stopPropagation();
+                toggleDropdown(dropdownToggle);
+            }
+            // Close dropdowns when clicking outside
+            else if (!e.target.closest('.dropdown')) {
+                document.querySelectorAll('.dropdown-menu.show').forEach(menu => {
+                    menu.classList.remove('show');
                 });
+            }
         });
-    });
 
-    // Resolve ticket action
-    document.querySelectorAll('.resolve-ticket').forEach(btn => {
-        btn.addEventListener('click', function() {
-            const ticketId = this.getAttribute('data-id');
-            console.log('Fetching resolve modal for ticket ID:', ticketId);
-            fetch(`ticket_ajax.php?action=get_resolve_modal&ticket_id=${ticketId}`)
-                .then(response => {
-                    console.log('Resolve modal response status:', response.status);
-                    return response.json();
-                })
-                .then(data => {
-                    console.log('Resolve modal data:', data);
-                    if (data.success) {
-                        const modalContainer = document.createElement('div');
-                        modalContainer.innerHTML = data.html;
-                        document.body.appendChild(modalContainer);
-                        const resolveModal = document.getElementById('resolveTicketModal');
-                        resolveModal.style.display = 'block';
-                        document.querySelector('#resolveTicketModal .close').addEventListener('click', function() {
-                            console.log('Closing resolve modal');
-                            resolveModal.style.display = 'none';
-                            modalContainer.remove();
-                        });
-                        const resolveForm = document.querySelector('#resolveTicketModal form');
-                        if (resolveForm) {
-                            resolveForm.addEventListener('submit', function(e) {
-                                e.preventDefault();
-                                console.log('Submitting resolve form for ticket ID:', ticketId);
-                                const formData = new FormData(this);
-                                fetch('ticket_ajax.php', {
-                                    method: 'POST',
-                                    body: formData
-                                })
-                                    .then(response => response.json())
-                                    .then(data => {
-                                        console.log('Resolve form response:', data);
-                                        if (data.success) {
-                                            alert(data.message);
-                                            resolveModal.style.display = 'none';
-                                            modalContainer.remove();
-                                            window.location.reload();
-                                        } else {
-                                            alert(data.message || 'Error resolving ticket');
-                                        }
-                                    })
-                                    .catch(error => {
-                                        console.error('Error submitting resolve form:', error);
-                                        alert('Error resolving ticket: ' + error.message);
-                                    });
-                            });
-                        }
-                    } else {
-                        alert(data.message || 'Error fetching resolve modal');
-                    }
-                })
-                .catch(error => {
-                    console.error('Error fetching resolve modal:', error);
-                    alert('Error fetching resolve modal: ' + error.message);
-                });
+        // Prevent dropdown menu from closing when clicking inside it
+        document.addEventListener('click', function(e) {
+            if (e.target.closest('.dropdown-menu')) {
+                e.stopPropagation();
+            }
         });
-    });
 
-    // Reopen ticket action
-    document.querySelectorAll('.reopen-ticket').forEach(btn => {
-        btn.addEventListener('click', function() {
-            const ticketId = this.getAttribute('data-id');
-            console.log('Attempting to reopen ticket ID:', ticketId);
-            if (confirm(`Are you sure you want to reopen ticket #${ticketId}?`)) {
-                const formData = new FormData();
-                formData.append('action', 'reopen_ticket');
-                formData.append('ticket_id', ticketId);
-                fetch('ticket_ajax.php', {
-                    method: 'POST',
-                    body: formData,
-                    credentials: 'same-origin'
-                })
+        // Your existing event listeners for ticket actions...
+
+        // View ticket action
+        document.addEventListener('click', function(e) {
+            if (e.target.closest('.view-ticket')) {
+                const btn = e.target.closest('.view-ticket');
+                const ticketId = btn.getAttribute('data-id');
+                console.log('Viewing ticket ID:', ticketId);
+                window.location.href = `help_desk.php?view_ticket=${ticketId}`;
+            }
+        });
+
+        // Print ticket action
+        document.addEventListener('click', function(e) {
+            if (e.target.closest('.print-ticket')) {
+                const btn = e.target.closest('.print-ticket');
+                const ticketId = btn.getAttribute('data-id');
+                console.log('Printing ticket ID:', ticketId);
+                window.location.href = `help_desk.php?view_ticket=${ticketId}&action=print`;
+            }
+        });
+
+        // Assign ticket action (edit-ticket)
+        document.addEventListener('click', function(e) {
+            if (e.target.closest('.edit-ticket')) {
+                const btn = e.target.closest('.edit-ticket');
+                const ticketId = btn.getAttribute('data-id');
+                console.log('Fetching assign modal for ticket ID:', ticketId);
+
+                fetch(`ticket_ajax.php?action=get_assign_modal&ticket_id=${ticketId}`)
                     .then(response => {
-                        console.log('Reopen ticket response status:', response.status);
-                        if (!response.ok) {
-                            return response.text().then(text => {
-                                throw new Error(`HTTP error ${response.status}: ${text}`);
-                            });
-                        }
+                        console.log('Assign modal response status:', response.status);
                         return response.json();
                     })
                     .then(data => {
-                        console.log('Reopen ticket response:', data);
+                        console.log('Assign modal data:', data);
                         if (data.success) {
-                            alert(data.message);
-                            window.location.reload();
+                            const modalContainer = document.createElement('div');
+                            modalContainer.innerHTML = data.html;
+                            document.body.appendChild(modalContainer);
+                            const assignModal = document.getElementById('assignTicketModal');
+                            assignModal.style.display = 'block';
+
+                            // Close modal handler
+                            const closeBtn = assignModal.querySelector('.close');
+                            if (closeBtn) {
+                                closeBtn.addEventListener('click', function() {
+                                    console.log('Closing assign modal');
+                                    assignModal.style.display = 'none';
+                                    modalContainer.remove();
+                                });
+                            }
+
+                            // Form submit handler
+                            const assignForm = assignModal.querySelector('form');
+                            if (assignForm) {
+                                assignForm.addEventListener('submit', function(e) {
+                                    e.preventDefault();
+                                    console.log('Submitting assign form for ticket ID:', ticketId);
+                                    const formData = new FormData(this);
+
+                                    fetch('ticket_ajax.php', {
+                                        method: 'POST',
+                                        body: formData
+                                    })
+                                        .then(response => response.json())
+                                        .then(data => {
+                                            console.log('Assign form response:', data);
+                                            if (data.success) {
+                                                alert(data.message);
+                                                assignModal.style.display = 'none';
+                                                modalContainer.remove();
+                                                window.location.reload();
+                                            } else {
+                                                alert(data.message || 'Error assigning ticket');
+                                            }
+                                        })
+                                        .catch(error => {
+                                            console.error('Error submitting assign form:', error);
+                                            alert('Error assigning ticket: ' + error.message);
+                                        });
+                                });
+                            }
                         } else {
-                            alert(data.message || 'Error reopening ticket');
+                            alert(data.message || 'Error fetching assign modal');
                         }
                     })
                     .catch(error => {
-                        console.error('Error reopening ticket:', error);
-                        alert('Error reopening ticket: ' + error.message);
+                        console.error('Error fetching assign modal:', error);
+                        alert('Error fetching assign modal: ' + error.message);
                     });
             }
         });
-    });
 
-    // Close ticket action
-    document.querySelectorAll('.close-ticket').forEach(btn => {
-        btn.addEventListener('click', function() {
-            const ticketId = this.getAttribute('data-id');
-            console.log('Attempting to close ticket ID:', ticketId);
-            if (confirm(`Are you sure you want to close ticket #${ticketId}?`)) {
-                const formData = new FormData();
-                formData.append('action', 'close_ticket');
-                formData.append('ticket_id', ticketId);
-                fetch('ticket_ajax.php', {
-                    method: 'POST',
-                    body: formData,
-                    credentials: 'same-origin'
-                })
+        // Resolve ticket action
+        document.addEventListener('click', function(e) {
+            if (e.target.closest('.resolve-ticket')) {
+                const btn = e.target.closest('.resolve-ticket');
+                const ticketId = btn.getAttribute('data-id');
+                console.log('Fetching resolve modal for ticket ID:', ticketId);
+
+                fetch(`ticket_ajax.php?action=get_resolve_modal&ticket_id=${ticketId}`)
                     .then(response => {
-                        console.log('Close ticket response status:', response.status);
-                        if (!response.ok) {
-                            return response.text().then(text => {
-                                throw new Error(`HTTP error ${response.status}: ${text}`);
-                            });
-                        }
+                        console.log('Resolve modal response status:', response.status);
                         return response.json();
                     })
                     .then(data => {
-                        console.log('Close ticket response:', data);
+                        console.log('Resolve modal data:', data);
                         if (data.success) {
-                            alert(data.message);
-                            window.location.reload();
+                            const modalContainer = document.createElement('div');
+                            modalContainer.innerHTML = data.html;
+                            document.body.appendChild(modalContainer);
+                            const resolveModal = document.getElementById('resolveTicketModal');
+                            resolveModal.style.display = 'block';
+
+                            // Close modal handler
+                            const closeBtn = resolveModal.querySelector('.close');
+                            if (closeBtn) {
+                                closeBtn.addEventListener('click', function() {
+                                    console.log('Closing resolve modal');
+                                    resolveModal.style.display = 'none';
+                                    modalContainer.remove();
+                                });
+                            }
+
+                            // Form submit handler
+                            const resolveForm = resolveModal.querySelector('form');
+                            if (resolveForm) {
+                                resolveForm.addEventListener('submit', function(e) {
+                                    e.preventDefault();
+                                    console.log('Submitting resolve form for ticket ID:', ticketId);
+                                    const formData = new FormData(this);
+
+                                    fetch('ticket_ajax.php', {
+                                        method: 'POST',
+                                        body: formData
+                                    })
+                                        .then(response => response.json())
+                                        .then(data => {
+                                            console.log('Resolve form response:', data);
+                                            if (data.success) {
+                                                alert(data.message);
+                                                resolveModal.style.display = 'none';
+                                                modalContainer.remove();
+                                                window.location.reload();
+                                            } else {
+                                                alert(data.message || 'Error resolving ticket');
+                                            }
+                                        })
+                                        .catch(error => {
+                                            console.error('Error submitting resolve form:', error);
+                                            alert('Error resolving ticket: ' + error.message);
+                                        });
+                                });
+                            }
                         } else {
-                            alert(data.message || 'Error closing ticket');
+                            alert(data.message || 'Error fetching resolve modal');
                         }
                     })
                     .catch(error => {
-                        console.error('Error closing ticket:', error);
-                        alert('Error closing ticket: ' + error.message);
+                        console.error('Error fetching resolve modal:', error);
+                        alert('Error fetching resolve modal: ' + error.message);
                     });
             }
         });
-    });
 
-    // Delete ticket action
-    document.querySelectorAll('.delete-ticket').forEach(btn => {
-        btn.addEventListener('click', function() {
-            const ticketId = this.getAttribute('data-id');
-            console.log('Attempting to delete ticket ID:', ticketId);
-            if (confirm(`Are you sure you want to delete ticket #${ticketId}?`)) {
-                alert(`Delete ticket ${ticketId} - Implement this functionality`);
+        // Reopen ticket action
+        document.addEventListener('click', function(e) {
+            if (e.target.closest('.reopen-ticket')) {
+                const btn = e.target.closest('.reopen-ticket');
+                const ticketId = btn.getAttribute('data-id');
+                console.log('Attempting to reopen ticket ID:', ticketId);
+
+                if (confirm(`Are you sure you want to reopen ticket #${ticketId}?`)) {
+                    const formData = new FormData();
+                    formData.append('action', 'reopen_ticket');
+                    formData.append('ticket_id', ticketId);
+
+                    fetch('ticket_ajax.php', {
+                        method: 'POST',
+                        body: formData,
+                        credentials: 'same-origin'
+                    })
+                        .then(response => {
+                            console.log('Reopen ticket response status:', response.status);
+                            if (!response.ok) {
+                                return response.text().then(text => {
+                                    throw new Error(`HTTP error ${response.status}: ${text}`);
+                                });
+                            }
+                            return response.json();
+                        })
+                        .then(data => {
+                            console.log('Reopen ticket response:', data);
+                            if (data.success) {
+                                alert(data.message);
+                                window.location.reload();
+                            } else {
+                                alert(data.message || 'Error reopening ticket');
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error reopening ticket:', error);
+                            alert('Error reopening ticket: ' + error.message);
+                        });
+                }
+            }
+        });
+
+        // Close ticket action
+        document.addEventListener('click', function(e) {
+            if (e.target.closest('.close-ticket')) {
+                const btn = e.target.closest('.close-ticket');
+                const ticketId = btn.getAttribute('data-id');
+                console.log('Attempting to close ticket ID:', ticketId);
+
+                if (confirm(`Are you sure you want to close ticket #${ticketId}?`)) {
+                    const formData = new FormData();
+                    formData.append('action', 'close_ticket');
+                    formData.append('ticket_id', ticketId);
+
+                    fetch('ticket_ajax.php', {
+                        method: 'POST',
+                        body: formData,
+                        credentials: 'same-origin'
+                    })
+                        .then(response => {
+                            console.log('Close ticket response status:', response.status);
+                            if (!response.ok) {
+                                return response.text().then(text => {
+                                    throw new Error(`HTTP error ${response.status}: ${text}`);
+                                });
+                            }
+                            return response.json();
+                        })
+                        .then(data => {
+                            console.log('Close ticket response:', data);
+                            if (data.success) {
+                                alert(data.message);
+                                window.location.reload();
+                            } else {
+                                alert(data.message || 'Error closing ticket');
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error closing ticket:', error);
+                            alert('Error closing ticket: ' + error.message);
+                        });
+                }
+            }
+        });
+
+        // Delete ticket action
+        document.addEventListener('click', function(e) {
+            if (e.target.closest('.delete-ticket')) {
+                const btn = e.target.closest('.delete-ticket');
+                const ticketId = btn.getAttribute('data-id');
+                console.log('Attempting to delete ticket ID:', ticketId);
+
+                if (confirm(`Are you sure you want to delete ticket #${ticketId}?`)) {
+                    alert(`Delete ticket ${ticketId} - Implement this functionality`);
+                }
             }
         });
     });
