@@ -1,3 +1,5 @@
+<!--landing page-->
+
 <!doctype html>
 
 <html
@@ -50,6 +52,365 @@
     <!--? Config:  Mandatory theme config file contain global vars & default theme options, Set your preferred theme option in this file.  -->
 
     <script src="../../Sneat/assets/js/front-config.js"></script>
+
+    <!-- Chatbot Styles -->
+    <style>
+        /* Chat Widget Styles */
+        .chat-widget {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 9999;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        .chat-toggle {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .chat-toggle:hover {
+            transform: translateY(-2px) scale(1.05);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        .chat-toggle::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: all 0.6s ease;
+        }
+
+        .chat-toggle:hover::before {
+            width: 100%;
+            height: 100%;
+        }
+
+        .chat-toggle.active {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+        }
+
+        .chat-container {
+            position: absolute;
+            bottom: 80px;
+            right: 0;
+            width: 380px;
+            height: 500px;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(20px) scale(0.95);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow: hidden;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .chat-container.active {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0) scale(1);
+        }
+
+        .chat-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            text-align: center;
+            position: relative;
+        }
+
+        .chat-header h3 {
+            margin: 0;
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .chat-header p {
+            margin: 5px 0 0 0;
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .chat-close {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.2s;
+        }
+
+        .chat-close:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .chat-messages {
+            height: 340px;
+            overflow-y: auto;
+            padding: 20px;
+            background: #f8f9fa;
+        }
+
+        .chat-messages::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .chat-messages::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+
+        .chat-messages::-webkit-scrollbar-thumb {
+            background: #c1c1c1;
+            border-radius: 3px;
+        }
+
+        .message {
+            margin-bottom: 15px;
+            display: flex;
+            animation: messageSlideIn 0.3s ease-out;
+        }
+
+        @keyframes messageSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .message.user {
+            justify-content: flex-end;
+        }
+
+        .message-content {
+            max-width: 80%;
+            padding: 12px 16px;
+            border-radius: 18px;
+            font-size: 14px;
+            line-height: 1.4;
+            word-break: break-word;
+        }
+
+        .message.bot .message-content {
+            background: white;
+            color: #333;
+            border: 1px solid #e9ecef;
+            margin-right: auto;
+        }
+
+        .message.user .message-content {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .message.bot::before {
+            content: '🤖';
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 10px;
+            font-size: 16px;
+            flex-shrink: 0;
+        }
+
+        .typing-indicator {
+            display: none;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .typing-indicator.active {
+            display: flex;
+        }
+
+        .typing-dots {
+            background: white;
+            border: 1px solid #e9ecef;
+            border-radius: 18px;
+            padding: 12px 16px;
+            margin-left: 42px;
+        }
+
+        .typing-dots span {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #999;
+            margin: 0 2px;
+            animation: typing 1.4s infinite ease-in-out;
+        }
+
+        .typing-dots span:nth-child(1) {
+            animation-delay: -0.32s;
+        }
+
+        .typing-dots span:nth-child(2) {
+            animation-delay: -0.16s;
+        }
+
+        @keyframes typing {
+            0%, 80%, 100% {
+                transform: scale(0.8);
+                opacity: 0.5;
+            }
+            40% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .chat-input-container {
+            padding: 15px 20px;
+            background: white;
+            border-top: 1px solid #e9ecef;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .chat-input {
+            flex: 1;
+            border: 2px solid #e9ecef;
+            border-radius: 20px;
+            padding: 10px 15px;
+            font-size: 14px;
+            outline: none;
+            transition: border-color 0.2s;
+            resize: none;
+            min-height: 20px;
+            max-height: 80px;
+            overflow-y: auto;
+        }
+
+        .chat-input:focus {
+            border-color: #667eea;
+        }
+
+        .chat-input::placeholder {
+            color: #999;
+        }
+
+        .chat-send {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .chat-send:hover {
+            transform: scale(1.05);
+        }
+
+        .chat-send:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .welcome-message {
+            text-align: center;
+            color: #666;
+            padding: 20px;
+            font-size: 14px;
+        }
+
+        .welcome-message h4 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        /* Notification Badge */
+        .chat-notification {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            width: 20px;
+            height: 20px;
+            background: #ff4757;
+            border-radius: 50%;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 12px;
+            font-weight: bold;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(255, 71, 87, 0.7);
+            }
+            70% {
+                box-shadow: 0 0 0 10px rgba(255, 71, 87, 0);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(255, 71, 87, 0);
+            }
+        }
+
+        .error-message {
+            background-color: #fee;
+            color: #c33;
+            padding: 10px;
+            border-radius: 8px;
+            margin: 10px 0;
+            font-size: 13px;
+            border-left: 4px solid #c33;
+        }
+
+        @media (max-width: 768px) {
+            .chat-container {
+                width: calc(100vw - 40px);
+                height: calc(100vh - 140px);
+                bottom: 80px;
+                right: 20px;
+                left: 20px;
+            }
+        }
+    </style>
 </head>
 
 <body>
@@ -444,8 +805,6 @@
     </section>
     <!-- Useful features: End -->
 
-
-
     <!-- Fun facts: Start -->
     <section id="landingFunFacts" class="section-py landing-fun-facts">
         <div class="container">
@@ -784,7 +1143,7 @@
                             <p class="mb-6">
                                 If you would like to discuss anything related to payment, account, licensing,<br
                                     class="d-none d-lg-block" />
-                                partnerships, or have pre-sales questions, you’re at the right place.
+                                partnerships, or have pre-sales questions, you're at the right place.
                             </p>
                             <form>
                                 <div class="row g-4">
@@ -834,9 +1193,9 @@
         <div class="container">
             <div class="row gx-0 gy-6 g-lg-10">
                 <div class="col-lg-5">
-                        <a href="landing-page.html" class="app-brand-link mb-6">
-                            <img src="../../Sneat/assets/img/favicon/img.png" alt="Your Logo" class="app-brand-logo" width="316" height="99">
-                        </a>
+                    <a href="landing-page.html" class="app-brand-link mb-6">
+                        <img src="../../Sneat/assets/img/favicon/img.png" alt="Your Logo" class="app-brand-logo" width="316" height="99">
+                    </a>
                     <p class="footer-text footer-logo-description mb-6">
                         Boost your business growth with expert traditional and digital
                         marketing solutions from Eloquent Marketing Agency
@@ -909,6 +1268,43 @@
     </div>
 </footer>
 
+<!-- Chatbot Widget -->
+<div class="chat-widget">
+    <div class="chat-notification">1</div>
+    <button class="chat-toggle">
+        <i class="bx bx-message-rounded"></i>
+    </button>
+    <div class="chat-container">
+        <div class="chat-header">
+            <h3>Eloquent Support</h3>
+            <p>We're here to help you!</p>
+            <button class="chat-close">
+                <i class="bx bx-x"></i>
+            </button>
+        </div>
+        <div class="chat-messages">
+            <div class="welcome-message">
+                <h4>Welcome to Eloquent Marketing!</h4>
+                <p>How can we help you today? Ask us anything about our services, pricing, or how we can help grow your business.</p>
+            </div>
+            <!-- Messages will be dynamically inserted here -->
+        </div>
+        <div class="typing-indicator">
+            <div class="typing-dots">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+        <div class="chat-input-container">
+            <textarea class="chat-input" placeholder="Type your message..." rows="1"></textarea>
+            <button class="chat-send">
+                <i class="bx bx-send"></i>
+            </button>
+        </div>
+    </div>
+</div>
+
 <!-- Core JS -->
 <!-- build:js assets/vendor/js/theme.js  -->
 
@@ -930,5 +1326,281 @@
 
 <!-- Page JS -->
 <script src="../../Sneat/assets/js/front-page-landing.js"></script>
+
+<!-- Chatbot Script -->
+<!-- Chatbot Script -->
+<script>
+    // Gemini-powered Marketing Assistant
+    class EloquentMarketingBot {
+        constructor() {
+            this.apiKey = 'AIzaSyACxk5zCzJt6H0jJ2vs2sIP98V9jj7NcL0';
+            this.apiUrl = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent';
+            this.isOpen = false;
+            this.conversationHistory = [];
+
+            this.initializeElements();
+            this.attachEventListeners();
+            this.showInitialMessage();
+        }
+
+        initializeElements() {
+            this.chatToggle = document.querySelector('.chat-toggle');
+            this.chatContainer = document.querySelector('.chat-container');
+            this.chatClose = document.querySelector('.chat-close');
+            this.chatMessages = document.querySelector('.chat-messages');
+            this.chatInput = document.querySelector('.chat-input');
+            this.chatSend = document.querySelector('.chat-send');
+            this.typingIndicator = document.querySelector('.typing-indicator');
+            this.notificationBadge = document.querySelector('.chat-notification');
+        }
+
+        attachEventListeners() {
+            // Toggle chat
+            this.chatToggle.addEventListener('click', () => this.toggleChat());
+            this.chatClose.addEventListener('click', () => this.closeChat());
+
+            // Send message
+            this.chatSend.addEventListener('click', () => this.handleSendMessage());
+
+            // Handle Enter key
+            this.chatInput.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    this.handleSendMessage();
+                }
+            });
+
+            // Auto-resize textarea
+            this.chatInput.addEventListener('input', () => {
+                this.chatInput.style.height = 'auto';
+                this.chatInput.style.height = Math.min(this.chatInput.scrollHeight, 80) + 'px';
+            });
+        }
+
+        toggleChat() {
+            if (this.isOpen) {
+                this.closeChat();
+            } else {
+                this.openChat();
+            }
+        }
+
+        openChat() {
+            this.isOpen = true;
+            this.chatContainer.classList.add('active');
+            this.chatToggle.classList.add('active');
+            this.hideNotification();
+
+            // Focus input after animation
+            setTimeout(() => {
+                this.chatInput.focus();
+            }, 300);
+        }
+
+        closeChat() {
+            this.isOpen = false;
+            this.chatContainer.classList.remove('active');
+            this.chatToggle.classList.remove('active');
+        }
+
+        hideNotification() {
+            this.notificationBadge.style.display = 'none';
+        }
+
+        async handleSendMessage() {
+            const message = this.chatInput.value.trim();
+            if (!message) return;
+
+            // Clear input
+            this.chatInput.value = '';
+            this.chatInput.style.height = 'auto';
+
+            // Add user message
+            this.addMessage(message, 'user');
+
+            // Show typing indicator
+            this.showTyping();
+
+            try {
+                // Prepare system message with company context
+                const systemMessage = `You are a helpful AI assistant for Eloquent Marketing Agency, a professional marketing company.
+
+                Our services include:
+                - Events management and planning
+                - Marketing communications & advertisements
+                - Souvenirs & corporate gifts
+                - Bulk WhatsApp marketing
+                - Marketing advisory & brand building
+                - Digital marketing solutions
+
+                Contact Information:
+                - Email: getresults@eloquentmarketingagency.com
+                - Phone: +233 530 420 669
+                - Business hours: Monday to Friday, 9am to 5pm
+
+                You should help potential clients by:
+                - Providing information about our services
+                - Answering questions about pricing (explain it varies by scope)
+                - Directing them to contact us for detailed quotes
+                - Being professional but friendly
+                - Focusing on how we can help grow their business
+
+                Keep responses concise, helpful, and engaging. Current date: ${new Date().toLocaleDateString()}
+
+                User's message: ${message}`;
+
+                // Send to Gemini API
+                const response = await this.sendToGemini(systemMessage);
+                this.hideTyping();
+                this.addMessage(response, 'bot');
+
+                // Show notification if chat is closed
+                if (!this.isOpen) {
+                    this.notificationBadge.style.display = 'flex';
+                }
+            } catch (error) {
+                this.hideTyping();
+                this.addMessage('I apologize, but I\'m having trouble connecting right now. Please feel free to contact us directly at getresults@eloquentmarketingagency.com or call +233 530 420 669.', 'bot', true);
+                console.error('Gemini API Error:', error);
+            }
+        }
+
+        addMessage(content, sender, isError = false) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${sender}`;
+
+            const contentDiv = document.createElement('div');
+            contentDiv.className = 'message-content';
+
+            if (isError) {
+                contentDiv.style.backgroundColor = '#fee';
+                contentDiv.style.color = '#c33';
+                contentDiv.style.borderLeft = '4px solid #c33';
+            }
+
+            // Format message content (basic markdown support)
+            contentDiv.innerHTML = this.formatMessage(content);
+            messageDiv.appendChild(contentDiv);
+
+            // Remove welcome message if it exists
+            const welcomeMessage = this.chatMessages.querySelector('.welcome-message');
+            if (welcomeMessage) {
+                welcomeMessage.remove();
+            }
+
+            this.chatMessages.appendChild(messageDiv);
+            this.scrollToBottom();
+
+            // Store in conversation history
+            this.conversationHistory.push({
+                role: sender === 'user' ? 'user' : 'model',
+                parts: [{ text: content }]
+            });
+        }
+
+        formatMessage(text) {
+            // Basic markdown formatting
+            return text
+                .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                .replace(/\*(.*?)\*/g, '<em>$1</em>')
+                .replace(/`(.*?)`/g, '<code style="background: #f1f1f1; padding: 2px 4px; border-radius: 3px;">$1</code>')
+                .replace(/\n/g, '<br>');
+        }
+
+        showTyping() {
+            this.typingIndicator.classList.add('active');
+            this.scrollToBottom();
+        }
+
+        hideTyping() {
+            this.typingIndicator.classList.remove('active');
+        }
+
+        scrollToBottom() {
+            setTimeout(() => {
+                this.chatMessages.scrollTop = this.chatMessages.scrollHeight;
+            }, 100);
+        }
+
+        async sendToGemini(message) {
+            // Prepare conversation context
+            const contents = [
+                {
+                    role: 'user',
+                    parts: [{ text: message }]
+                }
+            ];
+
+            // Add conversation history (last 10 messages to manage context length)
+            const recentHistory = this.conversationHistory.slice(-10);
+            if (recentHistory.length > 0) {
+                contents.unshift(...recentHistory);
+            }
+
+            const requestBody = {
+                contents: contents,
+                generationConfig: {
+                    temperature: 0.7,
+                    topK: 40,
+                    topP: 0.95,
+                    maxOutputTokens: 1024,
+                },
+                safetySettings: [
+                    {
+                        category: "HARM_CATEGORY_HARASSMENT",
+                        threshold: "BLOCK_MEDIUM_AND_ABOVE"
+                    },
+                    {
+                        category: "HARM_CATEGORY_HATE_SPEECH",
+                        threshold: "BLOCK_MEDIUM_AND_ABOVE"
+                    },
+                    {
+                        category: "HARM_CATEGORY_SEXUALLY_EXPLICIT",
+                        threshold: "BLOCK_MEDIUM_AND_ABOVE"
+                    },
+                    {
+                        category: "HARM_CATEGORY_DANGEROUS_CONTENT",
+                        threshold: "BLOCK_MEDIUM_AND_ABOVE"
+                    }
+                ]
+            };
+
+            const response = await fetch(`${this.apiUrl}?key=${this.apiKey}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(requestBody)
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(`API Error: ${response.status} - ${errorData.error?.message || 'Unknown error'}`);
+            }
+
+            const data = await response.json();
+
+            if (data.candidates && data.candidates[0] && data.candidates[0].content) {
+                return data.candidates[0].content.parts[0].text;
+            } else {
+                throw new Error('Unexpected API response format');
+            }
+        }
+
+        showInitialMessage() {
+            // Add initial welcome message from bot after a delay
+            setTimeout(() => {
+                if (this.chatMessages.querySelectorAll('.message').length === 0) {
+                    this.addMessage("Hi there! 👋 Welcome to Eloquent Marketing Agency. I'm here to help you learn about our marketing services and how we can help grow your business. What would you like to know?", 'bot');
+                }
+            }, 1500);
+        }
+    }
+
+    // Initialize the chatbot when the page loads
+    document.addEventListener('DOMContentLoaded', function() {
+        new EloquentMarketingBot();
+    });
+</script>
 </body>
 </html>

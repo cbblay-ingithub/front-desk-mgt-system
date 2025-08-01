@@ -660,24 +660,6 @@ $hosts = getAllHosts();
     </div>
 </div>
 
-<!-- Notification System -->
-<div class="notification-wrapper">
-    <div class="notification-bell" id="notificationBell">
-        <i class="fas fa-bell"></i>
-        <span class="notification-count" id="notificationCount">0</span>
-    </div>
-    <div class="notification-panel" id="notificationPanel">
-        <div class="notification-header">
-            <h3>Notifications</h3>
-            <button id="markAllReadBtn" class="mark-all-read">Mark All Read</button>
-        </div>
-        <div class="notification-list" id="notificationList">
-            <!-- Notifications will be inserted here -->
-            <div class="empty-notification">No notifications</div>
-        </div>
-    </div>
-</div>
-
 <!-- JavaScript Dependencies -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
