@@ -49,6 +49,7 @@ $users = getUsers($conn);
 $categories = getCategories($conn);
 $tickets = getTickets($conn);
 
+
 // Handle ticket details view
 $ticketDetail = null;
 $ticketDetailsHTML = '';
@@ -56,16 +57,11 @@ $ticketPrintHTML = '';
 if (isset($_GET['view_ticket']) && is_numeric($_GET['view_ticket'])) {
     $ticketDetail = getTicketDetails($conn, $_GET['view_ticket']);
     if ($ticketDetail) {
-        if ($ticketDetail['CreatedBy'] != $userId) {
-            $error = "You do not have permission to view this ticket.";
-        } else {
-            $ticketDetailsHTML = generateTicketDetailsHTML($ticketDetail);
-            $ticketPrintHTML = generateTicketPrintHTML($ticketDetail);
-            echo "<script>window.onload = function() { document.getElementById('viewTicketModal').style.display = 'block'; }</script>";
-        }
+        $ticketDetailsHTML = generateTicketDetailsHTML($ticketDetail);
+        $ticketPrintHTML = generateTicketPrintHTML($ticketDetail);
+        echo "<script>window.onload = function() { document.getElementById('viewTicketModal').style.display = 'block'; }</script>";
     }
 }
-
 $conn->close();
 ?>
 
@@ -74,7 +70,11 @@ $conn->close();
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Help Desk Tickets - Host</title>
+    <title>Help Desk - Host</title>
+    <link rel="stylesheet" href="../../Sneat/assets/vendor/libs/select2/select2.css" />
+    <link rel="stylesheet" href="../../Sneat/assets/vendor/fonts/iconify-icons.css" />
+    <link rel="stylesheet" href="../../Sneat/assets/vendor/css/core.css" />
+    <link rel="stylesheet" href="../../Sneat/assets/css/demo.css" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -104,15 +104,11 @@ $conn->close();
         .status-in-progress { color: orange; }
         .status-resolved { color: green; }
         .status-closed { color: gray; }
-        .error-message {
-            background-color: #fee;
-            color: #c33;
-            padding: 10px;
-            border-radius: 8px;
-            margin: 10px 0;
-            font-size: 13px;
-            border-left: 4px solid #c33;
-        }
+        .filter-group { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 20px; }
+        .filter-btn { padding: 6px 12px; border: 1px solid #626569; border-radius: 4px; background: #f8f9fa; cursor: pointer; color: #626569; }
+        .filter-btn.active { background: #007bff; color: white; border-color: #007bff; }
+        .filter-btn:hover { background: #e9ecef; }
+        .filter-btn.active:hover { background: #0056b3; }
 
         /* Chat Bot Styles */
         .chat-widget {
@@ -471,161 +467,300 @@ $conn->close();
                 left: 20px;
             }
         }
+        #layout-menu {
+            width: 260px !important;
+            min-width: 260px !important;
+            max-width: 260px !important;
+            flex: 0 0 260px !important;
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            height: 100vh !important;
+            overflow-y: auto !important;
+            overflow-x: hidden !important;
+            z-index: 1000 !important;
+        }
+
+        .layout-menu-collapsed #layout-menu {
+            width: 78px !important;
+            min-width: 78px !important;
+            max-width: 78px !important;
+            flex: 0 0 78px !important;
+        }
+
+        .layout-content {
+            flex: 1 1 auto;
+            min-width: 0;
+            margin-left: 260px !important;
+            width: calc(100% - 260px) !important;
+            height: 100vh !important;
+            overflow-y: auto !important;
+            overflow-x: hidden !important;
+        }
+
+        .layout-menu-collapsed .layout-content {
+            margin-left: 78px !important;
+            width: calc(100% - 78px) !important;
+        }
+        .layout-menu-collapsed #layout-menu .layout-menu-toggle {
+            animation: pulse-glow 2s infinite !important;
+        }
     </style>
 </head>
 <body data-user-id="<?php echo $userId; ?>">
-<div class="layout">
-    <div class="sidebar">
-        <h4 class="text-white text-center">Host Panel</h4>
-        <a href="dashboard.php"><i class="fas fa-tachometer-alt me-2"></i> Dashboard</a>
-        <a href="host_dashboard.php"><i class="fas fa-calendar-check me-2"></i> Manage Appointments</a>
-        <a href="host_tickets.php" class="active"><i class="fas fa-ticket"></i> Manage Tickets</a>
-        <a href="../Logout.php"><i class="fas fa-sign-out-alt me-2"></i> Logout</a>
-    </div>
-    <div class="container">
-        <header>
-            <h1>Help Desk Tickets</h1>
-            <button id="createTicketBtn" class="submit-btn">Create New Ticket</button>
-        </header>
+<div class="layout-wrapper layout-content-navbar">
+    <div class="layout-container">
+        <?php include 'host-sidebar.php'; ?>
+        <div class="layout-content">
+            <!-- Navbar -->
+            <nav class="layout-navbar container-xxl navbar-detached navbar navbar-expand-xl align-items-center bg-navbar-theme" id="layout-navbar">
+                <div class="layout-menu-toggle navbar-nav align-items-xl-center me-4 me-xl-0 d-xl-none">
+                    <a class="nav-item nav-link px-0 me-xl-6" href="javascript:void(0)">
+                        <i class="icon-base bx bx-menu icon-md"></i>
+                    </a>
+                </div>
+                <div class="navbar-nav-right d-flex align-items-center justify-content-end" id="navbar-collapse">
+                    <!-- Page Title -->
+                    <div class="navbar-nav align-items-center me-auto">
+                        <div class="nav-item">
+                            <h4 class="mb-0 fw-bold ms-2">Help Desk Tickets</h4>
+                        </div>
+                    </div>
+                    <!-- Create Ticket button -->
+                    <div class="navbar-nav align-items-center me-3">
+                        <button class="btn btn-primary" id="createTicketBtn">
+                            <i class="fas fa-plus-circle me-2"></i> Create New Ticket
+                        </button>
+                    </div>
+                </div>
+            </nav>
 
-        <?php if (isset($message)): ?>
-            <div class="alert alert-success"><?php echo $message; ?></div>
-        <?php endif; ?>
-        <?php if (isset($error)): ?>
-            <div class="alert alert-danger"><?php echo $error; ?></div>
-        <?php endif; ?>
+            <!-- Main content -->
+            <div class="container-fluid container-p-y">
+                <?php if (isset($message)): ?>
+                    <div class="alert alert-success"><?php echo $message; ?></div>
+                <?php endif; ?>
+                <?php if (isset($error)): ?>
+                    <div class="alert alert-danger"><?php echo $error; ?></div>
+                <?php endif; ?>
 
-        <table class="ticket-table">
-            <thead>
-            <tr>
-                <th>Ticket ID</th>
-                <th>Description</th>
-                <th>Priority</th>
-                <th>Status</th>
-                <th>Created Date</th>
-            </tr>
-            </thead>
-            <tbody id="ticketTableBody">
-            <?php if (empty($tickets)): ?>
-                <tr><td colspan="5" style="text-align: center;">No tickets found</td></tr>
-            <?php else: ?>
-                <?php foreach ($tickets as $ticket): ?>
-                    <tr data-status="<?php echo $ticket['Status']; ?>" data-priority="<?php echo $ticket['Priority']; ?>">
-                        <td><?php echo $ticket['TicketID']; ?></td>
-                        <td>
-                            <?php
-                            $description = htmlspecialchars($ticket['Description']);
-                            echo strlen($description) > 25 ? substr($description, 0, 25) . '...' : $description;
-                            ?>
-                            <a href="host_tickets.php?view_ticket=<?php echo $ticket['TicketID']; ?>" class="ms-2" title="View details">
-                        </td>
-                        <td><span class="priority-<?php echo $ticket['Priority']; ?>"><?php echo ucfirst($ticket['Priority']); ?></span></td>
-                        <td><span class="status-<?php echo $ticket['Status']; ?>"><?php echo ucfirst($ticket['Status']); ?></span></td>
-                        <td><?php echo date('M d, Y H:i', strtotime($ticket['CreatedDate'])); ?></td>
-                    </tr>
-                <?php endforeach; ?>
-            <?php endif; ?>
-            </tbody>
-        </table>
-    </div>
-</div>
-
-<!-- Chat Widget -->
-<div class="chat-widget">
-    <!-- Chat Toggle Button -->
-    <button class="chat-toggle" id="chatToggle">
-        <i class="fas fa-comments"></i>
-        <div class="chat-notification" id="chatNotification">1</div>
-    </button>
-
-    <!-- Chat Container -->
-    <div class="chat-container" id="chatContainer">
-        <!-- Chat Header -->
-        <div class="chat-header">
-            <button class="chat-close" id="chatClose">
-                <i class="fas fa-times"></i>
-            </button>
-            <h3>Help Desk Assistant</h3>
-            <p>How can I help you with your tickets today?</p>
-        </div>
-
-        <!-- Chat Messages -->
-        <div class="chat-messages" id="chatMessages">
-            <div class="welcome-message">
-                <h4>👋 Welcome!</h4>
-                <p>I'm your AI assistant for the Help Desk system. I can help you with:</p>
-                <ul>
-                    <li>Creating new tickets</li>
-                    <li>Checking ticket status</li>
-                    <li>Resolving common issues</li>
-                    <li>Answering questions about the system</li>
-                </ul>
+                <div class="card">
+                    <div class="card-body">
+                        <table class="table table-hover ticket-table">
+                            <thead>
+                            <tr>
+                                <th>Ticket ID</th>
+                                <th>Description</th>
+                                <th>Priority</th>
+                                <th>Status</th>
+                                <th>Created Date</th>
+                                <th>Actions</th>
+                            </tr>
+                            </thead>
+                            <tbody id="ticketTableBody">
+                            <?php if (empty($tickets)): ?>
+                                <tr><td colspan="6" style="text-align: center;">No tickets found</td></tr>
+                            <?php else: ?>
+                                <?php foreach ($tickets as $ticket): ?>
+                                    <tr data-status="<?php echo $ticket['Status']; ?>" data-priority="<?php echo $ticket['Priority']; ?>">
+                                        <td><?php echo $ticket['TicketID']; ?></td>
+                                        <td>
+                                            <?php
+                                            $description = htmlspecialchars($ticket['Description']);
+                                            echo strlen($description) > 25 ? substr($description, 0, 25) . '...' : $description;
+                                            ?>
+                                        </td>
+                                        <td><span class="priority-<?php echo htmlspecialchars($ticket['Priority']); ?>"><?php echo ucfirst($ticket['Priority']); ?></span></td>
+                                        <td><span class="status-<?php echo htmlspecialchars($ticket['Status']); ?>"><?php echo ucfirst($ticket['Status']); ?></span></td>
+                                        <td><?php echo date('M d, Y H:i', strtotime($ticket['CreatedDate'])); ?></td>
+                                        <td>
+                                            <a href="host_tickets.php?view_ticket=<?php echo $ticket['TicketID']; ?>" class="btn btn-sm btn-outline-primary" title="View details">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            <?php endif; ?>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
-        </div>
-
-        <!-- Typing Indicator -->
-        <div class="typing-indicator" id="typingIndicator">
-            <div class="typing-dots">
-                <span></span>
-                <span></span>
-                <span></span>
-            </div>
-        </div>
-
-        <!-- Chat Input -->
-        <div class="chat-input-container">
-            <textarea
-                class="chat-input"
-                id="chatInput"
-                placeholder="Type your question about tickets..."
-                rows="1"
-            ></textarea>
-            <button class="chat-send" id="chatSend">
-                <i class="fas fa-paper-plane"></i>
-            </button>
         </div>
     </div>
 </div>
+    <!-- Chat Widget -->
+    <div class="chat-widget">
+        <!-- Chat Toggle Button -->
+        <button class="chat-toggle" id="chatToggle">
+            <i class="fas fa-comments"></i>
+            <div class="chat-notification" id="chatNotification">1</div>
+        </button>
 
-<!-- Create Ticket Modal -->
-<div id="createTicketModal" class="modal">
-    <div class="modal-content">
-        <span class="close">×</span>
-        <h2>Create New Ticket</h2>
-        <form id="createTicketForm" method="POST" action="host_tickets.php">
-            <input type="hidden" name="action" value="create_ticket">
-            <input type="hidden" name="created_by" value="<?php echo $userId; ?>">
-            <div class="form-group">
-                <label for="category_id">Category:</label>
-                <select id="category_id" name="category_id">
-                    <option value="">Select Category</option>
-                    <?php foreach ($categories as $id => $name): ?>
-                        <option value="<?php echo $id; ?>"><?php echo htmlspecialchars($name); ?></option>
-                    <?php endforeach; ?>
-                </select>
+        <!-- Chat Container -->
+        <div class="chat-container" id="chatContainer">
+            <!-- Chat Header -->
+            <div class="chat-header">
+                <button class="chat-close" id="chatClose">
+                    <i class="fas fa-times"></i>
+                </button>
+                <h3>Help Desk Assistant</h3>
+                <p>How can I help you with your tickets today?</p>
             </div>
-            <div class="form-group">
-                <label for="description">Description:</label>
-                <textarea id="description" name="description" required placeholder="Describe the issue..."></textarea>
+
+            <!-- Chat Messages -->
+            <div class="chat-messages" id="chatMessages">
+                <div class="welcome-message">
+                    <h4>👋 Welcome!</h4>
+                    <p>I'm your AI assistant for the Help Desk system. I can help you with:</p>
+                    <ul>
+                        <li>Creating new tickets</li>
+                        <li>Checking ticket status</li>
+                        <li>Resolving common issues</li>
+                        <li>Answering questions about the system</li>
+                    </ul>
+                </div>
             </div>
-            <input type="hidden" name="priority" value="medium">
-            <button type="submit" class="submit-btn">Create Ticket</button>
-        </form>
+
+            <!-- Typing Indicator -->
+            <div class="typing-indicator" id="typingIndicator">
+                <div class="typing-dots">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+            </div>
+
+            <!-- Chat Input -->
+            <div class="chat-input-container">
+                <textarea
+                    class="chat-input"
+                    id="chatInput"
+                    placeholder="Type your question about tickets..."
+                    rows="1"
+                ></textarea>
+                <button class="chat-send" id="chatSend">
+                    <i class="fas fa-paper-plane"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Create Ticket Modal -->
+    <div id="createTicketModal" class="modal">
+        <div class="modal-content">
+            <span class="close">×</span>
+            <h2>Create New Ticket</h2>
+            <form id="createTicketForm" method="POST" action="host_tickets.php">
+                <input type="hidden" name="action" value="create_ticket">
+                <input type="hidden" name="created_by" value="<?php echo $userId; ?>">
+                <div class="form-group">
+                    <label for="category_id">Category:</label>
+                    <select id="category_id" name="category_id">
+                        <option value="">Select Category</option>
+                        <?php foreach ($categories as $id => $name): ?>
+                            <option value="<?php echo $id; ?>"><?php echo htmlspecialchars($name); ?></option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="description">Description:</label>
+                    <textarea id="description" name="description" required placeholder="Describe the issue..."></textarea>
+                </div>
+                <input type="hidden" name="priority" value="medium">
+                <button type="submit" class="submit-btn">Create Ticket</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- View Ticket Modal -->
+    <div id="viewTicketModal" class="modal">
+        <div class="modal-content">
+            <span class="close">×</span>
+            <h2>Ticket Details</h2>
+            <div id="ticketDetails"><?php echo $ticketDetailsHTML; ?></div>
+        </div>
     </div>
 </div>
-
-<!-- View Ticket Modal -->
-<div id="viewTicketModal" class="modal">
-    <div class="modal-content">
-        <span class="close">×</span>
-        <h2>Ticket Details</h2>
-        <div id="ticketDetails"><?php echo $ticketDetailsHTML; ?></div>
-    </div>
-</div>
-
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+<script src="../../Sneat/assets/vendor/libs/fullcalendar/fullcalendar.js"></script>
+<script src="../../Sneat/assets/vendor/libs/moment/moment.js"></script>
+<script src="../../Sneat/assets/vendor/libs/jquery/jquery.js"></script>
+<script src="../../Sneat/assets/vendor/libs/popper/popper.js"></script>
+<script src="../../Sneat/assets/vendor/js/bootstrap.js"></script>
+<script src="../../Sneat/assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.js"></script>
+<script src="../../Sneat/assets/vendor/js/menu.js"></script>
+<script src="../../Sneat/assets/js/main.js"></script>
 <script>
+    $(document).ready(function() {
+        // Sidebar toggle functionality
+        function updateTooltip() {
+            const $toggle = $('.layout-menu-toggle');
+            const isCollapsed = $('html').hasClass('layout-menu-collapsed');
+
+            if (isCollapsed) {
+                $toggle.attr('data-tooltip', 'Expand Menu');
+                $toggle.attr('title', 'Expand Menu');
+            } else {
+                $toggle.attr('data-tooltip', 'Collapse Menu');
+                $toggle.attr('title', 'Collapse Menu');
+            }
+        }
+
+        $('.layout-menu-toggle').off('click').on('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            const $html = $('html');
+            const $sidebar = $('#layout-menu');
+            const $toggle = $(this);
+
+            $toggle.css('pointer-events', 'none');
+            $html.toggleClass('layout-menu-collapsed');
+            const isCollapsed = $html.hasClass('layout-menu-collapsed');
+
+            if (isCollapsed) {
+                $sidebar.css({
+                    'width': '78px',
+                    'min-width': '78px',
+                    'max-width': '78px'
+                });
+            } else {
+                $sidebar.css({
+                    'width': '260px',
+                    'min-width': '260px',
+                    'max-width': '260px'
+                });
+            }
+
+            updateTooltip();
+            localStorage.setItem('layoutMenuCollapsed', isCollapsed);
+
+            setTimeout(() => {
+                $toggle.css('pointer-events', 'auto');
+            }, 300);
+        });
+
+        const isCollapsed = localStorage.getItem('layoutMenuCollapsed') === 'true';
+        if (isCollapsed) {
+            $('html').addClass('layout-menu-collapsed');
+            $('#layout-menu').css({
+                'width': '78px',
+                'min-width': '78px',
+                'max-width': '78px'
+            });
+        } else {
+            $('#layout-menu').css({
+                'width': '260px',
+                'min-width': '260px',
+                'max-width': '260px'
+            });
+        }
+
+        updateTooltip();
+
+    });
     document.addEventListener('DOMContentLoaded', function() {
         console.log('DOM loaded, initializing event listeners');
 

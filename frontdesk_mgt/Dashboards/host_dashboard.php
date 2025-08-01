@@ -629,9 +629,7 @@ echo "<!-- Debug: " . count($appointments) . " appointments loaded -->";
                     </button>
                 </div>
 
-        </div>
-
-        </nav>
+            </nav>
         <div class="container-fluid container-p-y">
             <div class="row mb-4">
                 <div class="col-md-8">

@@ -582,6 +582,7 @@ $conn->close();
                                 <h4 class="mb-0 fw-bold ms-2">Manage Tickets</h4>
                             </div>
                         </div>
+
                         <!-- Chat Widget -->
                         <div class="chat-widget">
                             <!-- Chat Toggle Button -->
@@ -692,6 +693,7 @@ $conn->close();
                         </div>
 
                 </nav>
+
                     <div class="content-wrapper">
                         <div class="container-xxl flex-grow-1 container-p-y">
 

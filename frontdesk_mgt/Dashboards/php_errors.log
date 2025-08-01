@@ -29397,3 +29397,237 @@ Stack trace:
 [01-Aug-2025 15:35:41 Europe/Berlin] PHP Warning:  Undefined variable $tickets in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\host_tickets.php on line 946
 [01-Aug-2025 15:35:41 Europe/Berlin] PHP Stack trace:
 [01-Aug-2025 15:35:41 Europe/Berlin] PHP   1. {main}() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\host_tickets.php:0
+[01-Aug-2025 15:57:29 Europe/Berlin] PHP Fatal error:  Uncaught mysqli_sql_exception: Incorrect integer value: '' for column 'CreatedBy' at row 1 in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\ticket_ops.php:46
+Stack trace:
+#0 C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\ticket_ops.php(46): mysqli_stmt->execute()
+#1 C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\host_tickets.php(21): createTicket(Object(mysqli))
+#2 {main}
+  thrown in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\ticket_ops.php on line 46
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP Warning:  Undefined array key "CheckInTime" in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_frontend_dash.php on line 1543
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP Stack trace:
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP   1. {main}() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_frontend_dash.php:0
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP Warning:  Undefined array key "SessionEndTime" in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_frontend_dash.php on line 1544
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP Stack trace:
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP   1. {main}() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_frontend_dash.php:0
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP Warning:  Undefined array key "CheckInTime" in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_frontend_dash.php on line 1543
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP Stack trace:
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP   1. {main}() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_frontend_dash.php:0
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP Warning:  Undefined array key "SessionEndTime" in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_frontend_dash.php on line 1544
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP Stack trace:
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP   1. {main}() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_frontend_dash.php:0
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP Warning:  Undefined array key "CheckInTime" in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_frontend_dash.php on line 1543
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP Stack trace:
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP   1. {main}() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_frontend_dash.php:0
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP Warning:  Undefined array key "SessionEndTime" in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_frontend_dash.php on line 1544
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP Stack trace:
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP   1. {main}() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_frontend_dash.php:0
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP Warning:  Undefined array key "CheckInTime" in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_frontend_dash.php on line 1543
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP Stack trace:
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP   1. {main}() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_frontend_dash.php:0
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP Warning:  Undefined array key "SessionEndTime" in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_frontend_dash.php on line 1544
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP Stack trace:
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP   1. {main}() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_frontend_dash.php:0
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP Warning:  Undefined array key "CheckInTime" in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_frontend_dash.php on line 1543
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP Stack trace:
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP   1. {main}() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_frontend_dash.php:0
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP Warning:  Undefined array key "SessionEndTime" in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_frontend_dash.php on line 1544
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP Stack trace:
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP   1. {main}() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_frontend_dash.php:0
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP Warning:  Undefined array key "CheckInTime" in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_frontend_dash.php on line 1543
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP Stack trace:
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP   1. {main}() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_frontend_dash.php:0
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP Warning:  Undefined array key "SessionEndTime" in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_frontend_dash.php on line 1544
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP Stack trace:
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP   1. {main}() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_frontend_dash.php:0
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP Warning:  Undefined array key "CheckInTime" in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_frontend_dash.php on line 1543
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP Stack trace:
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP   1. {main}() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_frontend_dash.php:0
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP Warning:  Undefined array key "SessionEndTime" in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_frontend_dash.php on line 1544
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP Stack trace:
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP   1. {main}() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_frontend_dash.php:0
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP Warning:  Undefined array key "CheckInTime" in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_frontend_dash.php on line 1543
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP Stack trace:
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP   1. {main}() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_frontend_dash.php:0
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP Warning:  Undefined array key "SessionEndTime" in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_frontend_dash.php on line 1544
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP Stack trace:
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP   1. {main}() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_frontend_dash.php:0
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP Warning:  Undefined array key "CheckInTime" in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_frontend_dash.php on line 1543
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP Stack trace:
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP   1. {main}() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_frontend_dash.php:0
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP Warning:  Undefined array key "SessionEndTime" in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_frontend_dash.php on line 1544
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP Stack trace:
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP   1. {main}() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_frontend_dash.php:0
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP Warning:  Undefined array key "CheckInTime" in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_frontend_dash.php on line 1543
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP Stack trace:
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP   1. {main}() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_frontend_dash.php:0
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP Warning:  Undefined array key "SessionEndTime" in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_frontend_dash.php on line 1544
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP Stack trace:
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP   1. {main}() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_frontend_dash.php:0
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP Warning:  Undefined array key "CheckInTime" in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_frontend_dash.php on line 1543
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP Stack trace:
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP   1. {main}() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_frontend_dash.php:0
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP Warning:  Undefined array key "SessionEndTime" in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_frontend_dash.php on line 1544
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP Stack trace:
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP   1. {main}() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_frontend_dash.php:0
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP Warning:  Undefined array key "CheckInTime" in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_frontend_dash.php on line 1543
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP Stack trace:
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP   1. {main}() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_frontend_dash.php:0
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP Warning:  Undefined array key "SessionEndTime" in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_frontend_dash.php on line 1544
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP Stack trace:
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP   1. {main}() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_frontend_dash.php:0
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP Warning:  Undefined array key "CheckInTime" in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_frontend_dash.php on line 1543
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP Stack trace:
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP   1. {main}() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_frontend_dash.php:0
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP Warning:  Undefined array key "SessionEndTime" in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_frontend_dash.php on line 1544
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP Stack trace:
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP   1. {main}() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_frontend_dash.php:0
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP Warning:  Undefined array key "CheckInTime" in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_frontend_dash.php on line 1543
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP Stack trace:
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP   1. {main}() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_frontend_dash.php:0
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP Warning:  Undefined array key "SessionEndTime" in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_frontend_dash.php on line 1544
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP Stack trace:
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP   1. {main}() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_frontend_dash.php:0
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP Warning:  Undefined array key "CheckInTime" in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_frontend_dash.php on line 1543
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP Stack trace:
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP   1. {main}() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_frontend_dash.php:0
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP Warning:  Undefined array key "SessionEndTime" in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_frontend_dash.php on line 1544
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP Stack trace:
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP   1. {main}() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_frontend_dash.php:0
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP Warning:  Undefined array key "CheckInTime" in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_frontend_dash.php on line 1543
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP Stack trace:
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP   1. {main}() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_frontend_dash.php:0
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP Warning:  Undefined array key "SessionEndTime" in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_frontend_dash.php on line 1544
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP Stack trace:
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP   1. {main}() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_frontend_dash.php:0
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP Warning:  Undefined array key "CheckInTime" in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_frontend_dash.php on line 1543
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP Stack trace:
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP   1. {main}() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_frontend_dash.php:0
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP Warning:  Undefined array key "SessionEndTime" in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_frontend_dash.php on line 1544
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP Stack trace:
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP   1. {main}() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_frontend_dash.php:0
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP Warning:  Undefined array key "CheckInTime" in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_frontend_dash.php on line 1543
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP Stack trace:
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP   1. {main}() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_frontend_dash.php:0
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP Warning:  Undefined array key "SessionEndTime" in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_frontend_dash.php on line 1544
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP Stack trace:
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP   1. {main}() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_frontend_dash.php:0
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP Warning:  Undefined array key "CheckInTime" in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_frontend_dash.php on line 1543
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP Stack trace:
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP   1. {main}() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_frontend_dash.php:0
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP Warning:  Undefined array key "SessionEndTime" in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_frontend_dash.php on line 1544
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP Stack trace:
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP   1. {main}() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_frontend_dash.php:0
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP Warning:  Undefined array key "CheckInTime" in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_frontend_dash.php on line 1543
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP Stack trace:
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP   1. {main}() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_frontend_dash.php:0
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP Warning:  Undefined array key "SessionEndTime" in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_frontend_dash.php on line 1544
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP Stack trace:
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP   1. {main}() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_frontend_dash.php:0
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP Warning:  Undefined array key "CheckInTime" in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_frontend_dash.php on line 1543
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP Stack trace:
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP   1. {main}() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_frontend_dash.php:0
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP Warning:  Undefined array key "SessionEndTime" in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_frontend_dash.php on line 1544
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP Stack trace:
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP   1. {main}() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_frontend_dash.php:0
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP Warning:  Undefined array key "CheckInTime" in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_frontend_dash.php on line 1543
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP Stack trace:
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP   1. {main}() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_frontend_dash.php:0
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP Warning:  Undefined array key "SessionEndTime" in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_frontend_dash.php on line 1544
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP Stack trace:
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP   1. {main}() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_frontend_dash.php:0
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP Warning:  Undefined array key "CheckInTime" in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_frontend_dash.php on line 1543
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP Stack trace:
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP   1. {main}() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_frontend_dash.php:0
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP Warning:  Undefined array key "SessionEndTime" in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_frontend_dash.php on line 1544
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP Stack trace:
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP   1. {main}() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_frontend_dash.php:0
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP Warning:  Undefined array key "CheckInTime" in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_frontend_dash.php on line 1543
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP Stack trace:
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP   1. {main}() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_frontend_dash.php:0
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP Warning:  Undefined array key "SessionEndTime" in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_frontend_dash.php on line 1544
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP Stack trace:
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP   1. {main}() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_frontend_dash.php:0
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP Warning:  Undefined array key "CheckInTime" in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_frontend_dash.php on line 1543
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP Stack trace:
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP   1. {main}() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_frontend_dash.php:0
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP Warning:  Undefined array key "SessionEndTime" in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_frontend_dash.php on line 1544
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP Stack trace:
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP   1. {main}() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_frontend_dash.php:0
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP Warning:  Undefined array key "CheckInTime" in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_frontend_dash.php on line 1543
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP Stack trace:
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP   1. {main}() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_frontend_dash.php:0
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP Warning:  Undefined array key "SessionEndTime" in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_frontend_dash.php on line 1544
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP Stack trace:
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP   1. {main}() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_frontend_dash.php:0
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP Warning:  Undefined array key "CheckInTime" in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_frontend_dash.php on line 1543
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP Stack trace:
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP   1. {main}() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_frontend_dash.php:0
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP Warning:  Undefined array key "SessionEndTime" in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_frontend_dash.php on line 1544
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP Stack trace:
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP   1. {main}() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_frontend_dash.php:0
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP Warning:  Undefined array key "CheckInTime" in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_frontend_dash.php on line 1543
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP Stack trace:
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP   1. {main}() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_frontend_dash.php:0
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP Warning:  Undefined array key "SessionEndTime" in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_frontend_dash.php on line 1544
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP Stack trace:
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP   1. {main}() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_frontend_dash.php:0
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP Warning:  Undefined array key "CheckInTime" in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_frontend_dash.php on line 1543
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP Stack trace:
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP   1. {main}() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_frontend_dash.php:0
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP Warning:  Undefined array key "SessionEndTime" in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_frontend_dash.php on line 1544
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP Stack trace:
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP   1. {main}() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_frontend_dash.php:0
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP Warning:  Undefined array key "CheckInTime" in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_frontend_dash.php on line 1543
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP Stack trace:
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP   1. {main}() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_frontend_dash.php:0
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP Warning:  Undefined array key "SessionEndTime" in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_frontend_dash.php on line 1544
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP Stack trace:
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP   1. {main}() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_frontend_dash.php:0
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP Warning:  Undefined array key "CheckInTime" in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_frontend_dash.php on line 1543
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP Stack trace:
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP   1. {main}() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_frontend_dash.php:0
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP Warning:  Undefined array key "SessionEndTime" in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_frontend_dash.php on line 1544
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP Stack trace:
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP   1. {main}() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_frontend_dash.php:0
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP Warning:  Undefined array key "CheckInTime" in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_frontend_dash.php on line 1543
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP Stack trace:
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP   1. {main}() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_frontend_dash.php:0
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP Warning:  Undefined array key "SessionEndTime" in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_frontend_dash.php on line 1544
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP Stack trace:
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP   1. {main}() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_frontend_dash.php:0
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP Warning:  Undefined array key "CheckInTime" in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_frontend_dash.php on line 1543
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP Stack trace:
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP   1. {main}() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_frontend_dash.php:0
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP Warning:  Undefined array key "SessionEndTime" in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_frontend_dash.php on line 1544
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP Stack trace:
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP   1. {main}() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_frontend_dash.php:0
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP Warning:  Undefined array key "CheckInTime" in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_frontend_dash.php on line 1543
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP Stack trace:
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP   1. {main}() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_frontend_dash.php:0
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP Warning:  Undefined array key "SessionEndTime" in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_frontend_dash.php on line 1544
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP Stack trace:
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP   1. {main}() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_frontend_dash.php:0
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP Warning:  Undefined array key "CheckInTime" in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_frontend_dash.php on line 1543
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP Stack trace:
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP   1. {main}() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_frontend_dash.php:0
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP Warning:  Undefined array key "SessionEndTime" in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_frontend_dash.php on line 1544
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP Stack trace:
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP   1. {main}() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_frontend_dash.php:0
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP Warning:  Undefined array key "CheckInTime" in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_frontend_dash.php on line 1543
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP Stack trace:
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP   1. {main}() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_frontend_dash.php:0
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP Warning:  Undefined array key "SessionEndTime" in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_frontend_dash.php on line 1544
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP Stack trace:
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP   1. {main}() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_frontend_dash.php:0
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP Warning:  Undefined array key "CheckInTime" in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_frontend_dash.php on line 1543
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP Stack trace:
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP   1. {main}() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_frontend_dash.php:0
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP Warning:  Undefined array key "SessionEndTime" in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_frontend_dash.php on line 1544
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP Stack trace:
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP   1. {main}() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_frontend_dash.php:0
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP Warning:  Undefined array key "CheckInTime" in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_frontend_dash.php on line 1543
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP Stack trace:
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP   1. {main}() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_frontend_dash.php:0
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP Warning:  Undefined array key "SessionEndTime" in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_frontend_dash.php on line 1544
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP Stack trace:
+[01-Aug-2025 16:51:00 Europe/Berlin] PHP   1. {main}() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_frontend_dash.php:0
