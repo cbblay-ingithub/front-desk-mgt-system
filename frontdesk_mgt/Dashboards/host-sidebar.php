@@ -145,7 +145,7 @@ $currentPage = basename($_SERVER['PHP_SELF']);
         </li>
 
         <!-- Manage Tickets -->
-        <li class="menu-item <?= ($currentPage == 'staff_tickets.php') ? 'active' : '' ?>">
+        <li class="menu-item <?= ($currentPage == 'host_tickets.php') ? 'active' : '' ?>">
             <a href="host_tickets.php" class="menu-link" data-tooltip="Manage Tickets">
                 <i class="menu-icon icon-base bx bx-message-square-detail"></i>
                 <div data-i18n="Manage Tickets">Manage Tickets</div>
