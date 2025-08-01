@@ -507,7 +507,7 @@ $conn->close();
         }
     </style>
 </head>
-<body data-user-id="<?php echo $userId; ?>">
+<body>
 <div class="layout-wrapper layout-content-navbar">
     <div class="layout-container">
         <?php include 'host-sidebar.php'; ?>
@@ -551,6 +551,7 @@ $conn->close();
                             <tr>
                                 <th>Ticket ID</th>
                                 <th>Description</th>
+                                <th>Category</th>
                                 <th>Priority</th>
                                 <th>Status</th>
                                 <th>Created Date</th>
@@ -570,6 +571,7 @@ $conn->close();
                                             echo strlen($description) > 25 ? substr($description, 0, 25) . '...' : $description;
                                             ?>
                                         </td>
+                                        <td><?php echo $ticket['CategoryName'] ? htmlspecialchars($ticket['CategoryName']) : 'Uncategorized'; ?></td>
                                         <td><span class="priority-<?php echo htmlspecialchars($ticket['Priority']); ?>"><?php echo ucfirst($ticket['Priority']); ?></span></td>
                                         <td><span class="status-<?php echo htmlspecialchars($ticket['Status']); ?>"><?php echo ucfirst($ticket['Status']); ?></span></td>
                                         <td><?php echo date('M d, Y H:i', strtotime($ticket['CreatedDate'])); ?></td>
@@ -646,14 +648,33 @@ $conn->close();
         </div>
     </div>
 
-    <!-- Create Ticket Modal -->
-    <div id="createTicketModal" class="modal">
-        <div class="modal-content">
-            <span class="close">×</span>
-            <h2>Create New Ticket</h2>
-            <form id="createTicketForm" method="POST" action="host_tickets.php">
-                <input type="hidden" name="action" value="create_ticket">
-                <input type="hidden" name="created_by" value="<?php echo $userId; ?>">
+<!-- Create Ticket Modal -->
+<div id="createTicketModal" class="modal">
+    <div class="modal-content">
+        <span class="close">×</span>
+        <h2>Create New Ticket</h2>
+        <form id="createTicketForm" method="POST" action="FD_tickets.php">
+            <input type="hidden" name="action" value="create_ticket">
+            <input type="hidden" name="created_by" value="<?php echo $userId; ?>">
+            <div class="form-group">
+                <label for="created_by">Created By:</label>
+                <select id="created_by" name="created_by" required>
+                    <option value="">Select User</option>
+                    <?php foreach ($users as $id => $name): ?>
+                        <option value="<?php echo $id; ?>"><?php echo htmlspecialchars($name); ?></option>
+                    <?php endforeach; ?>
+                </select>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="assigned_to">Assigned To:</label>
+                    <select id="assigned_to" name="assigned_to">
+                        <option value="">Select Assignee</option>
+                        <?php foreach ($users as $id => $name): ?>
+                            <option value="<?php echo $id; ?>"><?php echo htmlspecialchars($name); ?></option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
                 <div class="form-group">
                     <label for="category_id">Category:</label>
                     <select id="category_id" name="category_id">
@@ -663,15 +684,24 @@ $conn->close();
                         <?php endforeach; ?>
                     </select>
                 </div>
-                <div class="form-group">
-                    <label for="description">Description:</label>
-                    <textarea id="description" name="description" required placeholder="Describe the issue..."></textarea>
-                </div>
-                <input type="hidden" name="priority" value="medium">
-                <button type="submit" class="submit-btn">Create Ticket</button>
-            </form>
-        </div>
+            </div>
+            <div class="form-group">
+                <label for="description">Description:</label>
+                <textarea id="description" name="description" required placeholder="Describe the issue..."></textarea>
+            </div>
+            <div class="form-group">
+                <label for="priority">Priority:</label>
+                <select id="priority" name="priority" required>
+                    <option value="low">Low</option>
+                    <option value="medium" selected>Medium</option>
+                    <option value="high">High</option>
+                    <option value="critical">Critical</option>
+                </select>
+            </div>
+            <button type="submit" class="submit-btn">Create Ticket</button>
+        </form>
     </div>
+</div>
 
     <!-- View Ticket Modal -->
     <div id="viewTicketModal" class="modal">

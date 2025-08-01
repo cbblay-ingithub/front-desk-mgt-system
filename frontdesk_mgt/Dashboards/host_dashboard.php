@@ -841,6 +841,7 @@ echo "<!-- Debug: " . count($appointments) . " appointments loaded -->";
     </div>
 </div>
 
+    <!--Schedule Modal-->
 <div class="modal fade" id="scheduleModal" tabindex="-1" aria-labelledby="scheduleModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -888,6 +889,7 @@ echo "<!-- Debug: " . count($appointments) . " appointments loaded -->";
     </div>
 </div>
 
+<!--Reschedule Modal-->
 <div class="modal fade" id="rescheduleModal" tabindex="-1" aria-labelledby="rescheduleModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
