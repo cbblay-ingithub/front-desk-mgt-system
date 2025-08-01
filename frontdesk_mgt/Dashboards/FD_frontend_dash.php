@@ -850,7 +850,7 @@ function checkTimeConflict($hostId, $appointmentTime, $excludeAppointmentId = nu
     <a href="front-desk_dashboard.php"><i class="fas fa-tachometer-alt me-2"></i> Dashboard</a>
     <a href="visitor-mgt.php"><i class="fas fa-users me-2"></i>Manage Visitors</a>
     <a href="FD_frontend_dash.php"><i class="fas fa-calendar-check me-2"></i> Appointments</a>
-    <a href="staff_tickets.php"><i class="fas fa-ticket"></i> Help Desk Tickets</a>
+    <a href="FD_tickets.php"><i class="fas fa-ticket"></i> Help Desk Tickets</a>
     <a href="lost_found.php"><i class="fa-solid fa-suitcase"></i> View Lost & Found</a>
     <a href="../Logout.php"><i class="fas fa-sign-out-alt me-2"></i> Logout</a>
 </div>
