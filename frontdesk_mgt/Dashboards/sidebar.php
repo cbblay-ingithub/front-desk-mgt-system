@@ -1,5 +1,5 @@
 <?php
-// sidebar.php
+$currentPage = basename($_SERVER['PHP_SELF']);
 ?>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -41,7 +41,7 @@
         </li>
 
         <!-- Manage Tickets -->
-        <li class="menu-item">
+        <li class="menu-item <?= ($currentPage == 'help_desk.php') ? 'active' : '' ?>">
             <a href="help_desk.php" class="menu-link">
                 <i class="menu-icon icon-base bx bx-message-square-detail"></i>
                 <div data-i18n="Manage Tickets">Manage Tickets</div>
