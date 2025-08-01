@@ -488,7 +488,9 @@ $conn->close();
         <a href="visitor-mgt.php"><i class="fas fa-users me-2"></i> Manage Visitors</a>
         <a href="FD_frontend_dash.php"><i class="fas fa-calendar-check me-2"></i> Appointments</a>
         <a href="FD_tickets.php" class="active"><i class="fas fa-ticket"></i> Help Desk Tickets</a>
+        <!--
         <a href="lost_found.php"><i class="fa-solid fa-suitcase me-2"></i> View Lost & Found</a>
+        -->
         <a href="../Logout.php"><i class="fas fa-sign-out-alt me-2"></i> Logout</a>
     </div>
     <div class="container">
@@ -655,7 +657,7 @@ $conn->close();
     <div class="modal-content">
         <span class="close">×</span>
         <h2>Create New Ticket</h2>
-        <form id="createTicketForm" method="POST" action="frontdesk_tickets.php">
+        <form id="createTicketForm" method="POST" action="FD_tickets.php">
             <input type="hidden" name="action" value="create_ticket">
             <input type="hidden" name="created_by" value="<?php echo $userId; ?>">
             <div class="form-group">
