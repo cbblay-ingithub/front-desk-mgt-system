@@ -45,7 +45,8 @@ echo "<!-- Debug: " . count($appointments) . " appointments loaded -->";
     <link rel="stylesheet" href="../../Sneat/assets/vendor/fonts/iconify-icons.css" />
     <link rel="stylesheet" href="../../Sneat/assets/vendor/css/core.css" />
     <link rel="stylesheet" href="../../Sneat/assets/css/demo.css" />
-    <link rel="stylesheet" href="../../Sneat/assets/vendor/libs/fullcalendar/fullcalendar.css" />
+    <link rel="stylesheet" href="../../Sneat/assets/vendor/libs/flatpickr/flatpickr.css" />
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.js"></script>
     <link rel="stylesheet" href="../../Sneat/assets/vendor/css/pages/app-calendar.css" />
     <!-- External Libraries -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
@@ -602,6 +603,57 @@ echo "<!-- Debug: " . count($appointments) . " appointments loaded -->";
             font-size: 13px;
             border-left: 4px solid #c33;
         }
+        /* Calendar specific styles */
+        .fc-event {
+            cursor: pointer;
+            margin-bottom: 2px;
+            padding: 2px 5px;
+        }
+
+        .fc-daygrid-event {
+            white-space: normal;
+        }
+
+        .fc-daygrid-day-frame {
+            min-height: 80px;
+        }
+
+        .fc .fc-daygrid-day-number {
+            padding: 4px;
+        }
+
+        .fc .fc-col-header-cell-cushion {
+            padding: 4px;
+        }
+
+        .fc .fc-toolbar-title {
+            font-size: 1.25rem;
+        }
+
+        .fc .fc-button {
+            padding: 0.4rem 0.8rem;
+            font-size: 0.875rem;
+        }
+
+        .fc .fc-button-primary {
+            background-color: var(--bs-primary);
+            border-color: var(--bs-primary);
+        }
+
+        .fc .fc-button-primary:hover {
+            background-color: var(--bs-primary-dark);
+            border-color: var(--bs-primary-dark);
+        }
+
+        .fc .fc-button-primary:not(:disabled).fc-button-active {
+            background-color: var(--bs-primary-dark);
+            border-color: var(--bs-primary-dark);
+        }
+
+        .fc .fc-button-primary:disabled {
+            background-color: var(--bs-primary-light);
+            border-color: var(--bs-primary-light);
+        }
     </style>
 </head>
 <body>
@@ -773,14 +825,14 @@ echo "<!-- Debug: " . count($appointments) . " appointments loaded -->";
                                     </div>
                                 </div>
                             </div>
-
-                            <!-- Calendar Content -->
                             <div class="col-md-9 app-calendar-content">
                                 <div class="card shadow-none border-0">
                                     <div class="card-body pb-0">
+                                        <!-- FullCalendar -->
                                         <div id="calendar"></div>
                                     </div>
                                 </div>
+                                <div class="app-overlay"></div>
                             </div>
                         </div>
                     </div>
@@ -920,8 +972,10 @@ echo "<!-- Debug: " . count($appointments) . " appointments loaded -->";
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.6.13/flatpickr.min.js"></script>
-<script src="../../Sneat/assets/vendor/libs/fullcalendar/fullcalendar.js"></script>
-<script src="../../Sneat/assets/vendor/libs/moment/moment.js"></script>
+    <script src="../../Sneat/assets/vendor/libs/moment/moment.js"></script>
+    <script src="../../Sneat/assets/vendor/libs/fullcalendar/fullcalendar.js"></script>
+    <script src="../../Sneat/assets/vendor/libs/flatpickr/flatpickr.js"></script>
+    <script src="../../Sneat/assets/vendor/libs/select2/select2.js"></script>
 <script src="../../Sneat/assets/vendor/libs/jquery/jquery.js"></script>
 <script src="../../Sneat/assets/vendor/libs/popper/popper.js"></script>
 <script src="../../Sneat/assets/vendor/js/bootstrap.js"></script>
@@ -1044,58 +1098,24 @@ echo "<!-- Debug: " . count($appointments) . " appointments loaded -->";
                 return null;
             }
 
-            // Debug: Check if FullCalendar is loaded
-            if (typeof FullCalendar === 'undefined') {
-                console.error('FullCalendar library not loaded!');
-                return null;
-            }
-
-            console.log('Appointments data for calendar:', appointmentsData);
-
-            // Convert PHP appointments to FullCalendar format with better error handling
+            // Convert PHP appointments to FullCalendar format
             const calendarEvents = [];
 
             if (Array.isArray(appointmentsData) && appointmentsData.length > 0) {
-                appointmentsData.forEach(function(apt, index) {
-                    console.log(`Processing appointment ${index}:`, apt);
-
-                    // Validate required fields
-                    if (!apt.AppointmentID || !apt.AppointmentTime || !apt.Name) {
-                        console.warn(`Skipping invalid appointment at index ${index}:`, apt);
-                        return;
-                    }
-
-                    // Create proper ISO date string for FullCalendar
-                    let eventDate;
-                    try {
-                        // Handle different date formats from PHP
-                        if (apt.AppointmentTime.includes('T')) {
-                            // Already in ISO format
-                            eventDate = apt.AppointmentTime;
-                        } else {
-                            // Convert MySQL datetime to ISO format
-                            eventDate = moment(apt.AppointmentTime).toISOString();
-                        }
-
-                        console.log(`Converted date for appointment ${apt.AppointmentID}: ${apt.AppointmentTime} -> ${eventDate}`);
-                    } catch (e) {
-                        console.error(`Date conversion failed for appointment ${apt.AppointmentID}:`, e);
-                        return;
-                    }
-
+                appointmentsData.forEach(function(apt) {
                     // Map status to colors
                     const statusColors = {
                         'Upcoming': '#007bff',     // Blue
                         'Ongoing': '#17a2b8',      // Info blue
                         'Completed': '#28a745',    // Green
-                        'Cancelled': '#dc3545',    // Red
-                        'Overdue': '#ffc107'       // Yellow
+                        'Cancelled': '#dc3545',     // Red
+                        'Overdue': '#ffc107'        // Yellow
                     };
 
                     const event = {
                         id: apt.AppointmentID.toString(),
                         title: apt.Name,
-                        start: eventDate,
+                        start: apt.AppointmentTime,
                         allDay: false,
                         backgroundColor: statusColors[apt.Status] || '#6c757d',
                         borderColor: statusColors[apt.Status] || '#6c757d',
@@ -1103,22 +1123,14 @@ echo "<!-- Debug: " . count($appointments) . " appointments loaded -->";
                         extendedProps: {
                             status: apt.Status,
                             email: apt.Email || '',
-                            appointmentId: apt.AppointmentID,
-                            originalData: apt
-                        },
-                        className: 'fc-event-' + apt.Status.toLowerCase().replace(/\s+/g, '-')
+                            appointmentId: apt.AppointmentID
+                        }
                     };
-
-                    console.log(`Created calendar event:`, event);
                     calendarEvents.push(event);
                 });
-            } else {
-                console.warn('No appointments data available or data is not an array');
             }
 
-            console.log('Final calendar events array:', calendarEvents);
-
-            // Initialize FullCalendar with better error handling
+            // Initialize FullCalendar
             try {
                 calendar = new FullCalendar.Calendar(calendarEl, {
                     initialView: 'dayGridMonth',
@@ -1129,62 +1141,33 @@ echo "<!-- Debug: " . count($appointments) . " appointments loaded -->";
                     },
                     height: 'auto',
                     events: calendarEvents,
-                    eventDisplay: 'block', // Ensure events are displayed
+                    eventDisplay: 'block',
                     displayEventTime: true,
                     displayEventEnd: false,
                     eventClick: function(info) {
-                        console.log('Event clicked:', info.event);
                         showAppointmentDetails(info.event);
                     },
                     eventDidMount: function(info) {
-                        console.log('Event mounted:', info.event.title);
-                        try {
-                            // Add tooltip
-                            const tooltipTitle = `${info.event.title} - ${info.event.extendedProps.status}\nTime: ${moment(info.event.start).format('h:mm A')}`;
-                            info.el.setAttribute('title', tooltipTitle);
-
-                            // Add custom styling
-                            info.el.style.cursor = 'pointer';
-                        } catch (e) {
-                            console.warn('Event mount processing failed:', e);
-                        }
-                    },
-                    eventSourceFailure: function(errorObj) {
-                        console.error('Calendar event source failed:', errorObj);
-                    },
-                    loading: function(isLoading) {
-                        console.log('Calendar loading:', isLoading);
-                    },
-                    eventDataTransform: function(eventData) {
-                        console.log('Transforming event data:', eventData);
-                        return eventData;
+                        // Add tooltip
+                        const tooltipTitle = `${info.event.title} - ${info.event.extendedProps.status}\nTime: ${moment(info.event.start).format('h:mm A')}`;
+                        info.el.setAttribute('title', tooltipTitle);
+                        info.el.style.cursor = 'pointer';
                     }
                 });
 
-                console.log('FullCalendar instance created, attempting to render...');
                 calendar.render();
                 console.log('Calendar rendered successfully');
 
-                // Verify events are loaded
-                setTimeout(() => {
-                    const loadedEvents = calendar.getEvents();
-                    console.log(`Calendar loaded ${loadedEvents.length} events:`, loadedEvents);
-                }, 100);
-
             } catch (error) {
                 console.error('Calendar initialization/render failed:', error);
-                console.error('Stack trace:', error.stack);
-
-                // Show fallback message
                 calendarEl.innerHTML = `
-                <div class="alert alert-danger" role="alert">
-                    <h4 class="alert-heading">Calendar Error!</h4>
-                    <p>Failed to initialize calendar. Please check the console for details.</p>
-                    <hr>
-                    <p class="mb-0">Error: ${error.message}</p>
-                </div>
-            `;
-
+            <div class="alert alert-danger" role="alert">
+                <h4 class="alert-heading">Calendar Error!</h4>
+                <p>Failed to initialize calendar. Please check the console for details.</p>
+                <hr>
+                <p class="mb-0">Error: ${error.message}</p>
+            </div>
+        `;
                 return null;
             }
 
@@ -1228,6 +1211,7 @@ echo "<!-- Debug: " . count($appointments) . " appointments loaded -->";
         // Initialize inline calendar
         setTimeout(() => {
             try {
+                // Initialize inline calendar
                 flatpickr(".inline-calendar", {
                     inline: true,
                     onChange: function(selectedDates) {
