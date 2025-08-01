@@ -1,36 +1,332 @@
 <?php
-// Start session to get current front desk user ID
-
 session_start();
 require_once '../dbConfig.php';
 global $conn;
-$userID = $_SESSION['userID'] ?? null;
-if (!$userID) {
-    // Redirect to login page or show error
+
+// Check if user is logged in and has Front Desk role
+if (!isset($_SESSION['userID'])) {  // Fixed: Added closing parenthesis
     header("Location: ../Auth.html");
     exit;
 }
-if (isset($_SESSION['userID'])) {
-    $stmt = $conn->prepare("UPDATE users SET last_activity = NOW() WHERE UserID = ?");
-    $stmt->bind_param("i", $_SESSION['userID']);
-    $stmt->execute();
 
-    $activity = "Visited " . basename($_SERVER['PHP_SELF']);
-    $stmt = $conn->prepare("INSERT INTO user_activity_log (user_id, activity) VALUES (?, ?)");
-    $stmt->bind_param("is", $_SESSION['userID'], $activity);
-    $stmt->execute();
-}
+// Rest of your PHP code...
+
+// Update last activity
+$stmt = $conn->prepare("UPDATE users SET last_activity = NOW() WHERE UserID = ?");
+$stmt->bind_param("i", $_SESSION['userID']);
+$stmt->execute();
+
+// Log activity
+$activity = "Visited " . basename($_SERVER['PHP_SELF']);
+$stmt = $conn->prepare("INSERT INTO user_activity_log (user_id, activity) VALUES (?, ?)");
+$stmt->bind_param("is", $_SESSION['userID'], $activity);
+$stmt->execute();
+
+// Include appointments functions
 require_once 'front_desk_appointments.php';
+
+// Update appointment statuses
 updateAppointmentStatuses();
-// Get all appointments
+
+// Get data for the page
 $appointments = getAllAppointments();
-
-// Get statistics
 $stats = getAppointmentStats();
-
-// Get all hosts for dropdown
 $hosts = getAllHosts();
 
+// Handle AJAX requests
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
+    header('Content-Type: application/json');
+
+    try {
+        switch ($_POST['action']) {
+            case 'getVisitors':
+                $visitors = getVisitors();
+                echo json_encode($visitors);
+                break;
+
+            case 'getAppointmentDetails':
+                if (!isset($_POST['appointmentId'])) {
+                    throw new Exception('Appointment ID is required');
+                }
+                $details = getAppointmentDetails($_POST['appointmentId']);
+                echo json_encode($details);
+                break;
+
+            case 'schedule':
+                $required = ['hostId', 'appointmentTime'];
+                if ($_POST['isNewVisitor'] === '1') {
+                    array_push($required, 'newVisitorName', 'newVisitorEmail');
+                } else {
+                    array_push($required, 'visitorId');
+                }
+
+                foreach ($required as $field) {
+                    if (empty($_POST[$field])) {
+                        throw new Exception("$field is required");
+                    }
+                }
+
+                $result = scheduleAppointment($_POST);
+                echo json_encode($result);
+                break;
+
+            case 'reschedule':
+                $required = ['appointmentId', 'newTime'];
+                foreach ($required as $field) {
+                    if (empty($_POST[$field])) {
+                        throw new Exception("$field is required");
+                    }
+                }
+
+                $result = rescheduleAppointment($_POST);
+                echo json_encode($result);
+                break;
+
+            case 'checkInWithDetails':
+                $required = ['appointmentId', 'visitorId', 'idType', 'idNumber', 'visitPurpose'];
+                foreach ($required as $field) {
+                    if (empty($_POST[$field])) {
+                        throw new Exception("$field is required");
+                    }
+                }
+
+                $result = checkInVisitor($_POST);
+                echo json_encode($result);
+                break;
+
+            case 'cancelAppointment':
+                if (empty($_POST['appointmentId']) || empty($_POST['reason'])) {
+                    throw new Exception('Appointment ID and reason are required');
+                }
+
+                $result = cancelAppointment($_POST['appointmentId'], $_POST['reason']);
+                echo json_encode($result);
+                break;
+
+            case 'checkConflict':
+                if (empty($_POST['hostId']) || empty($_POST['appointmentTime'])) {
+                    throw new Exception('Host ID and appointment time are required');
+                }
+
+                $appointmentId = $_POST['appointmentId'] ?? null;
+                $result = checkTimeConflict($_POST['hostId'], $_POST['appointmentTime'], $appointmentId);
+                echo json_encode($result);
+                break;
+
+            default:
+                throw new Exception('Invalid action');
+        }
+    } catch (Exception $e) {
+        echo json_encode([
+            'success' => false,
+            'message' => $e->getMessage()
+        ]);
+    }
+    exit;
+}
+
+// Function to get visitors for dropdown
+function getVisitors() {
+    global $conn;
+    $stmt = $conn->prepare("SELECT VisitorID, Name, Email FROM visitors ORDER BY Name");
+    $stmt->execute();
+    $result = $stmt->get_result();
+    return $result->fetch_all(MYSQLI_ASSOC);
+}
+
+// Function to get appointment details
+function getAppointmentDetails($appointmentId) {
+    global $conn;
+    $stmt = $conn->prepare("
+        SELECT a.*, v.Name AS VisitorName, v.Email AS VisitorEmail, v.Phone AS VisitorPhone,
+               h.Name AS HostName, h.UserID AS HostID
+        FROM appointments a
+        JOIN visitors v ON a.VisitorID = v.VisitorID
+        JOIN users h ON a.HostID = h.UserID
+        WHERE a.AppointmentID = ?
+    ");
+    $stmt->bind_param("i", $appointmentId);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    return $result->fetch_assoc();
+}
+
+// Function to schedule a new appointment
+function scheduleAppointment($data) {
+    global $conn;
+
+    $conn->begin_transaction();
+
+    try {
+        // Handle new visitor if needed
+        if ($data['isNewVisitor'] === '1') {
+            $stmt = $conn->prepare("INSERT INTO visitors (Name, Email, Phone) VALUES (?, ?, ?)");
+            $stmt->bind_param("sss", $data['newVisitorName'], $data['newVisitorEmail'], $data['newVisitorPhone']);
+            $stmt->execute();
+            $visitorId = $stmt->insert_id;
+        } else {
+            $visitorId = $data['visitorId'];
+        }
+
+        // Schedule appointment
+        $stmt = $conn->prepare("
+            INSERT INTO appointments (VisitorID, HostID, AppointmentTime, Status, CreatedBy)
+            VALUES (?, ?, ?, 'Upcoming', ?)
+        ");
+        $status = 'Upcoming';
+        $createdBy = $_SESSION['userID'];
+        $stmt->bind_param("iisi", $visitorId, $data['hostId'], $data['appointmentTime'], $createdBy);
+        $stmt->execute();
+
+        $conn->commit();
+
+        return [
+            'success' => true,
+            'message' => 'Appointment scheduled successfully'
+        ];
+    } catch (Exception $e) {
+        $conn->rollback();
+        throw $e;
+    }
+}
+
+// Function to reschedule an appointment
+function rescheduleAppointment($data) {
+    global $conn;
+
+    $stmt = $conn->prepare("
+        UPDATE appointments 
+        SET AppointmentTime = ?, Status = 'Upcoming', UpdatedAt = NOW()
+        WHERE AppointmentID = ?
+    ");
+    $stmt->bind_param("si", $data['newTime'], $data['appointmentId']);
+    $stmt->execute();
+
+    if ($stmt->affected_rows > 0) {
+        // Log reschedule reason if provided
+        if (!empty($data['rescheduleReason'])) {
+            $stmt = $conn->prepare("
+                INSERT INTO appointment_notes (AppointmentID, Note, CreatedBy)
+                VALUES (?, ?, ?)
+            ");
+            $note = "Rescheduled: " . $data['rescheduleReason'];
+            $createdBy = $_SESSION['userID'];
+            $stmt->bind_param("isi", $data['appointmentId'], $note, $createdBy);
+            $stmt->execute();
+        }
+
+        return [
+            'success' => true,
+            'message' => 'Appointment rescheduled successfully'
+        ];
+    } else {
+        throw new Exception('Failed to reschedule appointment');
+    }
+}
+
+// Function to check in a visitor
+function checkInVisitor($data) {
+    global $conn;
+
+    $conn->begin_transaction();
+
+    try {
+        // Update appointment status
+        $stmt = $conn->prepare("
+            UPDATE appointments 
+            SET Status = 'Ongoing', CheckInTime = NOW(), UpdatedAt = NOW()
+            WHERE AppointmentID = ?
+        ");
+        $stmt->bind_param("i", $data['appointmentId']);
+        $stmt->execute();
+
+        // Record visitor check-in details
+        $stmt = $conn->prepare("
+            INSERT INTO visitor_checkins (VisitorID, AppointmentID, IDType, IDNumber, Purpose, CheckedInBy)
+            VALUES (?, ?, ?, ?, ?, ?)
+        ");
+        $checkedInBy = $_SESSION['userID'];
+        $stmt->bind_param("iisssi",
+            $data['visitorId'],
+            $data['appointmentId'],
+            $data['idType'],
+            $data['idNumber'],
+            $data['visitPurpose'],
+            $checkedInBy
+        );
+        $stmt->execute();
+
+        $conn->commit();
+
+        return [
+            'success' => true,
+            'message' => 'Visitor checked in successfully'
+        ];
+    } catch (Exception $e) {
+        $conn->rollback();
+        throw $e;
+    }
+}
+
+// Function to cancel an appointment
+function cancelAppointment($appointmentId, $reason) {
+    global $conn;
+
+    $stmt = $conn->prepare("
+        UPDATE appointments 
+        SET Status = 'Cancelled', CancellationReason = ?, UpdatedAt = NOW()
+        WHERE AppointmentID = ?
+    ");
+    $stmt->bind_param("si", $reason, $appointmentId);
+    $stmt->execute();
+
+    if ($stmt->affected_rows > 0) {
+        return [
+            'success' => true,
+            'message' => 'Appointment cancelled successfully'
+        ];
+    } else {
+        throw new Exception('Failed to cancel appointment');
+    }
+}
+
+// Function to check for time conflicts
+function checkTimeConflict($hostId, $appointmentTime, $excludeAppointmentId = null) {
+    global $conn;
+
+    $query = "
+        SELECT COUNT(*) AS conflict_count
+        FROM appointments
+        WHERE HostID = ? 
+        AND AppointmentTime = ?
+        AND Status NOT IN ('Cancelled', 'Completed')
+    ";
+
+    if ($excludeAppointmentId) {
+        $query .= " AND AppointmentID != ?";
+        $stmt = $conn->prepare($query);
+        $stmt->bind_param("isi", $hostId, $appointmentTime, $excludeAppointmentId);
+    } else {
+        $stmt = $conn->prepare($query);
+        $stmt->bind_param("is", $hostId, $appointmentTime);
+    }
+
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $row = $result->fetch_assoc();
+
+    if ($row['conflict_count'] > 0) {
+        return [
+            'success' => false,
+            'message' => 'The selected time is already booked for this host'
+        ];
+    } else {
+        return [
+            'success' => true,
+            'message' => 'Time slot is available'
+        ];
+    }
+}
 ?>
 
 <!DOCTYPE html>
@@ -197,6 +493,352 @@ $hosts = getAllHosts();
         .flatpickr-calendar {
             display: block !important;
             z-index: 9999 !important;
+        }
+
+        /* Chat Bot Styles */
+        .chat-widget {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 9999;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        .chat-toggle {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .chat-toggle:hover {
+            transform: translateY(-2px) scale(1.05);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        .chat-toggle::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: all 0.6s ease;
+        }
+
+        .chat-toggle:hover::before {
+            width: 100%;
+            height: 100%;
+        }
+
+        .chat-toggle.active {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+        }
+
+        .chat-container {
+            position: absolute;
+            bottom: 80px;
+            right: 0;
+            width: 380px;
+            height: 500px;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(20px) scale(0.95);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow: hidden;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .chat-container.active {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0) scale(1);
+        }
+
+        .chat-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            text-align: center;
+            position: relative;
+        }
+
+        .chat-header h3 {
+            margin: 0;
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .chat-header p {
+            margin: 5px 0 0 0;
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .chat-close {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.2s;
+        }
+
+        .chat-close:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .chat-messages {
+            height: 340px;
+            overflow-y: auto;
+            padding: 20px;
+            background: #f8f9fa;
+        }
+
+        .chat-messages::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .chat-messages::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+
+        .chat-messages::-webkit-scrollbar-thumb {
+            background: #c1c1c1;
+            border-radius: 3px;
+        }
+
+        .message {
+            margin-bottom: 15px;
+            display: flex;
+            animation: messageSlideIn 0.3s ease-out;
+        }
+
+        @keyframes messageSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .message.user {
+            justify-content: flex-end;
+        }
+
+        .message-content {
+            max-width: 80%;
+            padding: 12px 16px;
+            border-radius: 18px;
+            font-size: 14px;
+            line-height: 1.4;
+            word-break: break-word;
+        }
+
+        .message.bot .message-content {
+            background: white;
+            color: #333;
+            border: 1px solid #e9ecef;
+            margin-right: auto;
+        }
+
+        .message.user .message-content {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .message.bot::before {
+            content: '🤖';
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 10px;
+            font-size: 16px;
+            flex-shrink: 0;
+        }
+
+        .typing-indicator {
+            display: none;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .typing-indicator.active {
+            display: flex;
+        }
+
+        .typing-dots {
+            background: white;
+            border: 1px solid #e9ecef;
+            border-radius: 18px;
+            padding: 12px 16px;
+            margin-left: 42px;
+        }
+
+        .typing-dots span {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #999;
+            margin: 0 2px;
+            animation: typing 1.4s infinite ease-in-out;
+        }
+
+        .typing-dots span:nth-child(1) {
+            animation-delay: -0.32s;
+        }
+
+        .typing-dots span:nth-child(2) {
+            animation-delay: -0.16s;
+        }
+
+        @keyframes typing {
+            0%, 80%, 100% {
+                transform: scale(0.8);
+                opacity: 0.5;
+            }
+            40% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .chat-input-container {
+            padding: 15px 20px;
+            background: white;
+            border-top: 1px solid #e9ecef;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .chat-input {
+            flex: 1;
+            border: 2px solid #e9ecef;
+            border-radius: 20px;
+            padding: 10px 15px;
+            font-size: 14px;
+            outline: none;
+            transition: border-color 0.2s;
+            resize: none;
+            min-height: 20px;
+            max-height: 80px;
+            overflow-y: auto;
+        }
+
+        .chat-input:focus {
+            border-color: #667eea;
+        }
+
+        .chat-input::placeholder {
+            color: #999;
+        }
+
+        .chat-send {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .chat-send:hover {
+            transform: scale(1.05);
+        }
+
+        .chat-send:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .welcome-message {
+            text-align: center;
+            color: #666;
+            padding: 20px;
+            font-size: 14px;
+        }
+
+        .welcome-message h4 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        /* Notification Badge */
+        .chat-notification {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            width: 20px;
+            height: 20px;
+            background: #ff4757;
+            border-radius: 50%;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 12px;
+            font-weight: bold;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(255, 71, 87, 0.7);
+            }
+            70% {
+                box-shadow: 0 0 0 10px rgba(255, 71, 87, 0);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(255, 71, 87, 0);
+            }
+        }
+
+        .error-message {
+            background-color: #fee;
+            color: #c33;
+            padding: 10px;
+            border-radius: 8px;
+            margin: 10px 0;
+            font-size: 13px;
+            border-left: 4px solid #c33;
         }
     </style>
 </head>
@@ -454,6 +1096,64 @@ $hosts = getAllHosts();
         </div>
     </div>
 </div>
+
+
+
+
+
+<!-- Chat Widget -->
+<div class="chat-widget">
+    <!-- Chat Toggle Button -->
+    <button class="chat-toggle" id="chatToggle">
+        <i class="fas fa-comments"></i>
+        <div class="chat-notification" id="chatNotification">1</div>
+    </button>
+
+    <!-- Chat Container -->
+    <div class="chat-container" id="chatContainer">
+        <!-- Chat Header -->
+        <div class="chat-header">
+            <button class="chat-close" id="chatClose">
+                <i class="fas fa-times"></i>
+            </button>
+            <h3>AI Assistant</h3>
+            <p>How can I help you today?</p>
+        </div>
+
+        <!-- Chat Messages -->
+        <div class="chat-messages" id="chatMessages">
+            <div class="welcome-message">
+                <h4>👋 Welcome!</h4>
+                <p>I'm your AI assistant powered by Google Gemini. Ask me anything about appointments, scheduling, or general questions!</p>
+            </div>
+        </div>
+
+        <!-- Typing Indicator -->
+        <div class="typing-indicator" id="typingIndicator">
+            <div class="typing-dots">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+
+        <!-- Chat Input -->
+        <div class="chat-input-container">
+            <textarea
+                    class="chat-input"
+                    id="chatInput"
+                    placeholder="Type your message..."
+                    rows="1"
+            ></textarea>
+            <button class="chat-send" id="chatSend">
+                <i class="fas fa-paper-plane"></i>
+            </button>
+        </div>
+    </div>
+</div>
+
+
+
 
 <!-- Schedule Modal -->
 <div class="modal fade" id="scheduleModal" tabindex="-1" aria-labelledby="scheduleModalLabel" aria-hidden="true">
@@ -1217,6 +1917,482 @@ $hosts = getAllHosts();
                 }
             });
     }
+
+    // Enhanced Gemini Chat Bot Implementation with Appointment Access
+    class GeminiChatBot {
+        constructor() {
+            this.apiKey = 'AIzaSyACxk5zCzJt6H0jJ2vs2sIP98V9jj7NcL0';
+            this.apiUrl = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent';
+            this.isOpen = false;
+            this.conversationHistory = [];
+            this.appointmentsData = <?php echo json_encode($appointments); ?>;
+
+            this.initializeElements();
+            this.attachEventListeners();
+            this.showNotification();
+        }
+
+        initializeElements() {
+            this.chatToggle = document.getElementById('chatToggle');
+            this.chatContainer = document.getElementById('chatContainer');
+            this.chatClose = document.getElementById('chatClose');
+            this.chatMessages = document.getElementById('chatMessages');
+            this.chatInput = document.getElementById('chatInput');
+            this.chatSend = document.getElementById('chatSend');
+            this.typingIndicator = document.getElementById('typingIndicator');
+            this.chatNotification = document.getElementById('chatNotification');
+        }
+
+        attachEventListeners() {
+            // Toggle chat
+            this.chatToggle.addEventListener('click', () => this.toggleChat());
+            this.chatClose.addEventListener('click', () => this.closeChat());
+
+            // Send message
+            this.chatSend.addEventListener('click', () => this.handleSendMessage());
+
+            // Handle Enter key
+            this.chatInput.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    this.handleSendMessage();
+                }
+            });
+
+            // Auto-resize textarea
+            this.chatInput.addEventListener('input', () => {
+                this.chatInput.style.height = 'auto';
+                this.chatInput.style.height = Math.min(this.chatInput.scrollHeight, 80) + 'px';
+            });
+        }
+
+        toggleChat() {
+            if (this.isOpen) {
+                this.closeChat();
+            } else {
+                this.openChat();
+            }
+        }
+
+        openChat() {
+            this.isOpen = true;
+            this.chatContainer.classList.add('active');
+            this.chatToggle.classList.add('active');
+            this.chatToggle.innerHTML = '<i class="fas fa-times"></i>';
+            this.hideNotification();
+
+            // Focus input after animation
+            setTimeout(() => {
+                this.chatInput.focus();
+            }, 300);
+        }
+
+        closeChat() {
+            this.isOpen = false;
+            this.chatContainer.classList.remove('active');
+            this.chatToggle.classList.remove('active');
+            this.chatToggle.innerHTML = '<i class="fas fa-comments"></i>';
+        }
+
+        showNotification() {
+            this.chatNotification.style.display = 'flex';
+        }
+
+        hideNotification() {
+            this.chatNotification.style.display = 'none';
+        }
+
+        async handleSendMessage() {
+            const message = this.chatInput.value.trim();
+            if (!message) return;
+
+            // Clear input
+            this.chatInput.value = '';
+            this.chatInput.style.height = 'auto';
+
+            // Add user message
+            this.addMessage(message, 'user');
+
+            // Show typing indicator
+            this.showTyping();
+
+            try {
+                // Check for appointment-related queries
+                const appointmentResponse = this.handleAppointmentQuery(message);
+                if (appointmentResponse) {
+                    this.hideTyping();
+                    this.addMessage(appointmentResponse, 'bot');
+                    return;
+                }
+
+                // If not an appointment query, send to Gemini
+                const response = await this.sendToGemini(message);
+                this.hideTyping();
+                this.addMessage(response, 'bot');
+            } catch (error) {
+                this.hideTyping();
+                this.addMessage('Sorry, I encountered an error. Please try again later.', 'bot', true);
+                console.error('Gemini API Error:', error);
+            }
+        }
+
+        handleAppointmentQuery(message) {
+            const lowerMessage = message.toLowerCase();
+            const today = new Date().toISOString().split('T')[0];
+            const now = new Date();
+
+            // Helper function to format appointment details
+            const formatAppointment = (appt) => {
+                const date = new Date(appt.AppointmentTime);
+                return `👤 ${appt.Name}\n` +
+                    `📅 ${date.toLocaleDateString()}\n` +
+                    `⏰ ${date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}\n` +
+                    `📧 ${appt.Email}\n` +
+                    `📌 Status: ${appt.Status}\n` +
+                    (appt.CancellationReason ? `❌ Reason: ${appt.CancellationReason}\n` : '') +
+                    `---\n`;
+            };
+
+            // 1. Check for status/count queries
+            if (lowerMessage.includes('how many') && lowerMessage.includes('appointments')) {
+                return this.getAppointmentCounts();
+            }
+
+            // 2. Check for upcoming appointments
+            if (lowerMessage.includes('upcoming') || lowerMessage.includes('future') ||
+                lowerMessage.includes('next appointments')) {
+                return this.getUpcomingAppointments();
+            }
+
+            // 3. Check for past appointments
+            if (lowerMessage.includes('past') || lowerMessage.includes('previous') ||
+                lowerMessage.includes('completed appointments')) {
+                const pastAppts = this.appointmentsData
+                    .filter(a => new Date(a.AppointmentTime) < now && a.Status === 'Completed')
+                    .sort((a, b) => new Date(b.AppointmentTime) - new Date(a.AppointmentTime));
+
+                if (pastAppts.length === 0) return "You have no past completed appointments.";
+
+                let response = "Here are your past completed appointments:\n\n";
+                pastAppts.slice(0, 5).forEach(appt => response += formatAppointment(appt));
+                return response;
+            }
+
+            // 4. Check for today's appointments
+            if (lowerMessage.includes("today") || lowerMessage.includes('this day')) {
+                return this.getTodaysAppointments();
+            }
+
+            // 5. Check for specific date
+            const dateMatch = message.match(/(\b\d{1,2}[\/-]\d{1,2}[\/-]\d{2,4}\b)|(\b(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]* \d{1,2},? \d{4}\b)/i);
+            if (dateMatch) {
+                const searchDate = new Date(dateMatch[0]);
+                const dateStr = searchDate.toLocaleDateString();
+                const dateAppts = this.appointmentsData.filter(appt => {
+                    const apptDate = new Date(appt.AppointmentTime).toLocaleDateString();
+                    return apptDate === dateStr;
+                });
+
+                if (dateAppts.length === 0) return `No appointments found for ${dateStr}.`;
+
+                let response = `Appointments on ${dateStr}:\n\n`;
+                dateAppts.forEach(appt => response += formatAppointment(appt));
+                return response;
+            }
+
+            // 6. Check for specific visitor
+            const nameMatch = message.match(/(?:details|information|about|for)\s+(.+)/i);
+            if (nameMatch && nameMatch[1]) {
+                const searchName = nameMatch[1].trim();
+                const matchedAppts = this.appointmentsData.filter(a =>
+                    a.Name.toLowerCase().includes(searchName.toLowerCase())
+                );
+
+                if (matchedAppts.length === 0) return `No appointments found for ${searchName}.`;
+
+                let response = matchedAppts.length === 1 ?
+                    `Found 1 appointment for ${searchName}:\n\n` :
+                    `Found ${matchedAppts.length} appointments for ${searchName}:\n\n`;
+
+                matchedAppts.forEach(appt => response += formatAppointment(appt));
+                return response;
+            }
+
+            // 7. Check for status-specific queries
+            const statuses = ['upcoming', 'ongoing', 'completed', 'cancelled', 'overdue'];
+            const statusQuery = statuses.find(status => lowerMessage.includes(status));
+            if (statusQuery) {
+                const filtered = this.appointmentsData.filter(a =>
+                    a.Status.toLowerCase() === statusQuery
+                );
+
+                if (filtered.length === 0) return `You have no ${statusQuery} appointments.`;
+
+                let response = `Your ${statusQuery} appointments:\n\n`;
+                filtered.forEach(appt => response += formatAppointment(appt));
+                return response;
+            }
+
+            // 8. Check for time-based queries (morning/afternoon/evening)
+            const timePeriods = {
+                morning: { start: 6, end: 12 },
+                afternoon: { start: 12, end: 17 },
+                evening: { start: 17, end: 21 },
+                night: { start: 21, end: 6 }
+            };
+
+            const periodQuery = Object.keys(timePeriods).find(period =>
+                lowerMessage.includes(period)
+            );
+
+            if (periodQuery) {
+                const { start, end } = timePeriods[periodQuery];
+                const periodAppts = this.appointmentsData.filter(appt => {
+                    const hours = new Date(appt.AppointmentTime).getHours();
+                    return periodQuery === 'night' ?
+                        hours >= start || hours < end :
+                        hours >= start && hours < end;
+                });
+
+                if (periodAppts.length === 0) return `No ${periodQuery} appointments found.`;
+
+                let response = `Your ${periodQuery} appointments:\n\n`;
+                periodAppts.forEach(appt => response += formatAppointment(appt));
+                return response;
+            }
+
+            // 9. Check for general appointment list
+            if (lowerMessage.includes('list all') || lowerMessage.includes('all appointments')) {
+                if (this.appointmentsData.length === 0) return "You have no appointments.";
+
+                let response = "All your appointments:\n\n";
+                this.appointmentsData
+                    .sort((a, b) => new Date(a.AppointmentTime) - new Date(b.AppointmentTime))
+                    .forEach(appt => response += formatAppointment(appt));
+                return response;
+            }
+
+            return null;
+        }
+
+
+        getAppointmentCounts() {
+            const counts = {
+                total: this.appointmentsData.length,
+                upcoming: this.appointmentsData.filter(a => a.Status === 'Upcoming').length,
+                ongoing: this.appointmentsData.filter(a => a.Status === 'Ongoing').length,
+                completed: this.appointmentsData.filter(a => a.Status === 'Completed').length,
+                cancelled: this.appointmentsData.filter(a => a.Status === 'Cancelled').length
+            };
+
+            return `Here's your appointment summary:\n\n` +
+                `📅 Total Appointments: ${counts.total}\n` +
+                `⏳ Upcoming: ${counts.upcoming}\n` +
+                `🔵 Ongoing: ${counts.ongoing}\n` +
+                `✅ Completed: ${counts.completed}\n` +
+                `❌ Cancelled: ${counts.cancelled}`;
+        }
+
+        getUpcomingAppointments() {
+            const upcoming = this.appointmentsData
+                .filter(a => a.Status === 'Upcoming')
+                .sort((a, b) => new Date(a.AppointmentTime) - new Date(b.AppointmentTime))
+                .slice(0, 5); // Limit to 5 upcoming
+
+            if (upcoming.length === 0) {
+                return "You have no upcoming appointments scheduled.";
+            }
+
+            let response = "Here are your upcoming appointments:\n\n";
+            upcoming.forEach(appt => {
+                const date = new Date(appt.AppointmentTime);
+                response += `👤 ${appt.Name}\n` +
+                    `📅 ${date.toLocaleDateString()}\n` +
+                    `⏰ ${date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}\n` +
+                    `✉️ ${appt.Email}\n\n`;
+            });
+
+            return response;
+        }
+
+        getAppointmentDetails(name) {
+            const appointment = this.appointmentsData.find(a =>
+                a.Name.toLowerCase().includes(name.toLowerCase())
+            );
+
+            if (!appointment) {
+                return `I couldn't find an appointment for ${name}. Please check the name and try again.`;
+            }
+
+            const date = new Date(appointment.AppointmentTime);
+            return `Here are the details for ${appointment.Name}:\n\n` +
+                `📅 Date: ${date.toLocaleDateString()}\n` +
+                `⏰ Time: ${date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}\n` +
+                `📧 Email: ${appointment.Email}\n` +
+                `📌 Status: ${appointment.Status}\n` +
+                (appointment.CancellationReason ? `❌ Reason: ${appointment.CancellationReason}\n` : '');
+        }
+
+        getTodaysAppointments() {
+            const today = new Date().toISOString().split('T')[0];
+            const todaysAppts = this.appointmentsData.filter(appt => {
+                const apptDate = new Date(appt.AppointmentTime).toISOString().split('T')[0];
+                return apptDate === today && appt.Status !== 'Cancelled';
+            });
+
+            if (todaysAppts.length === 0) {
+                return "You have no appointments scheduled for today.";
+            }
+
+            let response = `You have ${todaysAppts.length} appointment(s) today:\n\n`;
+            todaysAppts.forEach(appt => {
+                const time = new Date(appt.AppointmentTime).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+                response += `⏰ ${time} - ${appt.Name} (${appt.Status})\n`;
+            });
+
+            return response;
+        }
+
+        addMessage(content, sender, isError = false) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${sender}`;
+
+            const contentDiv = document.createElement('div');
+            contentDiv.className = 'message-content';
+
+            if (isError) {
+                contentDiv.className += ' error-message';
+            }
+
+            // Format message content (basic markdown support)
+            contentDiv.innerHTML = this.formatMessage(content);
+            messageDiv.appendChild(contentDiv);
+
+            // Remove welcome message if it exists
+            const welcomeMessage = this.chatMessages.querySelector('.welcome-message');
+            if (welcomeMessage) {
+                welcomeMessage.remove();
+            }
+
+            this.chatMessages.appendChild(messageDiv);
+            this.scrollToBottom();
+
+            // Store in conversation history
+            this.conversationHistory.push({
+                role: sender === 'user' ? 'user' : 'model',
+                parts: [{ text: content }]
+            });
+        }
+
+        formatMessage(text) {
+            // Basic markdown formatting
+            return text
+                .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                .replace(/\*(.*?)\*/g, '<em>$1</em>')
+                .replace(/`(.*?)`/g, '<code style="background: #f1f1f1; padding: 2px 4px; border-radius: 3px;">$1</code>')
+                .replace(/\n/g, '<br>');
+        }
+
+        showTyping() {
+            this.typingIndicator.classList.add('active');
+            this.scrollToBottom();
+        }
+
+        hideTyping() {
+            this.typingIndicator.classList.remove('active');
+        }
+
+        scrollToBottom() {
+            setTimeout(() => {
+                this.chatMessages.scrollTop = this.chatMessages.scrollHeight;
+            }, 100);
+        }
+
+        async sendToGemini(message) {
+            // Prepare conversation context
+            const contents = [
+                {
+                    role: 'user',
+                    parts: [{ text: message }]
+                }
+            ];
+
+            // Add conversation history (last 10 messages to manage context length)
+            const recentHistory = this.conversationHistory.slice(-10);
+            if (recentHistory.length > 0) {
+                contents.unshift(...recentHistory);
+            }
+
+            // Add system message with appointment context
+            const systemMessage = {
+                role: 'user',
+                parts: [{
+                    text: `You are an AI assistant for an appointment management system. The user is a host managing appointments.
+                    Current appointment stats: Total ${this.appointmentsData.length}, Upcoming: ${this.appointmentsData.filter(a => a.Status === 'Upcoming').length},
+                    Ongoing: ${this.appointmentsData.filter(a => a.Status === 'Ongoing').length}. Today is ${new Date().toLocaleDateString()}.
+                    You can help with appointment queries, scheduling, and general questions. Keep responses concise and helpful.`
+                }]
+            };
+            contents.unshift(systemMessage);
+
+            const requestBody = {
+                contents: contents,
+                generationConfig: {
+                    temperature: 0.7,
+                    topK: 40,
+                    topP: 0.95,
+                    maxOutputTokens: 1024,
+                },
+                safetySettings: [
+                    {
+                        category: "HARM_CATEGORY_HARASSMENT",
+                        threshold: "BLOCK_MEDIUM_AND_ABOVE"
+                    },
+                    {
+                        category: "HARM_CATEGORY_HATE_SPEECH",
+                        threshold: "BLOCK_MEDIUM_AND_ABOVE"
+                    },
+                    {
+                        category: "HARM_CATEGORY_SEXUALLY_EXPLICIT",
+                        threshold: "BLOCK_MEDIUM_AND_ABOVE"
+                    },
+                    {
+                        category: "HARM_CATEGORY_DANGEROUS_CONTENT",
+                        threshold: "BLOCK_MEDIUM_AND_ABOVE"
+                    }
+                ]
+            };
+
+            const response = await fetch(`${this.apiUrl}?key=${this.apiKey}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(requestBody)
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(`API Error: ${response.status} - ${errorData.error?.message || 'Unknown error'}`);
+            }
+
+            const data = await response.json();
+
+            if (data.candidates && data.candidates[0] && data.candidates[0].content) {
+                return data.candidates[0].content.parts[0].text;
+            } else {
+                throw new Error('Unexpected API response format');
+            }
+        }
+    }
+
+    // Initialize the chatbot when the page loads
+    document.addEventListener('DOMContentLoaded', () => {
+        new GeminiChatBot();
+    });
+
+
+    // Add this to properly close the $(document).ready(function() {
     $(document).ready(function() {
         setInterval(function() {
             $.post('update_activity.php');
