@@ -204,56 +204,94 @@ $conn->close();
         .status-away-text { color: #ffc107; }
         .status-offline-text { color: #6c757d; }
         .status-inactive-text { color: #dc3545; }
+
+        .filter-dropdown {
+            width: 350px;
+            padding: 1rem;
+        }
+        .filter-dropdown .form-group {
+            margin-bottom: 1rem;
+        }
+        .filter-dropdown .btn-apply {
+            width: 100%;
+        }
+        .navbar-detached {
+            box-shadow: 0 1px 20px 0 rgba(76,87,125,.1);
+            background-color: #fff;
+            padding: 1rem 1.5rem;
+            border-radius: 0.375rem;
+            margin-bottom: 1.5rem;
+        }
     </style>
 </head>
 <body>
 <?php include 'admin-sidebar.php'; ?>
-<div class="content">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2>User Management</h2>
-        <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addUserModal">
-            <i class="fas fa-plus me-1"></i> Add New User
-        </button>
-    </div>
-
-    <!-- Filters Section -->
-    <div class="card mb-4">
-        <div class="card-body">
-            <form method="GET" class="row g-3">
-                <div class="col-md-3">
-                    <label class="form-label">Role</label>
-                    <select name="role" class="form-select">
-                        <option value="">All Roles</option>
-                        <?php foreach ($roles as $role): ?>
-                            <option value="<?= $role['Role'] ?>" <?= $roleFilter === $role['Role'] ? 'selected' : '' ?>>
-                                <?= htmlspecialchars($role['Role']) ?>
-                            </option>
-                        <?php endforeach; ?>
-                    </select>
-                </div>
-
-                <div class="col-md-3">
-                    <label class="form-label">Status</label>
-                    <select name="status" class="form-select">
-                        <option value="">All Statuses</option>
-                        <option value="active" <?= $statusFilter === 'active' ? 'selected' : '' ?>>Active</option>
-                        <option value="inactive" <?= $statusFilter === 'inactive' ? 'selected' : '' ?>>Inactive</option>
-                    </select>
-                </div>
-
-                <div class="col-md-4">
-                    <label class="form-label">Search</label>
-                    <input type="text" name="search" class="form-control"
-                           placeholder="Search by name or email" value="<?= htmlspecialchars($searchTerm) ?>">
-                </div>
-
-                <div class="col-md-2 d-flex align-items-end">
-                    <button type="submit" class="btn btn-primary w-100">Apply Filters</button>
-                </div>
-            </form>
+<div class="layout-content">
+    <nav class="layout-navbar container-xxl navbar-detached navbar navbar-expand-xl align-items-center bg-navbar-theme" id="layout-navbar">
+        <div class="layout-menu-toggle navbar-nav align-items-xl-center me-4 me-xl-0 d-xl-none">
+            <a class="nav-item nav-link px-0 me-xl-6" href="javascript:void(0)">
+                <i class="icon-base bx bx-menu icon-md"></i>
+            </a>
         </div>
-    </div>
+        <div class="navbar-nav-right d-flex align-items-center justify-content-end" id="navbar-collapse">
+            <!--Page Title-->
+            <div class="navbar-nav align-items-center me-auto">
+                <div class="nav-item">
+                    <h4 class="mb-0 fw-bold ms-2">User Management</h4>
+                </div>
+            </div>
 
+            <!--Filter Button-->
+            <div class="navbar-nav align-items-center me-3">
+                <div class="dropdown">
+                    <button class="btn btn-outline-primary dropdown-toggle" type="button" id="filterDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="fas fa-filter me-1"></i> Filters
+                    </button>
+                    <div class="dropdown-menu dropdown-menu-end filter-dropdown" aria-labelledby="filterDropdown">
+                        <form method="GET" id="filterForm">
+                            <div class="form-group">
+                                <label class="form-label">Role</label>
+                                <select name="role" class="form-select">
+                                    <option value="">All Roles</option>
+                                    <?php foreach ($roles as $role): ?>
+                                        <option value="<?= $role['Role'] ?>" <?= $roleFilter === $role['Role'] ? 'selected' : '' ?>>
+                                            <?= htmlspecialchars($role['Role']) ?>
+                                        </option>
+                                    <?php endforeach; ?>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Status</label>
+                                <select name="status" class="form-select">
+                                    <option value="">All Statuses</option>
+                                    <option value="active" <?= $statusFilter === 'active' ? 'selected' : '' ?>>Active</option>
+                                    <option value="inactive" <?= $statusFilter === 'inactive' ? 'selected' : '' ?>>Inactive</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Search</label>
+                                <input type="text" name="search" class="form-control"
+                                       placeholder="Search by name or email" value="<?= htmlspecialchars($searchTerm) ?>">
+                            </div>
+
+                            <button type="submit" class="btn btn-primary btn-apply mt-2">
+                                <i class="fas fa-check me-1"></i> Apply Filters
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!--Add User-->
+            <div class="navbar-nav align-items-center">
+                <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addUserModal">
+                    <i class="fas fa-plus me-1"></i> Add New User
+                </button>
+            </div>
+        </div>
+    </nav>
     <!-- Bulk Actions -->
     <!-- Bulk Actions and Users Table -->
     <form id="bulkActionsForm" method="POST">
@@ -620,6 +658,35 @@ $conn->close();
         // Reset modal when closed
         $('#editUserModal').on('hidden.bs.modal', function() {
             $('#editUserModalContent').html('');
+        });
+        // Keep filter dropdown open when clicking inside it
+        $(document).on('click', '.filter-dropdown', function(e) {
+            e.stopPropagation();
+        });
+
+        // Show active filter count badge if filters are applied
+        function updateFilterBadge() {
+            const filterCount = ($('#filterForm select[name="role"]').val() ? 1 : 0) +
+                ($('#filterForm select[name="status"]').val() ? 1 : 0) +
+                ($('#filterForm input[name="search"]').val() ? 1 : 0);
+
+            if (filterCount > 0) {
+                if (!$('#filterBadge').length) {
+                    $('#filterDropdown').append('<span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" id="filterBadge">' + filterCount + '</span>');
+                } else {
+                    $('#filterBadge').text(filterCount);
+                }
+            } else {
+                $('#filterBadge').remove();
+            }
+        }
+
+        // Initialize filter badge
+        updateFilterBadge();
+
+        // Update badge when filters change
+        $('#filterForm').on('change keyup', function() {
+            updateFilterBadge();
         });
     });
 </script>
