@@ -907,7 +907,7 @@ $conn->close();
             btn.addEventListener('click', function() {
                 const ticketId = this.getAttribute('data-id');
                 console.log('Viewing ticket ID:', ticketId);
-                window.location.href = `staff_tickets.php?view_ticket=${ticketId}`;
+                window.location.href = `FD_tickets.php?view_ticket=${ticketId}`;
             });
         });
 
