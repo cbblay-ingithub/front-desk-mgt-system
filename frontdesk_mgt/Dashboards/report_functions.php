@@ -213,6 +213,46 @@ function getHostReports($startDate = null, $endDate = null): array
     $stmt->execute();
     $appointmentMetrics = $stmt->get_result()->fetch_assoc();
 
+    // Get cancellation reasons
+    $cancelReasonSql = "SELECT 
+        CancellationReason, 
+        COUNT(*) AS count
+    FROM Appointments
+    WHERE Status = 'Cancelled'";
+    if ($startDate && $endDate) {
+        $cancelReasonSql .= " AND AppointmentTime BETWEEN ? AND ?";
+    }
+    $cancelReasonSql .= " GROUP BY CancellationReason";
+    $stmt = $conn->prepare($cancelReasonSql);
+    if (!empty($apptParams)) {
+        $stmt->bind_param("ss", ...$apptParams);
+    }
+    $stmt->execute();
+    $cancelReasons = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+
+    // Get new vs returning visitors
+    $visitorSql = "SELECT
+        SUM(CASE WHEN visit_count = 1 THEN 1 ELSE 0 END) AS new_visitors,
+        SUM(CASE WHEN visit_count > 1 THEN 1 ELSE 0 END) AS returning_visitors
+    FROM (
+        SELECT 
+            v.VisitorID, 
+            COUNT(*) AS visit_count
+        FROM Appointments a
+        JOIN Visitors v ON a.VisitorID = v.VisitorID
+        WHERE a.Status = 'Completed'";
+    if ($startDate && $endDate) {
+        $visitorSql .= " AND a.AppointmentTime BETWEEN ? AND ?";
+    }
+    $visitorSql .= " GROUP BY v.VisitorID
+    ) AS visitor_visits";
+    $stmt = $conn->prepare($visitorSql);
+    if (!empty($apptParams)) {
+        $stmt->bind_param("ss", ...$apptParams);
+    }
+    $stmt->execute();
+    $visitorMetrics = $stmt->get_result()->fetch_assoc();
+
     $ticketSql = "SELECT 
         COUNT(*) AS total_tickets,
         SUM(Status = 'Resolved') AS resolved
@@ -232,10 +272,11 @@ function getHostReports($startDate = null, $endDate = null): array
 
     return [
         'appointment_metrics' => $appointmentMetrics,
+        'cancellation_reasons' => $cancelReasons,
+        'visitor_metrics' => $visitorMetrics,
         'resolution_rates' => $resolutionRates
     ];
 }
-
 function getSupportReports($startDate = null, $endDate = null): array
 {
     global $conn;

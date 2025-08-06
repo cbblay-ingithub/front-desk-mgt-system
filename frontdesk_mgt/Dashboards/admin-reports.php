@@ -306,9 +306,77 @@ $conn->close();
                                 </div>
                                 <div class="card-body">
                                     <div class="row">
-                                        <div class="col-md-4"><div class="metric-card"><h5>Total Appointments</h5><div class="metric-value"><?= $teamReports['appointment_metrics']['total_appointments'] ?? 0 ?></div></div></div>
-                                        <div class="col-md-4"><div class="metric-card"><h5>Completed</h5><div class="metric-value"><?= $teamReports['appointment_metrics']['completed'] ?? 0 ?></div></div></div>
-                                        <div class="col-md-4"><div class="metric-card"><h5>Completion Rate</h5><div class="metric-value"><?= $teamReports['resolution_rates']['total_tickets'] > 0 ? round(($teamReports['resolution_rates']['resolved'] / $teamReports['resolution_rates']['total_tickets']) * 100) : 0 ?>%</div></div></div>
+                                        <div class="col-md-3"><div class="metric-card"><h5>Total Appointments</h5><div class="metric-value"><?= $teamReports['appointment_metrics']['total_appointments'] ?? 0 ?></div></div></div>
+                                        <div class="col-md-3"><div class="metric-card"><h5>Completed</h5><div class="metric-value"><?= $teamReports['appointment_metrics']['completed'] ?? 0 ?></div></div></div>
+                                        <div class="col-md-3"><div class="metric-card"><h5>Cancelled</h5><div class="metric-value"><?= $teamReports['appointment_metrics']['cancelled'] ?? 0 ?></div></div></div>
+                                        <div class="col-md-3"><div class="metric-card"><h5>Completion Rate</h5><div class="metric-value"><?= $teamReports['resolution_rates']['total_tickets'] > 0 ? round(($teamReports['resolution_rates']['resolved'] / $teamReports['resolution_rates']['total_tickets']) * 100) : 0 ?>%</div></div></div>
+                                    </div>
+
+                                    <!-- Cancellation Reasons -->
+                                    <div class="row mt-3">
+                                        <div class="col-md-6">
+                                            <div class="metric-card">
+                                                <h5>Cancellation Reasons</h5>
+                                                <?php if (!empty($teamReports['cancellation_reasons'])): ?>
+                                                    <table class="table table-bordered">
+                                                        <thead>
+                                                        <tr>
+                                                            <th>Reason</th>
+                                                            <th>Count</th>
+                                                        </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                        <?php foreach ($teamReports['cancellation_reasons'] as $reason): ?>
+                                                            <tr>
+                                                                <td><?= htmlspecialchars($reason['CancellationReason'] ?? 'No reason provided') ?></td>
+                                                                <td><?= $reason['count'] ?></td>
+                                                            </tr>
+                                                        <?php endforeach; ?>
+                                                        </tbody>
+                                                    </table>
+                                                <?php else: ?>
+                                                    <p>No cancellations in this period.</p>
+                                                <?php endif; ?>
+                                            </div>
+                                        </div>
+
+                                        <!-- Client Metrics -->
+                                        <div class="col-md-6">
+                                            <div class="metric-card">
+                                                <h5>Client Types</h5>
+                                                <?php
+                                                $newClients = $teamReports['client_metrics']['new_clients'] ?? 0;
+                                                $returningClients = $teamReports['client_metrics']['returning_clients'] ?? 0;
+                                                $totalClients = $newClients + $returningClients;
+                                                $newPercentage = $totalClients > 0 ? round(($newClients / $totalClients) * 100) : 0;
+                                                $returningPercentage = $totalClients > 0 ? round(($returningClients / $totalClients) * 100) : 0;
+                                                ?>
+                                                <div class="d-flex align-items-center mb-3">
+                                                    <div class="me-3">
+                                                        <span class="d-block fw-bold"><?= $newClients ?></span>
+                                                        <small>New Clients</small>
+                                                    </div>
+                                                    <div class="progress flex-grow-1" style="height: 20px;">
+                                                        <div class="progress-bar bg-success" role="progressbar" style="width: <?= $newPercentage ?>%" aria-valuenow="<?= $newPercentage ?>" aria-valuemin="0" aria-valuemax="100"></div>
+                                                    </div>
+                                                    <div class="ms-3 text-end">
+                                                        <span class="d-block fw-bold"><?= $newPercentage ?>%</span>
+                                                    </div>
+                                                </div>
+                                                <div class="d-flex align-items-center">
+                                                    <div class="me-3">
+                                                        <span class="d-block fw-bold"><?= $returningClients ?></span>
+                                                        <small>Returning Clients</small>
+                                                    </div>
+                                                    <div class="progress flex-grow-1" style="height: 20px;">
+                                                        <div class="progress-bar bg-info" role="progressbar" style="width: <?= $returningPercentage ?>%" aria-valuenow="<?= $returningPercentage ?>" aria-valuemin="0" aria-valuemax="100"></div>
+                                                    </div>
+                                                    <div class="ms-3 text-end">
+                                                        <span class="d-block fw-bold"><?= $returningPercentage ?>%</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
