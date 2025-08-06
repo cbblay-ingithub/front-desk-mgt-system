@@ -240,7 +240,6 @@ $conn->close();
 
             <!-- Main content area -->
             <div class="container-fluid container-p-y">
-                <h2 class="mb-4">Reports</h2>
 
                 <!-- Tab Navigation -->
                 <ul class="nav nav-tabs mb-4" id="reportTabs">
