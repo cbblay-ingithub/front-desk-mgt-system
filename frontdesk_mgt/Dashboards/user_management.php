@@ -207,16 +207,7 @@ $conn->close();
     </style>
 </head>
 <body>
-<div class="sidebar">
-    <h4 class="text-white text-center">Admin Panel</h4>
-    <a href="admin-dashboard.html"><i class="fas fa-tachometer-alt me-2"></i> Dashboard</a>
-    <a href="user_management.php"><i class='far fa-address-card' ></i> User Management</a>
-    <a href="admin-reports.php"><i class="fas fa-ticket"></i> Reporting</a>
-    <a href="lost_found.php"><i class="fa-solid fa-suitcase"></i> View Lost & Found</a>
-    <a href="settings.php"><i class="fas fa-cog me-2"></i> Settings</a>
-    <a href="../Logout.php"><i class="fas fa-sign-out-alt me-2"></i> Logout</a>
-</div>
-
+<?php include 'admin-sidebar.php'; ?>
 <div class="content">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h2>User Management</h2>
@@ -301,9 +292,11 @@ $conn->close();
                     <th>Role</th>
                     <th>Status</th>
                     <th>Online Status</th>
+                    <!--
                     <th>Last Activity</th>
                     <th>Last Login</th>
                     <th>Last Logout</th>
+                    -->
                     <th>Actions</th>
                 </tr>
                 </thead>
@@ -332,6 +325,7 @@ $conn->close();
                             <?= ucfirst($onlineStatus) ?>
                         </span>
                         </td>
+                        <!--
                         <td>
                             <?php if ($user['last_activity']): ?>
                                 <?= date('M d, Y H:i', strtotime($user['last_activity'])) ?>
@@ -345,6 +339,7 @@ $conn->close();
                         <td>
                             <?= $user['last_logout'] ? date('M d, Y H:i', strtotime($user['last_logout'])) : 'Never' ?>
                         </td>
+                        -->
                         <td>
                             <button class="btn btn-sm btn-warning edit-user"
                                     data-id="<?= $user['UserID'] ?>"
