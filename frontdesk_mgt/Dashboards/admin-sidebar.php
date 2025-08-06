@@ -114,12 +114,12 @@ $currentPage = basename($_SERVER['PHP_SELF']);
     <div class="app-brand demo">
         <a href="admin-dashboard.php"
            class="app-brand-link d-flex align-items-center flex-nowrap">
-            <span class="app-brand-logo demo">
-                <i class="bx bx-shield-alt text-primary" style="font-size:25px;"></i>
-            </span>
+    <span class="app-brand-logo demo">
+      <i class="bx bxs-dashboard text-primary" style="font-size:25px;"></i>
+    </span>
             <span class="app-brand-text demo menu-text fw-bold ms-1 text-nowrap">
-                Admin Panel
-            </span>
+      Admin Panel
+    </span>
         </a>
     </div>
 
