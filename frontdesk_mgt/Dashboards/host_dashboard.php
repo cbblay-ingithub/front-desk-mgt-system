@@ -783,12 +783,6 @@ echo "<!-- Debug: " . count($appointments) . " appointments loaded -->";
                         <div class="row g-0">
                             <!-- Calendar Sidebar -->
                             <div class="col-md-3 app-calendar-sidebar border-end" id="app-calendar-sidebar">
-                                <div class="border-bottom p-4 my-sm-0 mb-4">
-                                    <button class="btn btn-primary btn-toggle-sidebar w-100" data-bs-toggle="modal" data-bs-target="#scheduleModal">
-                                        <i class="fas fa-plus me-2"></i>
-                                        <span class="align-middle">Add Event</span>
-                                    </button>
-                                </div>
                                 <div class="px-3 pt-2">
                                     <div class="inline-calendar"></div>
                                 </div>
