@@ -1,3 +1,7 @@
+<?php
+global$users;
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -33,15 +37,7 @@
     </style>
 </head>
 <body>
-<div class="sidebar">
-    <h4 class="text-white text-center">Admin Panel</h4>
-    <a href="dashboard.php"><i class="fas fa-tachometer-alt me-2"></i> Dashboard</a>
-    <a href="user_management.php"><i class='far fa-address-card' ></i> User Management</a>
-    <a href="admin-reports.php"><i class="fas fa-ticket"></i> Reporting</a>
-    <a href="lost_found.php"><i class="fa-solid fa-suitcase"></i> View Lost & Found</a>
-    <a href="settings.php"><i class="fas fa-cog me-2"></i> Settings</a>
-    <a href="../Logout.php"><i class="fas fa-sign-out-alt me-2"></i> Logout</a>
-</div>
+<?php include 'admin-sidebar.php'; ?>
 
 <div class="main-content">
     <h2 class="mb-4">System Users</h2>

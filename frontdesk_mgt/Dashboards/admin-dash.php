@@ -5,7 +5,7 @@ $page = $_GET['page'] ?? 'user_management';
 
 switch ($page) {
     case 'dashboard':
-        include 'admin-dashboard.html';
+        include 'admin-dashboard.php';
         break;
     case 'appointments':
         include 'appointments.php';
@@ -45,5 +45,5 @@ if (isset($_SESSION['userID'])) {
 }
 $conn->close();
 
-include 'admin-dashboard.html';
+include 'admin-dashboard.php';
 
