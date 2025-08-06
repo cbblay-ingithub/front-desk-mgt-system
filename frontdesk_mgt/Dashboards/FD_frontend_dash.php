@@ -9,8 +9,6 @@ if (!isset($_SESSION['userID'])) {  // Fixed: Added closing parenthesis
     exit;
 }
 
-// Rest of your PHP code...
-
 // Update last activity
 $stmt = $conn->prepare("UPDATE users SET last_activity = NOW() WHERE UserID = ?");
 $stmt->bind_param("i", $_SESSION['userID']);
@@ -330,14 +328,30 @@ function checkTimeConflict($hostId, $appointmentTime, $excludeAppointmentId = nu
 ?>
 
 <!DOCTYPE html>
-<html lang="en">
+<html
+        lang="en"
+        dir="ltr"
+        data-theme="theme-default"
+        data-assets-path="../../Sneat/assets/"
+        data-template="vertical-menu-template">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Front Desk Dashboard - Appointments</title>
+    <title>Appointments- Front Desk</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.6.13/flatpickr.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&display=swap" rel="stylesheet">
+    <!-- Sneat CSS -->
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.js"></script>
+    <link rel="stylesheet" href="../../Sneat/assets/vendor/css/pages/app-calendar.css" />
+    <link rel="stylesheet" href="../../Sneat/assets/vendor/libs/select2/select2.css" />
+    <link rel="stylesheet" href="../../Sneat/assets/vendor/fonts/iconify-icons.css" />
+    <link rel="stylesheet" href="../../Sneat/assets/vendor/css/core.css" />
+    <link rel="stylesheet" href="../../Sneat/assets/css/demo.css" />
+    <link rel="stylesheet" href="../../Sneat/assets/vendor/libs/flatpickr/flatpickr.css" />
     <link rel="stylesheet" href="notification.css">
     <style>
         body {
@@ -493,6 +507,79 @@ function checkTimeConflict($hostId, $appointmentTime, $excludeAppointmentId = nu
         .flatpickr-calendar {
             display: block !important;
             z-index: 9999 !important;
+        }
+        /* Sidebar width fixes */
+        #layout-menu {
+            width: 260px !important;
+            min-width: 260px !important;
+            max-width: 260px !important;
+            flex: 0 0 260px !important;
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            height: 100vh !important;
+            overflow-y: auto !important;
+            overflow-x: hidden !important;
+            z-index: 1000 !important;
+        }
+
+        .layout-menu-collapsed #layout-menu {
+            width: 78px !important;
+            min-width: 78px !important;
+            max-width: 78px !important;
+            flex: 0 0 78px !important;
+        }
+
+        .layout-content {
+            flex: 1 1 auto;
+            min-width: 0;
+            margin-left: 260px !important;
+            width: calc(100% - 260px) !important;
+            height: 100vh !important;
+            overflow-y: auto !important;
+            overflow-x: hidden !important;
+        }
+
+        .layout-menu-collapsed .layout-content {
+            margin-left: 78px !important;
+            width: calc(100% - 78px) !important;
+        }
+
+        .layout-wrapper {
+            overflow: hidden !important;
+            height: 100vh !important;
+        }
+
+        .layout-container {
+            display: flex;
+            min-height: 100vh;
+            width: 100%;
+            overflow: hidden !important;
+        }
+
+        .no-transition {
+            transition: none !important;
+        }
+        .tab-content {
+            position: relative;
+            min-height: 500px; /* Adjust as needed */
+        }
+
+        .tab-pane {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            display: none;
+        }
+
+        .tab-pane.active {
+            display: block;
+            position: static; /* Reset for active pane */
+        }
+
+        #calendarView {
+            width: 100%;
         }
 
         /* Chat Bot Styles */
@@ -843,262 +930,230 @@ function checkTimeConflict($hostId, $appointmentTime, $excludeAppointmentId = nu
     </style>
 </head>
 <body>
-
-<!-- Sidebar -->
-<div class="sidebar">
-    <h4 class="text-white text-center">Front Desk Panel</h4>
-    <a href="front-desk_dashboard.php"><i class="fas fa-tachometer-alt me-2"></i> Dashboard</a>
-    <a href="visitor-mgt.php"><i class="fas fa-users me-2"></i>Manage Visitors</a>
-    <a href="FD_frontend_dash.php"><i class="fas fa-calendar-check me-2"></i> Appointments</a>
-    <a href="FD_tickets.php"><i class="fas fa-ticket"></i> Help Desk Tickets</a>
-    <!--
-       <a href="lost_found.php"><i class="fa-solid fa-suitcase me-2"></i> View Lost & Found</a>
-      -->
-    <a href="../Logout.php"><i class="fas fa-sign-out-alt me-2"></i> Logout</a>
-</div>
-
-<!-- Main Content -->
-<div class="main-content">
-    <div class="container-fluid py-4">
-        <div class="row mb-4">
-            <div class="col-md-8">
-                <h1 class="mb-3">Manage Appointments</h1>
-                <p class="text-muted">View and manage all visitor appointments</p>
-            </div>
-            <div class="col-md-4 text-md-end">
-                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#scheduleModal">
-                    <i class="fas fa-plus-circle me-2"></i> Schedule New Appointment
-                </button>
-            </div>
-        </div>
-
-        <!-- Stats Cards -->
-        <div class="row mb-4">
-            <div class="col-xl-3 col-md-6">
-                <div class="card stats-card primary">
-                    <div class="card-body">
-                        <div class="row">
-                            <div class="col">
-                                <h5 class="card-title text-uppercase text-muted mb-0">Total</h5>
-                                <span class="h2 font-weight-bold mb-0"><?= $stats['total'] ?></span>
-                            </div>
-                            <div class="col-auto">
-                                <div class="icon icon-shape bg-primary text-white rounded-circle p-2">
-                                    <i class="fas fa-calendar"></i>
-                                </div>
-                            </div>
+<div class="layout-wrapper layout-content-navbar">
+    <div class="layout-container">
+        <?php include 'frontdesk-sidebar.php'; ?>
+        <!-- Main Content -->
+        <div class="layout-content">
+            <nav class="layout-navbar container-xxl navbar-detached navbar navbar-expand-xl align-items-center bg-navbar-theme" id="layout-navbar">
+                <div class="layout-menu-toggle navbar-nav align-items-xl-center me-4 me-xl-0 d-xl-none">
+                    <a class="nav-item nav-link px-0 me-xl-6" href="javascript:void(0)">
+                        <i class="icon-base bx bx-menu icon-md"></i>
+                    </a>
+                </div>
+                <div class="navbar-nav-right d-flex align-items-center justify-content-end" id="navbar-collapse">
+                    <!-- Page Title -->
+                    <div class="navbar-nav align-items-center me-auto">
+                        <div class="nav-item">
+                            <h4 class="mb-0 fw-bold ms-2">Manage Appointments</h4>
+                        </div>
+                    </div>
+                    <!-- Schedule Appointment button -->
+                    <div class="navbar-nav align-items-center me-3">
+                        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#scheduleModal">
+                            <i class="fas fa-plus-circle me-2"></i> Schedule New Appointment
+                        </button>
+                    </div>
+                </div>
+            </nav>
+            <div class="container-fluid py-4">
+                <!-- View Toggle Buttons -->
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <div class="btn-group" role="group">
+                            <button type="button" class="btn btn-outline-primary active" id="listViewBtn">
+                                <i class="fas fa-list me-2"></i> List View
+                            </button>
+                            <button type="button" class="btn btn-outline-primary" id="calendarViewBtn">
+                                <i class="fas fa-calendar-alt me-2"></i> Calendar View
+                            </button>
                         </div>
                     </div>
                 </div>
-            </div>
-            <div class="col-xl-3 col-md-6">
-                <div class="card stats-card warning">
-                    <div class="card-body">
-                        <div class="row">
-                            <div class="col">
-                                <h5 class="card-title text-uppercase text-muted mb-0">Upcoming</h5>
-                                <span class="h2 font-weight-bold mb-0"><?= $stats['upcoming'] ?></span>
-                            </div>
-                            <div class="col-auto">
-                                <div class="icon icon-shape bg-warning text-white rounded-circle p-2">
-                                    <i class="fas fa-hourglass-half"></i>
-                                </div>
-                            </div>
+
+                <!-- Search and Filter Section -->
+                <div class="row mb-4">
+                    <div class="col-md-8">
+                        <form class="search-form d-flex">
+                            <input type="text" class="form-control me-2" id="searchInput" placeholder="Search by visitor name, email, or host...">
+                            <button type="button" class="btn btn-outline-primary">
+                                <i class="fas fa-search"></i>
+                            </button>
+                        </form>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="host-filter">
+                            <select class="form-select" id="hostFilter">
+                                <option value="">All Hosts</option>
+                                <?php foreach ($hosts as $host): ?>
+                                    <option value="<?= $host['UserID'] ?>" data-host-name="<?= htmlspecialchars($host['Name']) ?>">
+                                        <?= htmlspecialchars($host['Name']) ?>
+                                    </option>
+                                <?php endforeach; ?>
+                            </select>
                         </div>
                     </div>
                 </div>
-            </div>
-            <div class="col-xl-3 col-md-6">
-                <div class="card stats-card success">
-                    <div class="card-body">
-                        <div class="row">
-                            <div class="col">
-                                <h5 class="card-title text-uppercase text-muted mb-0">Completed</h5>
-                                <span class="h2 font-weight-bold mb-0"><?= $stats['completed'] ?></span>
-                            </div>
-                            <div class="col-auto">
-                                <div class="icon icon-shape bg-success text-white rounded-circle p-2">
-                                    <i class="fas fa-check-circle"></i>
-                                </div>
-                            </div>
+
+                <!-- Status Filters -->
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <div class="btn-group" role="group">
+                            <button type="button" class="btn btn-outline-primary filter-btn" data-filter="today">Today</button>
+                            <button type="button" class="btn btn-outline-primary filter-btn" data-filter="Upcoming">Upcoming</button>
+                            <button type="button" class="btn btn-outline-primary filter-btn" data-filter="Overdue">Overdue</button>
+                            <button type="button" class="btn btn-outline-primary filter-btn" data-filter="Ongoing">Ongoing</button>
+                            <button type="button" class="btn btn-outline-primary filter-btn" data-filter="Completed">Completed</button>
+                            <button type="button" class="btn btn-outline-primary filter-btn" data-filter="Cancelled">Cancelled</button>
                         </div>
                     </div>
                 </div>
-            </div>
-            <div class="col-xl-3 col-md-6">
-                <div class="card stats-card danger">
-                    <div class="card-body">
-                        <div class="row">
-                            <div class="col">
-                                <h5 class="card-title text-uppercase text-muted mb-0">Cancelled</h5>
-                                <span class="h2 font-weight-bold mb-0"><?= $stats['cancelled'] ?></span>
-                            </div>
-                            <div class="col-auto">
-                                <div class="icon icon-shape bg-danger text-white rounded-circle p-2">
-                                    <i class="fas fa-times-circle"></i>
+                <div class="tab-content" id="viewTabsContent" style="position: relative;">
+                    <!-- List View (default) -->
+                    <div class="tab-pane fade show active" id="list-view" role="tabpanel">
+                        <div class="row" id="appointmentsList">
+                            <?php if (empty($appointments)): ?>
+                                <div class="col-12 text-center py-5">
+                                    <h4 class="text-muted">No appointments found</h4>
+                                    <p>Schedule an appointment by clicking the button above</p>
                                 </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+                            <?php else: ?>
+                                <?php foreach ($appointments as $appointment): ?>
+                                    <div class="col-md-6 col-lg-4 mb-4 appointment-item"
+                                         data-status="<?= $appointment['Status'] ?>"
+                                         data-host="<?= $appointment['HostName']?>"
+                                         data-host-id="<?= $appointment['HostID'] ?>"
+                                         data-date="<?= date('Y-m-d', strtotime($appointment['AppointmentTime'])) ?>"
+                                         data-search="<?= strtolower($appointment['VisitorName'] . ' ' . $appointment['VisitorEmail'] . ' ' . $appointment['HostName']) ?>">
+                                        <div class="card appointment-card h-100">
+                                            <div class="card-header d-flex justify-content-between align-items-center">
+                                                <?php
+                                                // Map status to Bootstrap classes
+                                                $badgeClass = match($appointment['Status']) {
+                                                    'Cancelled' => 'danger',
+                                                    'Ongoing' => 'info',
+                                                    'Upcoming' => 'primary',
+                                                    'Completed' => 'success',
+                                                    'Overdue' => 'warning',
+                                                    default => 'secondary'
+                                                };
+                                                ?>
+                                                <span class="badge rounded-pill text-bg-<?= $badgeClass ?>"><?= $appointment['Status'] ?></span>
+                                                <small><?= date('M d, Y', strtotime($appointment['AppointmentTime'])) ?></small>
+                                            </div>
+                                            <div class="card-body">
+                                                <h5 class="card-title"><?= htmlspecialchars($appointment['VisitorName']) ?></h5>
+                                                <p class="card-text mb-1">
+                                                    <i class="far fa-envelope me-2"></i> <?= htmlspecialchars($appointment['VisitorEmail']) ?>
+                                                </p>
+                                                <p class="card-text mb-1">
+                                                    <i class="far fa-clock me-2"></i> <?= date('h:i A', strtotime($appointment['AppointmentTime'])) ?>
+                                                </p>
+                                                <p class="card-text mb-3">
+                                                    <i class="fas fa-user-tie me-2"></i> <?= htmlspecialchars($appointment['HostName']) ?>
+                                                </p>
 
-        <!-- View Toggle Buttons -->
-        <div class="row mb-4">
-            <div class="col-12">
-                <div class="btn-group" role="group">
-                    <button type="button" class="btn btn-outline-primary active" id="listViewBtn">
-                        <i class="fas fa-list me-2"></i> List View
-                    </button>
-                    <button type="button" class="btn btn-outline-primary" id="calendarViewBtn">
-                        <i class="fas fa-calendar-alt me-2"></i> Calendar View
-                    </button>
-                </div>
-            </div>
-        </div>
+                                                <?php if ($appointment['Status'] === 'Upcoming' || $appointment['Status'] === 'Overdue'): ?>
+                                                    <div class="action-buttons">
+                                                        <button class="btn btn-sm btn-outline-success check-in-btn"
+                                                                data-id="<?= $appointment['AppointmentID'] ?>">
+                                                            <i class="fas fa-check-circle me-1"></i> Check In
+                                                        </button>
+                                                        <button class="btn btn-sm btn-outline-primary reschedule-btn"
+                                                                data-id="<?= $appointment['AppointmentID'] ?>"
+                                                                data-bs-toggle="modal"
+                                                                data-bs-target="#rescheduleModal">
+                                                            <i class="fas fa-calendar-alt me-1"></i> Reschedule
+                                                        </button>
+                                                        <button class="btn btn-sm btn-outline-danger cancel-btn"
+                                                                data-id="<?= $appointment['AppointmentID'] ?>"
+                                                                data-bs-toggle="modal"
+                                                                data-bs-target="#cancelModal">
+                                                            <i class="fas fa-times-circle me-1"></i> Cancel
+                                                        </button>
+                                                    </div>
+                                                <?php elseif ($appointment['Status'] === 'Ongoing'): ?>
+                                                    <button class="btn btn-sm btn-outline-warning complete-session-btn"
+                                                            data-id="<?= $appointment['AppointmentID'] ?>">
+                                                        <i class="fas fa-check-double me-1"></i> Complete
+                                                    </button>
+                                                <?php endif; ?>
 
-        <!-- Search and Filter Section -->
-        <div class="row mb-4">
-            <div class="col-md-8">
-                <form class="search-form d-flex">
-                    <input type="text" class="form-control me-2" id="searchInput" placeholder="Search by visitor name, email, or host...">
-                    <button type="button" class="btn btn-outline-primary">
-                        <i class="fas fa-search"></i>
-                    </button>
-                </form>
-            </div>
-            <div class="col-md-4">
-                <div class="host-filter">
-                    <select class="form-select" id="hostFilter">
-                        <option value="">All Hosts</option>
-                        <?php foreach ($hosts as $host): ?>
-                            <option value="<?= $host['UserID'] ?>" data-host-name="<?= htmlspecialchars($host['Name']) ?>">
-                                <?= htmlspecialchars($host['Name']) ?>
-                            </option>
-                        <?php endforeach; ?>
-                    </select>
-                </div>
-            </div>
-        </div>
-
-        <!-- Status Filters -->
-        <div class="row mb-4">
-            <div class="col-12">
-                <div class="btn-group" role="group">
-                    <button type="button" class="btn btn-outline-primary filter-btn" data-filter="today">Today</button>
-                    <button type="button" class="btn btn-outline-primary filter-btn" data-filter="Upcoming">Upcoming</button>
-                    <button type="button" class="btn btn-outline-primary filter-btn" data-filter="Overdue">Overdue</button>
-                    <button type="button" class="btn btn-outline-primary filter-btn" data-filter="Ongoing">Ongoing</button>
-                    <button type="button" class="btn btn-outline-primary filter-btn" data-filter="Completed">Completed</button>
-                    <button type="button" class="btn btn-outline-primary filter-btn" data-filter="Cancelled">Cancelled</button>
-                </div>
-            </div>
-        </div>
-
-        <!-- List View (default) -->
-        <div id="listView">
-            <div class="row" id="appointmentsList">
-                <?php if (empty($appointments)): ?>
-                    <div class="col-12 text-center py-5">
-                        <h4 class="text-muted">No appointments found</h4>
-                        <p>Schedule an appointment by clicking the button above</p>
-                    </div>
-                <?php else: ?>
-                    <?php foreach ($appointments as $appointment): ?>
-                        <div class="col-md-6 col-lg-4 mb-4 appointment-item"
-                             data-status="<?= $appointment['Status'] ?>"
-                             data-host="<?= $appointment['HostName']?>"
-                             data-host-id="<?= $appointment['HostID'] ?>"
-                             data-date="<?= date('Y-m-d', strtotime($appointment['AppointmentTime'])) ?>"
-                             data-search="<?= strtolower($appointment['VisitorName'] . ' ' . $appointment['VisitorEmail'] . ' ' . $appointment['HostName']) ?>">
-                            <div class="card appointment-card h-100">
-                                <div class="card-header d-flex justify-content-between align-items-center">
-                                    <span class="badge status-badge-<?= $appointment['Status'] ?>"><?= $appointment['Status'] ?></span>
-                                    <small><?= date('M d, Y', strtotime($appointment['AppointmentTime'])) ?></small>
-                                </div>
-                                <div class="card-body">
-                                    <h5 class="card-title"><?= htmlspecialchars($appointment['VisitorName']) ?></h5>
-                                    <p class="card-text mb-1">
-                                        <i class="far fa-envelope me-2"></i> <?= htmlspecialchars($appointment['VisitorEmail']) ?>
-                                    </p>
-                                    <p class="card-text mb-1">
-                                        <i class="far fa-clock me-2"></i> <?= date('h:i A', strtotime($appointment['AppointmentTime'])) ?>
-                                    </p>
-                                    <p class="card-text mb-3">
-                                        <i class="fas fa-user-tie me-2"></i> <?= htmlspecialchars($appointment['HostName']) ?>
-                                    </p>
-
-                                    <?php if ($appointment['Status'] === 'Upcoming' || $appointment['Status'] === 'Overdue'): ?>
-                                        <div class="action-buttons">
-                                            <button class="btn btn-sm btn-outline-success check-in-btn"
-                                                    data-id="<?= $appointment['AppointmentID'] ?>">
-                                                <i class="fas fa-check-circle me-1"></i> Check In
-                                            </button>
-                                            <button class="btn btn-sm btn-outline-primary reschedule-btn"
-                                                    data-id="<?= $appointment['AppointmentID'] ?>"
-                                                    data-bs-toggle="modal"
-                                                    data-bs-target="#rescheduleModal">
-                                                <i class="fas fa-calendar-alt me-1"></i> Reschedule
-                                            </button>
-                                            <button class="btn btn-sm btn-outline-danger cancel-btn"
-                                                    data-id="<?= $appointment['AppointmentID'] ?>"
-                                                    data-bs-toggle="modal"
-                                                    data-bs-target="#cancelModal">
-                                                <i class="fas fa-times-circle me-1"></i> Cancel
-                                            </button>
+                                                <?php if ($appointment['Status'] === 'Cancelled' && !empty($appointment['CancellationReason'])): ?>
+                                                    <p class="text-muted mt-2">Cancellation Reason: <?= htmlspecialchars($appointment['CancellationReason']) ?></p>
+                                                <?php endif; ?>
+                                            </div>
                                         </div>
-                                    <?php elseif ($appointment['Status'] === 'Ongoing'): ?>
-                                        <button class="btn btn-sm btn-outline-warning complete-session-btn"
-                                                data-id="<?= $appointment['AppointmentID'] ?>">
-                                            <i class="fas fa-check-double me-1"></i> Complete
+                                    </div>
+                                <?php endforeach; ?>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+                    <!-- Calendar View (initially hidden) -->
+                    <div class="tab-pane fade" id="calendar-view" role="tabpanel">
+                        <div class="card app-calendar-wrapper">
+                            <div class="row g-0">
+                                <!-- Calendar Sidebar -->
+                                <div class="col-md-3 app-calendar-sidebar border-end" id="app-calendar-sidebar">
+                                    <div class="border-bottom p-4 my-sm-0 mb-4">
+                                        <button class="btn btn-primary btn-toggle-sidebar w-100" data-bs-toggle="modal" data-bs-target="#scheduleModal">
+                                            <i class="fas fa-plus me-2"></i>
+                                            <span class="align-middle">Add Event</span>
                                         </button>
-                                    <?php endif; ?>
-
-                                    <?php if ($appointment['Status'] === 'Cancelled' && !empty($appointment['CancellationReason'])): ?>
-                                        <p class="text-muted mt-2">Cancellation Reason: <?= htmlspecialchars($appointment['CancellationReason']) ?></p>
-                                    <?php endif; ?>
+                                    </div>
+                                    <div class="px-3 pt-2">
+                                        <div class="inline-calendar"></div>
+                                    </div>
+                                    <hr class="mb-4 mx-n4 mt-3" />
+                                    <div class="px-4 pb-2">
+                                        <div>
+                                            <h6>Event Filters</h6>
+                                        </div>
+                                        <div class="form-check mb-3 ms-2">
+                                            <input class="form-check-input select-all" type="checkbox" id="selectAll" data-value="all" checked />
+                                            <label class="form-check-label" for="selectAll">View All</label>
+                                        </div>
+                                        <div class="app-calendar-events-filter">
+                                            <div class="form-check form-check-primary mb-3 ms-2">
+                                                <input class="form-check-input input-filter" type="checkbox" id="select-upcoming" data-value="upcoming" checked />
+                                                <label class="form-check-label" for="select-upcoming">Upcoming</label>
+                                            </div>
+                                            <div class="form-check form-check-warning ms-2">
+                                                <input class="form-check-input input-filter" type="checkbox" id="select-overdue" data-value="overdue" checked />
+                                                <label class="form-check-label" for="select-overdue">Overdue</label>
+                                            </div>
+                                            <div class="form-check form-check-info ms-2">
+                                                <input class="form-check-input input-filter" type="checkbox" id="select-ongoing" data-value="ongoing" checked />
+                                                <label class="form-check-label" for="select-ongoing">Ongoing</label>
+                                            </div>
+                                            <div class="form-check form-check-success mb-3 ms-2">
+                                                <input class="form-check-input input-filter" type="checkbox" id="select-completed" data-value="completed" checked />
+                                                <label class="form-check-label" for="select-completed">Completed</label>
+                                            </div>
+                                            <div class="form-check form-check-danger mb-3 ms-2">
+                                                <input class="form-check-input input-filter" type="checkbox" id="select-cancelled" data-value="cancelled" checked />
+                                                <label class="form-check-label" for="select-cancelled">Cancelled</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-9 app-calendar-content">
+                                    <div class="card shadow-none border-0">
+                                        <div class="card-body pb-0">
+                                            <!-- FullCalendar -->
+                                            <div id="calendar"></div>
+                                        </div>
+                                    </div>
+                                    <div class="app-overlay"></div>
                                 </div>
                             </div>
                         </div>
-                    <?php endforeach; ?>
-                <?php endif; ?>
-            </div>
-        </div>
-
-        <!-- Calendar View (initially hidden) -->
-        <div id="calendarView" style="display: none;">
-            <div class="calendar-view">
-                <div class="calendar-header">
-                    <button class="btn btn-sm btn-outline-primary" id="prevMonth">
-                        <i class="fas fa-chevron-left"></i>
-                    </button>
-                    <h4 id="currentMonth"></h4>
-                    <button class="btn btn-sm btn-outline-primary" id="nextMonth">
-                        <i class="fas fa-chevron-right"></i>
-                    </button>
+                    </div>
                 </div>
-                <table class="table table-bordered">
-                    <thead>
-                    <tr>
-                        <th>Sun</th>
-                        <th>Mon</th>
-                        <th>Tue</th>
-                        <th>Wed</th>
-                        <th>Thu</th>
-                        <th>Fri</th>
-                        <th>Sat</th>
-                    </tr>
-                    </thead>
-                    <tbody id="calendarBody">
-                    <!-- Filled by JavaScript -->
-                    </tbody>
-                </table>
             </div>
         </div>
     </div>
 </div>
-
 
 
 
@@ -1366,6 +1421,12 @@ function checkTimeConflict($hostId, $appointmentTime, $excludeAppointmentId = nu
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.6.13/flatpickr.min.js"></script>
+<script src="../../Sneat/assets/vendor/libs/jquery/jquery.js"></script>
+<script src="../../Sneat/assets/vendor/libs/popper/popper.js"></script>
+<script src="../../Sneat/assets/vendor/js/bootstrap.js"></script>
+<script src="../../Sneat/assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.js"></script>
+<script src="../../Sneat/assets/vendor/js/menu.js"></script>
+<script src="../../Sneat/assets/js/main.js"></script>
 <script src="notification.js"></script>
 <script>
     $(document).ready(function() {
@@ -1404,19 +1465,18 @@ function checkTimeConflict($hostId, $appointmentTime, $excludeAppointmentId = nu
             }
         });
 
-        // Toggle views
         $('#listViewBtn').click(function() {
             $(this).addClass('active');
             $('#calendarViewBtn').removeClass('active');
-            $('#listView').show();
-            $('#calendarView').hide();
+            $('#list-view').addClass('show active');
+            $('#calendar-view').removeClass('show active');
         });
 
         $('#calendarViewBtn').click(function() {
             $(this).addClass('active');
             $('#listViewBtn').removeClass('active');
-            $('#listView').hide();
-            $('#calendarView').show();
+            $('#calendar-view').addClass('show active');
+            $('#list-view').removeClass('show active');
             renderCalendar(new Date());
         });
 
@@ -2399,6 +2459,92 @@ function checkTimeConflict($hostId, $appointmentTime, $excludeAppointmentId = nu
         setInterval(function() {
             $.post('update_activity.php');
         }, 60000); // Update every 60 seconds
+    });
+    // SIDEBAR TOGGLE FUNCTIONALITY
+    function updateTooltip() {
+        const $toggle = $('.layout-menu-toggle');
+        const isCollapsed = $('html').hasClass('layout-menu-collapsed');
+
+        if (isCollapsed) {
+            $toggle.attr('data-tooltip', 'Expand Menu');
+            $toggle.attr('title', 'Expand Menu');
+        } else {
+            $toggle.attr('data-tooltip', 'Collapse Menu');
+            $toggle.attr('title', 'Collapse Menu');
+        }
+    }
+
+    $('.layout-menu-toggle').off('click').on('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+
+        const $html = $('html');
+        const $sidebar = $('#layout-menu');
+        const $toggle = $(this);
+
+        $toggle.css('pointer-events', 'none');
+        $html.toggleClass('layout-menu-collapsed');
+        const isCollapsed = $html.hasClass('layout-menu-collapsed');
+
+        if (isCollapsed) {
+            $sidebar.css({
+                'width': '78px',
+                'min-width': '78px',
+                'max-width': '78px'
+            });
+        } else {
+            $sidebar.css({
+                'width': '260px',
+                'min-width': '260px',
+                'max-width': '260px'
+            });
+        }
+
+        updateTooltip();
+        localStorage.setItem('layoutMenuCollapsed', isCollapsed);
+
+        setTimeout(() => {
+            $toggle.css('pointer-events', 'auto');
+        }, 300);
+    });
+
+    // Initialize sidebar state
+    const isCollapsed = localStorage.getItem('layoutMenuCollapsed') === 'true';
+    if (isCollapsed) {
+        $('html').addClass('layout-menu-collapsed');
+        $('#layout-menu').css({
+            'width': '78px',
+            'min-width': '78px',
+            'max-width': '78px'
+        });
+    } else {
+        $('#layout-menu').css({
+            'width': '260px',
+            'min-width': '260px',
+            'max-width': '260px'
+        });
+    }
+
+    updateTooltip();
+
+    // Handle window resize
+    $(window).resize(function() {
+        const $sidebar = $('#layout-menu');
+        const isCollapsed = $('html').hasClass('layout-menu-collapsed');
+
+        if (isCollapsed) {
+            $sidebar.css({
+                'width': '78px',
+                'min-width': '78px',
+                'max-width': '78px'
+            });
+        } else {
+            $sidebar.css({
+                'width': '260px',
+                'min-width': '260px',
+                'max-width': '260px'
+            });
+        }
     });
 </script>
 </body>
