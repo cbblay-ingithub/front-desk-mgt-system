@@ -54,7 +54,7 @@ $conn->close();
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>Admin Reports</title>
+    <title>Reports -Admin</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -232,7 +232,7 @@ $conn->close();
                     <!-- Page Title -->
                     <div class="navbar-nav align-items-center me-auto">
                         <div class="nav-item">
-                            <h4 class="mb-0 fw-bold ms-2">Reports Dashboard</h4>
+                            <h4 class="mb-0 fw-bold ms-2">Reports</h4>
                         </div>
                     </div>
                 </div>

@@ -148,7 +148,7 @@ $currentPage = basename($_SERVER['PHP_SELF']);
         <li class="menu-item <?= ($currentPage == 'admin-reports.php') ? 'active' : '' ?>">
             <a href="admin-reports.php" class="menu-link" data-tooltip="Reporting">
                 <i class="menu-icon icon-base bx bx-bar-chart-alt"></i>
-                <div data-i18n="Reporting">Reporting</div>
+                <div data-i18n="Reporting">Reports</div>
             </a>
         </li>
 
