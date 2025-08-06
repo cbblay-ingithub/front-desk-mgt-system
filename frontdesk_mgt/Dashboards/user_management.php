@@ -146,29 +146,100 @@ $conn->close();
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="notification.css">
     <style>
-        body {
-            min-height: 100vh;
+        /* Sidebar width fixes */
+        #layout-menu {
+            width: 260px !important;
+            min-width: 260px !important;
+            max-width: 260px !important;
+            flex: 0 0 260px !important;
+            position: fixed !important; /* Make sidebar fixed */
+            top: 0 !important;
+            left: 0 !important;
+            height: 100vh !important; /* Full viewport height */
+            overflow-y: auto !important; /* Allow sidebar internal scrolling if needed */
+            overflow-x: hidden !important;
+            z-index: 1000 !important; /* Ensure it stays on top */
+        }
+
+        .layout-menu-collapsed #layout-menu {
+            width: 78px !important;
+            min-width: 78px !important;
+            max-width: 78px !important;
+            flex: 0 0 78px !important;
+        }
+
+        .layout-content {
+            flex: 1 1 auto;
+            min-width: 0;
+            margin-left: 260px !important; /* Push content away from fixed sidebar */
+            width: calc(100% - 260px) !important;
+            height: 100vh !important; /* Full viewport height */
+            overflow-y: auto !important; /* Make only main content scrollable */
+            overflow-x: hidden !important;
+        }
+
+        .layout-menu-collapsed .layout-content {
+            margin-left: 78px !important; /* Adjust for collapsed sidebar */
+            width: calc(100% - 78px) !important;
+        }
+
+        .layout-wrapper {
+            overflow: hidden !important; /* Prevent wrapper scrolling */
+            height: 100vh !important; /* Fixed height */
+        }
+
+        .layout-container {
             display: flex;
+            min-height: 100vh;
+            width: 100%;
+            overflow: hidden !important; /* Prevent container scrolling */
         }
-        .sidebar {
-            width: 250px;
-            background-color: #343a40;
-            padding-top: 1rem;
+
+        .no-transition {
+            transition: none !important;
         }
-        .sidebar a {
-            color: #fff;
-            padding: 12px 20px;
-            display: block;
-            text-decoration: none;
+
+        .layout-menu-toggle {
+            background-color: rgba(255, 255, 255, 0.1) !important;
+            border: 1px solid rgba(255, 255, 255, 0.2) !important;
+            border-radius: 6px !important;
+            padding: 8px !important;
+            color: #fff !important;
+            transition: all 0.3s ease !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            width: 32px !important;
+            height: 32px !important;
+            min-width: 32px !important;
         }
-        .sidebar a:hover {
-            background-color: #495057;
+
+        .layout-menu-toggle i {
+            font-size: 16px !important;
+            line-height: 1 !important;
+            opacity: 1 !important;
+            visibility: visible !important;
+            pointer-events: auto !important;
+            z-index: 1002 !important;
         }
-        .content {
-            flex-grow: 1;
-            padding: 2rem;
-            background-color: #f8f9fa;
+
+        .layout-menu-collapsed #layout-menu .layout-menu-toggle {
+            animation: pulse-glow 2s infinite !important;
         }
+
+        @keyframes pulse-glow {
+            0% {
+                box-shadow: 0 0 5px rgba(255, 255, 255, 0.3);
+            }
+            50% {
+                box-shadow: 0 0 15px rgba(255, 255, 255, 0.5), 0 0 25px rgba(255, 255, 255, 0.3);
+            }
+            100% {
+                box-shadow: 0 0 5px rgba(255, 255, 255, 0.3);
+            }
+        }
+
+        /* Original user management styles */
         .status-badge {
             display: inline-block;
             width: 12px;
@@ -222,282 +293,287 @@ $conn->close();
             border-radius: 0.375rem;
             margin-bottom: 1.5rem;
         }
+
+        /* Ensure body and html don't have extra scrollbars */
+        html, body {
+            overflow-x: hidden !important;
+            overflow-y: hidden !important; /* Only main content should scroll */
+            height: 100vh !important;
+        }
+
+        /* Fix content padding to prevent content from going behind sidebar */
+        .container-fluid.container-p-y {
+            padding-top: 1.5rem !important;
+            padding-bottom: 1.5rem !important;
+        }
+
+        .layout-content {
+            transition: margin-left 0.3s ease, width 0.3s ease !important;
+        }
     </style>
 </head>
 <body>
-<?php include 'admin-sidebar.php'; ?>
-<div class="layout-content">
-    <nav class="layout-navbar container-xxl navbar-detached navbar navbar-expand-xl align-items-center bg-navbar-theme" id="layout-navbar">
-        <div class="layout-menu-toggle navbar-nav align-items-xl-center me-4 me-xl-0 d-xl-none">
-            <a class="nav-item nav-link px-0 me-xl-6" href="javascript:void(0)">
-                <i class="icon-base bx bx-menu icon-md"></i>
-            </a>
-        </div>
-        <div class="navbar-nav-right d-flex align-items-center justify-content-end" id="navbar-collapse">
-            <!--Page Title-->
-            <div class="navbar-nav align-items-center me-auto">
-                <div class="nav-item">
-                    <h4 class="mb-0 fw-bold ms-2">User Management</h4>
+<div class="layout-wrapper layout-content-navbar">
+    <div class="layout-container">
+        <?php include 'admin-sidebar.php'; ?>
+        <div class="layout-content">
+            <nav class="layout-navbar container-xxl navbar-detached navbar navbar-expand-xl align-items-center bg-navbar-theme" id="layout-navbar">
+                <div class="layout-menu-toggle navbar-nav align-items-xl-center me-4 me-xl-0 d-xl-none">
+                    <a class="nav-item nav-link px-0 me-xl-6" href="javascript:void(0)">
+                        <i class="icon-base bx bx-menu icon-md"></i>
+                    </a>
                 </div>
-            </div>
+                <div class="navbar-nav-right d-flex align-items-center justify-content-end" id="navbar-collapse">
+                    <!--Page Title-->
+                    <div class="navbar-nav align-items-center me-auto">
+                        <div class="nav-item">
+                            <h4 class="mb-0 fw-bold ms-2">User Management</h4>
+                        </div>
+                    </div>
 
-            <!--Filter Button-->
-            <div class="navbar-nav align-items-center me-3">
-                <div class="dropdown">
-                    <button class="btn btn-outline-primary dropdown-toggle" type="button" id="filterDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                        <i class="fas fa-filter me-1"></i> Filters
-                    </button>
-                    <div class="dropdown-menu dropdown-menu-end filter-dropdown" aria-labelledby="filterDropdown">
-                        <form method="GET" id="filterForm">
-                            <div class="form-group">
-                                <label class="form-label">Role</label>
-                                <select name="role" class="form-select">
-                                    <option value="">All Roles</option>
-                                    <?php foreach ($roles as $role): ?>
-                                        <option value="<?= $role['Role'] ?>" <?= $roleFilter === $role['Role'] ? 'selected' : '' ?>>
-                                            <?= htmlspecialchars($role['Role']) ?>
-                                        </option>
-                                    <?php endforeach; ?>
+                    <!--Filter Button-->
+                    <div class="navbar-nav align-items-center me-3">
+                        <div class="dropdown">
+                            <button class="btn btn-outline-primary dropdown-toggle" type="button" id="filterDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="fas fa-filter me-1"></i> Filters
+                            </button>
+                            <div class="dropdown-menu dropdown-menu-end filter-dropdown" aria-labelledby="filterDropdown">
+                                <form method="GET" id="filterForm">
+                                    <div class="form-group">
+                                        <label class="form-label">Role</label>
+                                        <select name="role" class="form-select">
+                                            <option value="">All Roles</option>
+                                            <?php foreach ($roles as $role): ?>
+                                                <option value="<?= $role['Role'] ?>" <?= $roleFilter === $role['Role'] ? 'selected' : '' ?>>
+                                                    <?= htmlspecialchars($role['Role']) ?>
+                                                </option>
+                                            <?php endforeach; ?>
+                                        </select>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label class="form-label">Status</label>
+                                        <select name="status" class="form-select">
+                                            <option value="">All Statuses</option>
+                                            <option value="active" <?= $statusFilter === 'active' ? 'selected' : '' ?>>Active</option>
+                                            <option value="inactive" <?= $statusFilter === 'inactive' ? 'selected' : '' ?>>Inactive</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label class="form-label">Search</label>
+                                        <input type="text" name="search" class="form-control"
+                                               placeholder="Search by name or email" value="<?= htmlspecialchars($searchTerm) ?>">
+                                    </div>
+
+                                    <button type="submit" class="btn btn-primary btn-apply mt-2">
+                                        <i class="fas fa-check me-1"></i> Apply Filters
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!--Add User-->
+                    <div class="navbar-nav align-items-center">
+                        <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addUserModal">
+                            <i class="fas fa-plus me-1"></i> Add New User
+                        </button>
+                    </div>
+                </div>
+            </nav>
+
+            <!-- Main content area -->
+            <div class="container-fluid container-p-y">
+                <!-- Bulk Actions and Users Table -->
+                <form id="bulkActionsForm" method="POST">
+                    <div class="bulk-actions">
+                        <div class="row align-items-center">
+                            <div class="col-auto">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="selectAll">
+                                    <label class="form-check-label" for="selectAll">Select All</label>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <select name="bulk_action" class="form-select" required>
+                                    <option value="">Bulk Actions</option>
+                                    <option value="activate">Activate Accounts</option>
+                                    <option value="deactivate">Deactivate Accounts</option>
+                                    <option value="delete">Delete Users</option>
+                                    <option value="reset_metrics">Reset Metrics & Activities</option>
                                 </select>
                             </div>
-
-                            <div class="form-group">
-                                <label class="form-label">Status</label>
-                                <select name="status" class="form-select">
-                                    <option value="">All Statuses</option>
-                                    <option value="active" <?= $statusFilter === 'active' ? 'selected' : '' ?>>Active</option>
-                                    <option value="inactive" <?= $statusFilter === 'inactive' ? 'selected' : '' ?>>Inactive</option>
-                                </select>
+                            <div class="col-md-2">
+                                <button type="submit" class="btn btn-warning">Apply</button>
                             </div>
+                        </div>
+                    </div>
 
-                            <div class="form-group">
-                                <label class="form-label">Search</label>
-                                <input type="text" name="search" class="form-control"
-                                       placeholder="Search by name or email" value="<?= htmlspecialchars($searchTerm) ?>">
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-hover align-middle">
+                            <thead class="table-dark">
+                            <tr>
+                                <th width="30"><input type="checkbox" id="selectAllRows"></th>
+                                <th>UserID</th>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Phone</th>
+                                <th>Role</th>
+                                <th>Status</th>
+                                <th>Online Status</th>
+                                <th>Actions</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <?php foreach ($users as $user):
+                                $onlineStatus = getUserOnlineStatus($user);
+                                $failedCount = $failedCounts[$user['UserID']] ?? 0;
+                                ?>
+                                <tr>
+                                    <td><input type="checkbox" name="selected_users[]" value="<?= $user['UserID'] ?>"></td>
+                                    <td><?= htmlspecialchars($user['UserID']) ?></td>
+                                    <td>
+                                        <span class="status-badge status-<?= $onlineStatus ?>"></span>
+                                        <?= htmlspecialchars($user['Name']) ?>
+                                    </td>
+                                    <td><?= htmlspecialchars($user['Email']) ?></td>
+                                    <td><?= htmlspecialchars($user['Phone']) ?></td>
+                                    <td><?= htmlspecialchars($user['Role']) ?></td>
+                                    <td>
+                                    <span class="badge bg-<?= $user['status'] === 'active' ? 'success' : 'danger' ?>">
+                                        <?= ucfirst($user['status']) ?>
+                                    </span>
+                                    </td>
+                                    <td>
+                                    <span class="status-text status-<?= $onlineStatus ?>-text">
+                                        <?= ucfirst($onlineStatus) ?>
+                                    </span>
+                                    </td>
+                                    <td>
+                                        <button class="btn btn-sm btn-warning edit-user"
+                                                data-id="<?= $user['UserID'] ?>"
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#editUserModal">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-danger delete-user"
+                                                data-id="<?= $user['UserID'] ?>"
+                                                data-name="<?= htmlspecialchars($user['Name']) ?>">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-info view-activity"
+                                                data-id="<?= $user['UserID'] ?>"
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#activityModal">
+                                            <i class="fas fa-history"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                            <?php endforeach; ?>
+                            </tbody>
+                        </table>
+                    </div>
+                </form>
+
+                <!-- Add User Modal -->
+                <div class="modal fade" id="addUserModal" tabindex="-1">
+                    <div class="modal-dialog modal-lg">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Add New User</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                             </div>
-
-                            <button type="submit" class="btn btn-primary btn-apply mt-2">
-                                <i class="fas fa-check me-1"></i> Apply Filters
-                            </button>
-                        </form>
-                    </div>
-                </div>
-            </div>
-
-            <!--Add User-->
-            <div class="navbar-nav align-items-center">
-                <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addUserModal">
-                    <i class="fas fa-plus me-1"></i> Add New User
-                </button>
-            </div>
-        </div>
-    </nav>
-    <!-- Bulk Actions -->
-    <!-- Bulk Actions and Users Table -->
-    <form id="bulkActionsForm" method="POST">
-        <div class="bulk-actions">
-            <div class="row align-items-center">
-                <div class="col-auto">
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" id="selectAll">
-                        <label class="form-check-label" for="selectAll">Select All</label>
-                    </div>
-                </div>
-                <div class="col-md-3">
-                    <select name="bulk_action" class="form-select" required>
-                        <option value="">Bulk Actions</option>
-                        <option value="activate">Activate Accounts</option>
-                        <option value="deactivate">Deactivate Accounts</option>
-                        <option value="delete">Delete Users</option>
-                        <option value="reset_metrics">Reset Metrics & Activities</option>
-                    </select>
-                </div>
-                <div class="col-md-2">
-                    <button type="submit" class="btn btn-warning">Apply</button>
-                </div>
-            </div>
-        </div>
-
-        <div class="table-responsive">
-            <table class="table table-bordered table-hover align-middle">
-                <thead class="table-dark">
-                <tr>
-                    <th width="30"><input type="checkbox" id="selectAllRows"></th>
-                    <th>UserID</th>
-                    <th>Name</th>
-                    <th>Email</th>
-                    <th>Phone</th>
-                    <th>Role</th>
-                    <th>Status</th>
-                    <th>Online Status</th>
-                    <!--
-                    <th>Last Activity</th>
-                    <th>Last Login</th>
-                    <th>Last Logout</th>
-                    -->
-                    <th>Actions</th>
-                </tr>
-                </thead>
-                <tbody>
-                <?php foreach ($users as $user):
-                    $onlineStatus = getUserOnlineStatus($user);
-                    $failedCount = $failedCounts[$user['UserID']] ?? 0;
-                    ?>
-                    <tr>
-                        <td><input type="checkbox" name="selected_users[]" value="<?= $user['UserID'] ?>"></td>
-                        <td><?= htmlspecialchars($user['UserID']) ?></td>
-                        <td>
-                            <span class="status-badge status-<?= $onlineStatus ?>"></span>
-                            <?= htmlspecialchars($user['Name']) ?>
-                        </td>
-                        <td><?= htmlspecialchars($user['Email']) ?></td>
-                        <td><?= htmlspecialchars($user['Phone']) ?></td>
-                        <td><?= htmlspecialchars($user['Role']) ?></td>
-                        <td>
-                        <span class="badge bg-<?= $user['status'] === 'active' ? 'success' : 'danger' ?>">
-                            <?= ucfirst($user['status']) ?>
-                        </span>
-                        </td>
-                        <td>
-                        <span class="status-text status-<?= $onlineStatus ?>-text">
-                            <?= ucfirst($onlineStatus) ?>
-                        </span>
-                        </td>
-                        <!--
-                        <td>
-                            <?php if ($user['last_activity']): ?>
-                                <?= date('M d, Y H:i', strtotime($user['last_activity'])) ?>
-                            <?php else: ?>
-                                Never
-                            <?php endif; ?>
-                        </td>
-                        <td>
-                            <?= $user['last_login'] ? date('M d, Y H:i', strtotime($user['last_login'])) : 'Never' ?>
-                        </td>
-                        <td>
-                            <?= $user['last_logout'] ? date('M d, Y H:i', strtotime($user['last_logout'])) : 'Never' ?>
-                        </td>
-                        -->
-                        <td>
-                            <button class="btn btn-sm btn-warning edit-user"
-                                    data-id="<?= $user['UserID'] ?>"
-                                    data-bs-toggle="modal"
-                                    data-bs-target="#editUserModal">
-                                <i class="fas fa-edit"></i>
-                            </button>
-                            <button class="btn btn-sm btn-danger delete-user"
-                                    data-id="<?= $user['UserID'] ?>"
-                                    data-name="<?= htmlspecialchars($user['Name']) ?>">
-                                <i class="fas fa-trash"></i>
-                            </button>
-                            <button class="btn btn-sm btn-info view-activity"
-                                    data-id="<?= $user['UserID'] ?>"
-                                    data-bs-toggle="modal"
-                                    data-bs-target="#activityModal">
-                                <i class="fas fa-history"></i>
-                            </button>
-                        </td>
-                    </tr>
-                <?php endforeach; ?>
-                </tbody>
-            </table>
-        </div>
-    </form>
-
-<!-- Add User Modal -->
-<div class="modal fade" id="addUserModal" tabindex="-1">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Add New User</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <form id="addUserForm" method="POST" action="save_user.php">
-                <div class="modal-body">
-                    <div class="row g-3">
-                        <div class="col-md-6">
-                            <label class="form-label">Full Name</label>
-                            <input type="text" name="name" class="form-control" required>
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label">Email</label>
-                            <input type="email" name="email" class="form-control" required>
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label">Phone</label>
-                            <input type="text" name="phone" class="form-control">
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label">Role</label>
-                            <select name="role" class="form-select" required>
-                                <?php foreach ($roles as $role): ?>
-                                    <option value="<?= $role['Role'] ?>"><?= htmlspecialchars($role['Role']) ?></option>
-                                <?php endforeach; ?>
-                            </select>
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label">Password</label>
-                            <input type="password" name="password" class="form-control" required>
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label">Status</label>
-                            <select name="status" class="form-select" required>
-                                <option value="active">Active</option>
-                                <option value="inactive">Inactive</option>
-                            </select>
+                            <form id="addUserForm" method="POST" action="save_user.php">
+                                <div class="modal-body">
+                                    <div class="row g-3">
+                                        <div class="col-md-6">
+                                            <label class="form-label">Full Name</label>
+                                            <input type="text" name="name" class="form-control" required>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label">Email</label>
+                                            <input type="email" name="email" class="form-control" required>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label">Phone</label>
+                                            <input type="text" name="phone" class="form-control">
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label">Role</label>
+                                            <select name="role" class="form-select" required>
+                                                <?php foreach ($roles as $role): ?>
+                                                    <option value="<?= $role['Role'] ?>"><?= htmlspecialchars($role['Role']) ?></option>
+                                                <?php endforeach; ?>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label">Password</label>
+                                            <input type="password" name="password" class="form-control" required>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label">Status</label>
+                                            <select name="status" class="form-select" required>
+                                                <option value="active">Active</option>
+                                                <option value="inactive">Inactive</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                    <button type="submit" class="btn btn-primary">Save User</button>
+                                </div>
+                            </form>
                         </div>
                     </div>
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="submit" class="btn btn-primary">Save User</button>
+
+                <!-- Edit User Modal -->
+                <div class="modal fade" id="editUserModal" tabindex="-1">
+                    <div class="modal-dialog modal-lg">
+                        <div class="modal-content" id="editUserModalContent">
+                            <!-- Content will be loaded here -->
+                        </div>
+                    </div>
                 </div>
-            </form>
-        </div>
-    </div>
-</div>
 
-<!-- Edit User Modal -->
-<div class="modal fade" id="editUserModal" tabindex="-1">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content" id="editUserModalContent">
-            <!-- Content will be loaded here -->
-        </div>
-    </div>
-</div>
+                <!-- Activity Modal -->
+                <div class="modal fade" id="activityModal" tabindex="-1">
+                    <div class="modal-dialog modal-lg">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">User Activity</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                            </div>
+                            <div class="modal-body">
+                                <h6>Recent Activity</h6>
+                                <div class="user-activity" id="userActivityContent">
+                                    <!-- Activity will be loaded here -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
-<!-- Activity Modal -->
-<div class="modal fade" id="activityModal" tabindex="-1">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">User Activity</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
-                <h6>Recent Activity</h6>
-                <div class="user-activity" id="userActivityContent">
-                    <!-- Activity will be loaded here -->
+                <!-- Notification System -->
+                <div class="notification-wrapper">
+                    <div class="notification-bell" id="notificationBell">
+                        <i class="fas fa-bell"></i>
+                        <span class="notification-count" id="notificationCount">0</span>
+                    </div>
+                    <div class="notification-panel" id="notificationPanel">
+                        <div class="notification-header">
+                            <h3>Notifications</h3>
+                            <button id="markAllReadBtn" class="mark-all-read">Mark All Read</button>
+                        </div>
+                        <div class="notification-list" id="notificationList">
+                            <!-- Notifications will be inserted here -->
+                            <div class="empty-notification">No notifications</div>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
-    </div>
-</div>
-
-<!-- Notification System -->
-<div class="notification-wrapper">
-    <div class="notification-bell" id="notificationBell">
-        <i class="fas fa-bell"></i>
-        <span class="notification-count" id="notificationCount">0</span>
-    </div>
-    <div class="notification-panel" id="notificationPanel">
-        <div class="notification-header">
-            <h3>Notifications</h3>
-            <button id="markAllReadBtn" class="mark-all-read">Mark All Read</button>
-        </div>
-        <div class="notification-list" id="notificationList">
-            <!-- Notifications will be inserted here -->
-            <div class="empty-notification">No notifications</div>
         </div>
     </div>
 </div>
@@ -532,7 +608,6 @@ $conn->close();
         // Update immediately and every minute
         updateAdminStatus();
         setInterval(updateAdminStatus, 60000);
-
 
         // Bulk actions role selection toggle
         $('#bulkActionsForm').on('submit', function(e) {
@@ -659,6 +734,7 @@ $conn->close();
         $('#editUserModal').on('hidden.bs.modal', function() {
             $('#editUserModalContent').html('');
         });
+
         // Keep filter dropdown open when clicking inside it
         $(document).on('click', '.filter-dropdown', function(e) {
             e.stopPropagation();
@@ -688,6 +764,57 @@ $conn->close();
         $('#filterForm').on('change keyup', function() {
             updateFilterBadge();
         });
+
+        // Sidebar toggle functionality
+        $('.layout-menu-toggle').off('click').on('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            const $html = $('html');
+            const $sidebar = $('#layout-menu');
+            const $toggle = $(this);
+
+            $toggle.css('pointer-events', 'none');
+            $html.toggleClass('layout-menu-collapsed');
+            const isCollapsed = $html.hasClass('layout-menu-collapsed');
+
+            if (isCollapsed) {
+                $sidebar.css({
+                    'width': '78px',
+                    'min-width': '78px',
+                    'max-width': '78px'
+                });
+            } else {
+                $sidebar.css({
+                    'width': '260px',
+                    'min-width': '260px',
+                    'max-width': '260px'
+                });
+            }
+
+            localStorage.setItem('layoutMenuCollapsed', isCollapsed);
+
+            setTimeout(() => {
+                $toggle.css('pointer-events', 'auto');
+            }, 300);
+        });
+
+        // Initialize sidebar state from localStorage
+        const isCollapsed = localStorage.getItem('layoutMenuCollapsed') === 'true';
+        if (isCollapsed) {
+            $('html').addClass('layout-menu-collapsed');
+            $('#layout-menu').css({
+                'width': '78px',
+                'min-width': '78px',
+                'max-width': '78px'
+            });
+        } else {
+            $('#layout-menu').css({
+                'width': '260px',
+                'min-width': '260px',
+                'max-width': '260px'
+            });
+        }
     });
 </script>
 </body>
