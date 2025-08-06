@@ -79,16 +79,86 @@ $conn->close();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Help Desk Tickets - Front Desk</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
+    <!-- Main CSS Libraries -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="notification.css">
+
+    <!-- Sneat CSS (same as visitor-mgt.php) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../../Sneat/assets/vendor/fonts/iconify-icons.css" />
+    <link rel="stylesheet" href="../../Sneat/assets/vendor/css/core.css" />
+    <link rel="stylesheet" href="../../Sneat/assets/css/demo.css" />
     <link rel="stylesheet" href="help_desk.css">
     <style>
-        .layout { display: flex; min-height: 100vh; }
-        .sidebar { width: 250px; background: #343a40; color: white; padding: 20px; }
-        .sidebar a { color: white; display: block; padding: 10px; text-decoration: none; }
-        .sidebar a:hover { background: #495057; }
-        .container { flex: 1; padding: 20px; }
+        /* Layout structure matching visitor-mgt.php */
+        html, body {
+            height: 100%;
+            overflow-x: hidden !important;
+        }
+
+        .layout-wrapper {
+            display: flex;
+            min-height: 100vh;
+            width: 100%;
+            overflow: hidden !important;
+        }
+
+        .layout-container {
+            display: flex;
+            min-height: 100vh;
+            width: 100%;
+            overflow: hidden !important;
+        }
+
+        /* Sidebar width fixes */
+        #layout-menu {
+            width: 260px !important;
+            min-width: 260px !important;
+            max-width: 260px !important;
+            flex: 0 0 260px !important;
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            height: 100vh !important;
+            overflow-y: auto !important;
+            overflow-x: hidden !important;
+            z-index: 1000 !important;
+            transition: width 0.3s ease, min-width 0.3s ease, max-width 0.3s ease !important;
+        }
+
+        .layout-menu-collapsed #layout-menu {
+            width: 78px !important;
+            min-width: 78px !important;
+            max-width: 78px !important;
+            flex: 0 0 78px !important;
+        }
+
+        .layout-content {
+            flex: 1 1 auto;
+            min-width: 0;
+            margin-left: 260px !important;
+            width: calc(100% - 260px) !important;
+            height: 100vh !important;
+            overflow-y: auto !important;
+            overflow-x: hidden !important;
+            transition: margin-left 0.3s ease, width 0.3s ease !important;
+        }
+
+        .layout-menu-collapsed .layout-content {
+            margin-left: 78px !important;
+            width: calc(100% - 78px) !important;
+        }
+
+        /* Fix content padding */
+        .container-fluid.container-p-y {
+            padding-top: 1.5rem !important;
+            padding-bottom: 1.5rem !important;
+        }
+
+        /* Original ticket styles */
         .ticket-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
         .ticket-table th, .ticket-table td { border: 1px solid #dee2e6; padding: 10px; text-align: left; }
         .ticket-table th { background: #f8f9fa; }
@@ -466,132 +536,140 @@ $conn->close();
             font-size: 13px;
             border-left: 4px solid #c33;
         }
-
-        @media (max-width: 768px) {
-            .filter-btn { padding: 4px 8px; font-size: 0.9em; }
-            .filter-group { gap: 5px; }
-            .chat-container {
-                width: calc(100vw - 40px);
-                height: calc(100vh - 140px);
-                bottom: 80px;
-                right: 20px;
-                left: 20px;
-            }
-        }
     </style>
 </head>
 <body data-user-id="<?php echo $userId; ?>">
-<div class="layout">
-    <div class="sidebar">
-        <h4 class="text-white text-center">Front Desk Panel</h4>
-        <a href="front-desk_dashboard.php"><i class="fas fa-tachometer-alt me-2"></i> Dashboard</a>
-        <a href="visitor-mgt.php"><i class="fas fa-users me-2"></i> Manage Visitors</a>
-        <a href="FD_frontend_dash.php"><i class="fas fa-calendar-check me-2"></i> Appointments</a>
-        <a href="FD_tickets.php" class="active"><i class="fas fa-ticket"></i> Help Desk Tickets</a>
-        <!--
-        <a href="lost_found.php"><i class="fa-solid fa-suitcase me-2"></i> View Lost & Found</a>
-        -->
-        <a href="../Logout.php"><i class="fas fa-sign-out-alt me-2"></i> Logout</a>
-    </div>
-    <div class="container">
-        <header>
-            <h1>Help Desk Tickets</h1>
-            <button id="createTicketBtn" class="submit-btn">Create New Ticket</button>
-        </header>
+<div class="layout-wrapper layout-content-navbar">
+    <div class="layout-container">
+        <?php include 'frontdesk-sidebar.php'; ?>
 
-        <?php if (isset($message)): ?>
-            <div class="alert alert-success"><?php echo $message; ?></div>
-        <?php endif; ?>
-        <?php if (isset($error)): ?>
-            <div class="alert alert-danger"><?php echo $error; ?></div>
-        <?php endif; ?>
+        <div class="layout-content">
+            <nav class="layout-navbar container-xxl navbar-detached navbar navbar-expand-xl align-items-center bg-navbar-theme" id="layout-navbar">
+                <div class="layout-menu-toggle navbar-nav align-items-xl-center me-4 me-xl-0 d-xl-none">
+                    <a class="nav-item nav-link px-0 me-xl-6" href="javascript:void(0)">
+                        <i class="icon-base bx bx-menu icon-md"></i>
+                    </a>
+                </div>
+                <div class="navbar-nav-right d-flex align-items-center justify-content-end" id="navbar-collapse">
+                    <!--Page Title-->
+                    <div class="navbar-nav align-items-center me-auto">
+                        <div class="nav-item">
+                            <h4 class="mb-0 fw-bold ms-2">Help Desk Tickets</h4>
+                        </div>
+                    </div>
+                    <!--Create Ticket button-->
+                    <div class="navbar-nav align-items-center me-3">
+                        <button id="createTicketBtn" class="btn btn-primary">
+                            <i class="fas fa-plus-circle me-2"></i> Create New Ticket
+                        </button>
+                    </div>
+                </div>
+            </nav>
 
-        <!-- Filters for Front Desk -->
-        <div class="filter-group">
-            <div>
-                <strong>Status:</strong>
-                <button class="filter-btn status-filter" data-status="">All</button>
-                <button class="filter-btn status-filter" data-status="open">Open</button>
-                <button class="filter-btn status-filter" data-status="in-progress">In-Progress</button>
-                <button class="filter-btn status-filter" data-status="resolved">Resolved</button>
-                <button class="filter-btn status-filter" data-status="closed">Closed</button>
+            <div class="container-fluid container-p-y">
+                <?php if (isset($message)): ?>
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        <?php echo $message; ?>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                <?php endif; ?>
+                <?php if (isset($error)): ?>
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <?php echo $error; ?>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                <?php endif; ?>
+
+                <!-- Filters for Front Desk -->
+                <div class="filter-group">
+                    <div>
+                        <strong>Status:</strong>
+                        <button class="filter-btn status-filter" data-status="">All</button>
+                        <button class="filter-btn status-filter" data-status="open">Open</button>
+                        <button class="filter-btn status-filter" data-status="in-progress">In-Progress</button>
+                        <button class="filter-btn status-filter" data-status="resolved">Resolved</button>
+                        <button class="filter-btn status-filter" data-status="closed">Closed</button>
+                    </div>
+                    <div>
+                        <strong>Priority:</strong>
+                        <button class="filter-btn priority-filter" data-priority="">All</button>
+                        <button class="filter-btn priority-filter" data-priority="low">Low</button>
+                        <button class="filter-btn priority-filter" data-priority="medium">Medium</button>
+                        <button class="filter-btn priority-filter" data-priority="high">High</button>
+                        <button class="filter-btn priority-filter" data-priority="critical">Critical</button>
+                    </div>
+                    <button class="filter-btn reset-filter">Reset Filters</button>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table table-bordered table-striped align-middle">
+                        <thead class="table-dark">
+                        <tr>
+                            <th>Ticket ID</th>
+                            <th>Description</th>
+                            <th>Created By</th>
+                            <th>Assigned To</th>
+                            <th>Category</th>
+                            <th>Priority</th>
+                            <th>Status</th>
+                            <th>Created Date</th>
+                            <th>Actions</th>
+                        </tr>
+                        </thead>
+                        <tbody id="ticketTableBody">
+                        <?php if (empty($tickets)): ?>
+                            <tr><td colspan="9" style="text-align: center;">No tickets found</td></tr>
+                        <?php else: ?>
+                            <?php foreach ($tickets as $ticket): ?>
+                                <tr data-status="<?php echo $ticket['Status']; ?>" data-priority="<?php echo $ticket['Priority']; ?>">
+                                    <td><?php echo $ticket['TicketID']; ?></td>
+                                    <td>
+                                        <?php
+                                        $description = htmlspecialchars($ticket['Description']);
+                                        echo strlen($description) > 25 ? substr($description, 0, 25) . '...' : $description;
+                                        ?>
+                                    </td>
+                                    <td><?php echo htmlspecialchars($ticket['CreatedByName']); ?></td>
+                                    <td><?php echo $ticket['AssignedToName'] ? htmlspecialchars($ticket['AssignedToName']) : 'Not assigned'; ?></td>
+                                    <td><?php echo $ticket['CategoryName'] ? htmlspecialchars($ticket['CategoryName']) : 'Uncategorized'; ?></td>
+                                    <td><span class="priority-<?php echo $ticket['Priority']; ?>"><?php echo ucfirst($ticket['Priority']); ?></span></td>
+                                    <td><span class="status-<?php echo $ticket['Status']; ?>"><?php echo ucfirst($ticket['Status']); ?></span></td>
+                                    <td><?php echo date('M d, Y H:i', strtotime($ticket['CreatedDate'])); ?></td>
+                                    <td>
+                                        <div class="dropdown">
+                                            <button class="dropdown-toggle" data-ticket-id="<?php echo $ticket['TicketID']; ?>">
+                                                <i class="fas fa-ellipsis-h"></i>
+                                            </button>
+                                            <div class="dropdown-menu">
+                                                <a class="dropdown-item view-ticket" data-id="<?php echo $ticket['TicketID']; ?>">
+                                                    <i class="fas fa-eye me-2"></i> View
+                                                </a>
+                                                <?php if ($ticket['Status'] != 'closed'): ?>
+                                                    <a class="dropdown-item edit-ticket" data-id="<?php echo $ticket['TicketID']; ?>">
+                                                        <i class="fas fa-edit me-2"></i> Assign
+                                                    </a>
+                                                    <a class="dropdown-item resolve-ticket" data-id="<?php echo $ticket['TicketID']; ?>">
+                                                        <i class="fas fa-check-circle me-2"></i> Resolve
+                                                    </a>
+                                                    <a class="dropdown-item close-ticket" data-id="<?php echo $ticket['TicketID']; ?>">
+                                                        <i class="fas fa-times-circle me-2"></i> Close
+                                                    </a>
+                                                <?php else: ?>
+                                                    <a class="dropdown-item reopen-ticket" data-id="<?php echo $ticket['TicketID']; ?>">
+                                                        <i class="fas fa-undo me-2"></i> Reopen
+                                                    </a>
+                                                <?php endif; ?>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            <?php endforeach; ?>
+                        <?php endif; ?>
+                        </tbody>
+                    </table>
+                </div>
             </div>
-            <div>
-                <strong>Priority:</strong>
-                <button class="filter-btn priority-filter" data-priority="">All</button>
-                <button class="filter-btn priority-filter" data-priority="low">Low</button>
-                <button class="filter-btn priority-filter" data-priority="medium">Medium</button>
-                <button class="filter-btn priority-filter" data-priority="high">High</button>
-                <button class="filter-btn priority-filter" data-priority="critical">Critical</button>
-            </div>
-            <button class="filter-btn reset-filter">Reset Filters</button>
         </div>
-
-        <table class="ticket-table">
-            <thead>
-            <tr>
-                <th>Ticket ID</th>
-                <th>Description</th>
-                <th>Created By</th>
-                <th>Assigned To</th>
-                <th>Category</th>
-                <th>Priority</th>
-                <th>Status</th>
-                <th>Created Date</th>
-                <th>Actions</th>
-            </tr>
-            </thead>
-            <tbody id="ticketTableBody">
-            <?php if (empty($tickets)): ?>
-                <tr><td colspan="9" style="text-align: center;">No tickets found</td></tr>
-            <?php else: ?>
-                <?php foreach ($tickets as $ticket): ?>
-                    <tr data-status="<?php echo $ticket['Status']; ?>" data-priority="<?php echo $ticket['Priority']; ?>">
-                        <td><?php echo $ticket['TicketID']; ?></td>
-                        <td>
-                            <?php
-                            $description = htmlspecialchars($ticket['Description']);
-                            echo strlen($description) > 25 ? substr($description, 0, 25) . '...' : $description;
-                            ?>
-                        </td>
-                        <td><?php echo htmlspecialchars($ticket['CreatedByName']); ?></td>
-                        <td><?php echo $ticket['AssignedToName'] ? htmlspecialchars($ticket['AssignedToName']) : 'Not assigned'; ?></td>
-                        <td><?php echo $ticket['CategoryName'] ? htmlspecialchars($ticket['CategoryName']) : 'Uncategorized'; ?></td>
-                        <td><span class="priority-<?php echo $ticket['Priority']; ?>"><?php echo ucfirst($ticket['Priority']); ?></span></td>
-                        <td><span class="status-<?php echo $ticket['Status']; ?>"><?php echo ucfirst($ticket['Status']); ?></span></td>
-                        <td><?php echo date('M d, Y H:i', strtotime($ticket['CreatedDate'])); ?></td>
-                        <td>
-                            <div class="dropdown">
-                                <button class="dropdown-toggle" data-ticket-id="<?php echo $ticket['TicketID']; ?>">
-                                    <i class="fas fa-ellipsis-h"></i>
-                                </button>
-                                <div class="dropdown-menu">
-                                    <a class="dropdown-item view-ticket" data-id="<?php echo $ticket['TicketID']; ?>">
-                                        <i class="fas fa-eye me-2"></i> View
-                                    </a>
-                                    <?php if ($ticket['Status'] != 'closed'): ?>
-                                        <a class="dropdown-item edit-ticket" data-id="<?php echo $ticket['TicketID']; ?>">
-                                            <i class="fas fa-edit me-2"></i> Assign
-                                        </a>
-                                        <a class="dropdown-item resolve-ticket" data-id="<?php echo $ticket['TicketID']; ?>">
-                                            <i class="fas fa-check-circle me-2"></i> Resolve
-                                        </a>
-                                        <a class="dropdown-item close-ticket" data-id="<?php echo $ticket['TicketID']; ?>">
-                                            <i class="fas fa-times-circle me-2"></i> Close
-                                        </a>
-                                    <?php else: ?>
-                                        <a class="dropdown-item reopen-ticket" data-id="<?php echo $ticket['TicketID']; ?>">
-                                            <i class="fas fa-undo me-2"></i> Reopen
-                                        </a>
-                                    <?php endif; ?>
-                                </div>
-                            </div>
-                        </td>
-                    </tr>
-                <?php endforeach; ?>
-            <?php endif; ?>
-            </tbody>
-        </table>
     </div>
 </div>
 
@@ -640,10 +718,10 @@ $conn->close();
         <!-- Chat Input -->
         <div class="chat-input-container">
             <textarea
-                class="chat-input"
-                id="chatInput"
-                placeholder="Type your question about tickets..."
-                rows="1"
+                    class="chat-input"
+                    id="chatInput"
+                    placeholder="Type your question about tickets..."
+                    rows="1"
             ></textarea>
             <button class="chat-send" id="chatSend">
                 <i class="fas fa-paper-plane"></i>
@@ -718,6 +796,13 @@ $conn->close();
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+<!-- Include Sneat JS files like visitor-mgt.php does -->
+<script src="../../Sneat/assets/vendor/libs/popper/popper.js"></script>
+<script src="../../Sneat/assets/vendor/js/bootstrap.js"></script>
+<script src="../../Sneat/assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.js"></script>
+<script src="../../Sneat/assets/vendor/js/menu.js"></script>
+<script src="../../Sneat/assets/js/main.js"></script>
+
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         console.log('DOM loaded, initializing event listeners');
