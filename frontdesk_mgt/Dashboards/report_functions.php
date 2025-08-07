@@ -88,6 +88,7 @@ function getIndividualHostMetrics($hostId, $startDate = null, $endDate = null): 
 function getIndividualSupportMetrics($supportId, $startDate = null, $endDate = null): array
 {
     global $conn;
+
     // Fetch status breakdown of tickets assigned to the support staff
     $sql = "SELECT 
         Status,
@@ -110,6 +111,7 @@ function getIndividualSupportMetrics($supportId, $startDate = null, $endDate = n
     while ($row = $result->fetch_assoc()) {
         $statusBreakdown[$row['Status']] = $row['count'];
     }
+
     // Fetch average resolution time for resolved tickets
     $resTimeSql = "SELECT 
         AVG(TIMESTAMPDIFF(HOUR, CreatedDate, ResolvedDate)) AS avg_resolution_hours
@@ -144,11 +146,50 @@ function getIndividualSupportMetrics($supportId, $startDate = null, $endDate = n
     $stmt->execute();
     $ticketsCreated = $stmt->get_result()->fetch_assoc()['tickets_created'];
 
-    // Return all metrics in an array
+    // Get reopened tickets count and rate
+    $reopenedSql = "SELECT COUNT(*) AS reopened_count
+    FROM Help_Desk 
+    WHERE AssignedTo = ? AND Status = 'reopened'";
+    if ($startDate && $endDate) {
+        $reopenedSql .= " AND CreatedDate BETWEEN ? AND ?";
+    }
+
+    $stmt = $conn->prepare($reopenedSql);
+    if ($startDate && $endDate) {
+        $stmt->bind_param("iss", $supportId, $startDate, $endDate);
+    } else {
+        $stmt->bind_param("i", $supportId);
+    }
+    $stmt->execute();
+    $reopenedData = $stmt->get_result()->fetch_assoc();
+    $reopenedCount = $reopenedData['reopened_count'] ?? 0;
+
+// Get total tickets count separately
+    $totalSql = "SELECT COUNT(*) AS total_tickets 
+    FROM Help_Desk 
+    WHERE AssignedTo = ?";
+    if ($startDate && $endDate) {
+        $totalSql .= " AND CreatedDate BETWEEN ? AND ?";
+    }
+
+    $stmt = $conn->prepare($totalSql);
+    if ($startDate && $endDate) {
+        $stmt->bind_param("iss", $supportId, $startDate, $endDate);
+    } else {
+        $stmt->bind_param("i", $supportId);
+    }
+    $stmt->execute();
+    $totalData = $stmt->get_result()->fetch_assoc();
+    $totalTickets = $totalData['total_tickets'] ?? 0;
+
+    $reopenedRate = $totalTickets > 0 ? round(($reopenedCount / $totalTickets) * 100, 2) : 0;
     return [
         'status_breakdown' => $statusBreakdown,
         'avg_resolution_hours' => $avgResolutionHours,
-        'tickets_created' => $ticketsCreated
+        'tickets_created' => $ticketsCreated,
+        'reopened_tickets' => $reopenedCount,
+        'reopened_rate' => $reopenedRate,
+        'total_tickets' => $totalTickets
     ];
 }
 
@@ -280,6 +321,8 @@ function getHostReports($startDate = null, $endDate = null): array
 function getSupportReports($startDate = null, $endDate = null): array
 {
     global $conn;
+
+    // Total tickets count
     $totalSql = "SELECT COUNT(*) AS total_tickets FROM Help_Desk";
     $params = [];
     if ($startDate && $endDate) {
@@ -293,6 +336,7 @@ function getSupportReports($startDate = null, $endDate = null): array
     $stmt->execute();
     $totalTickets = $stmt->get_result()->fetch_assoc()['total_tickets'];
 
+    // Resolution times
     $resTimeSql = "SELECT 
         AVG(TIMESTAMPDIFF(HOUR, CreatedDate, ResolvedDate)) AS avg_resolution_hours
     FROM Help_Desk 
@@ -309,6 +353,29 @@ function getSupportReports($startDate = null, $endDate = null): array
     $stmt->execute();
     $resolutionTimes = $stmt->get_result()->fetch_assoc();
 
+    // Ticket status breakdown
+    $statusSql = "SELECT 
+        Status,
+        COUNT(*) AS count
+    FROM Help_Desk";
+    $params = [];
+    if ($startDate && $endDate) {
+        $statusSql .= " WHERE CreatedDate BETWEEN ? AND ?";
+        $params = [$startDate, $endDate];
+    }
+    $statusSql .= " GROUP BY Status";
+    $stmt = $conn->prepare($statusSql);
+    if (!empty($params)) {
+        $stmt->bind_param("ss", ...$params);
+    }
+    $stmt->execute();
+    $statusBreakdown = [];
+    $result = $stmt->get_result();
+    while ($row = $result->fetch_assoc()) {
+        $statusBreakdown[$row['Status']] = $row['count'];
+    }
+
+    // Category breakdown
     $catSql = "SELECT 
         c.CategoryName AS category,
         COUNT(*) AS count
@@ -319,7 +386,7 @@ function getSupportReports($startDate = null, $endDate = null): array
         $catSql .= " WHERE t.CreatedDate BETWEEN ? AND ?";
         $params = [$startDate, $endDate];
     }
-    $catSql .= " GROUP BY c.CategoryID";
+    $catSql .= " GROUP BY c.CategoryID ORDER BY count DESC";
     $stmt = $conn->prepare($catSql);
     if (!empty($params)) {
         $stmt->bind_param("ss", ...$params);
@@ -334,6 +401,7 @@ function getSupportReports($startDate = null, $endDate = null): array
     return [
         'total_tickets' => $totalTickets,
         'resolution_times' => $resolutionTimes,
+        'status_breakdown' => $statusBreakdown,
         'category_breakdown' => $categoryBreakdown
     ];
 }

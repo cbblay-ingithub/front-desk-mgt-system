@@ -435,7 +435,56 @@ $conn->close();
                                     <div class="row">
                                         <div class="col-md-3"><div class="metric-card"><h5>Total Tickets</h5><div class="metric-value"><?= $teamReports['total_tickets'] ?? 0 ?></div></div></div>
                                         <div class="col-md-3"><div class="metric-card"><h5>Avg. Resolution</h5><div class="metric-value"><?= $teamReports['resolution_times']['avg_resolution_hours'] ? round($teamReports['resolution_times']['avg_resolution_hours']) : 'N/A' ?> hrs</div></div></div>
-                                        <div class="col-md-6"><h5>Category Breakdown</h5><table class="table table-bordered"><thead><tr><th>Category</th><th>Count</th></tr></thead><tbody><?php foreach ($teamReports['category_breakdown'] as $category): ?><tr><td><?= $category['category'] ?></td><td><?= $category['count'] ?></td></tr><?php endforeach; ?></tbody></table></div>
+                                        <div class="col-md-3"><div class="metric-card"><h5>Open Tickets</h5><div class="metric-value"><?= $teamReports['status_breakdown']['open'] ?? 0 ?></div></div></div>
+                                        <div class="col-md-3"><div class="metric-card"><h5>Resolved Tickets</h5><div class="metric-value"><?= $teamReports['status_breakdown']['resolved'] ?? 0 ?></div></div></div>
+                                    </div>
+
+                                    <div class="row mt-3">
+                                        <div class="col-md-6">
+                                            <div class="metric-card">
+                                                <h5>Ticket Status Breakdown</h5>
+                                                <table class="table table-bordered">
+                                                    <thead>
+                                                    <tr>
+                                                        <th>Status</th>
+                                                        <th>Count</th>
+                                                        <th>Percentage</th>
+                                                    </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                    <?php foreach ($teamReports['status_breakdown'] as $status => $count): ?>
+                                                        <tr>
+                                                            <td><?= ucfirst($status) ?></td>
+                                                            <td><?= $count ?></td>
+                                                            <td><?= $teamReports['total_tickets'] > 0 ? round(($count / $teamReports['total_tickets']) * 100) : 0 ?>%</td>
+                                                        </tr>
+                                                    <?php endforeach; ?>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-6">
+                                            <div class="metric-card">
+                                                <h5>Top Issue Categories</h5>
+                                                <table class="table table-bordered">
+                                                    <thead>
+                                                    <tr>
+                                                        <th>Category</th>
+                                                        <th>Count</th>
+                                                    </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                    <?php foreach ($teamReports['category_breakdown'] as $category): ?>
+                                                        <tr>
+                                                            <td><?= $category['category'] ?></td>
+                                                            <td><?= $category['count'] ?></td>
+                                                        </tr>
+                                                    <?php endforeach; ?>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -452,10 +501,13 @@ $conn->close();
                                                 <div class="col-md-4">
                                                     <div class="metric-card">
                                                         <h5><?= $user['Name'] ?></h5>
+                                                        <p>Total Tickets: <strong><?= $metrics['total_tickets'] ?? 0 ?></strong></p>
                                                         <p>Open Tickets: <strong><?= $metrics['status_breakdown']['open'] ?? 0 ?></strong></p>
                                                         <p>In Progress: <strong><?= $metrics['status_breakdown']['in-progress'] ?? 0 ?></strong></p>
                                                         <p>Resolved: <strong><?= $metrics['status_breakdown']['resolved'] ?? 0 ?></strong></p>
                                                         <p>Closed: <strong><?= $metrics['status_breakdown']['closed'] ?? 0 ?></strong></p>
+                                                        <p>Reopened Tickets: <strong><?= $metrics['reopened_tickets'] ?? 0 ?></strong></p>
+                                                        <p>Reopened Rate: <strong><?= $metrics['reopened_rate'] ?? 0 ?>%</strong></p>
                                                         <p>Avg. Resolution Time: <strong><?= $metrics['avg_resolution_hours'] !== null ? round($metrics['avg_resolution_hours']) : 'N/A' ?> hrs</strong></p>
                                                         <p>Tickets Created: <strong><?= $metrics['tickets_created'] ?? 0 ?></strong></p>
                                                     </div>
@@ -467,7 +519,6 @@ $conn->close();
                             </div>
                         <?php endif; ?>
                     </div>
-
                     <!-- Front Desk Reports Tab -->
                     <div class="tab-pane fade <?= $activeTab === 'frontdesk' ? 'show active' : '' ?>" id="frontdeskTab">
                         <?php if ($activeTab === 'frontdesk') : ?>
