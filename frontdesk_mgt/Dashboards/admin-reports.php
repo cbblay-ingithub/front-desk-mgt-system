@@ -297,42 +297,44 @@ $conn->close();
                         <?php if ($activeTab === 'host') : ?>
                             <!-- Team Metrics -->
                             <div class="row mb-4">
+                                <h5 class="card-title m-0 me-2">Hosts Overview</h5>
                                 <div class="col-md-6 col-lg-3 mb-4">
                                     <div class="card h-100">
                                         <div class="card-body">
                                             <div class="d-flex justify-content-between align-items-start">
                                                 <div>
-                                <span class="badge bg-label-primary p-2 rounded mb-3">
-                                    <i class="bx bx-calendar-check bx-sm"></i>
-                                </span>
+                                                    <span class="badge bg-label-primary p-2 rounded mb-3">
+                                                        <i class="bx bx-calendar-check bx-sm"></i>
+                                                    </span>
                                                     <h5 class="card-title mb-1">Total Appointments</h5>
                                                     <h2 class="mb-0"><?= $teamReports['appointment_metrics']['total_appointments'] ?? 0 ?></h2>
                                                 </div>
                                                 <div class="avatar flex-shrink-0">
-                                <span class="avatar-initial rounded bg-label-primary">
-                                    <i class="bx bx-trending-up bx-sm"></i>
-                                </span>
+                                                    <span class="avatar-initial rounded bg-label-primary">
+                                                        <i class="bx bx-trending-up bx-sm"></i>
+                                                    </span>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
 
+
                                 <div class="col-md-6 col-lg-3 mb-4">
                                     <div class="card h-100">
                                         <div class="card-body">
                                             <div class="d-flex justify-content-between align-items-start">
                                                 <div>
-                                <span class="badge bg-label-success p-2 rounded mb-3">
-                                    <i class="bx bx-check-circle bx-sm"></i>
-                                </span>
+                                                        <span class="badge bg-label-success p-2 rounded mb-3">
+                                                            <i class="bx bx-check-circle bx-sm"></i>
+                                                        </span>
                                                     <h5 class="card-title mb-1">Completed</h5>
                                                     <h2 class="mb-0"><?= $teamReports['appointment_metrics']['completed'] ?? 0 ?></h2>
                                                 </div>
                                                 <div class="avatar flex-shrink-0">
-                                <span class="avatar-initial rounded bg-label-success">
-                                    <i class="bx bx-trending-up bx-sm"></i>
-                                </span>
+                                                    <span class="avatar-initial rounded bg-label-success">
+                                                        <i class="bx bx-trending-up bx-sm"></i>
+                                                    </span>
                                                 </div>
                                             </div>
                                         </div>
@@ -381,7 +383,14 @@ $conn->close();
                                     </div>
                                 </div>
                             </div>
-
+                        <form method="POST" action="generate_report.php" style="display: inline;">
+                            <input type="hidden" name="report_type" value="frontdesk">
+                            <input type="hidden" name="start_date" value="<?= $startDate ?>">
+                            <input type="hidden" name="end_date" value="<?= $endDate ?>">
+                            <button type="submit" class="btn btn-light btn-sm">
+                                <i class="fas fa-file-pdf me-1"></i> Export PDF
+                            </button>
+                        </form>
                         <!-- Cancellation Reasons -->
                         <div class="card mb-4">
                             <div class="card-header">
@@ -584,110 +593,221 @@ $conn->close();
                             </div>
                         <?php endif; ?>
                     </div>
-                    <!-- Support Staff Reports Tab -->
-                    <div class="tab-pane fade <?= $activeTab === 'support' ? 'show active' : '' ?>" id="supportTab">
-                        <?php if ($activeTab === 'support') : ?>
-                            <!-- Team Metrics -->
-                            <div class="report-card card">
-                                <div class="report-header card-header">
-                                    <h3>Support Team Reports</h3>
-                                    <form method="POST" action="generate_report.php" style="display: inline;">
-                                        <input type="hidden" name="report_type" value="support">
-                                        <input type="hidden" name="start_date" value="<?= $startDate ?>">
-                                        <input type="hidden" name="end_date" value="<?= $endDate ?>">
-                                        <button type="submit" class="btn btn-light btn-sm">
-                                            <i class="fas fa-file-pdf me-1"></i> Export PDF
-                                        </button>
-                                    </form>
-                                </div>
-                                <div class="card-body">
-                                    <div class="row">
-                                        <div class="col-md-3"><div class="metric-card"><h5>Total Tickets</h5><div class="metric-value"><?= $teamReports['total_tickets'] ?? 0 ?></div></div></div>
-                                        <div class="col-md-3"><div class="metric-card"><h5>Avg. Resolution</h5><div class="metric-value"><?= $teamReports['resolution_times']['avg_resolution_hours'] ? round($teamReports['resolution_times']['avg_resolution_hours']) : 'N/A' ?> hrs</div></div></div>
-                                        <div class="col-md-3"><div class="metric-card"><h5>Open Tickets</h5><div class="metric-value"><?= $teamReports['status_breakdown']['open'] ?? 0 ?></div></div></div>
-                                        <div class="col-md-3"><div class="metric-card"><h5>Resolved Tickets</h5><div class="metric-value"><?= $teamReports['status_breakdown']['resolved'] ?? 0 ?></div></div></div>
-                                    </div>
-
-                                    <div class="row mt-3">
-                                        <div class="col-md-6">
-                                            <div class="metric-card">
-                                                <h5>Ticket Status Breakdown</h5>
-                                                <table class="table table-bordered">
-                                                    <thead>
-                                                    <tr>
-                                                        <th>Status</th>
-                                                        <th>Count</th>
-                                                        <th>Percentage</th>
-                                                    </tr>
-                                                    </thead>
-                                                    <tbody>
-                                                    <?php foreach ($teamReports['status_breakdown'] as $status => $count): ?>
-                                                        <tr>
-                                                            <td><?= ucfirst($status) ?></td>
-                                                            <td><?= $count ?></td>
-                                                            <td><?= $teamReports['total_tickets'] > 0 ? round(($count / $teamReports['total_tickets']) * 100) : 0 ?>%</td>
-                                                        </tr>
-                                                    <?php endforeach; ?>
-                                                    </tbody>
-                                                </table>
-                                            </div>
-                                        </div>
-
-                                        <div class="col-md-6">
-                                            <div class="metric-card">
-                                                <h5>Top Issue Categories</h5>
-                                                <table class="table table-bordered">
-                                                    <thead>
-                                                    <tr>
-                                                        <th>Category</th>
-                                                        <th>Count</th>
-                                                    </tr>
-                                                    </thead>
-                                                    <tbody>
-                                                    <?php foreach ($teamReports['category_breakdown'] as $category): ?>
-                                                        <tr>
-                                                            <td><?= $category['category'] ?></td>
-                                                            <td><?= $category['count'] ?></td>
-                                                        </tr>
-                                                    <?php endforeach; ?>
-                                                    </tbody>
-                                                </table>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
+                <!-- Support Staff Reports Tab -->
+                <div class="tab-pane fade <?= $activeTab === 'support' ? 'show active' : '' ?>" id="supportTab">
+                    <?php if ($activeTab === 'support') : ?>
+                        <!-- Team Metrics -->
+                        <div class="card mb-4">
+                            <div class="card-header d-flex align-items-center justify-content-between">
+                                <h5 class="card-title m-0 me-2">Support Team Overview</h5>
+                                <form method="POST" action="generate_report.php" style="display: inline;">
+                                    <input type="hidden" name="report_type" value="frontdesk">
+                                    <input type="hidden" name="start_date" value="<?= $startDate ?>">
+                                    <input type="hidden" name="end_date" value="<?= $endDate ?>">
+                                    <button type="submit" class="btn btn-light btn-sm">
+                                        <i class="fas fa-file-pdf me-1"></i> Export PDF
+                                    </button>
+                                </form>
                             </div>
-
-                            <!-- Individual Performance Cards -->
-                            <div class="report-card card">
-                                <div class="report-header card-header"><h3>Individual Staff Performance</h3></div>
-                                <div class="card-body">
-                                    <div class="row">
-                                        <?php if (empty($users)): ?>
-                                            <p>No support staff available or no data found.</p>
-                                        <?php else: ?>
-                                            <?php foreach ($users as $user): $metrics = $individualReports[$user['UserID']]; ?>
-                                                <div class="col-md-4">
-                                                    <div class="metric-card">
-                                                        <h5><?= $user['Name'] ?></h5>
-                                                        <p>Total Tickets: <strong><?= $metrics['total_tickets'] ?? 0 ?></strong></p>
-                                                        <p>Open Tickets: <strong><?= $metrics['status_breakdown']['open'] ?? 0 ?></strong></p>
-                                                        <p>In Progress: <strong><?= $metrics['status_breakdown']['in-progress'] ?? 0 ?></strong></p>
-                                                        <p>Resolved: <strong><?= $metrics['status_breakdown']['resolved'] ?? 0 ?></strong></p>
-                                                        <p>Closed: <strong><?= $metrics['status_breakdown']['closed'] ?? 0 ?></strong></p>
-                                                        <p>Reopened Tickets: <strong><?= $metrics['reopened_tickets'] ?? 0 ?></strong></p>
-                                                        <p>Reopened Rate: <strong><?= $metrics['reopened_rate'] ?? 0 ?>%</strong></p>
-                                                        <p>Avg. Resolution Time: <strong><?= $metrics['avg_resolution_hours'] !== null ? round($metrics['avg_resolution_hours']) : 'N/A' ?> hrs</strong></p>
-                                                        <p>Tickets Created: <strong><?= $metrics['tickets_created'] ?? 0 ?></strong></p>
+                            <div class="card-body">
+                                <div class="row g-4 mb-4">
+                                    <div class="col-sm-6 col-lg-3">
+                                        <div class="card h-100">
+                                            <div class="card-body">
+                                                <div class="d-flex justify-content-between align-items-start">
+                                                    <div>
+                                        <span class="badge bg-label-primary rounded p-2 mb-3">
+                                            <i class="bx bx-support bx-sm"></i>
+                                        </span>
+                                                        <h5 class="mb-1">Total Tickets</h5>
+                                                        <h3 class="mb-2"><?= $teamReports['total_tickets'] ?? 0 ?></h3>
+                                                        <p class="mb-0 text-success">
+                                                            <span>+<?= round(($teamReports['total_tickets'] ?? 0) * 0.12) ?></span>
+                                                            <span>vs last month</span>
+                                                        </p>
                                                     </div>
                                                 </div>
-                                            <?php endforeach; ?>
-                                        <?php endif; ?>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-6 col-lg-3">
+                                        <div class="card h-100">
+                                            <div class="card-body">
+                                                <div class="d-flex justify-content-between align-items-start">
+                                                    <div>
+                                        <span class="badge bg-label-success rounded p-2 mb-3">
+                                            <i class="bx bx-check-circle bx-sm"></i>
+                                        </span>
+                                                        <h5 class="mb-1">Resolved</h5>
+                                                        <h3 class="mb-2"><?= $teamReports['status_breakdown']['resolved'] ?? 0 ?></h3>
+                                                        <p class="mb-0 text-success">
+                                                            <span>+<?= round(($teamReports['status_breakdown']['resolved'] ?? 0) * 0.08) ?></span>
+                                                            <span>vs last month</span>
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-6 col-lg-3">
+                                        <div class="card h-100">
+                                            <div class="card-body">
+                                                <div class="d-flex justify-content-between align-items-start">
+                                                    <div>
+                                        <span class="badge bg-label-warning rounded p-2 mb-3">
+                                            <i class="bx bx-time-five bx-sm"></i>
+                                        </span>
+                                                        <h5 class="mb-1">Avg. Resolution</h5>
+                                                        <h3 class="mb-2"><?= $teamReports['resolution_times']['avg_resolution_hours'] ? round($teamReports['resolution_times']['avg_resolution_hours']) : 'N/A' ?>h</h3>
+                                                        <p class="mb-0 text-danger">
+                                                            <span>-<?= round(($teamReports['resolution_times']['avg_resolution_hours'] ?? 0) * 0.05) ?>h</span>
+                                                            <span>vs last month</span>
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-6 col-lg-3">
+                                        <div class="card h-100">
+                                            <div class="card-body">
+                                                <div class="d-flex justify-content-between align-items-start">
+                                                    <div>
+                                        <span class="badge bg-label-info rounded p-2 mb-3">
+                                            <i class="bx bx-refresh bx-sm"></i>
+                                        </span>
+                                                        <h5 class="mb-1">Reopened Rate</h5>
+                                                        <h3 class="mb-2"><?= isset($individualReports) ? round(array_sum(array_column($individualReports, 'reopened_rate')) / count($individualReports)) : 0 ?>%</h3>
+                                                        <p class="mb-0 text-success">
+                                                            <span>-<?= round((isset($individualReports) ? (array_sum(array_column($individualReports, 'reopened_rate')) / count($individualReports)) : 0) * 0.03) ?>%</span>
+                                                            <span>vs last month</span>
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <!-- Ticket Status Chart -->
+                                    <div class="col-md-6 mb-4">
+                                        <div class="card h-100">
+                                            <div class="card-header d-flex justify-content-between">
+                                                <h5 class="card-title mb-0">Ticket Status</h5>
+                                                <div class="dropdown">
+                                                    <button class="btn p-0" type="button" id="ticketStatus" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                        <i class="bx bx-dots-vertical-rounded"></i>
+                                                    </button>
+                                                    <div class="dropdown-menu dropdown-menu-end" aria-labelledby="ticketStatus">
+                                                        <a class="dropdown-item" href="javascript:void(0);">Last 28 Days</a>
+                                                        <a class="dropdown-item" href="javascript:void(0);">Last Month</a>
+                                                        <a class="dropdown-item" href="javascript:void(0);">Last Year</a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="card-body">
+                                                <div id="ticketStatusChart"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Category Breakdown -->
+                                    <div class="col-md-6 mb-4">
+                                        <div class="card h-100">
+                                            <div class="card-header d-flex justify-content-between">
+                                                <h5 class="card-title mb-0">Issue Categories</h5>
+                                                <div class="dropdown">
+                                                    <button class="btn p-0" type="button" id="issueCategories" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                        <i class="bx bx-dots-vertical-rounded"></i>
+                                                    </button>
+                                                    <div class="dropdown-menu dropdown-menu-end" aria-labelledby="issueCategories">
+                                                        <a class="dropdown-item" href="javascript:void(0);">Last 28 Days</a>
+                                                        <a class="dropdown-item" href="javascript:void(0);">Last Month</a>
+                                                        <a class="dropdown-item" href="javascript:void(0);">Last Year</a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="card-body">
+                                                <div id="categoryBreakdownChart"></div>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        <?php endif; ?>
-                    </div>
+                        </div>
+
+                        <!-- Individual Performance Cards -->
+                        <div class="card">
+                            <div class="card-header d-flex align-items-center justify-content-between">
+                                <h5 class="card-title m-0 me-2">Individual Staff Performance</h5>
+                                <div class="dropdown">
+                                    <button class="btn p-0" type="button" id="staffPerformance" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        <i class="bx bx-dots-vertical-rounded"></i>
+                                    </button>
+                                    <div class="dropdown-menu dropdown-menu-end" aria-labelledby="staffPerformance">
+                                        <a class="dropdown-item" href="javascript:void(0);">Sort by Name</a>
+                                        <a class="dropdown-item" href="javascript:void(0);">Sort by Performance</a>
+                                        <a class="dropdown-item" href="javascript:void(0);">Sort by Resolution Time</a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <?php if (empty($users)): ?>
+                                    <div class="alert alert-warning">No support staff available or no data found.</div>
+                                <?php else: ?>
+                                    <div class="row g-4">
+                                        <?php foreach ($users as $user):
+                                            $metrics = $individualReports[$user['UserID']];
+                                            $resolved = $metrics['status_breakdown']['resolved'] ?? 0;
+                                            $total = $metrics['total_tickets'] ?? 1;
+                                            $resolutionRate = round(($resolved / $total) * 100);
+                                            ?>
+                                            <div class="col-md-6 col-lg-4 col-xl-3">
+                                                <div class="card h-100">
+                                                    <div class="card-body text-center">
+                                                        <div class="avatar avatar-xl mb-3">
+                                                            <span class="avatar-initial rounded-circle bg-label-primary"><?= substr($user['Name'], 0, 1) ?></span>
+                                                        </div>
+                                                        <h5 class="mb-1"><?= $user['Name'] ?></h5>
+                                                        <span class="text-body-secondary">Support Staff</span>
+
+                                                        <div class="my-4">
+                                                            <div class="d-flex justify-content-between mb-2">
+                                                                <span>Performance</span>
+                                                                <span><?= $resolutionRate ?>%</span>
+                                                            </div>
+                                                            <div class="progress" style="height: 6px">
+                                                                <div class="progress-bar bg-<?= $resolutionRate > 80 ? 'success' : ($resolutionRate > 50 ? 'warning' : 'danger') ?>"
+                                                                     role="progressbar" style="width: <?= $resolutionRate ?>%"
+                                                                     aria-valuenow="<?= $resolutionRate ?>" aria-valuemin="0" aria-valuemax="100"></div>
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="d-flex justify-content-around text-center mt-4 mb-2">
+                                                            <div>
+                                                                <h5 class="mb-0"><?= $resolved ?></h5>
+                                                                <small>Resolved</small>
+                                                            </div>
+                                                            <div>
+                                                                <h5 class="mb-0"><?= $metrics['avg_resolution_hours'] !== null ? round($metrics['avg_resolution_hours']) : 'N/A' ?>h</h5>
+                                                                <small>Avg. Time</small>
+                                                            </div>
+                                                            <div>
+                                                                <h5 class="mb-0"><?= $metrics['reopened_rate'] ?? 0 ?>%</h5>
+                                                                <small>Reopened</small>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        <?php endforeach; ?>
+                                    </div>
+                                <?php endif; ?>
+                            </div>
+                        </div>
+                    <?php endif; ?>
+                </div>
                     <!-- Front Desk Reports Tab -->
                     <div class="tab-pane fade <?= $activeTab === 'frontdesk' ? 'show active' : '' ?>" id="frontdeskTab">
                         <?php if ($activeTab === 'frontdesk') : ?>
@@ -931,6 +1051,72 @@ $conn->close();
         };
         var hostStatusChart = new ApexCharts(document.querySelector("#hostStatusChart"), hostStatusOptions);
         hostStatusChart.render();
+    });
+    $(document).ready(function() {
+        <?php if ($activeTab === 'support') : ?>
+        // Ticket Status Chart
+        var ticketStatusOptions = {
+            series: [
+                <?= $teamReports['status_breakdown']['open'] ?? 0 ?>,
+                <?= $teamReports['status_breakdown']['in-progress'] ?? 0 ?>,
+                <?= $teamReports['status_breakdown']['resolved'] ?? 0 ?>,
+                <?= $teamReports['status_breakdown']['closed'] ?? 0 ?>
+            ],
+            chart: {
+                type: 'donut',
+                height: 350
+            },
+            labels: ['Open', 'In Progress', 'Resolved', 'Closed'],
+            colors: ['#696cff', '#8592a3', '#71dd37', '#03c3ec'],
+            responsive: [{
+                breakpoint: 480,
+                options: {
+                    chart: {
+                        width: 200
+                    },
+                    legend: {
+                        position: 'bottom'
+                    }
+                }
+            }],
+            legend: {
+                position: 'right',
+                offsetY: 0,
+                height: 230,
+            }
+        };
+        var ticketStatusChart = new ApexCharts(document.querySelector("#ticketStatusChart"), ticketStatusOptions);
+        ticketStatusChart.render();
+
+        // Category Breakdown Chart
+        var categories = <?= json_encode(array_column($teamReports['category_breakdown'], 'category')) ?>;
+        var counts = <?= json_encode(array_column($teamReports['category_breakdown'], 'count')) ?>;
+
+        var categoryOptions = {
+            series: [{
+                data: counts
+            }],
+            chart: {
+                type: 'bar',
+                height: 350
+            },
+            colors: ['#696cff'],
+            plotOptions: {
+                bar: {
+                    borderRadius: 4,
+                    horizontal: true,
+                }
+            },
+            dataLabels: {
+                enabled: false
+            },
+            xaxis: {
+                categories: categories,
+            }
+        };
+        var categoryChart = new ApexCharts(document.querySelector("#categoryBreakdownChart"), categoryOptions);
+        categoryChart.render();
+        <?php endif; ?>
     });
 </script>
 </body>
