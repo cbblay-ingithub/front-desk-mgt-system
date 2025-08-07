@@ -522,53 +522,99 @@ $conn->close();
                     <!-- Front Desk Reports Tab -->
                     <div class="tab-pane fade <?= $activeTab === 'frontdesk' ? 'show active' : '' ?>" id="frontdeskTab">
                         <?php if ($activeTab === 'frontdesk') : ?>
-                            <!-- Team Metrics -->
-                            <div class="report-card card">
-                                <div class="report-header card-header">
-                                    <h3>Front Desk Team Reports</h3>
-                                    <form method="POST" action="generate_report.php" style="display: inline;">
-                                        <input type="hidden" name="report_type" value="frontdesk">
-                                        <input type="hidden" name="start_date" value="<?= $startDate ?>">
-                                        <input type="hidden" name="end_date" value="<?= $endDate ?>">
-                                        <button type="submit" class="btn btn-light btn-sm">
-                                            <i class="fas fa-file-pdf me-1"></i> Export PDF
-                                        </button>
-                                    </form>
-                                </div>
-                                <div class="card-body">
-                                    <div class="row">
-                                        <div class="col-md-4"><div class="metric-card"><h5>Appointments</h5><div class="metric-value"><?= $teamReports['scheduling_metrics']['total_appointments'] ?? 0 ?></div></div></div>
-                                        <div class="col-md-4"><div class="metric-card"><h5>Visitors Checked In</h5><div class="metric-value"><?= $teamReports['visitor_metrics']['visitors_checked_in'] ?? 0 ?></div></div></div>
-                                        <div class="col-md-4"><div class="metric-card"><h5>Lost Items Claimed</h5><div class="metric-value"><?= $teamReports['lost_found_metrics']['claimed'] ?? 0 ?> / <?= $teamReports['lost_found_metrics']['total_items'] ?? 0 ?></div></div></div>
-                                    </div>
-                                </div>
+                    <!-- Team Metrics -->
+                    <div class="report-card card">
+                        <div class="report-header card-header">
+                            <h3>Front Desk Team Reports</h3>
+                            <form method="POST" action="generate_report.php" style="display: inline;">
+                                <input type="hidden" name="report_type" value="frontdesk">
+                                <input type="hidden" name="start_date" value="<?= $startDate ?>">
+                                <input type="hidden" name="end_date" value="<?= $endDate ?>">
+                                <button type="submit" class="btn btn-light btn-sm">
+                                    <i class="fas fa-file-pdf me-1"></i> Export PDF
+                                </button>
+                            </form>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-3"><div class="metric-card"><h5>Appointments</h5><div class="metric-value"><?= $teamReports['scheduling_metrics']['total_appointments'] ?? 0 ?></div></div></div>
+                                <div class="col-md-3"><div class="metric-card"><h5>Avg. Check-In Time</h5><div class="metric-value"><?= $teamReports['visitor_metrics']['avg_checkin_time'] ? round($teamReports['visitor_metrics']['avg_checkin_time']) : 'N/A' ?> mins</div></div></div>
+                                <div class="col-md-3"><div class="metric-card"><h5>Visitors Checked In</h5><div class="metric-value"><?= $teamReports['visitor_metrics']['visitors_checked_in'] ?? 0 ?></div></div></div>
+                                <div class="col-md-3"><div class="metric-card"><h5>Peak Hour</h5><div class="metric-value"><?= $teamReports['peak_hour'] ? $teamReports['peak_hour'] . ':00' : 'N/A' ?></div></div></div>
                             </div>
 
-                            <!-- Individual Performance Cards -->
-                            <div class="report-card card">
-                                <div class="report-header card-header"><h3>Individual Front Desk Performance</h3></div>
-                                <div class="card-body">
-                                    <div class="row">
-                                        <?php if (empty($users)): ?>
-                                            <p>No front desk staff available or no data found.</p>
-                                        <?php else: ?>
-                                            <?php foreach ($users as $user): $metrics = $individualReports[$user['UserID']]; ?>
-                                                <div class="col-md-4">
-                                                    <div class="metric-card">
-                                                        <h5><?= $user['Name'] ?></h5>
-                                                        <p>Appointments Scheduled: <strong><?= $metrics['total_appointments_scheduled'] ?? 0 ?></strong></p>
-                                                        <p>Avg. Check-In Time: <strong><?= $metrics['avg_checkin_time'] !== null ? round($metrics['avg_checkin_time'], 2) : 'N/A' ?> mins</strong></p>
-                                                    </div>
-                                                </div>
-                                            <?php endforeach; ?>
-                                        <?php endif; ?>
+                            <!-- Client Metrics -->
+                            <div class="row mt-3">
+                                <div class="col-md-6">
+                                    <div class="metric-card">
+                                        <h5>Client Types</h5>
+                                        <?php
+                                        $newClients = $teamReports['client_metrics']['new_clients'] ?? 0;
+                                        $returningClients = $teamReports['client_metrics']['returning_clients'] ?? 0;
+                                        $totalClients = $newClients + $returningClients;
+                                        $newPercentage = $totalClients > 0 ? round(($newClients / $totalClients) * 100) : 0;
+                                        $returningPercentage = $totalClients > 0 ? round(($returningClients / $totalClients) * 100) : 0;
+                                        ?>
+                                        <div class="d-flex align-items-center mb-3">
+                                            <div class="me-3">
+                                                <span class="d-block fw-bold"><?= $newClients ?></span>
+                                                <small>New Clients</small>
+                                            </div>
+                                            <div class="progress flex-grow-1" style="height: 20px;">
+                                                <div class="progress-bar bg-success" role="progressbar" style="width: <?= $newPercentage ?>%" aria-valuenow="<?= $newPercentage ?>" aria-valuemin="0" aria-valuemax="100"></div>
+                                            </div>
+                                            <div class="ms-3 text-end">
+                                                <span class="d-block fw-bold"><?= $newPercentage ?>%</span>
+                                            </div>
+                                        </div>
+                                        <div class="d-flex align-items-center">
+                                            <div class="me-3">
+                                                <span class="d-block fw-bold"><?= $returningClients ?></span>
+                                                <small>Returning Clients</small>
+                                            </div>
+                                            <div class="progress flex-grow-1" style="height: 20px;">
+                                                <div class="progress-bar bg-info" role="progressbar" style="width: <?= $returningPercentage ?>%" aria-valuenow="<?= $returningPercentage ?>" aria-valuemin="0" aria-valuemax="100"></div>
+                                            </div>
+                                            <div class="ms-3 text-end">
+                                                <span class="d-block fw-bold"><?= $returningPercentage ?>%</span>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
+                        </div>
+                    </div>
+
+                    <!-- Individual Performance Cards -->
+                    <div class="report-card card">
+                        <div class="report-header card-header"><h3>Individual Front Desk Performance</h3></div>
+                        <div class="card-body">
+                            <div class="row">
+                                <?php if (empty($users)): ?>
+                                    <p>No front desk staff available or no data found.</p>
+                                <?php else: ?>
+                                    <?php foreach ($users as $user): $metrics = $individualReports[$user['UserID']]; ?>
+                                        <div class="col-md-4">
+                                            <div class="metric-card">
+                                                <h5><?= $user['Name'] ?></h5>
+                                                <p>Appointments Scheduled: <strong><?= $metrics['total_appointments_scheduled'] ?? 0 ?></strong></p>
+                                                <p>Avg. Check-In Time: <strong><?= $metrics['avg_checkin_time'] !== null ? round($metrics['avg_checkin_time'], 2) : 'N/A' ?> mins</strong></p>
+                                                <p>Error/Re-correction Rate: <strong><?= $metrics['error_rate'] ?? 0 ?>%</strong></p>
+                                                <p>Call Handling:</p>
+                                                <ul>
+                                                    <li>Total Calls: <strong><?= $metrics['call_metrics']['total_calls'] ?? 0 ?></strong></li>
+                                                    <li>Avg. Duration: <strong><?= $metrics['call_metrics']['avg_duration'] ?? 0 ?> mins</strong></li>
+                                                    <li>Resolution Rate: <strong><?= $metrics['call_metrics']['resolution_rate'] ?? 0 ?>%</strong></li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    <?php endforeach; ?>
+                                <?php endif; ?>
+                            </div>
+                        </div>
                         <?php endif; ?>
                     </div>
                 </div>
-            </div>
         </div>
     </div>
 </div>

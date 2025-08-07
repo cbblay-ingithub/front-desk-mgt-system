@@ -197,6 +197,8 @@ function getIndividualSupportMetrics($supportId, $startDate = null, $endDate = n
 function getIndividualFrontDeskMetrics($frontDeskId, $startDate = null, $endDate = null): array
 {
     global $conn;
+
+    // Basic appointment metrics
     $sql = "SELECT 
         COUNT(*) AS total_appointments_scheduled
     FROM Appointments
@@ -219,14 +221,45 @@ function getIndividualFrontDeskMetrics($frontDeskId, $startDate = null, $endDate
     // Average Check-In Time
     $checkInSql = "SELECT AVG(TIMESTAMPDIFF(MINUTE, AppointmentTime, CheckInTime)) AS avg_checkin_time
         FROM Appointments
-        WHERE ScheduledBy = ? AND CheckInTime IS NOT NULL AND AppointmentTime BETWEEN ? AND ?";
+        WHERE ScheduledBy = ? AND CheckInTime IS NOT NULL";
+    $checkInParams = [$frontDeskId];
+    if ($startDate && $endDate) {
+        $checkInSql .= " AND AppointmentTime BETWEEN ? AND ?";
+        $checkInParams[] = $startDate;
+        $checkInParams[] = $endDate;
+    }
     $stmt = $conn->prepare($checkInSql);
-    $start = $startDate ?: '1970-01-01';
-    $end = $endDate ?: '9999-12-31';
-    $stmt->bind_param("iss", $frontDeskId, $start, $end);
+    if ($startDate && $endDate) {
+        $stmt->bind_param("iss", $frontDeskId, $startDate, $endDate);
+    } else {
+        $stmt->bind_param("i", $frontDeskId);
+    }
     $stmt->execute();
     $checkIn = $stmt->get_result()->fetch_assoc();
     $metrics['avg_checkin_time'] = $checkIn['avg_checkin_time'] ? round($checkIn['avg_checkin_time'], 2) : 0;
+
+    // Error/recorrection rate - using cancelled appointments as a proxy
+    $errorSql = "SELECT 
+        COUNT(*) AS total_appointments,
+        SUM(CASE WHEN Status = 'Cancelled' THEN 1 ELSE 0 END) AS error_count
+    FROM Appointments
+    WHERE ScheduledBy = ?";
+    $errorParams = [$frontDeskId];
+    if ($startDate && $endDate) {
+        $errorSql .= " AND AppointmentTime BETWEEN ? AND ?";
+        $errorParams[] = $startDate;
+        $errorParams[] = $endDate;
+    }
+    $stmt = $conn->prepare($errorSql);
+    if ($startDate && $endDate) {
+        $stmt->bind_param("iss", $frontDeskId, $startDate, $endDate);
+    } else {
+        $stmt->bind_param("i", $frontDeskId);
+    }
+    $stmt->execute();
+    $errorData = $stmt->get_result()->fetch_assoc();
+    $metrics['error_rate'] = $errorData['total_appointments'] > 0 ?
+        round(($errorData['error_count'] / $errorData['total_appointments']) * 100, 2) : 0;
 
     return $metrics;
 }
@@ -409,6 +442,8 @@ function getSupportReports($startDate = null, $endDate = null): array
 function getFrontDeskReports($startDate = null, $endDate = null): array
 {
     global $conn;
+
+    // Scheduling metrics
     $apptSql = "SELECT 
         COUNT(*) AS total_appointments,
         SUM(Status = 'Completed') AS completed,
@@ -426,9 +461,10 @@ function getFrontDeskReports($startDate = null, $endDate = null): array
     $stmt->execute();
     $schedulingMetrics = $stmt->get_result()->fetch_assoc();
 
+    // Visitor check-in metrics
     $visitorSql = "SELECT 
         COUNT(*) AS visitors_checked_in,
-        AVG(TIMESTAMPDIFF(MINUTE, AppointmentTime, CheckInTime)) AS avg_checkin_delay
+        AVG(TIMESTAMPDIFF(MINUTE, AppointmentTime, CheckInTime)) AS avg_checkin_time
     FROM Appointments
     WHERE CheckInTime IS NOT NULL";
     $visitorParams = [];
@@ -443,27 +479,51 @@ function getFrontDeskReports($startDate = null, $endDate = null): array
     $stmt->execute();
     $visitorMetrics = $stmt->get_result()->fetch_assoc();
 
-    $lostSql = "SELECT 
-        COUNT(*) AS total_items,
-        SUM(Status = 'claimed') AS claimed,
-        SUM(Status = 'found') AS unclaimed
-    FROM Lost_And_Found";
-    $lostParams = [];
+    // New vs returning clients
+    $clientSql = "SELECT
+        SUM(CASE WHEN visit_count = 1 THEN 1 ELSE 0 END) AS new_clients,
+        SUM(CASE WHEN visit_count > 1 THEN 1 ELSE 0 END) AS returning_clients
+    FROM (
+        SELECT 
+            v.VisitorID, 
+            COUNT(*) AS visit_count
+        FROM Appointments a
+        JOIN Visitors v ON a.VisitorID = v.VisitorID
+        WHERE a.Status = 'Completed'";
     if ($startDate && $endDate) {
-        $lostSql .= " WHERE DateReported BETWEEN ? AND ?";
-        $lostParams = [$startDate, $endDate];
+        $clientSql .= " AND a.AppointmentTime BETWEEN ? AND ?";
     }
-    $stmt = $conn->prepare($lostSql);
-    if (!empty($lostParams)) {
-        $stmt->bind_param("ss", ...$lostParams);
+    $clientSql .= " GROUP BY v.VisitorID
+    ) AS visitor_visits";
+    $stmt = $conn->prepare($clientSql);
+    if (!empty($apptParams)) {
+        $stmt->bind_param("ss", ...$apptParams);
     }
     $stmt->execute();
-    $lostFoundMetrics = $stmt->get_result()->fetch_assoc();
+    $clientMetrics = $stmt->get_result()->fetch_assoc();
+
+    // Peak traffic hours
+    $peakSql = "SELECT 
+        HOUR(CheckInTime) AS peak_hour, 
+        COUNT(*) AS visitor_count
+    FROM Appointments
+    WHERE CheckInTime IS NOT NULL";
+    if ($startDate && $endDate) {
+        $peakSql .= " AND CheckInTime BETWEEN ? AND ?";
+    }
+    $peakSql .= " GROUP BY HOUR(CheckInTime) ORDER BY visitor_count DESC LIMIT 1";
+    $stmt = $conn->prepare($peakSql);
+    if (!empty($visitorParams)) {
+        $stmt->bind_param("ss", ...$visitorParams);
+    }
+    $stmt->execute();
+    $peakHour = $stmt->get_result()->fetch_assoc();
 
     return [
         'scheduling_metrics' => $schedulingMetrics,
         'visitor_metrics' => $visitorMetrics,
-        'lost_found_metrics' => $lostFoundMetrics
+        'client_metrics' => $clientMetrics,
+        'peak_hour' => $peakHour['peak_hour'] ?? null
     ];
 }
 ?>
