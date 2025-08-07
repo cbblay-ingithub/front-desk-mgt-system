@@ -170,17 +170,57 @@ $conn->close();
         .form-group select, .form-group textarea, .form-group input { width: 100%; padding: 8px; }
         .submit-btn { background: #007bff; color: white; padding: 10px 20px; border: none; cursor: pointer; }
         .submit-btn:hover { background: #0056b3; }
-        .dropdown { position: relative; display: inline-block;}
-        .dropdown-toggle { padding: 5px 10px;color: #626569; border-radius: 3px; background: #ffffff; border: none; cursor: pointer; }
-        .dropdown-menu { display: none; position: absolute; background: white; min-width: 120px; box-shadow: 0 8px 16px rgba(0,0,0,0.2); z-index: 1; }
-        .dropdown-menu.show { display: block; }
-        .dropdown-item { padding: 8px 12px; display: block; color: #212529; cursor: pointer; }
-        .dropdown-item:hover { background: #f8f9fa; }
         .filter-group { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 20px; }
         .filter-btn { padding: 6px 12px; border: 1px solid #626569; border-radius: 4px; background: #f8f9fa; cursor: pointer; color: #626569; }
         .filter-btn.active { background: #007bff; color: white; border-color: #007bff; }
         .filter-btn:hover { background: #e9ecef; }
         .filter-btn.active:hover { background: #0056b3; }
+        /* Dropdown menu styles */
+        /* Dropdown menu styles */
+        .dropdown {
+            position: relative;
+            display: inline-block;
+        }
+
+        .dropdown-toggle {
+            color: #343a40;
+            padding: 5px 10px;
+            border-radius: 3px;
+            background-color: #f8f9fa;
+        }
+
+        .dropdown-menu {
+            display: none;
+            position: absolute;
+            right: 0;
+            background-color: #fff;
+            min-width: 120px;
+            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+            z-index: 1;
+            border-radius: 4px;
+            border: 1px solid #dee2e6;
+        }
+
+        .dropdown-menu.show {
+            display: block;
+        }
+
+        .dropdown-item {
+            padding: 8px 12px;
+            text-decoration: none;
+            display: block;
+            color: #212529;
+            cursor: pointer;
+        }
+
+        .dropdown-item:hover {
+            background-color: #f8f9fa;
+        }
+
+        /* Ensure dropdowns appear above other content */
+        .dropdown-menu {
+            z-index: 1000;
+        }
         .error-message {
             background-color: #fee;
             color: #c33;
@@ -536,6 +576,14 @@ $conn->close();
             font-size: 13px;
             border-left: 4px solid #c33;
         }
+        .dropdown-menu {
+            z-index: 1060;
+        }
+
+        /* Search container transition */
+        #searchContainer {
+            transition: all 0.3s ease;
+        }
     </style>
 </head>
 <body data-user-id="<?php echo $userId; ?>">
@@ -556,6 +604,52 @@ $conn->close();
                         <div class="nav-item">
                             <h4 class="mb-0 fw-bold ms-2">Help Desk Tickets</h4>
                         </div>
+                    </div>
+                    <!-- In the navbar section -->
+                    <div class="navbar-nav align-items-center me-3">
+                        <div class="dropdown">
+                            <button class="btn btn-outline-secondary dropdown-toggle" type="button" id="filterDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="fas fa-filter"></i>
+                            </button>
+                            <div class="dropdown-menu dropdown-menu-end" aria-labelledby="filterDropdown" style="width: 250px; padding: 10px;">
+                                <h6 class="dropdown-header">Filter Tickets</h6>
+                                <div class="px-3">
+                                    <div class="mb-3">
+                                        <label for="status-filter" class="form-label">Status</label>
+                                        <select class="form-select" id="status-filter">
+                                            <option value="">All Statuses</option>
+                                            <option value="open">Open</option>
+                                            <option value="in-progress">In Progress</option>
+                                            <option value="resolved">Resolved</option>
+                                            <option value="closed">Closed</option>
+                                        </select>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="priority-filter" class="form-label">Priority</label>
+                                        <select class="form-select" id="priority-filter">
+                                            <option value="">All Priorities</option>
+                                            <option value="low">Low</option>
+                                            <option value="medium">Medium</option>
+                                            <option value="high">High</option>
+                                            <option value="critical">Critical</option>
+                                        </select>
+                                    </div>
+                                    <button class="btn btn-primary w-100" id="applyFilters">Apply Filters</button>
+                                    <button class="btn btn-outline-secondary w-100 mt-2" id="resetFilters">Reset</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Add search functionality -->
+                    <div class="navbar-nav align-items-center me-3">
+                        <button id="searchToggle" class="btn btn-outline-secondary">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
+
+                    <div class="navbar-nav align-items-center me-3" id="searchContainer" style="display: none; width: 200px;">
+                        <input type="text" class="form-control" id="search" placeholder="Search tickets...">
                     </div>
                     <!--Create Ticket button-->
                     <div class="navbar-nav align-items-center me-3">
@@ -579,27 +673,6 @@ $conn->close();
                         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                     </div>
                 <?php endif; ?>
-
-                <!-- Filters for Front Desk -->
-                <div class="filter-group">
-                    <div>
-                        <strong>Status:</strong>
-                        <button class="filter-btn status-filter" data-status="">All</button>
-                        <button class="filter-btn status-filter" data-status="open">Open</button>
-                        <button class="filter-btn status-filter" data-status="in-progress">In-Progress</button>
-                        <button class="filter-btn status-filter" data-status="resolved">Resolved</button>
-                        <button class="filter-btn status-filter" data-status="closed">Closed</button>
-                    </div>
-                    <div>
-                        <strong>Priority:</strong>
-                        <button class="filter-btn priority-filter" data-priority="">All</button>
-                        <button class="filter-btn priority-filter" data-priority="low">Low</button>
-                        <button class="filter-btn priority-filter" data-priority="medium">Medium</button>
-                        <button class="filter-btn priority-filter" data-priority="high">High</button>
-                        <button class="filter-btn priority-filter" data-priority="critical">Critical</button>
-                    </div>
-                    <button class="filter-btn reset-filter">Reset Filters</button>
-                </div>
 
                 <div class="table-responsive">
                     <table class="table table-bordered table-striped align-middle">
@@ -637,10 +710,10 @@ $conn->close();
                                     <td><?php echo date('M d, Y H:i', strtotime($ticket['CreatedDate'])); ?></td>
                                     <td>
                                         <div class="dropdown">
-                                            <button class="dropdown-toggle" data-ticket-id="<?php echo $ticket['TicketID']; ?>">
+                                            <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                                                 <i class="fas fa-ellipsis-h"></i>
                                             </button>
-                                            <div class="dropdown-menu">
+                                            <div class="dropdown-menu dropdown-menu-end">
                                                 <a class="dropdown-item view-ticket" data-id="<?php echo $ticket['TicketID']; ?>">
                                                     <i class="fas fa-eye me-2"></i> View
                                                 </a>
@@ -1115,30 +1188,52 @@ $conn->close();
             });
         });
 
-        // Filter tickets (front desk only)
+        // Filter tickets function
         function filterTickets() {
-            console.log('Filtering tickets');
-            const activeStatus = document.querySelector('.status-filter.active')?.dataset.status || '';
-            const activePriority = document.querySelector('.priority-filter.active')?.dataset.priority || '';
-            const rows = document.querySelectorAll('#ticketTableBody tr');
-            rows.forEach(row => {
+            const searchTerm = document.getElementById('search').value.toLowerCase();
+            const statusFilter = document.getElementById('status-filter').value;
+            const priorityFilter = document.getElementById('priority-filter').value;
+
+            document.querySelectorAll('#ticketTableBody tr').forEach(row => {
+                const rowText = row.textContent.toLowerCase();
                 const rowStatus = row.dataset.status;
                 const rowPriority = row.dataset.priority;
-                const show = (!activeStatus || rowStatus === activeStatus) &&
-                    (!activePriority || rowPriority === activePriority);
-                row.style.display = show ? '' : 'none';
+
+                const matchesSearch = searchTerm === '' || rowText.includes(searchTerm);
+                const matchesStatus = statusFilter === '' || rowStatus === statusFilter;
+                const matchesPriority = priorityFilter === '' || rowPriority === priorityFilter;
+
+                row.style.display = matchesSearch && matchesStatus && matchesPriority ? '' : 'none';
             });
         }
 
-        // Initialize filter buttons
-        document.querySelectorAll('.status-filter').forEach(btn => {
-            btn.addEventListener('click', function() {
-                console.log('Status filter clicked:', this.dataset.status);
-                document.querySelectorAll('.status-filter').forEach(b => b.classList.remove('active'));
-                this.classList.add('active');
-                filterTickets();
-            });
+// Event listeners
+        document.getElementById('applyFilters').addEventListener('click', function() {
+            filterTickets();
+            // Close the dropdown
+            bootstrap.Dropdown.getInstance(document.getElementById('filterDropdown')).hide();
         });
+
+        document.getElementById('resetFilters').addEventListener('click', function() {
+            document.getElementById('status-filter').value = '';
+            document.getElementById('priority-filter').value = '';
+            document.getElementById('search').value = '';
+            filterTickets();
+            // Close the dropdown
+            bootstrap.Dropdown.getInstance(document.getElementById('filterDropdown')).hide();
+        });
+
+// Toggle search input visibility
+        document.getElementById('searchToggle').addEventListener('click', function() {
+            const searchContainer = document.getElementById('searchContainer');
+            searchContainer.style.display = searchContainer.style.display === 'none' ? 'block' : 'none';
+            if (searchContainer.style.display === 'block') {
+                document.getElementById('search').focus();
+            }
+        });
+
+// Filter on search input
+        document.getElementById('search').addEventListener('input', filterTickets);
 
         document.querySelectorAll('.priority-filter').forEach(btn => {
             btn.addEventListener('click', function() {
@@ -1634,6 +1729,59 @@ RECENT TICKETS (Last 5):
     // Initialize the chatbot when the page loads
     document.addEventListener('DOMContentLoaded', () => {
         new HelpDeskChatBot();
+    });
+    // Function to handle CUSTOM dropdown toggle (for action buttons only)
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize Bootstrap dropdowns
+        const dropdownElementList = document.querySelectorAll('.dropdown-toggle');
+        const dropdownList = [...dropdownElementList].map(dropdownToggleEl => {
+            return new bootstrap.Dropdown(dropdownToggleEl);
+        });
+
+        // Close dropdowns when clicking outside
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('.dropdown')) {
+                dropdownList.forEach(dropdown => {
+                    dropdown.hide();
+                });
+            }
+        });
+    });
+
+    // Add event listeners when DOM is loaded
+    document.addEventListener('DOMContentLoaded', function() {
+        // Handle CUSTOM dropdown toggles (action buttons only)
+        document.addEventListener('click', function(e) {
+            const dropdownToggle = e.target.closest('.dropdown-toggle');
+
+            // Only handle custom dropdowns (not Bootstrap dropdowns with data-bs-toggle)
+            if (dropdownToggle && !dropdownToggle.hasAttribute('data-bs-toggle')) {
+                e.preventDefault();
+                e.stopPropagation();
+                toggleCustomDropdown(dropdownToggle);
+            }
+            // Close custom dropdowns when clicking outside (but not Bootstrap ones)
+            else if (!e.target.closest('.dropdown')) {
+                document.querySelectorAll('.dropdown-menu.show').forEach(menu => {
+                    const parentDropdown = menu.closest('.dropdown');
+                    if (!parentDropdown.querySelector('[data-bs-toggle]')) {
+                        menu.classList.remove('show');
+                    }
+                });
+            }
+        });
+
+        // Prevent custom dropdown menu from closing when clicking inside it
+        document.addEventListener('click', function(e) {
+            const dropdownMenu = e.target.closest('.dropdown-menu');
+            if (dropdownMenu) {
+                const parentDropdown = dropdownMenu.closest('.dropdown');
+                // Only prevent for custom dropdowns
+                if (!parentDropdown.querySelector('[data-bs-toggle]')) {
+                    e.stopPropagation();
+                }
+            }
+        });
     });
 </script>
 </body>
