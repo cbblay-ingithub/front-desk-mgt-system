@@ -382,30 +382,89 @@ $conn->close();
                                 </div>
                             </div>
 
-                            <!-- Appointment Trends -->
-                            <div class="row mb-4">
-                                <div class="col-md-6 mb-4">
-                                    <div class="card h-100">
-                                        <div class="card-header d-flex justify-content-between">
-                                            <h5 class="card-title m-0 me-2">Appointment Trends</h5>
-                                            <div class="dropdown">
-                                                <button class="btn p-0" type="button" id="appointmentTrends" data-bs-toggle="dropdown">
-                                                    <i class="bx bx-dots-vertical-rounded"></i>
-                                                </button>
-                                                <div class="dropdown-menu dropdown-menu-end">
-                                                    <a class="dropdown-item" href="javascript:void(0);">Last 7 Days</a>
-                                                    <a class="dropdown-item" href="javascript:void(0);">Last 30 Days</a>
-                                                    <a class="dropdown-item" href="javascript:void(0);">Last 90 Days</a>
+                        <!-- Cancellation Reasons -->
+                        <div class="card mb-4">
+                            <div class="card-header">
+                                <h5 class="card-title m-0 me-2">Cancellation Reasons</h5>
+                            </div>
+                            <div class="card-body">
+                                <?php if (!empty($teamReports['cancellation_reasons'])): ?>
+                                    <div class="table-responsive">
+                                        <table class="table table-bordered">
+                                            <thead>
+                                            <tr>
+                                                <th>Reason</th>
+                                                <th>Count</th>
+                                                <th>Percentage</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                            <?php foreach ($teamReports['cancellation_reasons'] as $reason): ?>
+                                                <tr>
+                                                    <td><?= $reason['CancellationReason'] ?: 'No reason given' ?></td>
+                                                    <td><?= $reason['count'] ?></td>
+                                                    <td><?= round(($reason['count'] / $teamReports['appointment_metrics']['cancelled']) * 100, 2) ?>%</td>
+                                                </tr>
+                                            <?php endforeach; ?>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                <?php else: ?>
+                                    <div class="alert alert-info">No cancellation data available</div>
+                                <?php endif; ?>
+                            </div>
+                        </div>
+
+                        <!-- Visitor Metrics -->
+                        <div class="card mb-4">
+                            <div class="card-header">
+                                <h5 class="card-title m-0 me-2">Visitor Metrics</h5>
+                            </div>
+                            <div class="card-body">
+                                <?php if (!empty($teamReports['visitor_metrics'])): ?>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                                <div>
+                                                    <h6 class="mb-1">New Visitors</h6>
+                                                    <h3 class="mb-0"><?= $teamReports['visitor_metrics']['new_visitors'] ?? 0 ?></h3>
+                                                </div>
+                                                <div class="avatar">
+                            <span class="avatar-initial rounded bg-label-success">
+                                <i class="bx bx-user-plus bx-sm"></i>
+                            </span>
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="card-body">
-                                            <div id="appointmentTrendsChart"></div>
+                                        <div class="col-md-6">
+                                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                                <div>
+                                                    <h6 class="mb-1">Returning Visitors</h6>
+                                                    <h3 class="mb-0"><?= $teamReports['visitor_metrics']['returning_visitors'] ?? 0 ?></h3>
+                                                </div>
+                                                <div class="avatar">
+                            <span class="avatar-initial rounded bg-label-primary">
+                                <i class="bx bx-user-check bx-sm"></i>
+                            </span>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-
-                                <div class="col-md-6 mb-4">
+                                    <div class="progress" style="height: 15px;">
+                                        <?php
+                                        $totalVisitors = ($teamReports['visitor_metrics']['new_visitors'] ?? 0) + ($teamReports['visitor_metrics']['returning_visitors'] ?? 0);
+                                        $newPercent = $totalVisitors > 0 ? ($teamReports['visitor_metrics']['new_visitors'] / $totalVisitors) * 100 : 0;
+                                        $returningPercent = $totalVisitors > 0 ? ($teamReports['visitor_metrics']['returning_visitors'] / $totalVisitors) * 100 : 0;
+                                        ?>
+                                        <div class="progress-bar bg-success" style="width: <?= $newPercent ?>%"></div>
+                                        <div class="progress-bar bg-primary" style="width: <?= $returningPercent ?>%"></div>
+                                    </div>
+                                <?php else: ?>
+                                    <div class="alert alert-info">No visitor data available</div>
+                                <?php endif; ?>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-4">
                                     <div class="card h-100">
                                         <div class="card-header d-flex justify-content-between">
                                             <h5 class="card-title m-0 me-2">Completion Rate</h5>
@@ -494,9 +553,20 @@ $conn->close();
                                                                     <h4 class="mb-0"><?= $metrics['no_show_rate'] ?? 0 ?>%</h4>
                                                                 </div>
                                                                 <div class="avatar">
-                                                <span class="avatar-initial rounded bg-label-warning">
-                                                    <i class="bx bx-user-x bx-sm"></i>
-                                                </span>
+                                                                <span class="avatar-initial rounded bg-label-warning">
+                                                                    <i class="bx bx-user-x bx-sm"></i>
+                                                                </span>
+                                                                    </div>
+                                                            </div>
+                                                            <div class="d-flex justify-content-between mb-3">
+                                                                <div>
+                                                                    <h6 class="mb-1">Peak Hour</h6>
+                                                                    <h4 class="mb-0"><?= $metrics['peak_hour'] ? date('g A', strtotime($metrics['peak_hour'].':00')) : 'N/A' ?></h4>
+                                                                </div>
+                                                                <div class="avatar">
+                                                                    <span class="avatar-initial rounded bg-label-info">
+                                                                        <i class="bx bx-time bx-sm"></i>
+                                                                    </span>
                                                                 </div>
                                                             </div>
                                                             <div class="progress mb-3" style="height: 8px">
