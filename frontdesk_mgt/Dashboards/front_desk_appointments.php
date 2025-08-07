@@ -160,6 +160,105 @@ function getHostById($hostId) {
     }
     return $result->fetch_assoc();
 }
+function addToQueue($hostId, $visitorInfo, $purpose, $frontDeskId) {
+    global $conn;
+
+    $conn->begin_transaction();
+
+    try {
+        // Create or find visitor
+        if (isset($visitorInfo['visitorId'])) {
+            $visitorId = $visitorInfo['visitorId'];
+        } else {
+            $stmt = $conn->prepare("INSERT INTO visitors (Name, Email, Phone) VALUES (?, ?, ?)");
+            $stmt->bind_param("sss", $visitorInfo['name'], $visitorInfo['email'], $visitorInfo['phone']);
+            $stmt->execute();
+            $visitorId = $conn->insert_id;
+        }
+
+        // Add to queue
+        $currentTime = date('Y-m-d H:i:s');
+        $stmt = $conn->prepare("INSERT INTO queue 
+                               (VisitorID, HostID, JoinTime, Status, Purpose) 
+                               VALUES (?, ?, ?, 'Waiting', ?)");
+        $stmt->bind_param("iiss", $visitorId, $hostId, $currentTime, $purpose);
+        $stmt->execute();
+        $queueId = $conn->insert_id;
+
+        $conn->commit();
+        return ["success" => true, "queueId" => $queueId];
+    } catch (Exception $e) {
+        $conn->rollback();
+        return ["success" => false, "message" => $e->getMessage()];
+    }
+}
+
+function getQueueForHost($hostId) {
+    global $conn;
+
+    $sql = "SELECT q.*, v.Name, v.Email, v.Phone 
+            FROM queue q
+            JOIN visitors v ON q.VisitorID = v.VisitorID
+            WHERE q.HostID = ? AND q.Status = 'Waiting'
+            ORDER BY q.JoinTime";
+
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("i", $hostId);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    $queue = [];
+    while ($row = $result->fetch_assoc()) {
+        $queue[] = $row;
+    }
+
+    return $queue;
+}
+
+function processNextInQueue($hostId) {
+    global $conn;
+
+    $conn->begin_transaction();
+
+    try {
+        // Get next in queue
+        $sql = "SELECT QueueID, VisitorID FROM queue 
+                WHERE HostID = ? AND Status = 'Waiting' 
+                ORDER BY JoinTime LIMIT 1 FOR UPDATE";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("i", $hostId);
+        $stmt->execute();
+        $result = $stmt->get_result();
+
+        if ($result->num_rows === 0) {
+            return ["success" => false, "message" => "No visitors in queue"];
+        }
+
+        $next = $result->fetch_assoc();
+        $queueId = $next['QueueID'];
+        $visitorId = $next['VisitorID'];
+
+        // Mark as processing
+        $stmt = $conn->prepare("UPDATE queue SET Status = 'Processing' WHERE QueueID = ?");
+        $stmt->bind_param("i", $queueId);
+        $stmt->execute();
+
+        // Create walk-in appointment
+        $currentTime = date('Y-m-d H:i:s');
+        $stmt = $conn->prepare("INSERT INTO appointments 
+                               (VisitorID, HostID, Status, IsWalkIn, WalkInTime) 
+                               VALUES (?, ?, 'Ongoing', TRUE, ?)");
+        $stmt->bind_param("iis", $visitorId, $hostId, $currentTime);
+        $stmt->execute();
+        $appointmentId = $conn->insert_id;
+
+        $conn->commit();
+        return ["success" => true, "appointmentId" => $appointmentId, "queueId" => $queueId];
+    } catch (Exception $e) {
+        $conn->rollback();
+        return ["success" => false, "message" => $e->getMessage()];
+    }
+}
 
 // AJAX handling
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -592,6 +691,42 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             } else {
                 echo json_encode(['success' => false, 'message' => 'Failed to cancel appointment']);
             }
+            break;
+        case 'addToQueue':
+            if (!isset($_POST['hostId']) || !isset($_POST['purpose']) || empty($_SESSION['userID'])) {
+                echo json_encode(['success' => false, 'message' => 'Missing required fields']);
+                break;
+            }
+
+            $visitorInfo = [
+                'name' => $_POST['name'] ?? '',
+                'email' => $_POST['email'] ?? '',
+                'phone' => $_POST['phone'] ?? '',
+                'visitorId' => $_POST['visitorId'] ?? null
+            ];
+
+            $result = addToQueue($_POST['hostId'], $visitorInfo, $_POST['purpose'], $_SESSION['userID']);
+            echo json_encode($result);
+            break;
+
+        case 'getQueue':
+            if (!isset($_POST['hostId'])) {
+                echo json_encode(['success' => false, 'message' => 'Missing host ID']);
+                break;
+            }
+
+            $queue = getQueueForHost($_POST['hostId']);
+            echo json_encode(['success' => true, 'queue' => $queue]);
+            break;
+
+        case 'processNextInQueue':
+            if (!isset($_POST['hostId'])) {
+                echo json_encode(['success' => false, 'message' => 'Missing host ID']);
+                break;
+            }
+
+            $result = processNextInQueue($_POST['hostId']);
+            echo json_encode($result);
             break;
 
         default:
