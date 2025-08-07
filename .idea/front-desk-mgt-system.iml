@@ -41,5 +41,7 @@
     <orderEntry type="library" name="jquery-3.6.0" level="application" />
     <orderEntry type="library" name="chart.js" level="application" />
     <orderEntry type="library" name="fullcalendar" level="application" />
+    <orderEntry type="library" name="boxicons" level="application" />
+    <orderEntry type="library" name="apexcharts" level="application" />
   </component>
 </module>

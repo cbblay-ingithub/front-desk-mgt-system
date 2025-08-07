@@ -57,6 +57,10 @@ $conn->close();
     <title>Reports -Admin</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../../Sneat/assets/vendor/css/pages/card-analytics.css" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&display=swap" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/boxicons@latest/css/boxicons.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/apexcharts@3.35.0/dist/apexcharts.min.css" />
     <style>
         /* Sidebar width fixes (from user_management.php) */
         #layout-menu {
@@ -292,88 +296,85 @@ $conn->close();
                     <div class="tab-pane fade <?= $activeTab === 'host' ? 'show active' : '' ?>" id="hostTab">
                         <?php if ($activeTab === 'host') : ?>
                             <!-- Team Metrics -->
-                            <div class="report-card card">
-                                <div class="report-header card-header">
-                                    <h3>Host Team Reports</h3>
-                                    <form method="POST" action="generate_report.php" style="display: inline;">
-                                        <input type="hidden" name="report_type" value="host">
-                                        <input type="hidden" name="start_date" value="<?= $startDate ?>">
-                                        <input type="hidden" name="end_date" value="<?= $endDate ?>">
-                                        <button type="submit" class="btn btn-light btn-sm">
-                                            <i class="fas fa-file-pdf me-1"></i> Export PDF
-                                        </button>
-                                    </form>
-                                </div>
-                                <div class="card-body">
-                                    <div class="row">
-                                        <div class="col-md-3"><div class="metric-card"><h5>Total Appointments</h5><div class="metric-value"><?= $teamReports['appointment_metrics']['total_appointments'] ?? 0 ?></div></div></div>
-                                        <div class="col-md-3"><div class="metric-card"><h5>Completed</h5><div class="metric-value"><?= $teamReports['appointment_metrics']['completed'] ?? 0 ?></div></div></div>
-                                        <div class="col-md-3"><div class="metric-card"><h5>Cancelled</h5><div class="metric-value"><?= $teamReports['appointment_metrics']['cancelled'] ?? 0 ?></div></div></div>
-                                        <div class="col-md-3"><div class="metric-card"><h5>Completion Rate</h5><div class="metric-value"><?= $teamReports['resolution_rates']['total_tickets'] > 0 ? round(($teamReports['resolution_rates']['resolved'] / $teamReports['resolution_rates']['total_tickets']) * 100) : 0 ?>%</div></div></div>
-                                    </div>
-
-                                    <!-- Cancellation Reasons -->
-                                    <div class="row mt-3">
-                                        <div class="col-md-6">
-                                            <div class="metric-card">
-                                                <h5>Cancellation Reasons</h5>
-                                                <?php if (!empty($teamReports['cancellation_reasons'])): ?>
-                                                    <table class="table table-bordered">
-                                                        <thead>
-                                                        <tr>
-                                                            <th>Reason</th>
-                                                            <th>Count</th>
-                                                        </tr>
-                                                        </thead>
-                                                        <tbody>
-                                                        <?php foreach ($teamReports['cancellation_reasons'] as $reason): ?>
-                                                            <tr>
-                                                                <td><?= htmlspecialchars($reason['CancellationReason'] ?? 'No reason provided') ?></td>
-                                                                <td><?= $reason['count'] ?></td>
-                                                            </tr>
-                                                        <?php endforeach; ?>
-                                                        </tbody>
-                                                    </table>
-                                                <?php else: ?>
-                                                    <p>No cancellations in this period.</p>
-                                                <?php endif; ?>
+                            <div class="row mb-4">
+                                <div class="col-md-6 col-lg-3 mb-4">
+                                    <div class="card h-100">
+                                        <div class="card-body">
+                                            <div class="d-flex justify-content-between align-items-start">
+                                                <div>
+                                <span class="badge bg-label-primary p-2 rounded mb-3">
+                                    <i class="bx bx-calendar-check bx-sm"></i>
+                                </span>
+                                                    <h5 class="card-title mb-1">Total Appointments</h5>
+                                                    <h2 class="mb-0"><?= $teamReports['appointment_metrics']['total_appointments'] ?? 0 ?></h2>
+                                                </div>
+                                                <div class="avatar flex-shrink-0">
+                                <span class="avatar-initial rounded bg-label-primary">
+                                    <i class="bx bx-trending-up bx-sm"></i>
+                                </span>
+                                                </div>
                                             </div>
                                         </div>
+                                    </div>
+                                </div>
 
-                                        <!-- Client Metrics -->
-                                        <div class="col-md-6">
-                                            <div class="metric-card">
-                                                <h5>Client Types</h5>
-                                                <?php
-                                                $newClients = $teamReports['client_metrics']['new_clients'] ?? 0;
-                                                $returningClients = $teamReports['client_metrics']['returning_clients'] ?? 0;
-                                                $totalClients = $newClients + $returningClients;
-                                                $newPercentage = $totalClients > 0 ? round(($newClients / $totalClients) * 100) : 0;
-                                                $returningPercentage = $totalClients > 0 ? round(($returningClients / $totalClients) * 100) : 0;
-                                                ?>
-                                                <div class="d-flex align-items-center mb-3">
-                                                    <div class="me-3">
-                                                        <span class="d-block fw-bold"><?= $newClients ?></span>
-                                                        <small>New Clients</small>
-                                                    </div>
-                                                    <div class="progress flex-grow-1" style="height: 20px;">
-                                                        <div class="progress-bar bg-success" role="progressbar" style="width: <?= $newPercentage ?>%" aria-valuenow="<?= $newPercentage ?>" aria-valuemin="0" aria-valuemax="100"></div>
-                                                    </div>
-                                                    <div class="ms-3 text-end">
-                                                        <span class="d-block fw-bold"><?= $newPercentage ?>%</span>
-                                                    </div>
+                                <div class="col-md-6 col-lg-3 mb-4">
+                                    <div class="card h-100">
+                                        <div class="card-body">
+                                            <div class="d-flex justify-content-between align-items-start">
+                                                <div>
+                                <span class="badge bg-label-success p-2 rounded mb-3">
+                                    <i class="bx bx-check-circle bx-sm"></i>
+                                </span>
+                                                    <h5 class="card-title mb-1">Completed</h5>
+                                                    <h2 class="mb-0"><?= $teamReports['appointment_metrics']['completed'] ?? 0 ?></h2>
                                                 </div>
-                                                <div class="d-flex align-items-center">
-                                                    <div class="me-3">
-                                                        <span class="d-block fw-bold"><?= $returningClients ?></span>
-                                                        <small>Returning Clients</small>
-                                                    </div>
-                                                    <div class="progress flex-grow-1" style="height: 20px;">
-                                                        <div class="progress-bar bg-info" role="progressbar" style="width: <?= $returningPercentage ?>%" aria-valuenow="<?= $returningPercentage ?>" aria-valuemin="0" aria-valuemax="100"></div>
-                                                    </div>
-                                                    <div class="ms-3 text-end">
-                                                        <span class="d-block fw-bold"><?= $returningPercentage ?>%</span>
-                                                    </div>
+                                                <div class="avatar flex-shrink-0">
+                                <span class="avatar-initial rounded bg-label-success">
+                                    <i class="bx bx-trending-up bx-sm"></i>
+                                </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6 col-lg-3 mb-4">
+                                    <div class="card h-100">
+                                        <div class="card-body">
+                                            <div class="d-flex justify-content-between align-items-start">
+                                                <div>
+                                <span class="badge bg-label-danger p-2 rounded mb-3">
+                                    <i class="bx bx-x-circle bx-sm"></i>
+                                </span>
+                                                    <h5 class="card-title mb-1">Cancelled</h5>
+                                                    <h2 class="mb-0"><?= $teamReports['appointment_metrics']['cancelled'] ?? 0 ?></h2>
+                                                </div>
+                                                <div class="avatar flex-shrink-0">
+                                <span class="avatar-initial rounded bg-label-danger">
+                                    <i class="bx bx-trending-down bx-sm"></i>
+                                </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6 col-lg-3 mb-4">
+                                    <div class="card h-100">
+                                        <div class="card-body">
+                                            <div class="d-flex justify-content-between align-items-start">
+                                                <div>
+                                <span class="badge bg-label-warning p-2 rounded mb-3">
+                                    <i class="bx bx-time bx-sm"></i>
+                                </span>
+                                                    <h5 class="card-title mb-1">Upcoming</h5>
+                                                    <h2 class="mb-0"><?= $teamReports['appointment_metrics']['upcoming'] ?? 0 ?></h2>
+                                                </div>
+                                                <div class="avatar flex-shrink-0">
+                                <span class="avatar-initial rounded bg-label-warning">
+                                    <i class="bx bx-trending-up bx-sm"></i>
+                                </span>
                                                 </div>
                                             </div>
                                         </div>
@@ -381,30 +382,129 @@ $conn->close();
                                 </div>
                             </div>
 
+                            <!-- Appointment Trends -->
+                            <div class="row mb-4">
+                                <div class="col-md-6 mb-4">
+                                    <div class="card h-100">
+                                        <div class="card-header d-flex justify-content-between">
+                                            <h5 class="card-title m-0 me-2">Appointment Trends</h5>
+                                            <div class="dropdown">
+                                                <button class="btn p-0" type="button" id="appointmentTrends" data-bs-toggle="dropdown">
+                                                    <i class="bx bx-dots-vertical-rounded"></i>
+                                                </button>
+                                                <div class="dropdown-menu dropdown-menu-end">
+                                                    <a class="dropdown-item" href="javascript:void(0);">Last 7 Days</a>
+                                                    <a class="dropdown-item" href="javascript:void(0);">Last 30 Days</a>
+                                                    <a class="dropdown-item" href="javascript:void(0);">Last 90 Days</a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="card-body">
+                                            <div id="appointmentTrendsChart"></div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6 mb-4">
+                                    <div class="card h-100">
+                                        <div class="card-header d-flex justify-content-between">
+                                            <h5 class="card-title m-0 me-2">Completion Rate</h5>
+                                            <div class="dropdown">
+                                                <button class="btn p-0" type="button" id="completionRate" data-bs-toggle="dropdown">
+                                                    <i class="bx bx-dots-vertical-rounded"></i>
+                                                </button>
+                                                <div class="dropdown-menu dropdown-menu-end">
+                                                    <a class="dropdown-item" href="javascript:void(0);">Last 7 Days</a>
+                                                    <a class="dropdown-item" href="javascript:void(0);">Last 30 Days</a>
+                                                    <a class="dropdown-item" href="javascript:void(0);">Last 90 Days</a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="d-flex justify-content-between mb-3">
+                                                <div class="d-flex flex-column">
+                                                    <h5 class="mb-0"><?= $completionRate = "";
+                                                        ?>%</h5>
+                                                    <small>Current Rate</small>
+                                                </div>
+                                                <div>
+                                                    <span class="badge bg-label-success">+2.15%</span>
+                                                </div>
+                                            </div>
+                                            <div id="completionRateGauge"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
                             <!-- Individual Performance Cards -->
-                            <div class="report-card card">
-                                <div class="report-header card-header"><h3>Individual Host Performance</h3></div>
+                            <div class="card mb-4">
+                                <div class="card-header d-flex justify-content-between align-items-center">
+                                    <h5 class="card-title m-0 me-2">Individual Host Performance</h5>
+                                    <div class="dropdown">
+                                        <button class="btn p-0" type="button" id="individualPerformance" data-bs-toggle="dropdown">
+                                            <i class="bx bx-dots-vertical-rounded"></i>
+                                        </button>
+                                        <div class="dropdown-menu dropdown-menu-end">
+                                            <a class="dropdown-item" href="javascript:void(0);">Export as PDF</a>
+                                            <a class="dropdown-item" href="javascript:void(0);">Export as CSV</a>
+                                        </div>
+                                    </div>
+                                </div>
                                 <div class="card-body">
                                     <div class="row">
                                         <?php if (empty($users)): ?>
-                                            <p>No host staff available or no data found.</p>
+                                            <div class="col-12 text-center py-4">
+                                                <div class="alert alert-info">No host staff available or no data found.</div>
+                                            </div>
                                         <?php else: ?>
                                             <?php foreach ($users as $user): $metrics = $individualReports[$user['UserID']]; ?>
-                                                <div class="col-md-4">
-                                                    <div class="metric-card">
-                                                        <h5><?= $user['Name'] ?></h5>
-                                                        <p>Total Appointments: <strong><?= $metrics['total_appointments'] ?? 0 ?></strong></p>
-                                                        <p>Completed: <strong><?= $metrics['completed'] ?? 0 ?></strong></p>
-                                                        <p>No-Show Rate: <strong><?= $metrics['no_show_rate'] ?? 0 ?>%</strong></p>
-                                                        <p>Cancelled: <strong><?= $metrics['cancelled'] ?? 0 ?></strong></p>
-                                                        <p>Upcoming: <strong><?= $metrics['upcoming'] ?? 0 ?></strong></p>
-                                                        <p>Peak Hour: <strong><?= $metrics['peak_hour'] ? $metrics['peak_hour'] . ':00' : 'N/A' ?></strong></p>
-                                                        <p>Monthly Trends:</p>
-                                                        <ul>
-                                                            <?php foreach ($metrics['monthly_trends'] as $trend): ?>
-                                                                <li><?= date('M Y', mktime(0,0,0,$trend['month'],1,$trend['year'])) ?>: <?= $trend['completed'] ?? 0 ?></li>
-                                                            <?php endforeach; ?>
-                                                        </ul>
+                                                <div class="col-md-6 col-lg-4 mb-4">
+                                                    <div class="card h-100">
+                                                        <div class="card-header d-flex justify-content-between align-items-center">
+                                                            <h5 class="card-title m-0"><?= $user['Name'] ?></h5>
+                                                            <span class="badge bg-label-primary">Host</span>
+                                                        </div>
+                                                        <div class="card-body">
+                                                            <div class="d-flex justify-content-between mb-3">
+                                                                <div>
+                                                                    <h6 class="mb-1">Appointments</h6>
+                                                                    <h4 class="mb-0"><?= $metrics['total_appointments'] ?? 0 ?></h4>
+                                                                </div>
+                                                                <div class="avatar">
+                                                <span class="avatar-initial rounded bg-label-primary">
+                                                    <i class="bx bx-calendar bx-sm"></i>
+                                                </span>
+                                                                </div>
+                                                            </div>
+                                                            <div class="d-flex justify-content-between mb-3">
+                                                                <div>
+                                                                    <h6 class="mb-1">Completed</h6>
+                                                                    <h4 class="mb-0"><?= $metrics['completed'] ?? 0 ?></h4>
+                                                                </div>
+                                                                <div class="avatar">
+                                                <span class="avatar-initial rounded bg-label-success">
+                                                    <i class="bx bx-check-circle bx-sm"></i>
+                                                </span>
+                                                                </div>
+                                                            </div>
+                                                            <div class="d-flex justify-content-between mb-3">
+                                                                <div>
+                                                                    <h6 class="mb-1">No-Show Rate</h6>
+                                                                    <h4 class="mb-0"><?= $metrics['no_show_rate'] ?? 0 ?>%</h4>
+                                                                </div>
+                                                                <div class="avatar">
+                                                <span class="avatar-initial rounded bg-label-warning">
+                                                    <i class="bx bx-user-x bx-sm"></i>
+                                                </span>
+                                                                </div>
+                                                            </div>
+                                                            <div class="progress mb-3" style="height: 8px">
+                                                                <div class="progress-bar bg-success" style="width: <?= ($metrics['completed'] / $metrics['total_appointments']) * 100 ?>%"></div>
+                                                                <div class="progress-bar bg-danger" style="width: <?= ($metrics['cancelled'] / $metrics['total_appointments']) * 100 ?>%"></div>
+                                                            </div>
+                                                            <div id="hostPerformanceChart_<?= $user['UserID'] ?>"></div>
+                                                        </div>
                                                     </div>
                                                 </div>
                                             <?php endforeach; ?>
@@ -414,7 +514,6 @@ $conn->close();
                             </div>
                         <?php endif; ?>
                     </div>
-
                     <!-- Support Staff Reports Tab -->
                     <div class="tab-pane fade <?= $activeTab === 'support' ? 'show active' : '' ?>" id="supportTab">
                         <?php if ($activeTab === 'support') : ?>
@@ -621,6 +720,8 @@ $conn->close();
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/apexcharts@3.35.0/dist/apexcharts.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
 <script>
     $(document).ready(function() {
         // Real-time status update for current admin (from user_management.php)
@@ -688,6 +789,78 @@ $conn->close();
                 'max-width': '260px'
             });
         }
+    });
+    $(document).ready(function() {
+        // Host Appointments Chart
+        var hostAppointmentsOptions = {
+            series: [{
+                name: 'Appointments',
+                data: [28, 40, 36, 52, 38, 60, 55]
+            }],
+            chart: {
+                height: 100,
+                type: 'area',
+                sparkline: {
+                    enabled: true
+                },
+                toolbar: {
+                    show: false
+                }
+            },
+            colors: ['#7367F0'],
+            fill: {
+                type: 'gradient',
+                gradient: {
+                    shadeIntensity: 0.5,
+                    opacityFrom: 0.5,
+                    opacityTo: 0.1
+                }
+            },
+            stroke: {
+                curve: 'smooth',
+                width: 2
+            },
+            tooltip: {
+                fixed: {
+                    enabled: false
+                },
+                x: {
+                    show: false
+                },
+                marker: {
+                    show: false
+                }
+            }
+        };
+        var hostAppointmentsChart = new ApexCharts(document.querySelector("#hostAppointmentsChart"), hostAppointmentsOptions);
+        hostAppointmentsChart.render();
+
+        // Host Status Chart (pie/donut)
+        var hostStatusOptions = {
+            series: [
+                <?= $teamReports['appointment_metrics']['completed'] ?? 0 ?>,
+                <?= $teamReports['appointment_metrics']['cancelled'] ?? 0 ?>,
+                <?= $teamReports['appointment_metrics']['upcoming'] ?? 0 ?>
+            ],
+            chart: {
+                type: 'donut',
+                height: 150
+            },
+            labels: ['Completed', 'Cancelled', 'Upcoming'],
+            colors: ['#28C76F', '#EA5455', '#FF9F43'],
+            legend: {
+                show: false
+            },
+            plotOptions: {
+                pie: {
+                    donut: {
+                        size: '75%'
+                    }
+                }
+            }
+        };
+        var hostStatusChart = new ApexCharts(document.querySelector("#hostStatusChart"), hostStatusOptions);
+        hostStatusChart.render();
     });
 </script>
 </body>
