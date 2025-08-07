@@ -175,13 +175,13 @@ function processTicketOperation($conn) {
     return ['message' => $message, 'error' => $error];
 }
 
-// Check for tickets older than 7 days that need to be auto-closed
+// Check for tickets older than 14 days that need to be auto-closed
 // Modify autoCloseOldTickets function
 function autoCloseOldTickets($conn) {
     // First, identify tickets that will be auto-closed
     $findSql = "SELECT TicketID, CreatedBy, AssignedTo FROM Help_Desk 
                 WHERE Status != 'closed' 
-                AND DATEDIFF(NOW(), IFNULL(LastUpdated, CreatedDate)) > 7";
+                AND DATEDIFF(NOW(), IFNULL(LastUpdated, CreatedDate)) > 14";
     $result = $conn->query($findSql);
 
     $ticketsToClose = [];
@@ -193,7 +193,7 @@ function autoCloseOldTickets($conn) {
     $updateSql = "UPDATE Help_Desk 
                   SET Status = 'closed', 
                       LastUpdated = NOW(), 
-                      ResolutionNotes = CONCAT(IFNULL(ResolutionNotes, ''), ' [Auto-closed after 7 days of inactivity]'),
+                      ResolutionNotes = CONCAT(IFNULL(ResolutionNotes, ''), ' [Auto-closed after 14 days of inactivity]'),
                       TimeSpent = IF(TimeSpent IS NULL, TIMESTAMPDIFF(MINUTE, CreatedDate, NOW()), TimeSpent)
                   WHERE Status != 'closed' 
                   AND DATEDIFF(NOW(), IFNULL(LastUpdated, CreatedDate)) > 7";
@@ -204,11 +204,11 @@ function autoCloseOldTickets($conn) {
         // Send notifications for auto-closed tickets
         foreach ($ticketsToClose as $ticket) {
             createNotification($conn, $ticket['CreatedBy'], $ticket['TicketID'], 'auto_closure', [
-                'reason' => 'Inactivity for more than 7 days'
+                'reason' => 'Inactivity for more than 14 days'
             ]);
             if ($ticket['AssignedTo']) {
                 createNotification($conn, $ticket['AssignedTo'], $ticket['TicketID'], 'auto_closure', [
-                    'reason' => 'Inactivity for more than 7 days'
+                    'reason' => 'Inactivity for more than 14 days'
                 ]);
             }
         }
