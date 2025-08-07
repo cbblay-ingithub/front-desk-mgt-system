@@ -382,28 +382,6 @@ function checkTimeConflict($hostId, $appointmentTime, $excludeAppointmentId = nu
             transform: translateY(-5px);
             box-shadow: 0 10px 20px rgba(0,0,0,0.1);
         }
-
-        .status-badge-Cancelled {
-            background-color: #dc3545;
-        }
-
-        .status-badge-Ongoing {
-            background-color: #66b2b2;
-        }
-
-        .status-badge-Upcoming {
-            background-color: #9133ef;
-        }
-
-        .status-badge-Completed {
-            background-color: #198754;
-        }
-
-        .status-badge-Overdue {
-            background-color: #ffc107;
-            color: #212529;
-        }
-
         .action-buttons {
             display: flex;
             gap: 10px;
@@ -439,54 +417,6 @@ function checkTimeConflict($hostId, $appointmentTime, $excludeAppointmentId = nu
             border-radius: 0.5rem;
             padding: 1rem;
             box-shadow: 0 0.125rem 0.25rem rgba(0,0,0,0.075);
-        }
-
-        .calendar-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1rem;
-        }
-
-        .calendar-day {
-            height: 100px;
-            overflow-y: auto;
-        }
-
-        .calendar-appointment {
-            padding: 2px 5px;
-            margin-bottom: 2px;
-            border-radius: 3px;
-            font-size: 0.75rem;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            cursor: pointer;
-        }
-
-        .calendar-appointment.Upcoming {
-            background-color: #cff4fc;
-            border-left: 3px solid #9133ef;
-        }
-
-        .calendar-appointment.Ongoing {
-            background-color: #fff3cd;
-            border-left: 3px solid #66b2b2;
-        }
-
-        .calendar-appointment.Completed {
-            background-color: #d1e7dd;
-            border-left: 3px solid #198754;
-        }
-
-        .calendar-appointment.Cancelled {
-            background-color: #f8d7da;
-            border-left: 3px solid #dc3545;
-        }
-
-        .calendar-appointment.Overdue {
-            background-color: #fff3cd;
-            border-left: 3px solid #ffc107;
         }
 
         .host-filter {
@@ -1461,185 +1391,138 @@ function checkTimeConflict($hostId, $appointmentTime, $excludeAppointmentId = nu
             $('#list-view').removeClass('show active');
 
             // Initialize calendar if not already done
-            if (!window.calendar) {
-                window.calendar = initializeCalendar();
-            } else {
-                try {
-                    window.calendar.refetchEvents();
-                    window.calendar.render();
-                } catch (e) {
-                    console.error('Calendar refresh failed:', e);
+            setTimeout(() => {
+                if (!window.calendar) {
                     window.calendar = initializeCalendar();
+                } else {
+                    try {
+                        window.calendar.refetchEvents();
+                        window.calendar.render();
+                    } catch (e) {
+                        console.error('Calendar refresh failed:', e);
+                        window.calendar = initializeCalendar();
+                    }
                 }
-            }
+            }, 100);
         });
     // CALENDAR INITIALIZATION FUNCTION
-    function initializeCalendar() {
-        console.log('Initializing calendar...');
-        const calendarEl = document.getElementById('calendar');
+        function initializeCalendar() {
+            console.log('Initializing calendar...');
+            const calendarEl = document.getElementById('calendar');
 
-        if (!calendarEl) {
-            console.error('Calendar element not found');
-            return null;
-        }
+            if (!calendarEl) {
+                console.error('Calendar element not found');
+                return null;
+            }
 
-        // Initialize FullCalendar
-        try {
-            calendar = new FullCalendar.Calendar(calendarEl, {
-                initialView: 'dayGridMonth',
-                headerToolbar: {
-                    left: 'prev,next today',
-                    center: 'title',
-                    right: 'dayGridMonth,timeGridWeek,timeGridDay'
-                },
-                height: 'auto',
-                events: function(fetchInfo, successCallback, failureCallback) {
-                    // Load appointments via AJAX
-                    $.ajax({
-                        url: 'front_desk_appointments.php',
-                        type: 'POST',
-                        data: {
-                            action: 'getAppointmentsForCalendar'
-                        },
-                        success: function(response) {
-                            const events = response.map(appt => ({
-                                id: appt.AppointmentID.toString(),
-                                title: appt.VisitorName,
-                                start: appt.AppointmentTime,
-                                allDay: false,
-                                backgroundColor: getStatusColor(appt.Status),
-                                borderColor: getStatusColor(appt.Status),
-                                textColor: '#ffffff',
-                                extendedProps: {
-                                    status: appt.Status,
-                                    email: appt.VisitorEmail || '',
-                                    appointmentId: appt.AppointmentID,
-                                    visitorName: appt.VisitorName,
-                                    hostName: appt.HostName
-                                }
-                            }));
-                            successCallback(events);
-                        },
-                        error: function(error) {
-                            console.error('Error loading calendar events:', error);
-                            failureCallback(error);
-                        }
-                    });
-                },
-                eventDisplay: 'block',
-                displayEventTime: true,
-                displayEventEnd: false,
-                eventClick: function(info) {
-                    showCalendarAppointmentDetails(info.event);
-                },
-                eventDidMount: function(info) {
-                    // Add tooltip
-                    const tooltipTitle = `${info.event.title} - ${info.event.extendedProps.status}\nTime: ${moment(info.event.start).format('h:mm A')}\nHost: ${info.event.extendedProps.hostName}`;
-                    info.el.setAttribute('title', tooltipTitle);
-                    info.el.style.cursor = 'pointer';
-                }
-            });
-
-            calendar.render();
-            console.log('Calendar rendered successfully');
-
-        } catch (error) {
-            console.error('Calendar initialization/render failed:', error);
-            calendarEl.innerHTML = `
-                    <div class="alert alert-danger" role="alert">
-                        <h4 class="alert-heading">Calendar Error!</h4>
-                        <p>Failed to initialize calendar. Please check the console for details.</p>
-                        <hr>
-                        <p class="mb-0">Error: ${error.message}</p>
-                    </div>
-                `;
-            return null;
-        }
-
-        return calendar;
-    }
-
-    function getStatusColor(status) {
-        const statusColors = {
-            'Upcoming': '#007bff',     // Blue
-            'Ongoing': '#17a2b8',      // Info blue
-            'Completed': '#28a745',    // Green
-            'Cancelled': '#dc3545',     // Red
-            'Overdue': '#ffc107'        // Yellow
-        };
-        return statusColors[status] || '#6c757d';
-    }
-
-    // Function to show appointment details from calendar click
-    function showCalendarAppointmentDetails(event) {
-        const props = event.extendedProps;
-        const appointmentId = props.appointmentId;
-
-        const modalHtml = `
-                <div class="modal fade" id="calendarAppointmentDetailModal" tabindex="-1">
-                    <div class="modal-dialog">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title">Appointment Details</h5>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                            </div>
-                            <div class="modal-body">
-                                <p><strong>Visitor:</strong> ${props.visitorName}</p>
-                                <p><strong>Email:</strong> ${props.email}</p>
-                                <p><strong>Host:</strong> ${props.hostName}</p>
-                                <p><strong>Date & Time:</strong> ${moment(event.start).format('MMMM DD, YYYY [at] h:mm A')}</p>
-                                <p><strong>Status:</strong> <span class="badge bg-${getStatusBadgeClass(props.status)}">${props.status}</span></p>
-                            </div>
-                            <div class="modal-footer">
-                                ${getCalendarActionButtons(appointmentId, props.status)}
-                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            try {
+                const calendar = new FullCalendar.Calendar(calendarEl, {
+                    initialView: 'dayGridMonth',
+                    headerToolbar: {
+                        left: 'prev,next today',
+                        center: 'title',
+                        right: 'dayGridMonth,timeGridWeek,timeGridDay'
+                    },
+                    height: 'auto',
+                    events: function(fetchInfo, successCallback, failureCallback) {
+                        $.ajax({
+                            url: 'front_desk_appointments.php',
+                            type: 'POST',
+                            data: {
+                                action: 'getAppointmentsForCalendar'
+                            },
+                            success: function(response) {
+                                successCallback(response);
+                            },
+                            error: function(error) {
+                                console.error('Error loading calendar events:', error);
+                                failureCallback(error);
+                            }
+                        });
+                    },
+                    eventClick: function(info) {
+                        const event = info.event;
+                        const modalHtml = `
+                    <div class="modal fade" id="calendarEventModal" tabindex="-1">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title">Appointment Details</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <p><strong>Visitor:</strong> ${event.extendedProps.visitorName}</p>
+                                    <p><strong>Host:</strong> ${event.extendedProps.hostName}</p>
+                                    <p><strong>Time:</strong> ${event.start.toLocaleString()}</p>
+                                    <p><strong>Status:</strong> <span class="badge bg-${getStatusBadgeClass(event.extendedProps.status)}">${event.extendedProps.status}</span></p>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                    ${getActionButtons(event.id, event.extendedProps.status)}
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-            `;
-
-        $('#calendarAppointmentDetailModal').remove();
-        $('body').append(modalHtml);
-        $('#calendarAppointmentDetailModal').modal('show');
-    }
-
-    function getStatusBadgeClass(status) {
-        const classes = {
-            'Cancelled': 'danger',
-            'Ongoing': 'info',
-            'Upcoming': 'primary',
-            'Completed': 'success',
-            'Overdue': 'warning'
-        };
-        return classes[status] || 'secondary';
-    }
-
-    function getCalendarActionButtons(appointmentId, status) {
-        let buttons = '';
-
-        if (status === 'Upcoming' || status === 'Overdue') {
-            buttons += `
-                    <button class="btn btn-success btn-sm check-in-calendar-btn" data-id="${appointmentId}">
-                        <i class="fas fa-check-circle me-1"></i> Check In
-                    </button>
-                    <button class="btn btn-primary btn-sm reschedule-calendar-btn" data-id="${appointmentId}">
-                        <i class="fas fa-calendar-alt me-1"></i> Reschedule
-                    </button>
-                    <button class="btn btn-danger btn-sm cancel-calendar-btn" data-id="${appointmentId}">
-                        <i class="fas fa-times me-1"></i> Cancel
-                    </button>
                 `;
-        } else if (status === 'Ongoing') {
-            buttons += `
-                    <button class="btn btn-warning btn-sm complete-calendar-btn" data-id="${appointmentId}">
-                        <i class="fas fa-stop me-1"></i> Complete
-                    </button>
-                `;
+
+                        $('#calendarEventModal').remove();
+                        $('body').append(modalHtml);
+                        $('#calendarEventModal').modal('show');
+                    },
+                    eventDidMount: function(info) {
+                        // Add tooltip
+                        $(info.el).tooltip({
+                            title: `${info.event.title}\nStatus: ${info.event.extendedProps.status}\nClick for details`,
+                            placement: 'top',
+                            trigger: 'hover'
+                        });
+                    }
+                });
+
+                calendar.render();
+                return calendar;
+            } catch (error) {
+                console.error('Calendar initialization failed:', error);
+                return null;
+            }
         }
 
-        return buttons;
-    }
+        function getStatusBadgeClass(status) {
+            const classes = {
+                'Cancelled': 'danger',
+                'Ongoing': 'info',
+                'Upcoming': 'primary',
+                'Completed': 'success',
+                'Overdue': 'warning'
+            };
+            return classes[status] || 'secondary';
+        }
+
+        function getActionButtons(appointmentId, status) {
+            let buttons = '';
+
+            if (status === 'Upcoming' || status === 'Overdue') {
+                buttons += `
+            <button class="btn btn-sm btn-success check-in-btn" data-id="${appointmentId}">
+                <i class="fas fa-check-circle me-1"></i> Check In
+            </button>
+            <button class="btn btn-sm btn-primary reschedule-btn" data-id="${appointmentId}">
+                <i class="fas fa-calendar-alt me-1"></i> Reschedule
+            </button>
+            <button class="btn btn-sm btn-danger cancel-btn" data-id="${appointmentId}">
+                <i class="fas fa-times me-1"></i> Cancel
+            </button>
+        `;
+            } else if (status === 'Ongoing') {
+                buttons += `
+            <button class="btn btn-sm btn-warning complete-btn" data-id="${appointmentId}">
+                <i class="fas fa-stop me-1"></i> Complete
+            </button>
+        `;
+            }
+
+            return buttons;
+        }
 
     // CALENDAR FILTER FUNCTIONALITY
     $(document).on('change', '.input-filter', function() {
@@ -1705,81 +1588,26 @@ function checkTimeConflict($hostId, $appointmentTime, $excludeAppointmentId = nu
     }, 300);
 
     // Button handlers for calendar modal
-    $(document).on('click', '.check-in-calendar-btn', function() {
-        const appointmentId = $(this).data('id');
-        $('#calendarAppointmentDetailModal').modal('hide');
+        // Handle action buttons in calendar modal
+        $(document).on('click', '.check-in-btn, .reschedule-btn, .cancel-btn, .complete-btn', function() {
+            const appointmentId = $(this).data('id');
+            const action = $(this).hasClass('check-in-btn') ? 'checkIn' :
+                $(this).hasClass('reschedule-btn') ? 'reschedule' :
+                    $(this).hasClass('cancel-btn') ? 'cancel' : 'complete';
 
-        $.ajax({
-            url: 'front_desk_appointments.php',
-            type: 'POST',
-            data: {
-                action: 'getAppointmentDetails',
-                appointmentId: appointmentId
-            },
-            success: function(response) {
-                if (response) {
-                    $('#checkInAppointmentId').val(appointmentId);
-                    $('#checkInVisitorId').val(response.VisitorID);
-                    $('#checkInVisitorName').text(response.VisitorName);
-                    $('#checkInVisitorEmail').text(response.VisitorEmail);
-                    $('#checkInHostName').text(response.HostName);
-                    $('#checkInAppointmentTime').text(new Date(response.AppointmentTime).toLocaleString());
-                    $('#visitorCheckInModal').modal('show');
-                }
+            $('#calendarEventModal').modal('hide');
+
+            // Handle each action appropriately
+            if (action === 'checkIn') {
+                // Show check-in modal
+            } else if (action === 'reschedule') {
+                // Show reschedule modal
+            } else if (action === 'cancel') {
+                // Show cancel modal
+            } else if (action === 'complete') {
+                // Handle completion
             }
         });
-    });
-
-    $(document).on('click', '.reschedule-calendar-btn', function() {
-        const appointmentId = $(this).data('id');
-        $('#calendarAppointmentDetailModal').modal('hide');
-
-        $.ajax({
-            url: 'front_desk_appointments.php',
-            type: 'POST',
-            data: {
-                action: 'getAppointmentDetails',
-                appointmentId: appointmentId
-            },
-            success: function(response) {
-                if (response) {
-                    $('#rescheduleAppointmentId').val(appointmentId);
-                    $('#rescheduleVisitorName').text(response.VisitorName);
-                    $('#rescheduleHostName').text(response.HostName);
-                    $('#rescheduleHostId').val(response.HostID);
-                    $('#rescheduleModal').modal('show');
-                }
-            }
-        });
-    });
-
-    $(document).on('click', '.cancel-calendar-btn', function() {
-        const appointmentId = $(this).data('id');
-        $('#calendarAppointmentDetailModal').modal('hide');
-        $('#cancelModal').data('appointmentId', appointmentId).modal('show');
-    });
-
-    $(document).on('click', '.complete-calendar-btn', function() {
-        const appointmentId = $(this).data('id');
-        if (confirm('Are you sure you want to mark this appointment as completed?')) {
-            $.ajax({
-                url: 'front_desk_appointments.php',
-                type: 'POST',
-                data: {
-                    action: 'completeAppointment',
-                    appointmentId: appointmentId
-                },
-                success: function(response) {
-                    if (response.success) {
-                        alert('Appointment marked as completed');
-                        location.reload();
-                    } else {
-                        alert('Error: ' + response.message);
-                    }
-                }
-            });
-        }
-    });
 
 
 

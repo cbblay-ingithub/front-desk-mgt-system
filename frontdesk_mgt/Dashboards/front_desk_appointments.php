@@ -259,6 +259,17 @@ function processNextInQueue($hostId) {
         return ["success" => false, "message" => $e->getMessage()];
     }
 }
+function getStatusColor($status) {
+    return match ($status) {
+        'Upcoming' => '#007bff',
+        'Ongoing' => '#17a2b8',
+        'Completed' => '#28a745',
+        'Cancelled' => '#dc3545',
+        'Overdue' => '#ffc107',
+        default => '#6c757d',
+    };
+}
+
 
 // AJAX handling
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -727,6 +738,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             $result = processNextInQueue($_POST['hostId']);
             echo json_encode($result);
+            break;
+        case 'getAppointmentsForCalendar':
+            $appointments = getAllAppointments();
+            $calendarEvents = array();
+
+            foreach ($appointments as $appointment) {
+                $calendarEvents[] = array(
+                    'id' => $appointment['AppointmentID'],
+                    'title' => $appointment['VisitorName'] . ' with ' . $appointment['HostName'],
+                    'start' => $appointment['AppointmentTime'],
+                    'allDay' => false,
+                    'color' => getStatusColor($appointment['Status']),
+                    'extendedProps' => array(
+                        'status' => $appointment['Status'],
+                        'visitorName' => $appointment['VisitorName'],
+                        'hostName' => $appointment['HostName'],
+                        'email' => $appointment['VisitorEmail']
+                    )
+                );
+            }
+
+            echo json_encode($calendarEvents);
             break;
 
         default:
