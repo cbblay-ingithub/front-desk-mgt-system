@@ -808,101 +808,256 @@ $conn->close();
                         </div>
                     <?php endif; ?>
                 </div>
-                    <!-- Front Desk Reports Tab -->
-                    <div class="tab-pane fade <?= $activeTab === 'frontdesk' ? 'show active' : '' ?>" id="frontdeskTab">
-                        <?php if ($activeTab === 'frontdesk') : ?>
-                    <!-- Team Metrics -->
-                    <div class="report-card card">
-                        <div class="report-header card-header">
-                            <h3>Front Desk Team Reports</h3>
-                            <form method="POST" action="generate_report.php" style="display: inline;">
-                                <input type="hidden" name="report_type" value="frontdesk">
-                                <input type="hidden" name="start_date" value="<?= $startDate ?>">
-                                <input type="hidden" name="end_date" value="<?= $endDate ?>">
-                                <button type="submit" class="btn btn-light btn-sm">
-                                    <i class="fas fa-file-pdf me-1"></i> Export PDF
-                                </button>
-                            </form>
-                        </div>
-                        <div class="card-body">
-                            <div class="row">
-                                <div class="col-md-3"><div class="metric-card"><h5>Appointments</h5><div class="metric-value"><?= $teamReports['scheduling_metrics']['total_appointments'] ?? 0 ?></div></div></div>
-                                <div class="col-md-3"><div class="metric-card"><h5>Avg. Check-In Time</h5><div class="metric-value"><?= $teamReports['visitor_metrics']['avg_checkin_time'] ? round($teamReports['visitor_metrics']['avg_checkin_time']) : 'N/A' ?> mins</div></div></div>
-                                <div class="col-md-3"><div class="metric-card"><h5>Visitors Checked In</h5><div class="metric-value"><?= $teamReports['visitor_metrics']['visitors_checked_in'] ?? 0 ?></div></div></div>
-                                <div class="col-md-3"><div class="metric-card"><h5>Peak Hour</h5><div class="metric-value"><?= $teamReports['peak_hour'] ? $teamReports['peak_hour'] . ':00' : 'N/A' ?></div></div></div>
+                <!-- Front Desk Reports Tab -->
+                <div class="tab-pane fade <?= $activeTab === 'frontdesk' ? 'show active' : '' ?>" id="frontdeskTab">
+                    <?php if ($activeTab === 'frontdesk') : ?>
+                        <!-- Team Metrics -->
+                        <div class="card">
+                            <div class="card-header d-flex align-items-center justify-content-between">
+                                <div class="card-title mb-0">
+                                    <h5 class="m-0 me-2">Front Desk Performance Overview</h5>
+                                    <p class="card-subtitle">Key metrics for front desk operations</p>
+                                </div>
+                                <div class="dropdown">
+                                    <button class="btn p-0" type="button" id="frontDeskDropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        <i class="icon-base bx bx-dots-vertical-rounded icon-lg text-body-secondary"></i>
+                                    </button>
+                                    <div class="dropdown-menu dropdown-menu-end" aria-labelledby="frontDeskDropdown">
+                                        <a class="dropdown-item" href="javascript:void(0);">Last 30 Days</a>
+                                        <a class="dropdown-item" href="javascript:void(0);">Last Quarter</a>
+                                        <a class="dropdown-item" href="javascript:void(0);">Last Year</a>
+                                    </div>
+                                </div>
+                                <form method="POST" action="generate_report.php" style="display: inline;">
+                                    <input type="hidden" name="report_type" value="frontdesk">
+                                    <input type="hidden" name="start_date" value="<?= $startDate ?>">
+                                    <input type="hidden" name="end_date" value="<?= $endDate ?>">
+                                    <button type="submit" class="btn btn-light btn-sm">
+                                        <i class="fas fa-file-pdf me-1"></i> Export PDF
+                                    </button>
+                                </form>
                             </div>
 
-                            <!-- Client Metrics -->
-                            <div class="row mt-3">
-                                <div class="col-md-6">
-                                    <div class="metric-card">
-                                        <h5>Client Types</h5>
-                                        <?php
-                                        $newClients = $teamReports['client_metrics']['new_clients'] ?? 0;
-                                        $returningClients = $teamReports['client_metrics']['returning_clients'] ?? 0;
-                                        $totalClients = $newClients + $returningClients;
-                                        $newPercentage = $totalClients > 0 ? round(($newClients / $totalClients) * 100) : 0;
-                                        $returningPercentage = $totalClients > 0 ? round(($returningClients / $totalClients) * 100) : 0;
-                                        ?>
-                                        <div class="d-flex align-items-center mb-3">
-                                            <div class="me-3">
-                                                <span class="d-block fw-bold"><?= $newClients ?></span>
-                                                <small>New Clients</small>
-                                            </div>
-                                            <div class="progress flex-grow-1" style="height: 20px;">
-                                                <div class="progress-bar bg-success" role="progressbar" style="width: <?= $newPercentage ?>%" aria-valuenow="<?= $newPercentage ?>" aria-valuemin="0" aria-valuemax="100"></div>
-                                            </div>
-                                            <div class="ms-3 text-end">
-                                                <span class="d-block fw-bold"><?= $newPercentage ?>%</span>
+                            <div class="card-body">
+                                <div class="row">
+                                    <!-- Total Appointments -->
+                                    <div class="col-md-6 col-xl-3 mb-4">
+                                        <div class="metric-card">
+                                            <div class="d-flex justify-content-between align-items-center">
+                                                <div>
+                                                    <h5 class="mb-1">Appointments</h5>
+                                                    <div class="metric-value"><?= $teamReports['scheduling_metrics']['total_appointments'] ?? 0 ?></div>
+                                                    <small class="text-success">+2.4% from last period</small>
+                                                </div>
+                                                <div class="avatar">
+                                    <span class="avatar-initial rounded bg-label-primary">
+                                        <i class="icon-base bx bx-calendar icon-lg"></i>
+                                    </span>
+                                                </div>
                                             </div>
                                         </div>
-                                        <div class="d-flex align-items-center">
-                                            <div class="me-3">
-                                                <span class="d-block fw-bold"><?= $returningClients ?></span>
-                                                <small>Returning Clients</small>
+                                    </div>
+
+                                    <!-- Completed Appointments -->
+                                    <div class="col-md-6 col-xl-3 mb-4">
+                                        <div class="metric-card">
+                                            <div class="d-flex justify-content-between align-items-center">
+                                                <div>
+                                                    <h5 class="mb-1">Completed</h5>
+                                                    <div class="metric-value"><?= $teamReports['scheduling_metrics']['completed'] ?? 0 ?></div>
+                                                    <small class="text-success">+5.1% from last period</small>
+                                                </div>
+                                                <div class="avatar">
+                                    <span class="avatar-initial rounded bg-label-success">
+                                        <i class="icon-base bx bx-check-circle icon-lg"></i>
+                                    </span>
+                                                </div>
                                             </div>
-                                            <div class="progress flex-grow-1" style="height: 20px;">
-                                                <div class="progress-bar bg-info" role="progressbar" style="width: <?= $returningPercentage ?>%" aria-valuenow="<?= $returningPercentage ?>" aria-valuemin="0" aria-valuemax="100"></div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Check-In Time -->
+                                    <div class="col-md-6 col-xl-3 mb-4">
+                                        <div class="metric-card">
+                                            <div class="d-flex justify-content-between align-items-center">
+                                                <div>
+                                                    <h5 class="mb-1">Avg Check-In</h5>
+                                                    <div class="metric-value"><?= $teamReports['visitor_metrics']['avg_checkin_time'] ? round($teamReports['visitor_metrics']['avg_checkin_time']) : 'N/A' ?> min</div>
+                                                    <small class="text-danger">-1.2 min from last period</small>
+                                                </div>
+                                                <div class="avatar">
+                                    <span class="avatar-initial rounded bg-label-info">
+                                        <i class="icon-base bx bx-time-five icon-lg"></i>
+                                    </span>
+                                                </div>
                                             </div>
-                                            <div class="ms-3 text-end">
-                                                <span class="d-block fw-bold"><?= $returningPercentage ?>%</span>
+                                        </div>
+                                    </div>
+
+                                    <!-- Peak Hour -->
+                                    <div class="col-md-6 col-xl-3 mb-4">
+                                        <div class="metric-card">
+                                            <div class="d-flex justify-content-between align-items-center">
+                                                <div>
+                                                    <h5 class="mb-1">Peak Hour</h5>
+                                                    <div class="metric-value"><?= $teamReports['peak_hour'] ? $teamReports['peak_hour'] . ':00' : 'N/A' ?></div>
+                                                    <small>Most active time</small>
+                                                </div>
+                                                <div class="avatar">
+                                    <span class="avatar-initial rounded bg-label-warning">
+                                        <i class="icon-base bx bx-trending-up icon-lg"></i>
+                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Client Metrics Row -->
+                                <div class="row mt-4">
+                                    <div class="col-md-6 mb-4">
+                                        <div class="metric-card h-100">
+                                            <h5 class="mb-3">Client Types</h5>
+                                            <?php
+                                            $newClients = $teamReports['client_metrics']['new_clients'] ?? 0;
+                                            $returningClients = $teamReports['client_metrics']['returning_clients'] ?? 0;
+                                            $totalClients = $newClients + $returningClients;
+                                            $newPercentage = $totalClients > 0 ? round(($newClients / $totalClients) * 100) : 0;
+                                            $returningPercentage = $totalClients > 0 ? round(($returningClients / $totalClients) * 100) : 0;
+                                            ?>
+                                            <div class="d-flex align-items-center mb-3">
+                                                <div class="me-3">
+                                                    <span class="badge bg-label-primary me-2"><?= $newClients ?></span>
+                                                    <span>New Clients</span>
+                                                </div>
+                                                <div class="progress flex-grow-1" style="height: 10px;">
+                                                    <div class="progress-bar bg-primary" role="progressbar" style="width: <?= $newPercentage ?>%" aria-valuenow="<?= $newPercentage ?>" aria-valuemin="0" aria-valuemax="100"></div>
+                                                </div>
+                                                <div class="ms-3 text-end">
+                                                    <span class="fw-medium"><?= $newPercentage ?>%</span>
+                                                </div>
+                                            </div>
+                                            <div class="d-flex align-items-center">
+                                                <div class="me-3">
+                                                    <span class="badge bg-label-success me-2"><?= $returningClients ?></span>
+                                                    <span>Returning Clients</span>
+                                                </div>
+                                                <div class="progress flex-grow-1" style="height: 10px;">
+                                                    <div class="progress-bar bg-success" role="progressbar" style="width: <?= $returningPercentage ?>%" aria-valuenow="<?= $returningPercentage ?>" aria-valuemin="0" aria-valuemax="100"></div>
+                                                </div>
+                                                <div class="ms-3 text-end">
+                                                    <span class="fw-medium"><?= $returningPercentage ?>%</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-6 mb-4">
+                                        <div class="metric-card h-100">
+                                            <h5 class="mb-3">Appointment Status</h5>
+                                            <div class="d-flex justify-content-between mb-2">
+                                                <span>Completed</span>
+                                                <span class="fw-medium"><?= $teamReports['scheduling_metrics']['completed'] ?? 0 ?></span>
+                                            </div>
+                                            <div class="progress mb-3" style="height: 10px;">
+                                                <div class="progress-bar bg-success" role="progressbar"
+                                                     style="width: <?= $teamReports['scheduling_metrics']['total_appointments'] > 0 ? round(($teamReports['scheduling_metrics']['completed'] / $teamReports['scheduling_metrics']['total_appointments']) * 100) : 0 ?>%"
+                                                     aria-valuenow="<?= $teamReports['scheduling_metrics']['completed'] ?>"
+                                                     aria-valuemin="0"
+                                                     aria-valuemax="<?= $teamReports['scheduling_metrics']['total_appointments'] ?>">
+                                                </div>
+                                            </div>
+
+                                            <div class="d-flex justify-content-between mb-2">
+                                                <span>Cancelled</span>
+                                                <span class="fw-medium"><?= $teamReports['scheduling_metrics']['cancelled'] ?? 0 ?></span>
+                                            </div>
+                                            <div class="progress" style="height: 10px;">
+                                                <div class="progress-bar bg-danger" role="progressbar"
+                                                     style="width: <?= $teamReports['scheduling_metrics']['total_appointments'] > 0 ? round(($teamReports['scheduling_metrics']['cancelled'] / $teamReports['scheduling_metrics']['total_appointments']) * 100) : 0 ?>%"
+                                                     aria-valuenow="<?= $teamReports['scheduling_metrics']['cancelled'] ?>"
+                                                     aria-valuemin="0"
+                                                     aria-valuemax="<?= $teamReports['scheduling_metrics']['total_appointments'] ?>">
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
 
-                    <!-- Individual Performance Cards -->
-                    <div class="report-card card">
-                        <div class="report-header card-header"><h3>Individual Front Desk Performance</h3></div>
-                        <div class="card-body">
-                            <div class="row">
-                                <?php if (empty($users)): ?>
-                                    <p>No front desk staff available or no data found.</p>
-                                <?php else: ?>
-                                    <?php foreach ($users as $user): $metrics = $individualReports[$user['UserID']]; ?>
-                                        <div class="col-md-4">
-                                            <div class="metric-card">
-                                                <h5><?= $user['Name'] ?></h5>
-                                                <p>Appointments Scheduled: <strong><?= $metrics['total_appointments_scheduled'] ?? 0 ?></strong></p>
-                                                <p>Avg. Check-In Time: <strong><?= $metrics['avg_checkin_time'] !== null ? round($metrics['avg_checkin_time'], 2) : 'N/A' ?> mins</strong></p>
-                                                <p>Error/Re-correction Rate: <strong><?= $metrics['error_rate'] ?? 0 ?>%</strong></p>
-                                                <p>Call Handling:</p>
-                                                <ul>
-                                                    <li>Total Calls: <strong><?= $metrics['call_metrics']['total_calls'] ?? 0 ?></strong></li>
-                                                    <li>Avg. Duration: <strong><?= $metrics['call_metrics']['avg_duration'] ?? 0 ?> mins</strong></li>
-                                                    <li>Resolution Rate: <strong><?= $metrics['call_metrics']['resolution_rate'] ?? 0 ?>%</strong></li>
-                                                </ul>
-                                            </div>
+                        <!-- Individual Performance Cards -->
+                        <div class="card">
+                            <div class="card-header d-flex align-items-center justify-content-between">
+                                <h5 class="card-title m-0 me-2">Individual Staff Performance</h5>
+                                <div class="dropdown">
+                                    <button class="btn p-0" type="button" id="staffPerformanceDropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        <i class="icon-base bx bx-dots-vertical-rounded icon-lg text-body-secondary"></i>
+                                    </button>
+                                    <div class="dropdown-menu dropdown-menu-end" aria-labelledby="staffPerformanceDropdown">
+                                        <a class="dropdown-item" href="javascript:void(0);">Export as PDF</a>
+                                        <a class="dropdown-item" href="javascript:void(0);">Export as CSV</a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <?php if (empty($users)): ?>
+                                        <div class="col-12">
+                                            <div class="alert alert-info">No front desk staff available or no data found.</div>
                                         </div>
-                                    <?php endforeach; ?>
-                                <?php endif; ?>
+                                    <?php else: ?>
+                                        <?php foreach ($users as $user): $metrics = $individualReports[$user['UserID']]; ?>
+                                            <div class="col-md-6 col-xl-4 mb-4">
+                                                <div class="metric-card h-100">
+                                                    <div class="d-flex justify-content-between align-items-center mb-3">
+                                                        <h5 class="mb-0"><?= $user['Name'] ?></h5>
+                                                        <span class="badge bg-label-primary">Front Desk</span>
+                                                    </div>
+
+                                                    <div class="mb-3">
+                                                        <div class="d-flex justify-content-between mb-1">
+                                                            <span>Appointments Scheduled</span>
+                                                            <span class="fw-medium"><?= $metrics['total_appointments_scheduled'] ?? 0 ?></span>
+                                                        </div>
+                                                        <div class="progress" style="height: 6px;">
+                                                            <div class="progress-bar bg-primary" role="progressbar" style="width: <?= min(100, ($metrics['total_appointments_scheduled'] / ($teamReports['scheduling_metrics']['total_appointments'] ?? 1) * 100)) ?>%"></div>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="mb-3">
+                                                        <div class="d-flex justify-content-between mb-1">
+                                                            <span>Avg Check-In Time</span>
+                                                            <span class="fw-medium"><?= $metrics['avg_checkin_time'] !== null ? round($metrics['avg_checkin_time'], 1) : 'N/A' ?> min</span>
+                                                        </div>
+                                                        <div class="progress" style="height: 6px;">
+                                                            <div class="progress-bar bg-<?= ($metrics['avg_checkin_time'] ?? 0) < 10 ? 'success' : (($metrics['avg_checkin_time'] ?? 0) < 20 ? 'warning' : 'danger') ?>"
+                                                                 role="progressbar"
+                                                                 style="width: <?= min(100, ($metrics['avg_checkin_time'] ?? 0) * 5) ?>%">
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <div>
+                                                        <div class="d-flex justify-content-between mb-1">
+                                                            <span>Error Rate</span>
+                                                            <span class="fw-medium"><?= $metrics['error_rate'] ?? 0 ?>%</span>
+                                                        </div>
+                                                        <div class="progress" style="height: 6px;">
+                                                            <div class="progress-bar bg-<?= ($metrics['error_rate'] ?? 0) < 5 ? 'success' : (($metrics['error_rate'] ?? 0) < 15 ? 'warning' : 'danger') ?>"
+                                                                 role="progressbar"
+                                                                 style="width: <?= $metrics['error_rate'] ?? 0 ?>%">
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        <?php endforeach; ?>
+                                    <?php endif; ?>
+                                </div>
                             </div>
                         </div>
-                        <?php endif; ?>
-                    </div>
+                    <?php endif; ?>
                 </div>
         </div>
     </div>
@@ -910,8 +1065,8 @@ $conn->close();
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/apexcharts@3.35.0/dist/apexcharts.min.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/apexcharts@3.35.0/dist/apexcharts.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
 <script>
     $(document).ready(function() {
         // Real-time status update for current admin (from user_management.php)
@@ -1117,6 +1272,89 @@ $conn->close();
         var categoryChart = new ApexCharts(document.querySelector("#categoryBreakdownChart"), categoryOptions);
         categoryChart.render();
         <?php endif; ?>
+    });
+    // Initialize charts when the tab is shown
+    document.addEventListener('DOMContentLoaded', function() {
+        // Client Type Pie Chart
+        if (document.getElementById('clientTypeChart')) {
+            var clientTypeOptions = {
+                series: [<?= $newPercentage ?>, <?= $returningPercentage ?>],
+                chart: {
+                    type: 'donut',
+                    height: 300
+                },
+                labels: ['New Clients', 'Returning Clients'],
+                colors: ['#696cff', '#71dd37'],
+                responsive: [{
+                    breakpoint: 480,
+                    options: {
+                        chart: {
+                            width: 200
+                        },
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }]
+            };
+
+            var clientTypeChart = new ApexCharts(document.getElementById("clientTypeChart"), clientTypeOptions);
+            clientTypeChart.render();
+        }
+
+        // Appointment Status Chart
+        if (document.getElementById('appointmentStatusChart')) {
+            var statusOptions = {
+                series: [{
+                    name: 'Completed',
+                    data: [<?= $teamReports['scheduling_metrics']['completed'] ?? 0 ?>]
+                }, {
+                    name: 'Cancelled',
+                    data: [<?= $teamReports['scheduling_metrics']['cancelled'] ?? 0 ?>]
+                }],
+                chart: {
+                    type: 'bar',
+                    height: 300,
+                    stacked: true,
+                    toolbar: {
+                        show: false
+                    }
+                },
+                plotOptions: {
+                    bar: {
+                        horizontal: false,
+                        borderRadius: 4,
+                        columnWidth: '50%',
+                    },
+                },
+                colors: ['#71dd37', '#ff3e1d'],
+                dataLabels: {
+                    enabled: false
+                },
+                xaxis: {
+                    categories: ['Appointments'],
+                    axisBorder: {
+                        show: false
+                    },
+                    axisTicks: {
+                        show: false
+                    }
+                },
+                yaxis: {
+                    show: false
+                },
+                legend: {
+                    position: 'top',
+                    horizontalAlign: 'left'
+                },
+                grid: {
+                    show: false
+                }
+            };
+
+            var statusChart = new ApexCharts(document.getElementById("appointmentStatusChart"), statusOptions);
+            statusChart.render();
+        }
     });
 </script>
 </body>
