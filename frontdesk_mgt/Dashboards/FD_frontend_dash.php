@@ -1448,21 +1448,342 @@ function checkTimeConflict($hostId, $appointmentTime, $excludeAppointmentId = nu
         });
 
         $('#listViewBtn').click(function() {
-            $(this).addClass('active');
-            $('#calendarViewBtn').removeClass('active');
+            $(this).addClass('active').removeClass('btn-outline-primary').addClass('btn-primary');
+            $('#calendarViewBtn').removeClass('active').removeClass('btn-primary').addClass('btn-outline-primary');
             $('#list-view').addClass('show active');
             $('#calendar-view').removeClass('show active');
         });
 
         $('#calendarViewBtn').click(function() {
-            $(this).addClass('active');
-            $('#listViewBtn').removeClass('active');
+            $(this).addClass('active').removeClass('btn-outline-primary').addClass('btn-primary');
+            $('#listViewBtn').removeClass('active').removeClass('btn-primary').addClass('btn-outline-primary');
             $('#calendar-view').addClass('show active');
             $('#list-view').removeClass('show active');
-            renderCalendar(new Date());
-        });
 
-        // Search and filter handlers
+            // Initialize calendar if not already done
+            if (!window.calendar) {
+                window.calendar = initializeCalendar();
+            } else {
+                try {
+                    window.calendar.refetchEvents();
+                    window.calendar.render();
+                } catch (e) {
+                    console.error('Calendar refresh failed:', e);
+                    window.calendar = initializeCalendar();
+                }
+            }
+        });
+    // CALENDAR INITIALIZATION FUNCTION
+    function initializeCalendar() {
+        console.log('Initializing calendar...');
+        const calendarEl = document.getElementById('calendar');
+
+        if (!calendarEl) {
+            console.error('Calendar element not found');
+            return null;
+        }
+
+        // Initialize FullCalendar
+        try {
+            calendar = new FullCalendar.Calendar(calendarEl, {
+                initialView: 'dayGridMonth',
+                headerToolbar: {
+                    left: 'prev,next today',
+                    center: 'title',
+                    right: 'dayGridMonth,timeGridWeek,timeGridDay'
+                },
+                height: 'auto',
+                events: function(fetchInfo, successCallback, failureCallback) {
+                    // Load appointments via AJAX
+                    $.ajax({
+                        url: 'front_desk_appointments.php',
+                        type: 'POST',
+                        data: {
+                            action: 'getAppointmentsForCalendar'
+                        },
+                        success: function(response) {
+                            const events = response.map(appt => ({
+                                id: appt.AppointmentID.toString(),
+                                title: appt.VisitorName,
+                                start: appt.AppointmentTime,
+                                allDay: false,
+                                backgroundColor: getStatusColor(appt.Status),
+                                borderColor: getStatusColor(appt.Status),
+                                textColor: '#ffffff',
+                                extendedProps: {
+                                    status: appt.Status,
+                                    email: appt.VisitorEmail || '',
+                                    appointmentId: appt.AppointmentID,
+                                    visitorName: appt.VisitorName,
+                                    hostName: appt.HostName
+                                }
+                            }));
+                            successCallback(events);
+                        },
+                        error: function(error) {
+                            console.error('Error loading calendar events:', error);
+                            failureCallback(error);
+                        }
+                    });
+                },
+                eventDisplay: 'block',
+                displayEventTime: true,
+                displayEventEnd: false,
+                eventClick: function(info) {
+                    showCalendarAppointmentDetails(info.event);
+                },
+                eventDidMount: function(info) {
+                    // Add tooltip
+                    const tooltipTitle = `${info.event.title} - ${info.event.extendedProps.status}\nTime: ${moment(info.event.start).format('h:mm A')}\nHost: ${info.event.extendedProps.hostName}`;
+                    info.el.setAttribute('title', tooltipTitle);
+                    info.el.style.cursor = 'pointer';
+                }
+            });
+
+            calendar.render();
+            console.log('Calendar rendered successfully');
+
+        } catch (error) {
+            console.error('Calendar initialization/render failed:', error);
+            calendarEl.innerHTML = `
+                    <div class="alert alert-danger" role="alert">
+                        <h4 class="alert-heading">Calendar Error!</h4>
+                        <p>Failed to initialize calendar. Please check the console for details.</p>
+                        <hr>
+                        <p class="mb-0">Error: ${error.message}</p>
+                    </div>
+                `;
+            return null;
+        }
+
+        return calendar;
+    }
+
+    function getStatusColor(status) {
+        const statusColors = {
+            'Upcoming': '#007bff',     // Blue
+            'Ongoing': '#17a2b8',      // Info blue
+            'Completed': '#28a745',    // Green
+            'Cancelled': '#dc3545',     // Red
+            'Overdue': '#ffc107'        // Yellow
+        };
+        return statusColors[status] || '#6c757d';
+    }
+
+    // Function to show appointment details from calendar click
+    function showCalendarAppointmentDetails(event) {
+        const props = event.extendedProps;
+        const appointmentId = props.appointmentId;
+
+        const modalHtml = `
+                <div class="modal fade" id="calendarAppointmentDetailModal" tabindex="-1">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Appointment Details</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                            </div>
+                            <div class="modal-body">
+                                <p><strong>Visitor:</strong> ${props.visitorName}</p>
+                                <p><strong>Email:</strong> ${props.email}</p>
+                                <p><strong>Host:</strong> ${props.hostName}</p>
+                                <p><strong>Date & Time:</strong> ${moment(event.start).format('MMMM DD, YYYY [at] h:mm A')}</p>
+                                <p><strong>Status:</strong> <span class="badge bg-${getStatusBadgeClass(props.status)}">${props.status}</span></p>
+                            </div>
+                            <div class="modal-footer">
+                                ${getCalendarActionButtons(appointmentId, props.status)}
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+        $('#calendarAppointmentDetailModal').remove();
+        $('body').append(modalHtml);
+        $('#calendarAppointmentDetailModal').modal('show');
+    }
+
+    function getStatusBadgeClass(status) {
+        const classes = {
+            'Cancelled': 'danger',
+            'Ongoing': 'info',
+            'Upcoming': 'primary',
+            'Completed': 'success',
+            'Overdue': 'warning'
+        };
+        return classes[status] || 'secondary';
+    }
+
+    function getCalendarActionButtons(appointmentId, status) {
+        let buttons = '';
+
+        if (status === 'Upcoming' || status === 'Overdue') {
+            buttons += `
+                    <button class="btn btn-success btn-sm check-in-calendar-btn" data-id="${appointmentId}">
+                        <i class="fas fa-check-circle me-1"></i> Check In
+                    </button>
+                    <button class="btn btn-primary btn-sm reschedule-calendar-btn" data-id="${appointmentId}">
+                        <i class="fas fa-calendar-alt me-1"></i> Reschedule
+                    </button>
+                    <button class="btn btn-danger btn-sm cancel-calendar-btn" data-id="${appointmentId}">
+                        <i class="fas fa-times me-1"></i> Cancel
+                    </button>
+                `;
+        } else if (status === 'Ongoing') {
+            buttons += `
+                    <button class="btn btn-warning btn-sm complete-calendar-btn" data-id="${appointmentId}">
+                        <i class="fas fa-stop me-1"></i> Complete
+                    </button>
+                `;
+        }
+
+        return buttons;
+    }
+
+    // CALENDAR FILTER FUNCTIONALITY
+    $(document).on('change', '.input-filter', function() {
+        console.log('Calendar filter changed');
+        if (calendar && typeof calendar.getEvents === 'function') {
+            updateCalendarFilters();
+        }
+    });
+
+    $(document).on('change', '.select-all', function() {
+        const isChecked = $(this).is(':checked');
+        $('.input-filter').prop('checked', isChecked);
+        if (calendar && typeof calendar.getEvents === 'function') {
+            updateCalendarFilters();
+        }
+    });
+
+    function updateCalendarFilters() {
+        if (!calendar || typeof calendar.getEvents !== 'function') {
+            console.warn('Calendar not available for filtering');
+            return;
+        }
+
+        const checkedFilters = $('.input-filter:checked').map(function() {
+            return $(this).data('value');
+        }).get();
+
+        console.log('Applying calendar filters:', checkedFilters);
+
+        const events = calendar.getEvents();
+        console.log('Total events to filter:', events.length);
+
+        events.forEach(function(event) {
+            const status = event.extendedProps.status.toLowerCase();
+            const shouldShow = checkedFilters.includes(status) || checkedFilters.includes('all');
+
+            console.log(`Event: ${event.title}, Status: ${status}, Show: ${shouldShow}`);
+
+            if (shouldShow) {
+                event.setProp('display', 'auto');
+            } else {
+                event.setProp('display', 'none');
+            }
+        });
+    }
+
+    // Initialize inline calendar
+    setTimeout(() => {
+        try {
+            // Initialize inline calendar
+            flatpickr(".inline-calendar", {
+                inline: true,
+                onChange: function(selectedDates) {
+                    if (calendar && selectedDates[0]) {
+                        calendar.gotoDate(selectedDates[0]);
+                    }
+                }
+            });
+            console.log('Inline calendar initialized');
+        } catch (e) {
+            console.error('Flatpickr initialization failed:', e);
+        }
+    }, 300);
+
+    // Button handlers for calendar modal
+    $(document).on('click', '.check-in-calendar-btn', function() {
+        const appointmentId = $(this).data('id');
+        $('#calendarAppointmentDetailModal').modal('hide');
+
+        $.ajax({
+            url: 'front_desk_appointments.php',
+            type: 'POST',
+            data: {
+                action: 'getAppointmentDetails',
+                appointmentId: appointmentId
+            },
+            success: function(response) {
+                if (response) {
+                    $('#checkInAppointmentId').val(appointmentId);
+                    $('#checkInVisitorId').val(response.VisitorID);
+                    $('#checkInVisitorName').text(response.VisitorName);
+                    $('#checkInVisitorEmail').text(response.VisitorEmail);
+                    $('#checkInHostName').text(response.HostName);
+                    $('#checkInAppointmentTime').text(new Date(response.AppointmentTime).toLocaleString());
+                    $('#visitorCheckInModal').modal('show');
+                }
+            }
+        });
+    });
+
+    $(document).on('click', '.reschedule-calendar-btn', function() {
+        const appointmentId = $(this).data('id');
+        $('#calendarAppointmentDetailModal').modal('hide');
+
+        $.ajax({
+            url: 'front_desk_appointments.php',
+            type: 'POST',
+            data: {
+                action: 'getAppointmentDetails',
+                appointmentId: appointmentId
+            },
+            success: function(response) {
+                if (response) {
+                    $('#rescheduleAppointmentId').val(appointmentId);
+                    $('#rescheduleVisitorName').text(response.VisitorName);
+                    $('#rescheduleHostName').text(response.HostName);
+                    $('#rescheduleHostId').val(response.HostID);
+                    $('#rescheduleModal').modal('show');
+                }
+            }
+        });
+    });
+
+    $(document).on('click', '.cancel-calendar-btn', function() {
+        const appointmentId = $(this).data('id');
+        $('#calendarAppointmentDetailModal').modal('hide');
+        $('#cancelModal').data('appointmentId', appointmentId).modal('show');
+    });
+
+    $(document).on('click', '.complete-calendar-btn', function() {
+        const appointmentId = $(this).data('id');
+        if (confirm('Are you sure you want to mark this appointment as completed?')) {
+            $.ajax({
+                url: 'front_desk_appointments.php',
+                type: 'POST',
+                data: {
+                    action: 'completeAppointment',
+                    appointmentId: appointmentId
+                },
+                success: function(response) {
+                    if (response.success) {
+                        alert('Appointment marked as completed');
+                        location.reload();
+                    } else {
+                        alert('Error: ' + response.message);
+                    }
+                }
+            });
+        }
+    });
+
+
+
+    // Search and filter handlers
         $('#searchInput').on('keyup', function() {
             filterAppointments();
         });
@@ -1693,209 +2014,7 @@ function checkTimeConflict($hostId, $appointmentTime, $excludeAppointmentId = nu
                 }
             });
         });
-        // CALENDAR INITIALIZATION FUNCTION
-        function initializeCalendar() {
-            console.log('Initializing calendar...');
-            const calendarEl = document.getElementById('calendar');
 
-            if (!calendarEl) {
-                console.error('Calendar element not found');
-                return null;
-            }
-
-            // Convert PHP appointments to FullCalendar format
-            const calendarEvents = [];
-
-            if (Array.isArray(appointmentsData) && appointmentsData.length > 0) {
-                Object.values(appointmentsData).forEach(function(apt) {
-                    // Map status to colors
-                    const statusColors = {
-                        'Upcoming': '#007bff',     // Blue
-                        'Ongoing': '#17a2b8',      // Info blue
-                        'Completed': '#28a745',    // Green
-                        'Cancelled': '#dc3545',     // Red
-                        'Overdue': '#ffc107'        // Yellow
-                    };
-
-                    const event = {
-                        id: apt.AppointmentID.toString(),
-                        title: apt.VisitorName,
-                        start: apt.AppointmentTime,
-                        allDay: false,
-                        backgroundColor: statusColors[apt.Status] || '#6c757d',
-                        borderColor: statusColors[apt.Status] || '#6c757d',
-                        textColor: '#ffffff',
-                        extendedProps: {
-                            status: apt.Status,
-                            email: apt.VisitorEmail || '',
-                            appointmentId: apt.AppointmentID,
-                            visitorName: apt.VisitorName,
-                            hostName: apt.HostName
-                        }
-                    };
-                    calendarEvents.push(event);
-                });
-            }
-
-            // Initialize FullCalendar
-            try {
-                calendar = new FullCalendar.Calendar(calendarEl, {
-                    initialView: 'dayGridMonth',
-                    headerToolbar: {
-                        left: 'prev,next today',
-                        center: 'title',
-                        right: 'dayGridMonth,timeGridWeek,timeGridDay'
-                    },
-                    height: 'auto',
-                    events: calendarEvents,
-                    eventDisplay: 'block',
-                    displayEventTime: true,
-                    displayEventEnd: false,
-                    eventClick: function(info) {
-                        showCalendarAppointmentDetails(info.event);
-                    },
-                    eventDidMount: function(info) {
-                        // Add tooltip
-                        const tooltipTitle = `${info.event.title} - ${info.event.extendedProps.status}\nTime: ${moment(info.event.start).format('h:mm A')}\nHost: ${info.event.extendedProps.hostName}`;
-                        info.el.setAttribute('title', tooltipTitle);
-                        info.el.style.cursor = 'pointer';
-                    }
-                });
-
-                calendar.render();
-                console.log('Calendar rendered successfully');
-
-            } catch (error) {
-                console.error('Calendar initialization/render failed:', error);
-                calendarEl.innerHTML = `
-            <div class="alert alert-danger" role="alert">
-                <h4 class="alert-heading">Calendar Error!</h4>
-                <p>Failed to initialize calendar. Please check the console for details.</p>
-                <hr>
-                <p class="mb-0">Error: ${error.message}</p>
-            </div>
-        `;
-                return null;
-            }
-
-            return calendar;
-        }
-
-// Function to show appointment details from calendar click
-        function showCalendarAppointmentDetails(event) {
-            const props = event.extendedProps;
-            const appointmentId = props.appointmentId;
-
-            const modalHtml = `
-        <div class="modal fade" id="calendarAppointmentDetailModal" tabindex="-1">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title">Appointment Details</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                    </div>
-                    <div class="modal-body">
-                        <p><strong>Visitor:</strong> ${props.visitorName}</p>
-                        <p><strong>Email:</strong> ${props.email}</p>
-                        <p><strong>Host:</strong> ${props.hostName}</p>
-                        <p><strong>Date & Time:</strong> ${moment(event.start).format('MMMM DD, YYYY [at] h:mm A')}</p>
-                        <p><strong>Status:</strong> <span class="badge bg-${getStatusBadgeClass(props.status)}">${props.status}</span></p>
-                    </div>
-                    <div class="modal-footer">
-                        ${getCalendarActionButtons(appointmentId, props.status)}
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    `;
-
-            $('#calendarAppointmentDetailModal').remove();
-            $('body').append(modalHtml);
-            $('#calendarAppointmentDetailModal').modal('show');
-        }
-
-        function getStatusBadgeClass(status) {
-            const classes = {
-                'Cancelled': 'danger',
-                'Ongoing': 'info',
-                'Upcoming': 'primary',
-                'Completed': 'success',
-                'Overdue': 'warning'
-            };
-            return classes[status] || 'secondary';
-        }
-
-        function getCalendarActionButtons(appointmentId, status) {
-            let buttons = '';
-
-            if (status === 'Upcoming' || status === 'Overdue') {
-                buttons += `
-            <button class="btn btn-success btn-sm check-in-calendar-btn" data-id="${appointmentId}">
-                <i class="fas fa-check-circle me-1"></i> Check In
-            </button>
-            <button class="btn btn-primary btn-sm reschedule-calendar-btn" data-id="${appointmentId}">
-                <i class="fas fa-calendar-alt me-1"></i> Reschedule
-            </button>
-            <button class="btn btn-danger btn-sm cancel-calendar-btn" data-id="${appointmentId}">
-                <i class="fas fa-times me-1"></i> Cancel
-            </button>
-        `;
-            } else if (status === 'Ongoing') {
-                buttons += `
-            <button class="btn btn-warning btn-sm complete-calendar-btn" data-id="${appointmentId}">
-                <i class="fas fa-stop me-1"></i> Complete
-            </button>
-        `;
-            }
-
-            return buttons;
-        }
-
-// CALENDAR FILTER FUNCTIONALITY
-        $(document).on('change', '.input-filter', function() {
-            console.log('Calendar filter changed');
-            if (calendar && typeof calendar.getEvents === 'function') {
-                updateCalendarFilters();
-            }
-        });
-
-        $(document).on('change', '.select-all', function() {
-            const isChecked = $(this).is(':checked');
-            $('.input-filter').prop('checked', isChecked);
-            if (calendar && typeof calendar.getEvents === 'function') {
-                updateCalendarFilters();
-            }
-        });
-
-        function updateCalendarFilters() {
-            if (!calendar || typeof calendar.getEvents !== 'function') {
-                console.warn('Calendar not available for filtering');
-                return;
-            }
-
-            const checkedFilters = $('.input-filter:checked').map(function() {
-                return $(this).data('value');
-            }).get();
-
-            console.log('Applying calendar filters:', checkedFilters);
-
-            const events = calendar.getEvents();
-            console.log('Total events to filter:', events.length);
-
-            events.forEach(function(event) {
-                const status = event.extendedProps.status.toLowerCase();
-                const shouldShow = checkedFilters.includes(status) || checkedFilters.includes('all');
-
-                console.log(`Event: ${event.title}, Status: ${status}, Show: ${shouldShow}`);
-
-                if (shouldShow) {
-                    event.setProp('display', 'auto');
-                } else {
-                    event.setProp('display', 'none');
-                }
-            });
-        }
 
 // TAB SWITCHING - Initialize calendar when tab is shown
         $('#calendarViewBtn').click(function() {
@@ -1919,100 +2038,6 @@ function checkTimeConflict($hostId, $appointmentTime, $excludeAppointmentId = nu
             }, 150);
         });
 
-// Initialize inline calendar
-        setTimeout(() => {
-            try {
-                // Initialize inline calendar
-                flatpickr(".inline-calendar", {
-                    inline: true,
-                    onChange: function(selectedDates) {
-                        if (calendar && selectedDates[0]) {
-                            calendar.gotoDate(selectedDates[0]);
-                        }
-                    }
-                });
-                console.log('Inline calendar initialized');
-            } catch (e) {
-                console.error('Flatpickr initialization failed:', e);
-            }
-        }, 300);
-
-// Button handlers for calendar modal
-        $(document).on('click', '.check-in-calendar-btn', function() {
-            const appointmentId = $(this).data('id');
-            $('#calendarAppointmentDetailModal').modal('hide');
-
-            $.ajax({
-                url: 'front_desk_appointments.php',
-                type: 'POST',
-                data: {
-                    action: 'getAppointmentDetails',
-                    appointmentId: appointmentId
-                },
-                success: function(response) {
-                    if (response) {
-                        $('#checkInAppointmentId').val(appointmentId);
-                        $('#checkInVisitorId').val(response.VisitorID);
-                        $('#checkInVisitorName').text(response.VisitorName);
-                        $('#checkInVisitorEmail').text(response.VisitorEmail);
-                        $('#checkInHostName').text(response.HostName);
-                        $('#checkInAppointmentTime').text(new Date(response.AppointmentTime).toLocaleString());
-                        $('#visitorCheckInModal').modal('show');
-                    }
-                }
-            });
-        });
-
-        $(document).on('click', '.reschedule-calendar-btn', function() {
-            const appointmentId = $(this).data('id');
-            $('#calendarAppointmentDetailModal').modal('hide');
-
-            $.ajax({
-                url: 'front_desk_appointments.php',
-                type: 'POST',
-                data: {
-                    action: 'getAppointmentDetails',
-                    appointmentId: appointmentId
-                },
-                success: function(response) {
-                    if (response) {
-                        $('#rescheduleAppointmentId').val(appointmentId);
-                        $('#rescheduleVisitorName').text(response.VisitorName);
-                        $('#rescheduleHostName').text(response.HostName);
-                        $('#rescheduleHostId').val(response.HostID);
-                        $('#rescheduleModal').modal('show');
-                    }
-                }
-            });
-        });
-
-        $(document).on('click', '.cancel-calendar-btn', function() {
-            const appointmentId = $(this).data('id');
-            $('#calendarAppointmentDetailModal').modal('hide');
-            $('#cancelModal').data('appointmentId', appointmentId).modal('show');
-        });
-
-        $(document).on('click', '.complete-calendar-btn', function() {
-            const appointmentId = $(this).data('id');
-            if (confirm('Are you sure you want to mark this appointment as completed?')) {
-                $.ajax({
-                    url: 'front_desk_appointments.php',
-                    type: 'POST',
-                    data: {
-                        action: 'completeAppointment',
-                        appointmentId: appointmentId
-                    },
-                    success: function(response) {
-                        if (response.success) {
-                            alert('Appointment marked as completed');
-                            location.reload();
-                        } else {
-                            alert('Error: ' + response.message);
-                        }
-                    }
-                });
-            }
-        });
 
         $(document).on('click', '.reschedule-btn', function() {
             const appointmentId = $(this).data('id');
