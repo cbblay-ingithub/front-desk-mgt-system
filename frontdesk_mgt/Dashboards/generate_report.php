@@ -29,7 +29,7 @@ try {
         'margin_footer' => 10
     ]);
 } catch (\Mpdf\MpdfException $e) {
-
+    die("Error creating PDF: " . $e->getMessage());
 }
 
 // Get report parameters
@@ -74,9 +74,70 @@ $html = '<!DOCTYPE html>
 <head>
     <title>'.$title.'</title>
     <style>
-        /* ... existing styles ... */
+        body {
+            font-family: Arial, sans-serif;
+            font-size: 12px;
+            color: #333;
+        }
+        .report-title {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #2c3e50;
+            padding-bottom: 10px;
+        }
+        .date-range {
+            text-align: center;
+            margin-bottom: 20px;
+            font-style: italic;
+        }
+        .section-title {
+            background-color: #f8f9fa;
+            padding: 8px;
+            border-left: 4px solid #2c3e50;
+            margin: 20px 0 10px 0;
+        }
+        .metric-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        .metric-card {
+            border: 1px solid #e0e0e0;
+            border-radius: 5px;
+            padding: 15px;
+            flex: 1 1 200px;
+            min-width: 200px;
+            background-color: #f9f9f9;
+        }
+        .full-width {
+            flex: 1 1 100%;
+        }
+        .metric-title {
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #2c3e50;
+        }
+        .metric-value {
+            font-size: 18px;
+            color: #0d6efd;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
         .individual-section {
-            margin-top: 40px;
+            margin-top: 30px;
             page-break-inside: avoid;
         }
         .individual-header {
@@ -88,7 +149,7 @@ $html = '<!DOCTYPE html>
         }
         .metric-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
             gap: 15px;
             margin-bottom: 20px;
         }
@@ -98,16 +159,17 @@ $html = '<!DOCTYPE html>
             padding: 15px;
             background-color: #f9f9f9;
         }
-        .metric-title {
-            font-weight: bold;
-            margin-bottom: 5px;
-        }
-        .metric-value {
-            font-size: 18px;
-        }
         .trend-list {
             padding-left: 20px;
             margin-top: 10px;
+        }
+        .footer {
+            margin-top: 30px;
+            text-align: center;
+            font-size: 10px;
+            color: #666;
+            border-top: 1px solid #ddd;
+            padding-top: 10px;
         }
     </style>
 </head>
@@ -124,47 +186,131 @@ if ($startDate || $endDate) {
 }
 
 // Team metrics section
+$html .= '<h3 class="section-title">Team Performance Overview</h3>';
+
 if ($reportType === 'host') {
     $html .= '<div class="metric-container">
         <div class="metric-card">
             <div class="metric-title">Total Appointments</div>
-            <div class="metric-value">'.$report['appointment_metrics']['total_appointments'].'</div>
+            <div class="metric-value">'.($report['appointment_metrics']['total_appointments'] ?? 0).'</div>
         </div>
         
         <div class="metric-card">
-            <div class="metric-title">Completed Appointments</div>
-            <div class="metric-value">'.$report['appointment_metrics']['completed'].'</div>
+            <div class="metric-title">Completed</div>
+            <div class="metric-value">'.($report['appointment_metrics']['completed'] ?? 0).'</div>
         </div>
         
         <div class="metric-card">
-            <div class="metric-title">Resolution Rate</div>
-            <div class="metric-value">';
-
-    if ($report['resolution_rates']['total_tickets'] > 0) {
-        $html .= round(($report['resolution_rates']['resolved'] / $report['resolution_rates']['total_tickets']) * 100).'%';
-    } else {
-        $html .= '0%';
-    }
-
-    $html .= '</div>
+            <div class="metric-title">Cancelled</div>
+            <div class="metric-value">'.($report['appointment_metrics']['cancelled'] ?? 0).'</div>
+        </div>
+        
+        <div class="metric-card">
+            <div class="metric-title">Upcoming</div>
+            <div class="metric-value">'.($report['appointment_metrics']['upcoming'] ?? 0).'</div>
         </div>
     </div>';
+
+    // Cancellation Reasons
+    if (!empty($report['cancellation_reasons'])) {
+        $html .= '<h3 class="section-title">Cancellation Reasons</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Reason</th>
+                    <th>Count</th>
+                    <th>Percentage</th>
+                </tr>
+            </thead>
+            <tbody>';
+
+        foreach ($report['cancellation_reasons'] as $reason) {
+            $percentage = $report['appointment_metrics']['cancelled'] > 0 ?
+                round(($reason['count'] / $report['appointment_metrics']['cancelled']) * 100, 2) : 0;
+
+            $html .= '<tr>
+                <td>'.($reason['CancellationReason'] ?: 'No reason given').'</td>
+                <td>'.$reason['count'].'</td>
+                <td>'.$percentage.'%</td>
+            </tr>';
+        }
+
+        $html .= '</tbody></table>';
+    }
+
+    // Visitor Metrics
+    if (!empty($report['visitor_metrics'])) {
+        $html .= '<h3 class="section-title">Visitor Metrics</h3>
+        <div class="metric-container">
+            <div class="metric-card">
+                <div class="metric-title">New Visitors</div>
+                <div class="metric-value">'.($report['visitor_metrics']['new_visitors'] ?? 0).'</div>
+            </div>
+            
+            <div class="metric-card">
+                <div class="metric-title">Returning Visitors</div>
+                <div class="metric-value">'.($report['visitor_metrics']['returning_visitors'] ?? 0).'</div>
+            </div>
+        </div>';
+    }
 
 } elseif ($reportType === 'support') {
     $html .= '<div class="metric-container">
         <div class="metric-card">
             <div class="metric-title">Total Tickets</div>
-            <div class="metric-value">'.$report['total_tickets'].'</div>
+            <div class="metric-value">'.($report['total_tickets'] ?? 0).'</div>
+        </div>
+        
+        <div class="metric-card">
+            <div class="metric-title">Resolved</div>
+            <div class="metric-value">'.($report['status_breakdown']['resolved'] ?? 0).'</div>
         </div>
         
         <div class="metric-card">
             <div class="metric-title">Avg. Resolution Time</div>
-            <div class="metric-value">'.round($report['resolution_times']['avg_resolution_hours']).' hours</div>
+            <div class="metric-value">'.(isset($report['resolution_times']['avg_resolution_hours']) ? round($report['resolution_times']['avg_resolution_hours']) : 'N/A').'h</div>
         </div>
-    </div>
-    
-    <div class="table-container">
-        <h3 class="text-center">Category Breakdown</h3>
+        
+        <div class="metric-card">
+            <div class="metric-title">Reopened Rate</div>
+            <div class="metric-value">'.(isset($individualReports) ? round(array_sum(array_column($individualReports, 'reopened_rate')) / count($individualReports)) : 0).'%</div>
+        </div>
+    </div>';
+
+    // Ticket Status Breakdown
+    if (!empty($report['status_breakdown'])) {
+        $html .= '<h3 class="section-title">Ticket Status Breakdown</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Status</th>
+                    <th>Count</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Open</td>
+                    <td>'.($report['status_breakdown']['open'] ?? 0).'</td>
+                </tr>
+                <tr>
+                    <td>In Progress</td>
+                    <td>'.($report['status_breakdown']['in-progress'] ?? 0).'</td>
+                </tr>
+                <tr>
+                    <td>Resolved</td>
+                    <td>'.($report['status_breakdown']['resolved'] ?? 0).'</td>
+                </tr>
+                <tr>
+                    <td>Closed</td>
+                    <td>'.($report['status_breakdown']['closed'] ?? 0).'</td>
+                </tr>
+            </tbody>
+        </table>';
+    }
+
+    // Category Breakdown
+    if (!empty($report['category_breakdown'])) {
+        $html .= '<h3 class="section-title">Issue Categories</h3>
         <table>
             <thead>
                 <tr>
@@ -174,58 +320,99 @@ if ($reportType === 'host') {
             </thead>
             <tbody>';
 
-    foreach ($report['category_breakdown'] as $category) {
-        $html .= '<tr>
-            <td>'.$category['category'].'</td>
-            <td>'.$category['count'].'</td>
-        </tr>';
-    }
+        foreach ($report['category_breakdown'] as $category) {
+            $html .= '<tr>
+                <td>'.$category['category'].'</td>
+                <td>'.$category['count'].'</td>
+            </tr>';
+        }
 
-    $html .= '</tbody>
-        </table>
-    </div>';
+        $html .= '</tbody></table>';
+    }
 
 } elseif ($reportType === 'frontdesk') {
     $html .= '<div class="metric-container">
         <div class="metric-card">
-            <div class="metric-title">Total Appointments</div>
-            <div class="metric-value">'.$report['scheduling_metrics']['total_appointments'].'</div>
+            <div class="metric-title">Appointments</div>
+            <div class="metric-value">'.($report['scheduling_metrics']['total_appointments'] ?? 0).'</div>
         </div>
         
         <div class="metric-card">
-            <div class="metric-title">Visitors Checked In</div>
-            <div class="metric-value">'.$report['visitor_metrics']['visitors_checked_in'].'</div>
+            <div class="metric-title">Completed</div>
+            <div class="metric-value">'.($report['scheduling_metrics']['completed'] ?? 0).'</div>
         </div>
         
         <div class="metric-card">
-            <div class="metric-title">Lost Items Claimed</div>
-            <div class="metric-value">
-                '.$report['lost_found_metrics']['claimed'].' / '.$report['lost_found_metrics']['total_items'].'
-            </div>
+            <div class="metric-title">Avg Check-In</div>
+            <div class="metric-value">'.($report['visitor_metrics']['avg_checkin_time'] ? round($report['visitor_metrics']['avg_checkin_time']) : 'N/A').' min</div>
         </div>
-    </div>
-    
-    <div class="metric-card full-width">
-        <div class="metric-title">Average Check-in Delay</div>
-        <div class="metric-value">
-            '.round($report['visitor_metrics']['avg_checkin_delay']).' minutes
+        
+        <div class="metric-card">
+            <div class="metric-title">Peak Hour</div>
+            <div class="metric-value">'.($report['peak_hour'] ? $report['peak_hour'].':00' : 'N/A').'</div>
         </div>
     </div>';
+
+    // Client Metrics
+    if (!empty($report['client_metrics'])) {
+        $newClients = $report['client_metrics']['new_clients'] ?? 0;
+        $returningClients = $report['client_metrics']['returning_clients'] ?? 0;
+        $totalClients = $newClients + $returningClients;
+        $newPercentage = $totalClients > 0 ? round(($newClients / $totalClients) * 100) : 0;
+        $returningPercentage = $totalClients > 0 ? round(($returningClients / $totalClients) * 100) : 0;
+
+        $html .= '<h3 class="section-title">Client Types</h3>
+        <div class="metric-container">
+            <div class="metric-card">
+                <div class="metric-title">New Clients</div>
+                <div class="metric-value">'.$newClients.' ('.$newPercentage.'%)</div>
+            </div>
+            
+            <div class="metric-card">
+                <div class="metric-title">Returning Clients</div>
+                <div class="metric-value">'.$returningClients.' ('.$returningPercentage.'%)</div>
+            </div>
+        </div>';
+    }
+
+    // Appointment Status
+    if (!empty($report['scheduling_metrics'])) {
+        $html .= '<h3 class="section-title">Appointment Status</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Status</th>
+                    <th>Count</th>
+                    <th>Percentage</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Completed</td>
+                    <td>'.($report['scheduling_metrics']['completed'] ?? 0).'</td>
+                    <td>'.($report['scheduling_metrics']['total_appointments'] > 0 ? round(($report['scheduling_metrics']['completed'] / $report['scheduling_metrics']['total_appointments']) * 100) : 0).'%</td>
+                </tr>
+                <tr>
+                    <td>Cancelled</td>
+                    <td>'.($report['scheduling_metrics']['cancelled'] ?? 0).'</td>
+                    <td>'.($report['scheduling_metrics']['total_appointments'] > 0 ? round(($report['scheduling_metrics']['cancelled'] / $report['scheduling_metrics']['total_appointments']) * 100) : 0).'%</td>
+                </tr>
+            </tbody>
+        </table>';
+    }
 }
 
 // Individual Performance Section
 if (!empty($users)) {
     $html .= '<div class="individual-section">
-        <div class="individual-header">
-            <h2>Individual Performance Metrics</h2>
-        </div>
+        <h3 class="section-title">Individual Performance</h3>
         <div class="metric-grid">';
 
     foreach ($users as $user) {
-        $metrics = $individualReports[$user['UserID']];
+        $metrics = $individualReports[$user['UserID']] ?? [];
 
         $html .= '<div class="individual-metric">
-            <h3>'.$user['Name'].'</h3>';
+            <h4>'.$user['Name'].'</h4>';
 
         if ($reportType === 'host') {
             $html .= '<div class="metric-title">Total Appointments</div>
@@ -237,55 +424,35 @@ if (!empty($users)) {
                 <div class="metric-title">No-Show Rate</div>
                 <div class="metric-value">'.($metrics['no_show_rate'] ?? 0).'%</div>
                 
-                <div class="metric-title">Cancelled</div>
-                <div class="metric-value">'.($metrics['cancelled'] ?? 0).'</div>
-                
-                <div class="metric-title">Upcoming</div>
-                <div class="metric-value">'.($metrics['upcoming'] ?? 0).'</div>
-                
                 <div class="metric-title">Peak Hour</div>
-                <div class="metric-value">'.($metrics['peak_hour'] ? $metrics['peak_hour'].':00' : 'N/A').'</div>
-                
-                <div class="metric-title">Monthly Trends</div>
-                <ul class="trend-list">';
-
-            if (!empty($metrics['monthly_trends'])) {
-                foreach ($metrics['monthly_trends'] as $trend) {
-                    $html .= '<li>'.date('M Y', mktime(0,0,0,$trend['month'],1,$trend['year'])).': '.($trend['completed'] ?? 0).'</li>';
-                }
-            } else {
-                $html .= '<li>No trends data available</li>';
-            }
-
-            $html .= '</ul>';
+                <div class="metric-value">'.($metrics['peak_hour'] ? date('g A', strtotime($metrics['peak_hour'].':00')) : 'N/A').'</div>';
 
         } elseif ($reportType === 'support') {
-            $statusBreakdown = $metrics['status_breakdown'] ?? [];
+            $resolved = $metrics['status_breakdown']['resolved'] ?? 0;
+            $total = $metrics['total_tickets'] ?? 1;
+            $resolutionRate = round(($resolved / $total) * 100);
 
-            $html .= '<div class="metric-title">Open Tickets</div>
-                <div class="metric-value">'.($statusBreakdown['open'] ?? 0).'</div>
+            $html .= '<div class="metric-title">Resolved Tickets</div>
+                <div class="metric-value">'.$resolved.'</div>
                 
-                <div class="metric-title">In Progress</div>
-                <div class="metric-value">'.($statusBreakdown['in-progress'] ?? 0).'</div>
-                
-                <div class="metric-title">Resolved</div>
-                <div class="metric-value">'.($statusBreakdown['resolved'] ?? 0).'</div>
-                
-                <div class="metric-title">Closed</div>
-                <div class="metric-value">'.($statusBreakdown['closed'] ?? 0).'</div>
+                <div class="metric-title">Resolution Rate</div>
+                <div class="metric-value">'.$resolutionRate.'%</div>
                 
                 <div class="metric-title">Avg. Resolution Time</div>
-                <div class="metric-value">'.($metrics['avg_resolution_hours'] !== null ? round($metrics['avg_resolution_hours']) : 'N/A').' hrs</div>
+                <div class="metric-value">'.($metrics['avg_resolution_hours'] !== null ? round($metrics['avg_resolution_hours']) : 'N/A').'h</div>
                 
-                <div class="metric-title">Tickets Created</div>
-                <div class="metric-value">'.($metrics['tickets_created'] ?? 0).'</div>';
+                <div class="metric-title">Reopened Rate</div>
+                <div class="metric-value">'.($metrics['reopened_rate'] ?? 0).'%</div>';
 
         } elseif ($reportType === 'frontdesk') {
             $html .= '<div class="metric-title">Appointments Scheduled</div>
                 <div class="metric-value">'.($metrics['total_appointments_scheduled'] ?? 0).'</div>
                 
-                <div class="metric-title">Avg. Check-In Time</div>
-                <div class="metric-value">'.($metrics['avg_checkin_time'] !== null ? round($metrics['avg_checkin_time'], 2) : 'N/A').' mins</div>';
+                <div class="metric-title">Avg Check-In Time</div>
+                <div class="metric-value">'.($metrics['avg_checkin_time'] !== null ? round($metrics['avg_checkin_time'], 1) : 'N/A').' min</div>
+                
+                <div class="metric-title">Error Rate</div>
+                <div class="metric-value">'.($metrics['error_rate'] ?? 0).'%</div>';
         }
 
         $html .= '</div>';
