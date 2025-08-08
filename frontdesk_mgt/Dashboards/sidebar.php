@@ -33,7 +33,7 @@ $currentPage = basename($_SERVER['PHP_SELF']);
     <!-- Menu Items -->
     <ul class="menu-inner py-1">
         <!-- Dashboard -->
-        <li class="menu-item">
+        <li class="menu-item <?= ($currentPage == 'HD_analytics.php') ? 'active' : '' ?>">
             <a href="HD_analytics.php" class="menu-link">
                 <i class="menu-icon icon-base bx bx-home-smile"></i>
                 <div data-i18n="Dashboard">Dashboard</div>

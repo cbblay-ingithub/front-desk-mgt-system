@@ -1,70 +1,1119 @@
 <?php
-global$users;
+require_once '../dbConfig.php';
+global $conn;
+session_start();
+
+if (isset($_SESSION['userID'])) {
+    $stmt = $conn->prepare("UPDATE users SET last_activity = NOW() WHERE UserID = ?");
+    $stmt->bind_param("i", $_SESSION['userID']);
+    $stmt->execute();
+
+    // Log activity for admins
+    $activity = "Visited " . basename($_SERVER['PHP_SELF']);
+    $stmt = $conn->prepare("INSERT INTO user_activity_log (user_id, activity) VALUES (?, ?)");
+    $stmt->bind_param("is", $_SESSION['userID'], $activity);
+    $stmt->execute();
+}
+
+// Fetch dashboard statistics
+function getDashboardStats($conn) {
+    $stats = [];
+
+    // Total Users
+    $result = $conn->query("SELECT COUNT(*) as total FROM users");
+    $stats['total_users'] = $result->fetch_assoc()['total'];
+
+    // Active Users (last 30 days)
+    $result = $conn->query("SELECT COUNT(*) as active FROM users WHERE last_activity >= DATE_SUB(NOW(), INTERVAL 30 DAY)");
+    $stats['active_users'] = $result->fetch_assoc()['active'];
+
+    // New Users (last 30 days)
+    $result = $conn->query("SELECT COUNT(*) as new_users FROM users WHERE created_at >= DATE_SUB(NOW(), INTERVAL 30 DAY)");
+    $stats['new_users'] = $result->fetch_assoc()['new_users'];
+
+    // Total Tickets
+    $result = $conn->query("SELECT COUNT(*) as total FROM Help_Desk");
+    $stats['total_tickets'] = $result->fetch_assoc()['total'];
+
+    // Open Tickets
+    $result = $conn->query("SELECT COUNT(*) as open FROM Help_Desk WHERE Status = 'open'");
+    $stats['open_tickets'] = $result->fetch_assoc()['open'];
+
+    // Total Visitors
+    $result = $conn->query("SELECT COUNT(*) as total FROM Visitors");
+    $stats['total_visitors'] = $result->fetch_assoc()['total'];
+
+    // Checked In Visitors
+    $result = $conn->query("SELECT COUNT(DISTINCT v.VisitorID) as checked_in 
+                           FROM Visitors v 
+                           JOIN Visitor_Logs vl ON v.VisitorID = vl.VisitorID 
+                           WHERE vl.CheckOutTime IS NULL");
+    $stats['checked_in_visitors'] = $result->fetch_assoc()['checked_in'];
+
+
+    $result = $conn->query("
+    SELECT 
+        COUNT(*) as total_appointments,
+        COUNT(DISTINCT DATE(AppointmentTime)) as days_with_appointments
+    FROM Appointments
+    WHERE AppointmentTime >= DATE_SUB(NOW(), INTERVAL 30 DAY)
+");
+    $appointment_stats = $result->fetch_assoc();
+    $stats['average_appointments'] = $appointment_stats['days_with_appointments'] > 0
+        ? round($appointment_stats['total_appointments'] / $appointment_stats['days_with_appointments'], 1)
+        : 0;
+
+    // Lost & Found Items
+    $result = $conn->query("SELECT COUNT(*) as total FROM Lost_And_Found");
+    $stats['total_items'] = $result->fetch_assoc()['total'];
+
+    // Unclaimed Items
+    $result = $conn->query("SELECT COUNT(*) as unclaimed FROM Lost_And_Found WHERE Status IN ('lost', 'found')");
+    $stats['unclaimed_items'] = $result->fetch_assoc()['unclaimed'];
+
+    return $stats;
+}
+
+// Get chart data
+function getChartData($conn) {
+    $data = [];
+
+    // User registration trend (last 7 days)
+    $result = $conn->query("
+        SELECT DATE(created_at) as date, COUNT(*) as count 
+        FROM users 
+        WHERE created_at >= DATE_SUB(NOW(), INTERVAL 7 DAY)
+        GROUP BY DATE(created_at)
+        ORDER BY date
+    ");
+    $data['user_trend'] = [];
+    while ($row = $result->fetch_assoc()) {
+        $data['user_trend'][] = $row;
+    }
+
+    // Ticket status distribution
+    $result = $conn->query("
+        SELECT Status, COUNT(*) as count 
+        FROM Help_Desk 
+        GROUP BY Status
+    ");
+    $data['ticket_status'] = [];
+    while ($row = $result->fetch_assoc()) {
+        $data['ticket_status'][] = $row;
+    }
+
+
+    // Add this to the getChartData function
+    $result = $conn->query("
+    SELECT 
+        a.AppointmentID,
+        a.AppointmentTime,
+        a.Status,
+        v.Name,
+        v.Email
+    FROM Appointments a
+    JOIN Visitors v ON a.VisitorID = v.VisitorID
+    ORDER BY a.AppointmentTime DESC
+    LIMIT 5
+");
+    $data['recent_appointments'] = [];
+    while ($row = $result->fetch_assoc()) {
+        $data['recent_appointments'][] = $row;
+    }
+    // User roles distribution
+    $result = $conn->query("
+        SELECT Role, COUNT(*) as count 
+        FROM users 
+        GROUP BY Role
+    ");
+    $data['user_roles'] = [];
+    while ($row = $result->fetch_assoc()) {
+        $data['user_roles'][] = $row;
+    }
+
+    // Monthly visitor trends (last 6 months)
+    $result = $conn->query("
+        SELECT 
+            YEAR(CheckInTime) as year,
+            MONTH(CheckInTime) as month,
+            COUNT(*) as count
+        FROM Visitor_Logs 
+        WHERE CheckInTime >= DATE_SUB(NOW(), INTERVAL 6 MONTH)
+        GROUP BY YEAR(CheckInTime), MONTH(CheckInTime)
+        ORDER BY year, month
+    ");
+    $data['visitor_trend'] = [];
+    while ($row = $result->fetch_assoc()) {
+        $monthName = date('M', mktime(0, 0, 0, $row['month'], 1));
+        $data['visitor_trend'][] = [
+            'month' => $monthName,
+            'count' => $row['count']
+        ];
+    }
+
+    // Recent activity
+    $result = $conn->query("
+        SELECT 
+            u.Name,
+            ual.activity,
+            ual.activity_time
+        FROM user_activity_log ual
+        JOIN users u ON ual.user_id = u.UserID
+        ORDER BY ual.activity_time DESC
+        LIMIT 10
+    ");
+    $data['recent_activity'] = [];
+    while ($row = $result->fetch_assoc()) {
+        $data['recent_activity'][] = $row;
+    }
+
+    return $data;
+}
+
+$stats = getDashboardStats($conn);
+$chartData = getChartData($conn);
+
+// Additional stats from first version
+$result = $conn->query("SELECT COUNT(*) as lost_items FROM Lost_And_Found WHERE Status IN ('lost', 'found')");
+$stats['lost_items'] = $result->fetch_assoc()['lost_items'];
+
+$conn->close();
 ?>
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class=" layout-menu-fixed layout-compact" dir="ltr" data-skin="default">
 <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
     <title>Admin Dashboard</title>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- CSS -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="notification.css">
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
     <style>
-        body {
-            min-height: 100vh;
+        /* Sidebar width fixes */
+        #layout-menu {
+            width: 260px !important;
+            min-width: 260px !important;
+            max-width: 260px !important;
+            flex: 0 0 260px !important;
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            height: 100vh !important;
+            overflow-y: auto !important;
+            overflow-x: hidden !important;
+            z-index: 1000 !important;
+        }
+
+        .layout-menu-collapsed #layout-menu {
+            width: 78px !important;
+            min-width: 78px !important;
+            max-width: 78px !important;
+            flex: 0 0 78px !important;
+        }
+
+        .layout-content {
+            flex: 1 1 auto;
+            min-width: 0;
+            margin-left: 260px !important;
+            width: calc(100% - 260px) !important;
+            height: 100vh !important;
+            overflow-y: auto !important;
+            overflow-x: hidden !important;
+        }
+
+        .layout-menu-collapsed .layout-content {
+            margin-left: 78px !important;
+            width: calc(100% - 78px) !important;
+        }
+
+        .layout-wrapper {
+            overflow: hidden !important;
+            height: 100vh !important;
+        }
+
+        .layout-container {
             display: flex;
+            min-height: 100vh;
+            width: 100%;
+            overflow: hidden !important;
         }
-        .sidebar {
-            width: 250px;
-            background-color: #343a40;
-            padding-top: 1rem;
+
+        html, body {
+            overflow-x: hidden !important;
+            overflow-y: hidden !important;
+            height: 100vh !important;
         }
-        .sidebar a {
-            color: #fff;
-            padding: 12px 20px;
-            display: block;
+
+        .container-fluid.container-p-y {
+            padding-top: 1.5rem !important;
+            padding-bottom: 1.5rem !important;
+        }
+
+        .layout-content {
+            transition: margin-left 0.3s ease, width 0.3s ease !important;
+        }
+
+        /* Dashboard Cards */
+        .stats-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            color: white;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            height: 100%;
+        }
+
+        .stats-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+
+        .stats-card.users { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .stats-card.tickets { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); }
+        .stats-card.visitors { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); }
+        .stats-card.items { background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); }
+        .stats-card.active-users { background: linear-gradient(135deg, #ff9a9e 0%, #fad0c4 100%); }
+        .stats-card.time { background: linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%); }
+
+        .stats-icon {
+            font-size: 2.5rem;
+            opacity: 0.8;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 400px;
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .activity-item {
+            padding: 12px;
+            border-left: 4px solid #007bff;
+            margin-bottom: 10px;
+            background: #f8f9fa;
+            border-radius: 0 8px 8px 0;
+            transition: all 0.3s ease;
+        }
+
+        .activity-item:hover {
+            background: #e9ecef;
+            transform: translateX(5px);
+        }
+
+        .navbar-detached {
+            box-shadow: 0 1px 20px 0 rgba(76,87,125,.1);
+            background-color: #fff;
+            padding: 1rem 1.5rem;
+            border-radius: 0.375rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .card {
+            border: none;
+            box-shadow: 0 2px 6px 0 rgba(67, 89, 113, 0.12);
+            border-radius: 0.75rem;
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            box-shadow: 0 4px 12px 0 rgba(67, 89, 113, 0.16);
+        }
+
+        /* Animation for stats */
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            opacity: 0;
+            animation: countUp 1s ease-out forwards;
+        }
+
+        @keyframes countUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .quick-action-btn {
+            padding: 15px;
+            border-radius: 12px;
+            border: 2px solid #e9ecef;
+            background: white;
+            color: #6c757d;
             text-decoration: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            transition: all 0.3s ease;
+            height: 120px;
         }
-        .sidebar a:hover {
-            background-color: #495057;
+
+        .quick-action-btn:hover {
+            border-color: #007bff;
+            color: #007bff;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,123,255,0.15);
         }
-        .main-content {
-            flex-grow: 1;
-            padding: 2rem;
-            background-color: #f8f9fa;
+
+        .quick-action-btn i {
+            font-size: 2rem;
+            margin-bottom: 8px;
+        }
+
+        /* Additional styles from first version */
+        .stat-card {
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            height: 100%;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .stat-card .card-body {
+            padding: 1.5rem;
+        }
+
+        .stat-card .icon {
+            font-size: 2.5rem;
+            opacity: 0.7;
+        }
+
+        .stat-card .count {
+            font-size: 2rem;
+            font-weight: 600;
+        }
+
+        .stat-card .label {
+            font-size: 0.9rem;
+            color: #6c757d;
+        }
+
+        .status-text {
+            font-size: 0.8em;
+            font-weight: 500;
+        }
+
+        .status-online-text { color: #28a745; }
+        .status-away-text { color: #ffc107; }
+        .status-offline-text { color: #6c757d; }
+        .status-inactive-text { color: #dc3545; }
+
+        .filter-dropdown {
+            width: 350px;
+            padding: 1rem;
+        }
+
+        .filter-dropdown .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .filter-dropdown .btn-apply {
+            width: 100%;
         }
     </style>
 </head>
-<body>
-<?php include 'admin-sidebar.php'; ?>
 
-<div class="main-content">
-    <h2 class="mb-4">System Users</h2>
-    <div class="table-responsive">
-        <table class="table table-bordered table-striped align-middle">
-            <thead class="table-dark">
-            <tr>
-                <th>UserID</th>
-                <th>Name</th>
-                <th>Email</th>
-                <th>Phone</th>
-                <th>Role</th>
-            </tr>
-            </thead>
-            <tbody>
-            <?php foreach ($users as $row): ?>
-            <tr>
-                <td><?= htmlspecialchars($row['UserID']) ?></td>
-                <td><?= htmlspecialchars($row['Name']) ?></td>
-                <td><?= htmlspecialchars($row['Email']) ?></td>
-                <td><?= htmlspecialchars($row['Phone']) ?></td>
-                <td><?= htmlspecialchars($row['Role']) ?></td>
-            </tr>
-            <?php endforeach; ?>
-            </tbody>
-        </table>
+<body>
+<div class="layout-wrapper layout-content-navbar">
+    <div class="layout-container">
+        <?php include 'admin-sidebar.php'; ?>
+
+        <div class="layout-content">
+            <!-- Navbar -->
+            <nav class="layout-navbar container-xxl navbar-detached navbar navbar-expand-xl align-items-center bg-navbar-theme" id="layout-navbar">
+                <div class="layout-menu-toggle navbar-nav align-items-xl-center me-4 me-xl-0 d-xl-none">
+                    <a class="nav-item nav-link px-0 me-xl-6" href="javascript:void(0)">
+                        <i class="icon-base bx bx-menu icon-md"></i>
+                    </a>
+                </div>
+                <div class="navbar-nav-right d-flex align-items-center justify-content-end" id="navbar-collapse">
+                    <div class="navbar-nav align-items-center me-auto">
+                        <div class="nav-item">
+                            <h4 class="mb-0 fw-bold ms-2">Admin Dashboard</h4>
+                        </div>
+                    </div>
+
+                    <div class="navbar-nav align-items-center">
+                        <div class="dropdown">
+                            <button class="btn btn-outline-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="fas fa-user-circle me-1"></i> <?php echo $_SESSION['name'] ?? 'Admin'; ?>
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                <li><a class="dropdown-item" href="profile.php"><i class="fas fa-user me-2"></i> Profile</a></li>
+                                <li><a class="dropdown-item" href="settings.php"><i class="fas fa-cog me-2"></i> Settings</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" href="../logout.php"><i class="fas fa-sign-out-alt me-2"></i> Logout</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </nav>
+
+            <!-- Main Content -->
+            <div class="container-fluid container-p-y">
+                <!-- First Row of Stats Cards (from first version) -->
+                <div class="row mb-4">
+                    <div class="col-md-6 col-lg-3 mb-4">
+                        <div class="stat-card card bg-primary text-white">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <div class="count"><?php echo $stats['total_users']; ?></div>
+                                        <div class="label">Total Users</div>
+                                    </div>
+                                    <div class="icon">
+                                        <i class="fas fa-users"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6 col-lg-3 mb-4">
+                        <div class="stat-card card bg-success text-white">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <div class="count"><?php echo $stats['active_users']; ?></div>
+                                        <div class="label">Active Users</div>
+                                    </div>
+                                    <div class="icon">
+                                        <i class="fas fa-user-check"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6 col-lg-3 mb-4">
+                        <div class="stat-card card bg-info text-white">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <div class="count"><?php echo $stats['total_visitors']; ?></div>
+                                        <div class="label">Total Visitors</div>
+                                    </div>
+                                    <div class="icon">
+                                        <i class="fas fa-address-book"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6 col-lg-3 mb-4">
+                        <div class="stat-card card bg-warning text-dark">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <div class="count"><?php echo $stats['checked_in_visitors']; ?></div>
+                                        <div class="label">Checked In Now</div>
+                                    </div>
+                                    <div class="icon">
+                                        <i class="fas fa-door-open"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Second Row of Stats Cards (from first version) -->
+                <div class="row mb-4">
+                    <div class="col-md-6 col-lg-4 mb-4">
+                        <div class="stat-card card bg-danger text-white">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <div class="count"><?php echo $stats['open_tickets']; ?></div>
+                                        <div class="label">Open Tickets</div>
+                                    </div>
+                                    <div class="icon">
+                                        <i class="fas fa-ticket-alt"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6 col-lg-4 mb-4">
+                        <div class="stat-card card bg-secondary text-white">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <div class="count"><?php echo $stats['average_appointments']; ?></div>
+                                        <div class="label">Avg Appointments/Day (30d)</div>
+                                    </div>
+                                    <div class="icon">
+                                        <i class="fas fa-calendar-check"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6 col-lg-4 mb-4">
+                        <div class="stat-card card bg-dark text-white">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <div class="count"><?php echo date('H:i'); ?></div>
+                                        <div class="label">Current Time</div>
+                                    </div>
+                                    <div class="icon">
+                                        <i class="fas fa-clock"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Actions (from second version) -->
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="card-title mb-0">Quick Actions</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-lg-2 col-md-4 col-6 mb-3">
+                                        <a href="user_management.php" class="quick-action-btn">
+                                            <i class="fas fa-users"></i>
+                                            <span>Manage Users</span>
+                                        </a>
+                                    </div>
+                                    <div class="col-lg-2 col-md-4 col-6 mb-3">
+                                        <a href="help_desk.php" class="quick-action-btn">
+                                            <i class="fas fa-ticket-alt"></i>
+                                            <span>View Tickets</span>
+                                        </a>
+                                    </div>
+                                    <div class="col-lg-2 col-md-4 col-6 mb-3">
+                                        <a href="manage_visitors.php" class="quick-action-btn">
+                                            <i class="fas fa-user-friends"></i>
+                                            <span>Manage Visitors</span>
+                                        </a>
+                                    </div>
+                                    <div class="col-lg-2 col-md-4 col-6 mb-3">
+                                        <a href="lost_and_found.php" class="quick-action-btn">
+                                            <i class="fas fa-search"></i>
+                                            <span>Manage Appointments</span>
+                                        </a>
+                                    </div>
+                                    <div class="col-lg-2 col-md-4 col-6 mb-3">
+                                        <a href="reports.php" class="quick-action-btn">
+                                            <i class="fas fa-chart-bar"></i>
+                                            <span>Reports</span>
+                                        </a>
+                                    </div>
+                                    <div class="col-lg-2 col-md-4 col-6 mb-3">
+                                        <a href="settings.php" class="quick-action-btn">
+                                            <i class="fas fa-cog"></i>
+                                            <span>Settings</span>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Charts Row (from second version) -->
+                <div class="row mb-4">
+                    <!-- User Registration Trend -->
+                    <div class="col-lg-8 mb-3">
+                        <div class="card">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <h5 class="card-title mb-0">User Registration Trend</h5>
+                                <small class="text-muted">Last 7 days</small>
+                            </div>
+                            <div class="card-body">
+                                <div class="chart-container">
+                                    <canvas id="userTrendChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Ticket Status Distribution -->
+                    <div class="col-lg-4 mb-3">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="card-title mb-0">Ticket Status</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="chart-container">
+                                    <canvas id="ticketStatusChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Second Charts Row (from second version) -->
+                <div class="row mb-4">
+                    <!-- User Roles Distribution -->
+                    <div class="col-lg-6 mb-3">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="card-title mb-0">User Roles Distribution</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="chart-container">
+                                    <canvas id="userRolesChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Visitor Trends -->
+                    <div class="col-lg-6 mb-3">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="card-title mb-0">Visitor Trends</h5>
+                                <small class="text-muted">Last 6 months</small>
+                            </div>
+                            <div class="card-body">
+                                <div class="chart-container">
+                                    <canvas id="visitorTrendChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Activity Section -->
+                <div class="row">
+                    <div class="col-lg-6 mb-4">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="card-title mb-0">Recent System Activity</h5>
+                            </div>
+                            <div class="card-body">
+                                <?php if (empty($chartData['recent_activity'])): ?>
+                                    <div class="text-center text-muted py-4">
+                                        <i class="fas fa-info-circle me-2"></i>
+                                        No recent activity found
+                                    </div>
+                                <?php else: ?>
+                                    <?php foreach ($chartData['recent_activity'] as $activity): ?>
+                                        <div class="activity-item mb-3">
+                                            <div class="d-flex justify-content-between align-items-start">
+                                                <div>
+                                                    <strong><?= htmlspecialchars($activity['Name']) ?></strong>
+                                                    <div class="text-muted small">
+                                                        <?= htmlspecialchars($activity['activity']) ?>
+                                                    </div>
+                                                </div>
+                                                <small class="text-muted">
+                                                    <?= date('M j, H:i', strtotime($activity['activity_time'])) ?>
+                                                </small>
+                                            </div>
+                                        </div>
+                                    <?php endforeach; ?>
+                                <?php endif; ?>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-6 mb-4">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="card-title mb-0">Recent Appointments</h5>
+                            </div>
+                            <div class="card-body">
+                                <?php if (empty($chartData['recent_appointments'])): ?>
+                                    <div class="text-center text-muted py-4">
+                                        <i class="fas fa-calendar-times me-2"></i>
+                                        No recent appointments found
+                                    </div>
+                                <?php else: ?>
+                                    <?php foreach ($chartData['recent_appointments'] as $appointment): ?>
+                                        <div class="appointment-item mb-3">
+                                            <div class="d-flex justify-content-between align-items-start">
+                                                <div>
+                                                    <strong><?= htmlspecialchars($appointment['Name']) ?></strong>
+                                                    <div class="text-muted small">
+                                                        <?= date('M j, Y h:i A', strtotime($appointment['AppointmentTime'])) ?>
+                                                    </div>
+                                                    <span class="badge bg-<?=
+                                                    match($appointment['Status']) {
+                                                        'Upcoming' => 'primary',
+                                                        'Ongoing' => 'info',
+                                                        'Completed' => 'success',
+                                                        'Cancelled' => 'danger',
+                                                        default => 'secondary'
+                                                    }
+                                                    ?>">
+                                        <?= $appointment['Status'] ?>
+                                    </span>
+                                                </div>
+                                                <small class="text-muted">
+                                                    <?= htmlspecialchars($appointment['Email']) ?>
+                                                </small>
+                                            </div>
+                                        </div>
+                                    <?php endforeach; ?>
+                                <?php endif; ?>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
+
+<!-- Scripts -->
+<script src="notification.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+    $(document).ready(function() {
+        // Initialize charts
+        initializeCharts();
+
+        // Sidebar toggle functionality
+        $('.layout-menu-toggle').off('click').on('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            const $html = $('html');
+            const $sidebar = $('#layout-menu');
+            const $toggle = $(this);
+
+            $toggle.css('pointer-events', 'none');
+            $html.toggleClass('layout-menu-collapsed');
+            const isCollapsed = $html.hasClass('layout-menu-collapsed');
+
+            if (isCollapsed) {
+                $sidebar.css({
+                    'width': '78px',
+                    'min-width': '78px',
+                    'max-width': '78px'
+                });
+            } else {
+                $sidebar.css({
+                    'width': '260px',
+                    'min-width': '260px',
+                    'max-width': '260px'
+                });
+            }
+
+            localStorage.setItem('layoutMenuCollapsed', isCollapsed);
+
+            setTimeout(() => {
+                $toggle.css('pointer-events', 'auto');
+            }, 300);
+        });
+
+        // Initialize sidebar state from localStorage
+        const isCollapsed = localStorage.getItem('layoutMenuCollapsed') === 'true';
+        if (isCollapsed) {
+            $('html').addClass('layout-menu-collapsed');
+            $('#layout-menu').css({
+                'width': '78px',
+                'min-width': '78px',
+                'max-width': '78px'
+            });
+        } else {
+            $('#layout-menu').css({
+                'width': '260px',
+                'min-width': '260px',
+                'max-width': '260px'
+            });
+        }
+
+        // Real-time admin status update
+        function updateAdminStatus() {
+            $.ajax({
+                url: 'update_activity.php',
+                type: 'GET',
+                success: function() {
+                    console.log('Admin status updated');
+                }
+            });
+        }
+
+        // Update immediately and every minute
+        updateAdminStatus();
+        setInterval(updateAdminStatus, 60000);
+    });
+
+    function initializeCharts() {
+        // User Registration Trend Chart
+        const userTrendData = <?php echo json_encode($chartData['user_trend']); ?>;
+        const userTrendCtx = document.getElementById('userTrendChart').getContext('2d');
+
+        // Fill missing days with 0
+        const last7Days = [];
+        for (let i = 6; i >= 0; i--) {
+            const date = new Date();
+            date.setDate(date.getDate() - i);
+            const dateStr = date.toISOString().split('T')[0];
+            const existing = userTrendData.find(d => d.date === dateStr);
+            last7Days.push({
+                date: dateStr,
+                count: existing ? existing.count : 0
+            });
+        }
+
+        new Chart(userTrendCtx, {
+            type: 'line',
+            data: {
+                labels: last7Days.map(d => new Date(d.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })),
+                datasets: [{
+                    label: 'New Users',
+                    data: last7Days.map(d => d.count),
+                    borderColor: '#667eea',
+                    backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                    borderWidth: 3,
+                    fill: true,
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            stepSize: 1
+                        }
+                    }
+                }
+            }
+        });
+
+        // Ticket Status Chart
+        const ticketStatusData = <?php echo json_encode($chartData['ticket_status']); ?>;
+        const ticketStatusCtx = document.getElementById('ticketStatusChart').getContext('2d');
+
+        new Chart(ticketStatusCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ticketStatusData.map(d => d.Status.charAt(0).toUpperCase() + d.Status.slice(1)),
+                datasets: [{
+                    data: ticketStatusData.map(d => d.count),
+                    backgroundColor: [
+                        '#ff6b6b',
+                        '#4ecdc4',
+                        '#45b7d1',
+                        '#96ceb4',
+                        '#ffeaa7'
+                    ],
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom'
+                    }
+                }
+            }
+        });
+
+        // User Roles Chart
+        const userRolesData = <?php echo json_encode($chartData['user_roles']); ?>;
+        const userRolesCtx = document.getElementById('userRolesChart').getContext('2d');
+
+        new Chart(userRolesCtx, {
+            type: 'bar',
+            data: {
+                labels: userRolesData.map(d => d.Role || 'Unassigned'),
+                datasets: [{
+                    label: 'Users',
+                    data: userRolesData.map(d => d.count),
+                    backgroundColor: [
+                        'rgba(102, 126, 234, 0.8)',
+                        'rgba(118, 75, 162, 0.8)',
+                        'rgba(255, 107, 107, 0.8)',
+                        'rgba(78, 205, 196, 0.8)',
+                        'rgba(69, 183, 209, 0.8)'
+                    ],
+                    borderColor: [
+                        '#667eea',
+                        '#764ba2',
+                        '#ff6b6b',
+                        '#4ecdc4',
+                        '#45b7d1'
+                    ],
+                    borderWidth: 2,
+                    borderRadius: 8
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            stepSize: 1
+                        }
+                    }
+                }
+            }
+        });
+
+        // Visitor Trend Chart
+        const visitorTrendData = <?php echo json_encode($chartData['visitor_trend']); ?>;
+        const visitorTrendCtx = document.getElementById('visitorTrendChart').getContext('2d');
+
+        new Chart(visitorTrendCtx, {
+            type: 'line',
+            data: {
+                labels: visitorTrendData.map(d => d.month),
+                datasets: [{
+                    label: 'Visitors',
+                    data: visitorTrendData.map(d => d.count),
+                    borderColor: '#4facfe',
+                    backgroundColor: 'rgba(79, 172, 254, 0.1)',
+                    borderWidth: 3,
+                    fill: true,
+                    tension: 0.4,
+                    pointBackgroundColor: '#4facfe',
+                    pointBorderColor: '#ffffff',
+                    pointBorderWidth: 2,
+                    pointRadius: 6
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            stepSize: 1
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    // Animate stat numbers
+    function animateStats() {
+        $('.stat-number').each(function() {
+            const $this = $(this);
+            const target = parseInt($this.text().replace(/,/g, ''));
+            const increment = target / 50;
+            let current = 0;
+
+            const timer = setInterval(function() {
+                current += increment;
+                if (current >= target) {
+                    current = target;
+                    clearInterval(timer);
+                }
+                $this.text(Math.floor(current).toLocaleString());
+            }, 30);
+        });
+    }
+
+    // Start animation when page loads
+    $(document).ready(function() {
+        setTimeout(animateStats, 500);
+    });
+
+    // Refresh dashboard data every 5 minutes
+    setInterval(function() {
+        location.reload();
+    }, 300000);
+
+    // Add loading states for quick actions
+    $('.quick-action-btn').on('click', function() {
+        const $btn = $(this);
+        const originalContent = $btn.html();
+
+        $btn.html('<i class="fas fa-spinner fa-spin"></i><span>Loading...</span>');
+
+        // Reset after 2 seconds (in case the page doesn't redirect)
+        setTimeout(function() {
+            $btn.html(originalContent);
+        }, 2000);
+    });
+
+    // Add tooltips to chart elements
+    $('[data-bs-toggle="tooltip"]').tooltip();
+
+    // Make cards clickable
+    $('.stats-card.users').click(function() {
+        window.location.href = 'user_management.php';
+    });
+
+    $('.stats-card.tickets').click(function() {
+        window.location.href = 'help_desk.php';
+    });
+
+    $('.stats-card.visitors').click(function() {
+        window.location.href = 'manage_visitors.php';
+    });
+
+    $('.stats-card.items').click(function() {
+        window.location.href = 'lost_and_found.php';
+    });
+
+    // Add cursor pointer to clickable cards
+    $('.stats-card').css('cursor', 'pointer');
+
+    // Update time in the dashboard every minute
+    function updateTime() {
+        const now = new Date();
+        const timeElement = document.querySelector('.stat-card.bg-dark .count');
+        if (timeElement) {
+            timeElement.textContent = now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+        }
+    }
+
+    setInterval(updateTime, 60000);
+</script>
 </body>
 </html>
