@@ -2,6 +2,9 @@
 global $conn;
 session_start();
 require_once 'dbConfig.php';
+require_once './Dashboards/audit_logger.php'; // Add this line
+
+$auditLogger = new AuditLogger($conn); // Initialize logger
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $email = trim($_POST["email-username"]);
@@ -19,18 +22,19 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $stmt->bind_result($userID, $name, $hashedPassword, $role, $status);
         $stmt->fetch();
 
-        // Record login attempt (success or failure)
-        $success = 0;
+        $success = false;
         if (password_verify($password, $hashedPassword)) {
             if ($status !== 'active') {
+                // Log inactive account attempt
+                $auditLogger->logLogin($userID, $role, false, "Inactive account attempted login");
                 echo "Your account is inactive. Please contact administrator.";
             } else {
-                $success = 1;
+                $success = true;
                 $_SESSION['userID'] = $userID;
                 $_SESSION['name'] = $name;
                 $_SESSION['role'] = $role;
 
-                // UPDATE: Set login timestamp and reset logout timestamp
+                // Update user login tracking
                 $updateStmt = $conn->prepare("UPDATE users SET                      
                     last_login = NOW(), 
                     last_logout = NULL,
@@ -41,12 +45,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 $updateStmt->execute();
                 $updateStmt->close();
 
-                // Record login activity
-                $activity = "Logged in";
-                $stmt = $conn->prepare("INSERT INTO user_activity_log (user_id, activity) VALUES (?, ?)");
-                $stmt->bind_param("is", $userID, $activity);
-                $stmt->execute();
-                $stmt->close();
+                // Log successful login
+                $auditLogger->logLogin($userID, $role, true);
 
                 // Redirect based on role
                 switch ($role) {
@@ -59,15 +59,19 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 exit;
             }
         } else {
+            // Log failed password attempt
+            $auditLogger->logLogin($userID ?? 0, $role ?? 'unknown', false, "Incorrect password");
             echo "Incorrect password.";
         }
 
-        // Record login attempt
+        // Legacy login attempt tracking (optional - can be removed if using audit logs)
         $attemptStmt = $conn->prepare("INSERT INTO login_attempts (user_id, success, ip_address) VALUES (?, ?, ?)");
-        $attemptStmt->bind_param("iis", $userID, $success, $ip);
+        $attemptStmt->bind_param("iis", $userID, (int)$success, $ip);
         $attemptStmt->execute();
         $attemptStmt->close();
     } else {
+        // Log non-existent user attempt
+        $auditLogger->logLogin(0, 'unknown', false, "Attempted login with non-existent email: $email");
         echo "No account found with that email.";
     }
     $stmt->close();

@@ -153,10 +153,10 @@ $currentPage = basename($_SERVER['PHP_SELF']);
         </li>
 
         <!-- Lost & Found -->
-        <li class="menu-item <?= ($currentPage == 'lost_found.php') ? 'active' : '' ?>">
-            <a href="lost_found.php" class="menu-link" data-tooltip="Lost & Found">
+        <li class="menu-item <?= ($currentPage == 'audit_logs.php') ? 'active' : '' ?>">
+            <a href="audit_logs.php" class="menu-link" data-tooltip="Audit Logs">
                 <i class="menu-icon icon-base bx bx-sitemap"></i>
-                <div data-i18n="Lost & Found">Lost & Found</div>
+                <div data-i18n="Lost & Found">Audit Logs</div>
             </a>
         </li>
 

@@ -1,6 +1,7 @@
 <?php
 session_start();
 require_once '../dbConfig.php';
+require_once __DIR__ . '/audit_logger.php';
 global $conn;
 
 // Check if user is logged in and has Front Desk role

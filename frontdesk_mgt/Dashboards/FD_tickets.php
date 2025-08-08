@@ -7,7 +7,7 @@ ini_set('error_log', 'php_errors.log'); // Specify your error log path
 // Include database configuration and core ticket functions
 global $conn;
 require_once '../dbConfig.php';
-
+require_once 'audit_logger.php';
 require_once 'ticket_functions.php';
 require_once 'ticket_ops.php';
 require_once 'view_ticket.php';

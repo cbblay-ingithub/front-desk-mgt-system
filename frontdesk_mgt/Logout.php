@@ -1,12 +1,17 @@
 <?php
+global $conn;
 session_start();
 require_once 'dbConfig.php';
+require_once './Dashboards/audit_logger.php'; // Add this line
+
+$auditLogger = new AuditLogger($conn); // Initialize logger
 
 if (isset($_SESSION['userID'])) {
     $userID = $_SESSION['userID'];
+    $userRole = $_SESSION['role'] ?? 'unknown';
     global $conn;
 
-    // SINGLE UPDATE: Set logout timestamp
+    // Update user logout time
     $updateStmt = $conn->prepare("UPDATE users SET 
         last_logout = NOW(),
         last_activity = NOW() 
@@ -15,22 +20,22 @@ if (isset($_SESSION['userID'])) {
     $updateStmt->execute();
     $updateStmt->close();
 
-    // Record logout activity
+    // Log logout event
+    $auditLogger->logLogout($userID, $userRole);
+
+    // Legacy activity logging (optional - can be removed if using audit logs)
     $activity = "Logged out";
     $stmt = $conn->prepare("INSERT INTO user_activity_log (user_id, activity) VALUES (?, ?)");
     $stmt->bind_param("is", $userID, $activity);
     $stmt->execute();
     $stmt->close();
-
 }
 
-// Unset all session variables
+// Clear session
 $_SESSION = array();
-
-// Destroy the session
 session_destroy();
 
-// Redirect to login page
+// Redirect to login
 header("Location: Auth.html");
 exit;
 ?>
