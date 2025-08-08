@@ -1588,7 +1588,6 @@ function checkTimeConflict($hostId, $appointmentTime, $excludeAppointmentId = nu
     }, 300);
 
     // Button handlers for calendar modal
-        // Handle action buttons in calendar modal
         $(document).on('click', '.check-in-btn, .reschedule-btn, .cancel-btn, .complete-btn', function() {
             const appointmentId = $(this).data('id');
             const action = $(this).hasClass('check-in-btn') ? 'checkIn' :
@@ -1600,10 +1599,16 @@ function checkTimeConflict($hostId, $appointmentTime, $excludeAppointmentId = nu
             // Handle each action appropriately
             if (action === 'checkIn') {
                 // Show check-in modal
+                $('#checkInAppointmentId').val(appointmentId);
+                $('#visitorCheckInModal').modal('show');
             } else if (action === 'reschedule') {
                 // Show reschedule modal
+                $('#rescheduleAppointmentId').val(appointmentId);
+                $('#rescheduleModal').modal('show');
             } else if (action === 'cancel') {
                 // Show cancel modal
+                $('#cancelModal').data('appointmentId', appointmentId);
+                $('#cancelModal').modal('show');
             } else if (action === 'complete') {
                 // Handle completion
             }
