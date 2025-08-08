@@ -181,7 +181,7 @@ $conn->close();
 ?>
 
 <!DOCTYPE html>
-<html lang="en" class=" layout-menu-fixed layout-compact" dir="ltr" data-skin="default">
+<html lang="en" class=" layout-menu-fixed" dir="ltr" data-skin="default">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
@@ -212,6 +212,60 @@ $conn->close();
             overflow-y: auto !important;
             overflow-x: hidden !important;
             z-index: 1000 !important;
+        }
+        /* Add these to your existing styles */
+        .layout-menu-fixed:not(.layout-menu-collapsed) .layout-menu {
+            width: 260px !important;
+        }
+
+        .layout-menu-fixed.layout-menu-collapsed .layout-menu {
+            width: 78px !important;
+        }
+
+        .layout-menu-fixed .layout-menu {
+            position: fixed;
+            height: 100%;
+        }
+
+        .layout-menu-fixed .layout-page {
+            margin-left: 260px;
+        }
+
+        .layout-menu-fixed.layout-menu-collapsed .layout-page {
+            margin-left: 78px;
+        }
+        .layout-menu-toggle {
+            background-color: rgba(255, 255, 255, 0.1) !important;
+            border: 1px solid rgba(255, 255, 255, 0.2) !important;
+            border-radius: 6px !important;
+            padding: 8px !important;
+            color: #fff !important;
+            transition: all 0.3s ease !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            width: 32px !important;
+            height: 32px !important;
+            min-width: 32px !important;
+        }
+
+        .layout-menu-toggle i {
+            font-size: 16px !important;
+            line-height: 1 !important;
+            opacity: 1 !important;
+            visibility: visible !important;
+            pointer-events: auto !important;
+            z-index: 1002 !important;
+        }
+
+        .layout-menu-collapsed #layout-menu .layout-menu-toggle {
+            animation: pulse-glow 2s infinite !important;
+        }
+
+        @keyframes pulse-glow {
+            0% { box-shadow: 0 0 5px rgba(255, 255, 255, 0.3); }
+            50% { box-shadow: 0 0 15px rgba(255, 255, 255, 0.5), 0 0 25px rgba(255, 255, 255, 0.3); }
+            100% { box-shadow: 0 0 5px rgba(255, 255, 255, 0.3); }
         }
 
         .layout-menu-collapsed #layout-menu {
@@ -447,7 +501,7 @@ $conn->close();
             <nav class="layout-navbar container-xxl navbar-detached navbar navbar-expand-xl align-items-center bg-navbar-theme" id="layout-navbar">
                 <div class="layout-menu-toggle navbar-nav align-items-xl-center me-4 me-xl-0 d-xl-none">
                     <a class="nav-item nav-link px-0 me-xl-6" href="javascript:void(0)">
-                        <i class="icon-base bx bx-menu icon-md"></i>
+                        <i class="fas fa-bars"></i>
                     </a>
                 </div>
                 <div class="navbar-nav-right d-flex align-items-center justify-content-end" id="navbar-collapse">
@@ -483,7 +537,7 @@ $conn->close();
                                 <div class="d-flex justify-content-between align-items-center">
                                     <div>
                                         <div class="count"><?php echo $stats['total_users']; ?></div>
-                                        <div class="label">Total Users</div>
+                                        <div class="label text-white">Total Users</div>
                                     </div>
                                     <div class="icon">
                                         <i class="fas fa-users"></i>
@@ -499,7 +553,7 @@ $conn->close();
                                 <div class="d-flex justify-content-between align-items-center">
                                     <div>
                                         <div class="count"><?php echo $stats['active_users']; ?></div>
-                                        <div class="label">Active Users</div>
+                                        <div class="label text-white">Active Users</div>
                                     </div>
                                     <div class="icon">
                                         <i class="fas fa-user-check"></i>
@@ -515,7 +569,7 @@ $conn->close();
                                 <div class="d-flex justify-content-between align-items-center">
                                     <div>
                                         <div class="count"><?php echo $stats['total_visitors']; ?></div>
-                                        <div class="label">Total Visitors</div>
+                                        <div class="label text-white">Total Visitors</div>
                                     </div>
                                     <div class="icon">
                                         <i class="fas fa-address-book"></i>
@@ -531,7 +585,7 @@ $conn->close();
                                 <div class="d-flex justify-content-between align-items-center">
                                     <div>
                                         <div class="count"><?php echo $stats['checked_in_visitors']; ?></div>
-                                        <div class="label">Checked In Now</div>
+                                        <div class="label text-white">Checked In Now</div>
                                     </div>
                                     <div class="icon">
                                         <i class="fas fa-door-open"></i>
@@ -550,7 +604,7 @@ $conn->close();
                                 <div class="d-flex justify-content-between align-items-center">
                                     <div>
                                         <div class="count"><?php echo $stats['open_tickets']; ?></div>
-                                        <div class="label">Open Tickets</div>
+                                        <div class="label text-white">Open Tickets</div>
                                     </div>
                                     <div class="icon">
                                         <i class="fas fa-ticket-alt"></i>
@@ -566,7 +620,7 @@ $conn->close();
                                 <div class="d-flex justify-content-between align-items-center">
                                     <div>
                                         <div class="count"><?php echo $stats['average_appointments']; ?></div>
-                                        <div class="label">Avg Appointments/Day (30d)</div>
+                                        <div class="label text-white">Avg Appointments/Day (30d)</div>
                                     </div>
                                     <div class="icon">
                                         <i class="fas fa-calendar-check"></i>
@@ -582,7 +636,7 @@ $conn->close();
                                 <div class="d-flex justify-content-between align-items-center">
                                     <div>
                                         <div class="count"><?php echo date('H:i'); ?></div>
-                                        <div class="label">Current Time</div>
+                                        <div class="label text-white">Current Time</div>
                                     </div>
                                     <div class="icon">
                                         <i class="fas fa-clock"></i>
@@ -615,19 +669,19 @@ $conn->close();
                                         </a>
                                     </div>
                                     <div class="col-lg-2 col-md-4 col-6 mb-3">
-                                        <a href="manage_visitors.php" class="quick-action-btn">
+                                        <a href="visitor-mgt.php" class="quick-action-btn">
                                             <i class="fas fa-user-friends"></i>
                                             <span>Manage Visitors</span>
                                         </a>
                                     </div>
                                     <div class="col-lg-2 col-md-4 col-6 mb-3">
-                                        <a href="lost_and_found.php" class="quick-action-btn">
+                                        <a href="FD_frontend_dash.php" class="quick-action-btn">
                                             <i class="fas fa-search"></i>
                                             <span>Manage Appointments</span>
                                         </a>
                                     </div>
                                     <div class="col-lg-2 col-md-4 col-6 mb-3">
-                                        <a href="reports.php" class="quick-action-btn">
+                                        <a href="admin-reports.php" class="quick-action-btn">
                                             <i class="fas fa-chart-bar"></i>
                                             <span>Reports</span>
                                         </a>
@@ -811,7 +865,8 @@ $conn->close();
 
             $toggle.css('pointer-events', 'none');
             $html.toggleClass('layout-menu-collapsed');
-            const isCollapsed = $html.hasClass('layout-menu-collapsed');
+            // Initialize sidebar state from localStorage
+            const isCollapsed = localStorage.getItem('layoutMenuCollapsed') === 'true';
 
             if (isCollapsed) {
                 $sidebar.css({
@@ -834,33 +889,42 @@ $conn->close();
             }, 300);
         });
 
-        // Initialize sidebar state from localStorage
-        const isCollapsed = localStorage.getItem('layoutMenuCollapsed') === 'true';
-        if (isCollapsed) {
-            $('html').addClass('layout-menu-collapsed');
-            $('#layout-menu').css({
-                'width': '78px',
-                'min-width': '78px',
-                'max-width': '78px'
-            });
-        } else {
-            $('#layout-menu').css({
-                'width': '260px',
-                'min-width': '260px',
-                'max-width': '260px'
-            });
-        }
+        $('.layout-menu-toggle').off('click').on('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
 
-        // Real-time admin status update
-        function updateAdminStatus() {
-            $.ajax({
-                url: 'update_activity.php',
-                type: 'GET',
-                success: function() {
-                    console.log('Admin status updated');
-                }
-            });
-        }
+            const $html = $('html');
+            const isCollapsed = $html.hasClass('layout-menu-collapsed');
+
+            // Toggle the collapsed state
+            $html.toggleClass('layout-menu-collapsed');
+
+            // Update the menu and content widths
+            if ($html.hasClass('layout-menu-collapsed')) {
+                $('#layout-menu').css({
+                    'width': '78px',
+                    'min-width': '78px',
+                    'max-width': '78px'
+                });
+                $('.layout-content').css({
+                    'margin-left': '78px',
+                    'width': 'calc(100% - 78px)'
+                });
+            } else {
+                $('#layout-menu').css({
+                    'width': '260px',
+                    'min-width': '260px',
+                    'max-width': '260px'
+                });
+                $('.layout-content').css({
+                    'margin-left': '260px',
+                    'width': 'calc(100% - 260px)'
+                });
+            }
+
+            // Store the state in localStorage
+            localStorage.setItem('layoutMenuCollapsed', $html.hasClass('layout-menu-collapsed'));
+        });
 
         // Update immediately and every minute
         updateAdminStatus();

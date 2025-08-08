@@ -152,13 +152,17 @@ $conn->close();
             min-width: 260px !important;
             max-width: 260px !important;
             flex: 0 0 260px !important;
-            position: fixed !important; /* Make sidebar fixed */
+            position: fixed !important;
             top: 0 !important;
             left: 0 !important;
-            height: 100vh !important; /* Full viewport height */
-            overflow-y: auto !important; /* Allow sidebar internal scrolling if needed */
+            height: 100vh !important;
+            overflow-y: auto !important;
             overflow-x: hidden !important;
-            z-index: 1000 !important; /* Ensure it stays on top */
+            z-index: 1001 !important; /* Increased z-index */
+            padding-top: 1rem;
+            background-color: #fff; /* Add background color */
+            box-shadow: 0 0 15px rgba(0,0,0,0.1); /* Add shadow */
+            transition: width 0.3s ease, min-width 0.3s ease, max-width 0.3s ease !important;
         }
 
         .layout-menu-collapsed #layout-menu {
@@ -171,34 +175,33 @@ $conn->close();
         .layout-content {
             flex: 1 1 auto;
             min-width: 0;
-            margin-left: 260px !important; /* Push content away from fixed sidebar */
+            margin-left: 260px !important;
             width: calc(100% - 260px) !important;
-            height: 100vh !important; /* Full viewport height */
-            overflow-y: auto !important; /* Make only main content scrollable */
+            height: 100vh !important;
+            overflow-y: auto !important;
             overflow-x: hidden !important;
+            transition: margin-left 0.3s ease, width 0.3s ease !important;
         }
 
         .layout-menu-collapsed .layout-content {
-            margin-left: 78px !important; /* Adjust for collapsed sidebar */
+            margin-left: 78px !important;
             width: calc(100% - 78px) !important;
         }
 
         .layout-wrapper {
-            overflow: hidden !important; /* Prevent wrapper scrolling */
-            height: 100vh !important; /* Fixed height */
+            overflow: hidden !important;
+            height: 100vh !important;
         }
 
         .layout-container {
             display: flex;
             min-height: 100vh;
             width: 100%;
-            overflow: hidden !important; /* Prevent container scrolling */
+            overflow: hidden !important;
+            position: relative;
         }
 
-        .no-transition {
-            transition: none !important;
-        }
-
+        /* Toggle Button Styles */
         .layout-menu-toggle {
             background-color: rgba(255, 255, 255, 0.1) !important;
             border: 1px solid rgba(255, 255, 255, 0.2) !important;
@@ -212,6 +215,7 @@ $conn->close();
             width: 32px !important;
             height: 32px !important;
             min-width: 32px !important;
+            cursor: pointer;
         }
 
         .layout-menu-toggle i {
@@ -228,15 +232,27 @@ $conn->close();
         }
 
         @keyframes pulse-glow {
-            0% {
-                box-shadow: 0 0 5px rgba(255, 255, 255, 0.3);
-            }
-            50% {
-                box-shadow: 0 0 15px rgba(255, 255, 255, 0.5), 0 0 25px rgba(255, 255, 255, 0.3);
-            }
-            100% {
-                box-shadow: 0 0 5px rgba(255, 255, 255, 0.3);
-            }
+            0% { box-shadow: 0 0 5px rgba(255, 255, 255, 0.3); }
+            50% { box-shadow: 0 0 15px rgba(255, 255, 255, 0.5), 0 0 25px rgba(255, 255, 255, 0.3); }
+            100% { box-shadow: 0 0 5px rgba(255, 255, 255, 0.3); }
+        }
+
+        /* Base Styles */
+        html, body {
+            overflow-x: hidden !important;
+            overflow-y: hidden !important;
+            height: 100vh !important;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container-fluid.container-p-y {
+            padding-top: 1.5rem !important;
+            padding-bottom: 1.5rem !important;
+        }
+
+        .layout-content {
+            transition: margin-left 0.3s ease, width 0.3s ease !important;
         }
 
         /* Original user management styles */
@@ -320,7 +336,7 @@ $conn->close();
             <nav class="layout-navbar container-xxl navbar-detached navbar navbar-expand-xl align-items-center bg-navbar-theme" id="layout-navbar">
                 <div class="layout-menu-toggle navbar-nav align-items-xl-center me-4 me-xl-0 d-xl-none">
                     <a class="nav-item nav-link px-0 me-xl-6" href="javascript:void(0)">
-                        <i class="icon-base bx bx-menu icon-md"></i>
+                        <i class="fas fa-bars"></i>
                     </a>
                 </div>
                 <div class="navbar-nav-right d-flex align-items-center justify-content-end" id="navbar-collapse">
@@ -635,8 +651,51 @@ $conn->close();
                 }
             });
         });
+        $(document).ready(function() {
+            // Initialize sidebar state from localStorage
+            function initializeSidebar() {
+                const isCollapsed = localStorage.getItem('layoutMenuCollapsed') === 'true';
+                const $html = $('html');
 
-        // Select all checkboxes
+                if (isCollapsed) {
+                    $html.addClass('layout-menu-collapsed');
+                } else {
+                    $html.removeClass('layout-menu-collapsed');
+                }
+            }
+
+            // Call initialization function
+            initializeSidebar();
+
+            // Sidebar toggle functionality - FIXED VERSION
+            $('.layout-menu-toggle').on('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+
+                const $html = $('html');
+                const $toggle = $(this);
+
+                // Prevent multiple rapid clicks
+                $toggle.css('pointer-events', 'none');
+
+                // Toggle the collapsed class
+                $html.toggleClass('layout-menu-collapsed');
+                const isCollapsed = $html.hasClass('layout-menu-collapsed');
+
+                // Save state to localStorage
+                localStorage.setItem('layoutMenuCollapsed', isCollapsed);
+
+                // Re-enable clicking after animation
+                setTimeout(() => {
+                    $toggle.css('pointer-events', 'auto');
+                }, 300);
+
+                // Optional: Log for debugging
+                console.log('Sidebar toggled. Collapsed:', isCollapsed);
+            });
+
+
+            // Select all checkboxes
         $('#selectAll, #selectAllRows').click(function() {
             $('input[name="selected_users[]"]').prop('checked', this.checked);
         });
@@ -765,56 +824,6 @@ $conn->close();
             updateFilterBadge();
         });
 
-        // Sidebar toggle functionality
-        $('.layout-menu-toggle').off('click').on('click', function(e) {
-            e.preventDefault();
-            e.stopPropagation();
-
-            const $html = $('html');
-            const $sidebar = $('#layout-menu');
-            const $toggle = $(this);
-
-            $toggle.css('pointer-events', 'none');
-            $html.toggleClass('layout-menu-collapsed');
-            const isCollapsed = $html.hasClass('layout-menu-collapsed');
-
-            if (isCollapsed) {
-                $sidebar.css({
-                    'width': '78px',
-                    'min-width': '78px',
-                    'max-width': '78px'
-                });
-            } else {
-                $sidebar.css({
-                    'width': '260px',
-                    'min-width': '260px',
-                    'max-width': '260px'
-                });
-            }
-
-            localStorage.setItem('layoutMenuCollapsed', isCollapsed);
-
-            setTimeout(() => {
-                $toggle.css('pointer-events', 'auto');
-            }, 300);
-        });
-
-        // Initialize sidebar state from localStorage
-        const isCollapsed = localStorage.getItem('layoutMenuCollapsed') === 'true';
-        if (isCollapsed) {
-            $('html').addClass('layout-menu-collapsed');
-            $('#layout-menu').css({
-                'width': '78px',
-                'min-width': '78px',
-                'max-width': '78px'
-            });
-        } else {
-            $('#layout-menu').css({
-                'width': '260px',
-                'min-width': '260px',
-                'max-width': '260px'
-            });
-        }
     });
 </script>
 </body>
