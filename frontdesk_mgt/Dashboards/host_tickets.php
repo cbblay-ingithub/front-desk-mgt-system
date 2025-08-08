@@ -725,46 +725,51 @@ $conn->close();
 <script>
     $(document).ready(function() {
         // Sidebar toggle functionality
-        function updateTooltip() {
-            const $toggle = $('.layout-menu-toggle');
-            const isCollapsed = $('html').hasClass('layout-menu-collapsed');
-
+        $(document).ready(function() {
+            // Restore sidebar state
+            const isCollapsed = localStorage.getItem('sidebarCollapsed') === 'true';
             if (isCollapsed) {
-                $toggle.attr('data-tooltip', 'Expand Menu');
-                $toggle.attr('title', 'Expand Menu');
-            } else {
-                $toggle.attr('data-tooltip', 'Collapse Menu');
-                $toggle.attr('title', 'Collapse Menu');
-            }
-        }
-
-        $('.layout-menu-toggle').off('click').on('click', function(e) {
-            e.preventDefault();
-            e.stopPropagation();
-
-            const $html = $('html');
-            const $sidebar = $('#layout-menu');
-            const $toggle = $(this);
-
-            $toggle.css('pointer-events', 'none');
-            $html.toggleClass('layout-menu-collapsed');
-            const isCollapsed = $html.hasClass('layout-menu-collapsed');
-
-            if (isCollapsed) {
-                $sidebar.css({
-                    'width': '78px',
-                    'min-width': '78px',
-                    'max-width': '78px'
-                });
-            } else {
-                $sidebar.css({
-                    'width': '260px',
-                    'min-width': '260px',
-                    'max-width': '260px'
-                });
+                $('html').addClass('layout-menu-collapsed');
+                $('#toggleIcon').removeClass('bx-chevron-left').addClass('bx-chevron-right');
             }
 
-            updateTooltip();
+            // Handle sidebar toggle
+            $('#sidebarToggle').on('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+
+                const $html = $('html');
+                const $sidebar = $('#layout-menu');
+                const $toggleIcon = $('#toggleIcon');
+
+                $(this).css('pointer-events', 'none');
+                $html.toggleClass('layout-menu-collapsed');
+                const isCollapsed = $html.hasClass('layout-menu-collapsed');
+
+                // Update icon
+                if (isCollapsed) {
+                    $toggleIcon.removeClass('bx-chevron-left').addClass('bx-chevron-right');
+                } else {
+                    $toggleIcon.removeClass('bx-chevron-right').addClass('bx-chevron-left');
+                }
+
+                // Store state
+                localStorage.setItem('sidebarCollapsed', isCollapsed);
+
+                setTimeout(() => {
+                    $(this).css('pointer-events', 'auto');
+                }, 300);
+            });
+
+            // Handle menu link tooltips in collapsed state
+            $(document).on('mouseenter', '.layout-menu-collapsed .menu-link', function() {
+                if ($('html').hasClass('layout-menu-collapsed')) {
+                    $(this).attr('title', $(this).data('tooltip'));
+                }
+            }).on('mouseleave', '.layout-menu-collapsed .menu-link', function() {
+                $(this).removeAttr('title');
+            });
+        });
             localStorage.setItem('layoutMenuCollapsed', isCollapsed);
 
             setTimeout(() => {
