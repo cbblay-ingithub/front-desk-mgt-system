@@ -347,6 +347,54 @@ $conn->close();
             flex: 1;
             min-width: 300px;
         }
+             /* Ensure fixed sidebar and proper content offset */
+         #layout-menu {
+             width: 260px !important;
+             min-width: 260px !important;
+             max-width: 260px !important;
+             flex: 0 0 260px !important;
+             position: fixed !important;
+             top: 0 !important;
+             left: 0 !important;
+             height: 100vh !important;
+             overflow-y: auto !important;
+             overflow-x: hidden !important;
+             z-index: 1000 !important;
+         }
+
+        .layout-menu-collapsed #layout-menu {
+            width: 78px !important;
+            min-width: 78px !important;
+            max-width: 78px !important;
+            flex: 0 0 78px !important;
+        }
+
+        .layout-content {
+            flex: 1 1 auto;
+            min-width: 0;
+            margin-left: 260px !important;
+            width: calc(100% - 260px) !important;
+            height: 100vh !important;
+            overflow-y: auto !important;
+            overflow-x: hidden !important;
+            transition: margin-left 0.3s ease, width 0.3s ease !important;
+            padding-top: 70px; /* Add padding to account for fixed navbar */
+
+        }
+
+        .layout-menu-collapsed .layout-content {
+            margin-left: 78px !important;
+            width: calc(100% - 78px) !important;
+        }
+
+        /* Prevent scrolling on body/html */
+        html, body {
+            overflow-x: hidden !important;
+            overflow-y: hidden !important;
+            height: 100vh !important;
+        }
+
+
     </style>
 </head>
 
@@ -356,7 +404,7 @@ $conn->close();
         <div class="layout-container">
             <?php include 'sidebar.php'; ?>
 
-            <div class="layout-page">
+            <div class="layout-content">
                 <!-- Navbar -->
                 <nav class="layout-navbar container-xxl navbar-detached navbar navbar-expand-xl align-items-center bg-navbar-theme" id="layout-navbar">
                     <div class="layout-menu-toggle navbar-nav align-items-xl-center me-4 me-xl-0 d-xl-none">
@@ -470,31 +518,31 @@ $conn->close();
                                 <div class="card-body">
                                     <div class="row">
                                         <div class="col-lg-2 col-md-4 col-6 mb-3">
-                                            <a href="create_ticket.php" class="quick-action-btn">
+                                            <a href="help_desk.php" class="quick-action-btn">
                                                 <i class="fas fa-plus-circle"></i>
                                                 <span>Create Ticket</span>
                                             </a>
                                         </div>
                                         <div class="col-lg-2 col-md-4 col-6 mb-3">
-                                            <a href="tickets.php?status=open" class="quick-action-btn">
+                                            <a href="help_desk.php?status=open" class="quick-action-btn">
                                                 <i class="fas fa-folder-open"></i>
                                                 <span>View Open</span>
                                             </a>
                                         </div>
                                         <div class="col-lg-2 col-md-4 col-6 mb-3">
-                                            <a href="tickets.php?status=in-progress" class="quick-action-btn">
+                                            <a href="help_desk.php?status=in-progress" class="quick-action-btn">
                                                 <i class="fas fa-spinner"></i>
                                                 <span>View In Progress</span>
                                             </a>
                                         </div>
                                         <div class="col-lg-2 col-md-4 col-6 mb-3">
-                                            <a href="tickets.php?status=resolved" class="quick-action-btn">
+                                            <a href="help_desk.php?status=resolved" class="quick-action-btn">
                                                 <i class="fas fa-check"></i>
                                                 <span>View Resolved</span>
                                             </a>
                                         </div>
                                         <div class="col-lg-2 col-md-4 col-6 mb-3">
-                                            <a href="tickets.php?assignee=me" class="quick-action-btn">
+                                            <a href="help_desk.php?assignee=me" class="quick-action-btn">
                                                 <i class="fas fa-user-tag"></i>
                                                 <span>My Tickets</span>
                                             </a>
@@ -586,7 +634,7 @@ $conn->close();
                             <div class="card">
                                 <div class="card-header d-flex justify-content-between align-items-center">
                                     <h5 class="card-title mb-0">Recent Tickets</h5>
-                                    <a href="tickets.php" class="btn btn-sm btn-outline-primary">View All</a>
+                                    <a href="help_desk.php" class="btn btn-sm btn-outline-primary">View All</a>
                                 </div>
                                 <div class="card-body recent-tickets-container">
                                     <?php if (empty($ticketData['recent_tickets'])): ?>
@@ -691,18 +739,45 @@ $conn->close();
         // Initialize charts
         initializeCharts();
 
-        // Sidebar toggle functionality
-        $('.layout-menu-toggle').off('click').on('click', function(e) {
+        // Restore sidebar state
+        const isCollapsed = localStorage.getItem('sidebarCollapsed') === 'true';
+        if (isCollapsed) {
+            $('html').addClass('layout-menu-collapsed');
+            $('#toggleIcon').removeClass('bx-chevron-left').addClass('bx-chevron-right');
+        }
+
+        // Handle sidebar toggle
+        $('#sidebarToggle').on('click', function(e) {
             e.preventDefault();
             e.stopPropagation();
 
             const $html = $('html');
             const $sidebar = $('#layout-menu');
-            const $toggle = $(this);
+            const $toggleIcon = $('#toggleIcon');
 
-            $toggle.css('pointer-events', 'none');
+            $(this).css('pointer-events', 'none');
             $html.toggleClass('layout-menu-collapsed');
             const isCollapsed = $html.hasClass('layout-menu-collapsed');
+
+            // Update icon
+            if (isCollapsed) {
+                $toggleIcon.removeClass('bx-chevron-left').addClass('bx-chevron-right');
+            } else {
+                $toggleIcon.removeClass('bx-chevron-right').addClass('bx-chevron-left');
+            }
+
+            // Store state
+            localStorage.setItem('sidebarCollapsed', isCollapsed);
+
+            setTimeout(() => {
+                $(this).css('pointer-events', 'auto');
+            }, 300);
+        });
+
+        // Handle window resize
+        $(window).resize(function() {
+            const $sidebar = $('#layout-menu');
+            const isCollapsed = $('html').hasClass('layout-menu-collapsed');
 
             if (isCollapsed) {
                 $sidebar.css({
@@ -717,30 +792,7 @@ $conn->close();
                     'max-width': '260px'
                 });
             }
-
-            localStorage.setItem('layoutMenuCollapsed', isCollapsed);
-
-            setTimeout(() => {
-                $toggle.css('pointer-events', 'auto');
-            }, 300);
         });
-
-        // Initialize sidebar state from localStorage
-        const isCollapsed = localStorage.getItem('layoutMenuCollapsed') === 'true';
-        if (isCollapsed) {
-            $('html').addClass('layout-menu-collapsed');
-            $('#layout-menu').css({
-                'width': '78px',
-                'min-width': '78px',
-                'max-width': '78px'
-            });
-        } else {
-            $('#layout-menu').css({
-                'width': '260px',
-                'min-width': '260px',
-                'max-width': '260px'
-            });
-        }
 
         // Add loading states for quick actions
         $('.quick-action-btn').on('click', function() {
