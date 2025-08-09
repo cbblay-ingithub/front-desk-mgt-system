@@ -2,9 +2,8 @@
 global $conn;
 session_start();
 require_once 'dbConfig.php';
-require_once './Dashboards/audit_logger.php'; // Add this line
-
-$auditLogger = new AuditLogger($conn); // Initialize logger
+require_once 'audit_logger.php';
+$auditLogger = new AuditLogger($conn);
 
 if (isset($_SESSION['userID'])) {
     $userID = $_SESSION['userID'];
