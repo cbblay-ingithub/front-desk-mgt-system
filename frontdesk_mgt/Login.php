@@ -51,9 +51,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 // Redirect based on role
                 switch ($role) {
                     case 'Admin': header("Location: Dashboards/admin-dashboard.php"); break;
-                    case 'Host': header("Location: Dashboards/host_dashboard.php"); break;
-                    case 'Front Desk Staff': header("Location: Dashboards/visitor-mgt.php"); break;
-                    case 'Support Staff': header("Location: Dashboards/help_desk.php"); break;
+                    case 'Host': header("Location: Dashboards/host_dash.php"); break;
+                    case 'Front Desk Staff': header("Location: Dashboards/frontdesk_dashboard.php"); break;
+                    case 'Support Staff': header("Location: Dashboards/HD_analytics.php"); break;
                     default: header("Location: unauthorized.php"); break;
                 }
                 exit;
