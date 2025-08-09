@@ -138,9 +138,13 @@ $conn->close();
     <link href="https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="../../Sneat/assets/vendor/fonts/iconify-icons.css" />
+    <link rel="stylesheet" href="../../Sneat/assets/vendor/css/core.css" />
+    <link rel="stylesheet" href="../../Sneat/assets/css/demo.css" />
+
 
     <style>
-        /* Sidebar and layout styles */
+        /* Sidebar and layout styles - UNCHANGED */
         #layout-menu {
             width: 260px !important;
             min-width: 260px !important;
@@ -177,35 +181,113 @@ $conn->close();
             width: calc(100% - 78px) !important;
         }
 
-        /* Dashboard Cards */
+        /* Enhanced Modern Dashboard Cards - UPDATED */
         .stats-card {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.08);
             border: none;
-            border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            height: 100%;
-            color: white;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+            overflow: hidden;
+            height: 200px;
+        }
+
+        .stats-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--card-gradient);
         }
 
         .stats-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            transform: translateY(-8px);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.12);
         }
 
-        .stats-card.visitors { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); }
-        .stats-card.appointments { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
-        .stats-card.tickets { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); }
-
-        .stats-icon {
-            font-size: 2.5rem;
-            opacity: 0.8;
+        .stats-card.visitors {
+            --card-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --card-color: #667eea;
         }
 
-        .stat-number {
-            font-size: 2.5rem;
+        .stats-card.appointments {
+            --card-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --card-color: #f093fb;
+        }
+
+        .stats-card.tickets {
+            --card-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            --card-color: #4facfe;
+        }
+
+        .card-icon-container {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 60px;
+            height: 60px;
+            border-radius: 16px;
+            background: var(--card-gradient);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+        }
+
+        .card-icon {
+            font-size: 24px;
+            color: white;
+        }
+
+        .main-stat {
+            font-size: 3.5rem;
+            font-weight: 800;
+            color: #1a202c;
+            line-height: 1;
+            margin-bottom: 0.5rem;
+        }
+
+        .main-label {
+            font-size: 1.1rem;
+            color: #64748b;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .sub-stats {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .sub-stat {
+            background: #f1f5f9;
+            padding: 8px 12px;
+            border-radius: 10px;
+            flex: 1;
+            min-width: 80px;
+            text-align: center;
+        }
+
+        .sub-stat-number {
+            font-size: 1.2rem;
             font-weight: 700;
+            color: var(--card-color);
+            display: block;
         }
 
+        .sub-stat-label {
+            font-size: 0.75rem;
+            color: #64748b;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.025em;
+        }
+
+        /* Other styles - UNCHANGED */
         .recent-item {
             padding: 12px;
             border-left: 4px solid;
@@ -289,7 +371,7 @@ $conn->close();
                 <div class="navbar-nav-right d-flex align-items-center justify-content-end" id="navbar-collapse">
                     <div class="navbar-nav align-items-center me-auto">
                         <div class="nav-item">
-                            <h4 class="mb-0 fw-bold ms-2">Front Desk Dashboard</h4>
+                            <h4 class="mb-0 fw-bold ms-2">Dashboard</h4>
                         </div>
                     </div>
 
@@ -302,7 +384,7 @@ $conn->close();
                                 <li><a class="dropdown-item" href="profile.php"><i class="fas fa-user me-2"></i> Profile</a></li>
                                 <li><a class="dropdown-item" href="settings.php"><i class="fas fa-cog me-2"></i> Settings</a></li>
                                 <li><hr class="dropdown-divider"></li>
-                                <li><a class="dropdown-item" href="../logout.php"><i class="fas fa-sign-out-alt me-2"></i> Logout</a></li>
+                                <li><a class="dropdown-item" href="../Logout.php"><i class="fas fa-sign-out-alt me-2"></i> Logout</a></li>
                             </ul>
                         </div>
                     </div>
@@ -316,20 +398,20 @@ $conn->close();
                     <!-- Visitors Card -->
                     <div class="col-md-4 mb-4">
                         <div class="stats-card visitors">
-                            <div class="card-body">
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <div>
-                                        <div class="stat-number"><?= $stats['total_visitors'] ?></div>
-                                        <div class="label">Total Visitors</div>
+                            <div class="card-icon-container">
+                                <i class="fas fa-users card-icon"></i>
+                            </div>
+                            <div class="card-body p-4">
+                                <div class="main-stat"><?= $stats['total_visitors'] ?></div>
+                                <div class="main-label">Total Visitors</div>
+                                <div class="sub-stats">
+                                    <div class="sub-stat">
+                                        <span class="sub-stat-number"><?= $stats['checked_in_visitors'] ?></span>
+                                        <div class="sub-stat-label">Checked In</div>
                                     </div>
-                                    <div class="stats-icon">
-                                        <i class="fas fa-users"></i>
-                                    </div>
-                                </div>
-                                <div class="mt-3">
-                                    <div class="d-flex justify-content-between">
-                                        <small>Checked In: <?= $stats['checked_in_visitors'] ?></small>
-                                        <small>Today: <?= $stats['today_visitors'] ?></small>
+                                    <div class="sub-stat">
+                                        <span class="sub-stat-number"><?= $stats['today_visitors'] ?></span>
+                                        <div class="sub-stat-label">Today</div>
                                     </div>
                                 </div>
                             </div>
@@ -339,21 +421,24 @@ $conn->close();
                     <!-- Appointments Card -->
                     <div class="col-md-4 mb-4">
                         <div class="stats-card appointments">
-                            <div class="card-body">
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <div>
-                                        <div class="stat-number"><?= $stats['total'] ?></div>
-                                        <div class="label">Today's Appointments</div>
+                            <div class="card-icon-container">
+                                <i class="fas fa-calendar-check card-icon"></i>
+                            </div>
+                            <div class="card-body p-4">
+                                <div class="main-stat"><?= $stats['total'] ?></div>
+                                <div class="main-label">Today's Appointments</div>
+                                <div class="sub-stats">
+                                    <div class="sub-stat">
+                                        <span class="sub-stat-number"><?= $stats['upcoming'] ?></span>
+                                        <div class="sub-stat-label">Upcoming</div>
                                     </div>
-                                    <div class="stats-icon">
-                                        <i class="fas fa-calendar-check"></i>
+                                    <div class="sub-stat">
+                                        <span class="sub-stat-number"><?= $stats['ongoing'] ?></span>
+                                        <div class="sub-stat-label">Ongoing</div>
                                     </div>
-                                </div>
-                                <div class="mt-3">
-                                    <div class="d-flex justify-content-between">
-                                        <small>Upcoming: <?= $stats['upcoming'] ?></small>
-                                        <small>Ongoing: <?= $stats['ongoing'] ?></small>
-                                        <small>Completed: <?= $stats['completed'] ?></small>
+                                    <div class="sub-stat">
+                                        <span class="sub-stat-number"><?= $stats['completed'] ?></span>
+                                        <div class="sub-stat-label">Completed</div>
                                     </div>
                                 </div>
                             </div>
@@ -363,27 +448,29 @@ $conn->close();
                     <!-- Tickets Card -->
                     <div class="col-md-4 mb-4">
                         <div class="stats-card tickets">
-                            <div class="card-body">
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <div>
-                                        <div class="stat-number"><?= $stats['total_tickets'] ?></div>
-                                        <div class="label">Recent Tickets (7d)</div>
+                            <div class="card-icon-container">
+                                <i class="fas fa-ticket-alt card-icon"></i>
+                            </div>
+                            <div class="card-body p-4">
+                                <div class="main-stat"><?= $stats['total_tickets'] ?></div>
+                                <div class="main-label">Recent Tickets (7d)</div>
+                                <div class="sub-stats">
+                                    <div class="sub-stat">
+                                        <span class="sub-stat-number"><?= $stats['open_tickets'] ?></span>
+                                        <div class="sub-stat-label">Open</div>
                                     </div>
-                                    <div class="stats-icon">
-                                        <i class="fas fa-ticket-alt"></i>
+                                    <div class="sub-stat">
+                                        <span class="sub-stat-number"><?= $stats['in_progress_tickets'] ?></span>
+                                        <div class="sub-stat-label">In Progress</div>
                                     </div>
-                                </div>
-                                <div class="mt-3">
-                                    <div class="d-flex justify-content-between">
-                                        <small>Open: <?= $stats['open_tickets'] ?></small>
-                                        <small>In Progress: <?= $stats['in_progress_tickets'] ?></small>
-                                        <small>Resolved: <?= $stats['resolved_tickets'] ?></small>
+                                    <div class="sub-stat">
+                                        <span class="sub-stat-number"><?= $stats['resolved_tickets'] ?></span>
+                                        <div class="sub-stat-label">Resolved</div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
 
                 <!-- Quick Actions -->
                 <div class="row mb-4">
@@ -395,25 +482,25 @@ $conn->close();
                             <div class="card-body">
                                 <div class="row">
                                     <div class="col-lg-2 col-md-4 col-6 mb-3">
-                                        <a href="check_in.php" class="quick-action-btn">
+                                        <a href="visitor-mgt.php" class="quick-action-btn">
                                             <i class="fas fa-user-plus"></i>
                                             <span>Check In Visitor</span>
                                         </a>
                                     </div>
                                     <div class="col-lg-2 col-md-4 col-6 mb-3">
-                                        <a href="check_out.php" class="quick-action-btn">
+                                        <a href="visitor-mgt.php" class="quick-action-btn">
                                             <i class="fas fa-user-minus"></i>
                                             <span>Check Out Visitor</span>
                                         </a>
                                     </div>
                                     <div class="col-lg-2 col-md-4 col-6 mb-3">
-                                        <a href="schedule_appointment.php" class="quick-action-btn">
+                                        <a href="FD_frontend_dash.php" class="quick-action-btn">
                                             <i class="fas fa-calendar-plus"></i>
                                             <span>Schedule Appointment</span>
                                         </a>
                                     </div>
                                     <div class="col-lg-2 col-md-4 col-6 mb-3">
-                                        <a href="create_ticket.php" class="quick-action-btn">
+                                        <a href="FD_tickets.php" class="quick-action-btn">
                                             <i class="fas fa-plus-circle"></i>
                                             <span>Create Ticket</span>
                                         </a>
@@ -443,7 +530,7 @@ $conn->close();
                         <div class="card h-100">
                             <div class="card-header d-flex justify-content-between align-items-center">
                                 <h5 class="card-title mb-0">Recent Visitors</h5>
-                                <a href="visitor_logs.php" class="btn btn-sm btn-outline-primary">View All</a>
+                                <a href="visitor-mgt.php" class="btn btn-sm btn-outline-primary">View All</a>
                             </div>
                             <div class="card-body">
                                 <?php if (empty($recentData['recent_visitors'])): ?>
