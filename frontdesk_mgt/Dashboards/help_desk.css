@@ -15,21 +15,45 @@
     padding: 0;
 
 }
+/* Fix for the main layout structure */
+.layout-wrapper {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    width: 100%;
+}
+
+.layout-container {
+    display: flex;
+    flex: 1;
+    width: 100%;
+}
+
+/* Table container fixes */
+.table-responsive {
+    width: 100%;
+    overflow-x: auto;
+}
+
+/* Ensure the sidebar and content align properly */
+.sidebar {
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    z-index: 100;
+}
+
+/* Main content area should take remaining space */
+.main-content {
+    flex: 1;
+    padding: 20px;
+    margin-left: 250px; /* Match sidebar width */
+}
 .layout {
     display: flex;
     min-height: 100vh;
 }
-.sidebar {
-    width: 250px;
-    flex-shrink: 0; /* Prevent it from shrinking */
-    color: #fff;
-    background-color: #343a40;
-    padding-top: 1rem;
-    min-height: 100vh;
-    position: sticky;
-    top: 0;
-    overflow-y: auto;
-}
+
 .sidebar a {
     color: #fff;
     padding: 12px 20px;

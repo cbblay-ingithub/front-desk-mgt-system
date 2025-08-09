@@ -1,4 +1,5 @@
 <?php
+
 ?>
 <!DOCTYPE html>
 <html lang="en"
@@ -755,7 +756,7 @@
                 ...currentFilters
             });
 
-            const response = await fetch(`audit_logs_api.php?${params}`);
+            const response = await fetch(`audit_backend.php?${params}`);
             const data = await response.json();
 
             if (data.success) {
@@ -774,7 +775,7 @@
     async function loadStats() {
         try {
             const params = new URLSearchParams(currentFilters);
-            const response = await fetch(`audit_logs_stats.php?${params}`);
+            const response = await fetch(`audit_stats.php?${params}`);
             const data = await response.json();
 
             if (data.success) {

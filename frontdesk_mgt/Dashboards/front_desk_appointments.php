@@ -14,7 +14,6 @@ if (session_status() === PHP_SESSION_NONE) {
 }
 
 require_once '../dbConfig.php';
-require_once __DIR__ . '/audit_logger.php';
 require_once __DIR__ . '/emails.php';
 require_once __DIR__ . '/mailTemplates.php';
 

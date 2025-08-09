@@ -360,7 +360,7 @@ $conn->close();
                     <div class="navbar-nav align-items-center me-3">
                         <div class="dropdown">
                             <button class="btn btn-outline-primary dropdown-toggle" type="button" id="filterDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                                <i class="fas fa-filter me-1"></i> Filters
+                                <i class="fas fa-filter me-1"></i>
                             </button>
                             <div class="dropdown-menu dropdown-menu-end filter-dropdown" aria-labelledby="filterDropdown">
                                 <form method="GET" id="filterForm">
@@ -415,10 +415,7 @@ $conn->close();
                     <div class="bulk-actions">
                         <div class="row align-items-center">
                             <div class="col-auto">
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" id="selectAll">
-                                    <label class="form-check-label" for="selectAll">Select All</label>
-                                </div>
+                                
                             </div>
                             <div class="col-md-3">
                                 <select name="bulk_action" class="form-select" required>
@@ -434,72 +431,67 @@ $conn->close();
                             </div>
                         </div>
                     </div>
-
-                </form>
-                <div class="table-responsive">
-                    <table class="table table-bordered table-hover align-middle">
-                        <thead class="table-dark">
-                        <tr>
-                            <th width="30"><input type="checkbox" id="selectAllRows"></th>
-                            <th>UserID</th>
-                            <th>Name</th>
-                            <th>Email</th>
-                            <th>Phone</th>
-                            <th>Role</th>
-                            <th>Status</th>
-                            <th>Online Status</th>
-                            <th>Actions</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <?php foreach ($users as $user):
-                            $onlineStatus = getUserOnlineStatus($user);
-                            $failedCount = $failedCounts[$user['UserID']] ?? 0;
-                            ?>
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-hover align-middle">
+                            <thead class="table-dark">
                             <tr>
-                                <td><input type="checkbox" name="selected_users[]" value="<?= $user['UserID'] ?>"></td>
-                                <td><?= htmlspecialchars($user['UserID']) ?></td>
-                                <td>
-                                    <span class="status-badge status-<?= $onlineStatus ?>"></span>
-                                    <?= htmlspecialchars($user['Name']) ?>
-                                </td>
-                                <td><?= htmlspecialchars($user['Email']) ?></td>
-                                <td><?= htmlspecialchars($user['Phone']) ?></td>
-                                <td><?= htmlspecialchars($user['Role']) ?></td>
-                                <td>
+                                <th width="30"><input type="checkbox" id="selectAllRows"></th>
+                                <th>UserID</th>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Phone</th>
+                                <th>Role</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <?php foreach ($users as $user):
+                                $onlineStatus = getUserOnlineStatus($user);
+                                $failedCount = $failedCounts[$user['UserID']] ?? 0;
+                                ?>
+                                <tr>
+                                    <td><input type="checkbox" name="selected_users[]" value="<?= $user['UserID'] ?>"></td>
+                                    <td><?= htmlspecialchars($user['UserID']) ?></td>
+                                    <td>
+                                        <span class="status-badge status-<?= $onlineStatus ?>"></span>
+                                        <?= htmlspecialchars($user['Name']) ?>
+                                    </td>
+                                    <td><?= htmlspecialchars($user['Email']) ?></td>
+                                    <td><?= htmlspecialchars($user['Phone']) ?></td>
+                                    <td><?= htmlspecialchars($user['Role']) ?></td>
+                                    <td>
                                     <span class="badge bg-<?= $user['status'] === 'active' ? 'success' : 'danger' ?>">
                                         <?= ucfirst($user['status']) ?>
                                     </span>
-                                </td>
-                                <td>
-                                    <span class="status-text status-<?= $onlineStatus ?>-text">
-                                        <?= ucfirst($onlineStatus) ?>
-                                    </span>
-                                </td>
-                                <td>
-                                    <button class="btn btn-sm btn-warning edit-user"
-                                            data-id="<?= $user['UserID'] ?>"
-                                            data-bs-toggle="modal"
-                                            data-bs-target="#editUserModal">
-                                        <i class="fas fa-edit"></i>
-                                    </button>
-                                    <button class="btn btn-sm btn-danger delete-user"
-                                            data-id="<?= $user['UserID'] ?>"
-                                            data-name="<?= htmlspecialchars($user['Name']) ?>">
-                                        <i class="fas fa-trash"></i>
-                                    </button>
-                                    <button class="btn btn-sm btn-info view-activity"
-                                            data-id="<?= $user['UserID'] ?>"
-                                            data-bs-toggle="modal"
-                                            data-bs-target="#activityModal">
-                                        <i class="fas fa-history"></i>
-                                    </button>
-                                </td>
-                            </tr>
-                        <?php endforeach; ?>
-                        </tbody>
-                    </table>
-                </div>
+                                    </td>
+                                    <td>
+                                        <button class="btn btn-sm btn-warning edit-user"
+                                                data-id="<?= $user['UserID'] ?>"
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#editUserModal">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-danger delete-user"
+                                                data-id="<?= $user['UserID'] ?>"
+                                                data-name="<?= htmlspecialchars($user['Name']) ?>">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-info view-activity"
+                                                data-id="<?= $user['UserID'] ?>"
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#activityModal">
+                                            <i class="fas fa-history"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                            <?php endforeach; ?>
+                            </tbody>
+                        </table>
+                    </div>
+
+                </form>
+
 
                 <!-- Add User Modal -->
                 <div class="modal fade" id="addUserModal" tabindex="-1">
@@ -619,11 +611,15 @@ $conn->close();
         // Bulk actions role selection toggle
         $('#bulkActionsForm').on('submit', function(e) {
             e.preventDefault();
-            const formData = $(this).serialize();
-            if ($('input[name="selected_users[]"]:checked').length === 0) {
+            // Get all checked checkboxes
+            const checkedBoxes = $('input[name="selected_users[]"]:checked');
+
+            if (checkedBoxes.length === 0) {
                 alert('Please select at least one user.');
                 return;
             }
+            // Prepare the form data
+            const formData = $(this).serialize();
             $.ajax({
                 type: 'POST',
                 url: 'user_management.php',
@@ -686,10 +682,17 @@ $conn->close();
             });
 
 
-        // Select all checkboxes
-        $(document).on('change', '#selectAll, #selectAllRows', function() {
+        // Select all checkboxes functionality
+        $(document).on('change', '#selectAllRows', function() {
             const isChecked = $(this).prop('checked');
             $('input[name="selected_users[]"]').prop('checked', isChecked);
+        });
+
+        // Update "select all" checkbox when individual checkboxes change
+        $(document).on('change', 'input[name="selected_users[]"]', function() {
+            const allChecked = $('input[name="selected_users[]"]:checked').length ===
+                $('input[name="selected_users[]"]').length;
+            $('#selectAllRows').prop('checked', allChecked);
         });
 
         // Edit user modal
@@ -761,6 +764,7 @@ $conn->close();
                     alert('Error adding user. Please try again.');
                 }
             });
+
 
 
         // Handle edit form submission

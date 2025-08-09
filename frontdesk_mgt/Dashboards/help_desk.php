@@ -105,7 +105,7 @@ $conn->close();
 <!DOCTYPE html>
 <html
         lang="en"
-        class="layout-navbar-fixed layout-menu-fixed layout-compact layout-menu-collapsed"
+        class="layout-navbar-fixed layout-menu-fixed layout-compact "
         dir="ltr"
         data-skin="default"
         data-assets-path="../../assets/"
@@ -560,6 +560,8 @@ $conn->close();
             }
         }
 
+
+
     </style>
 </head>
 <div data-user-id="<?php echo $_SESSION['$userID'] ?? ''; ?>">
@@ -580,63 +582,6 @@ $conn->close();
                         <div class="navbar-nav align-items-center me-auto">
                             <div class="nav-item">
                                 <h4 class="mb-0 fw-bold ms-2">Manage Tickets</h4>
-                            </div>
-                        </div>
-
-                        <!-- Chat Widget -->
-                        <div class="chat-widget">
-                            <!-- Chat Toggle Button -->
-                            <button class="chat-toggle" id="chatToggle">
-                                <i class="fas fa-comments"></i>
-                                <div class="chat-notification" id="chatNotification">1</div>
-                            </button>
-
-                            <!-- Chat Container -->
-                            <div class="chat-container" id="chatContainer">
-                                <!-- Chat Header -->
-                                <div class="chat-header">
-                                    <button class="chat-close" id="chatClose">
-                                        <i class="fas fa-times"></i>
-                                    </button>
-                                    <h3>Help Desk Assistant</h3>
-                                    <p>How can I help you with your tickets today?</p>
-                                </div>
-
-                                <!-- Chat Messages -->
-                                <div class="chat-messages" id="chatMessages">
-                                    <div class="welcome-message">
-                                        <h4>👋 Welcome!</h4>
-                                        <p>I'm your AI assistant for the Help Desk system. I can help you with:</p>
-                                        <ul>
-                                            <li>Creating new tickets</li>
-                                            <li>Checking ticket status</li>
-                                            <li>Resolving common issues</li>
-                                            <li>Answering questions about the system</li>
-                                        </ul>
-                                    </div>
-                                </div>
-
-                                <!-- Typing Indicator -->
-                                <div class="typing-indicator" id="typingIndicator">
-                                    <div class="typing-dots">
-                                        <span></span>
-                                        <span></span>
-                                        <span></span>
-                                    </div>
-                                </div>
-
-                                <!-- Chat Input -->
-                                <div class="chat-input-container">
-            <textarea
-                    class="chat-input"
-                    id="chatInput"
-                    placeholder="Type your question about tickets..."
-                    rows="1"
-            ></textarea>
-                                    <button class="chat-send" id="chatSend">
-                                        <i class="fas fa-paper-plane"></i>
-                                    </button>
-                                </div>
                             </div>
                         </div>
 
@@ -691,12 +636,10 @@ $conn->close();
                                 </div>
                             </div>
                         </div>
-
+                    </div>
                 </nav>
 
-                    <div class="content-wrapper">
-                        <div class="container-xxl flex-grow-1 container-p-y">
-
+                        <div class="container-fluid container-p-y">
                             <table class="ticket-table">
                                 <thead>
                                 <tr>
@@ -770,7 +713,63 @@ $conn->close();
                                 </tbody>
                             </table>
                         </div>
+                <!-- Chat Widget -->
+                <div class="chat-widget">
+                    <!-- Chat Toggle Button -->
+                    <button class="chat-toggle" id="chatToggle">
+                        <i class="fas fa-comments"></i>
+                        <div class="chat-notification" id="chatNotification">1</div>
+                    </button>
+
+                    <!-- Chat Container -->
+                    <div class="chat-container" id="chatContainer">
+                        <!-- Chat Header -->
+                        <div class="chat-header">
+                            <button class="chat-close" id="chatClose">
+                                <i class="fas fa-times"></i>
+                            </button>
+                            <h3>Help Desk Assistant</h3>
+                            <p>How can I help you with your tickets today?</p>
+                        </div>
+
+                        <!-- Chat Messages -->
+                        <div class="chat-messages" id="chatMessages">
+                            <div class="welcome-message">
+                                <h4>👋 Welcome!</h4>
+                                <p>I'm your AI assistant for the Help Desk system. I can help you with:</p>
+                                <ul>
+                                    <li>Creating new tickets</li>
+                                    <li>Checking ticket status</li>
+                                    <li>Resolving common issues</li>
+                                    <li>Answering questions about the system</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- Typing Indicator -->
+                        <div class="typing-indicator" id="typingIndicator">
+                            <div class="typing-dots">
+                                <span></span>
+                                <span></span>
+                                <span></span>
+                            </div>
+                        </div>
+
+                        <!-- Chat Input -->
+                        <div class="chat-input-container">
+                                    <textarea
+                                            class="chat-input"
+                                            id="chatInput"
+                                            placeholder="Type your question about tickets..."
+                                            rows="1"
+                                    ></textarea>
+                            <button class="chat-send" id="chatSend">
+                                <i class="fas fa-paper-plane"></i>
+                            </button>
+                        </div>
                     </div>
+                </div>
+
 
         </div>
     </div>

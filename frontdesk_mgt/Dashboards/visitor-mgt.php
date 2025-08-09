@@ -1,7 +1,6 @@
 <?php
 session_start();
 require_once '../dbConfig.php';
-require_once __DIR__ . '/audit_logger.php';
 
 global $conn;
 // Fetch visitors

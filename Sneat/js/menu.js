@@ -969,6 +969,10 @@ class Menu {
     this._wrapper = null
     this._nextBtn = null
   }
+
+    static init() {
+
+    }
 }
 
 window.Menu = Menu

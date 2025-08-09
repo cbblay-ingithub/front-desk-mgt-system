@@ -2,7 +2,6 @@
 session_start();
 require_once '../dbConfig.php';
 require_once 'report_functions.php';
-require_once __DIR__ . '/audit_logger.php';
 global $conn;
 
 // Update user activity (from user_management.php)

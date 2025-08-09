@@ -1,7 +1,6 @@
 <?php
 // Include database connection
 require_once '../dbConfig.php';
-require_once __DIR__ . '/audit_logger.php';
 error_reporting(E_ALL);
 ini_set('display_errors', 0);
 
