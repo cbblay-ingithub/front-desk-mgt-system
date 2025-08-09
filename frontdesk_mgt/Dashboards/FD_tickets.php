@@ -129,6 +129,7 @@ $conn->close();
             transition: width 0.3s ease, min-width 0.3s ease, max-width 0.3s ease !important;
         }
 
+
         .layout-menu-collapsed #layout-menu {
             width: 78px !important;
             min-width: 78px !important;
