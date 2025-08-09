@@ -593,7 +593,7 @@ $conn->close();
                             <div class="card-body">
                                 <div class="d-flex justify-content-between align-items-center">
                                     <div>
-                                        <div class="count"><?php echo $stats['checked_in_visitors']; ?></div>
+                                        <div class="count text-white"><?php echo $stats['checked_in_visitors']; ?></div>
                                         <div class="label text-white">Checked In Now</div>
                                     </div>
                                     <div class="icon">
