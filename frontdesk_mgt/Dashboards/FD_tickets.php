@@ -128,6 +128,15 @@ $conn->close();
             z-index: 1000 !important;
             transition: width 0.3s ease, min-width 0.3s ease, max-width 0.3s ease !important;
         }
+        #layout-navbar {
+            position: sticky;
+            top: 0;
+            z-index: 999; /* Ensure it stays above other content */
+            background-color: var(--bs-body-bg); /* Match your theme background */
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Optional: adds subtle shadow */
+            padding-top: 0.5rem;
+            padding-bottom: 0.5rem;
+        }
 
 
         .layout-menu-collapsed #layout-menu {
