@@ -107,6 +107,15 @@ echo "<!-- Debug: " . count($appointments) . " appointments loaded -->";
             overflow-x: hidden !important;
             z-index: 1000 !important; /* Ensure it stays on top */
         }
+        #layout-navbar {
+            position: sticky;
+            top: 0;
+            z-index: 999; /* Ensure it stays above other content */
+            background-color: var(--bs-body-bg); /* Match your theme background */
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Optional: adds subtle shadow */
+            padding-top: 0.5rem;
+            padding-bottom: 0.5rem;
+        }
 
         .layout-menu-collapsed #layout-menu {
             width: 78px !important;
@@ -966,10 +975,10 @@ echo "<!-- Debug: " . count($appointments) . " appointments loaded -->";
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.6.13/flatpickr.min.js"></script>
-    <script src="../../Sneat/assets/vendor/libs/moment/moment.js"></script>
-    <script src="../../Sneat/assets/vendor/libs/fullcalendar/fullcalendar.js"></script>
-    <script src="../../Sneat/assets/vendor/libs/flatpickr/flatpickr.js"></script>
-    <script src="../../Sneat/assets/vendor/libs/select2/select2.js"></script>
+<script src="../../Sneat/assets/vendor/libs/moment/moment.js"></script>
+<script src="../../Sneat/assets/vendor/libs/fullcalendar/fullcalendar.js"></script>
+<script src="../../Sneat/assets/vendor/libs/flatpickr/flatpickr.js"></script>
+<script src="../../Sneat/assets/vendor/libs/select2/select2.js"></script>
 <script src="../../Sneat/assets/vendor/libs/jquery/jquery.js"></script>
 <script src="../../Sneat/assets/vendor/libs/popper/popper.js"></script>
 <script src="../../Sneat/assets/vendor/js/bootstrap.js"></script>
@@ -1269,19 +1278,19 @@ echo "<!-- Debug: " . count($appointments) . " appointments loaded -->";
 
             if (status === 'Upcoming') {
                 buttons += `
-                <button class="btn btn-success btn-sm start-session-btn" data-id="${appointmentId}">
+                <button class="btn btn-sm btn-outline-success start-session-btn" data-id="${appointmentId}">
                     <i class="fas fa-play me-1"></i> Start Session
                 </button>
-                <button class="btn btn-primary btn-sm reschedule-btn" data-id="${appointmentId}" data-bs-toggle="modal" data-bs-target="#rescheduleModal">
+                <button class="btn btn-sm btn-outline-primary reschedule-btn" data-id="${appointmentId}" data-bs-toggle="modal" data-bs-target="#rescheduleModal">
                     <i class="fas fa-calendar-alt me-1"></i> Reschedule
                 </button>
-                <button class="btn btn-danger btn-sm cancel-btn" data-id="${appointmentId}">
+                <button class="btn btn-sm btn-outline-danger cancel-btn" data-id="${appointmentId}">
                     <i class="fas fa-times me-1"></i> Cancel
                 </button>
             `;
             } else if (status === 'Ongoing') {
                 buttons += `
-                <button class="btn btn-warning btn-sm end-session-btn" data-id="${appointmentId}">
+                <button class="btn btn-sm btn-outline-warning end-session-btn" data-id="${appointmentId}">
                     <i class="fas fa-stop me-1"></i> End Session
                 </button>
             `;
