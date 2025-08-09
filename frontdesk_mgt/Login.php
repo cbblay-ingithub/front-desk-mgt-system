@@ -65,7 +65,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
 
         // Legacy login attempt tracking (optional - can be removed if using audit logs)
-        // Change this section:
         $attemptStmt = $conn->prepare("INSERT INTO login_attempts (user_id, success, ip_address) VALUES (?, ?, ?)");
         $successInt = (int)$success; // Create a variable first
         $attemptStmt->bind_param("iis", $userID, $successInt, $ip);
