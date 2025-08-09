@@ -435,71 +435,71 @@ $conn->close();
                         </div>
                     </div>
 
-                    <div class="table-responsive">
-                        <table class="table table-bordered table-hover align-middle">
-                            <thead class="table-dark">
+                </form>
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover align-middle">
+                        <thead class="table-dark">
+                        <tr>
+                            <th width="30"><input type="checkbox" id="selectAllRows"></th>
+                            <th>UserID</th>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Phone</th>
+                            <th>Role</th>
+                            <th>Status</th>
+                            <th>Online Status</th>
+                            <th>Actions</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <?php foreach ($users as $user):
+                            $onlineStatus = getUserOnlineStatus($user);
+                            $failedCount = $failedCounts[$user['UserID']] ?? 0;
+                            ?>
                             <tr>
-                                <th width="30"><input type="checkbox" id="selectAllRows"></th>
-                                <th>UserID</th>
-                                <th>Name</th>
-                                <th>Email</th>
-                                <th>Phone</th>
-                                <th>Role</th>
-                                <th>Status</th>
-                                <th>Online Status</th>
-                                <th>Actions</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            <?php foreach ($users as $user):
-                                $onlineStatus = getUserOnlineStatus($user);
-                                $failedCount = $failedCounts[$user['UserID']] ?? 0;
-                                ?>
-                                <tr>
-                                    <td><input type="checkbox" name="selected_users[]" value="<?= $user['UserID'] ?>"></td>
-                                    <td><?= htmlspecialchars($user['UserID']) ?></td>
-                                    <td>
-                                        <span class="status-badge status-<?= $onlineStatus ?>"></span>
-                                        <?= htmlspecialchars($user['Name']) ?>
-                                    </td>
-                                    <td><?= htmlspecialchars($user['Email']) ?></td>
-                                    <td><?= htmlspecialchars($user['Phone']) ?></td>
-                                    <td><?= htmlspecialchars($user['Role']) ?></td>
-                                    <td>
+                                <td><input type="checkbox" name="selected_users[]" value="<?= $user['UserID'] ?>"></td>
+                                <td><?= htmlspecialchars($user['UserID']) ?></td>
+                                <td>
+                                    <span class="status-badge status-<?= $onlineStatus ?>"></span>
+                                    <?= htmlspecialchars($user['Name']) ?>
+                                </td>
+                                <td><?= htmlspecialchars($user['Email']) ?></td>
+                                <td><?= htmlspecialchars($user['Phone']) ?></td>
+                                <td><?= htmlspecialchars($user['Role']) ?></td>
+                                <td>
                                     <span class="badge bg-<?= $user['status'] === 'active' ? 'success' : 'danger' ?>">
                                         <?= ucfirst($user['status']) ?>
                                     </span>
-                                    </td>
-                                    <td>
+                                </td>
+                                <td>
                                     <span class="status-text status-<?= $onlineStatus ?>-text">
                                         <?= ucfirst($onlineStatus) ?>
                                     </span>
-                                    </td>
-                                    <td>
-                                        <button class="btn btn-sm btn-warning edit-user"
-                                                data-id="<?= $user['UserID'] ?>"
-                                                data-bs-toggle="modal"
-                                                data-bs-target="#editUserModal">
-                                            <i class="fas fa-edit"></i>
-                                        </button>
-                                        <button class="btn btn-sm btn-danger delete-user"
-                                                data-id="<?= $user['UserID'] ?>"
-                                                data-name="<?= htmlspecialchars($user['Name']) ?>">
-                                            <i class="fas fa-trash"></i>
-                                        </button>
-                                        <button class="btn btn-sm btn-info view-activity"
-                                                data-id="<?= $user['UserID'] ?>"
-                                                data-bs-toggle="modal"
-                                                data-bs-target="#activityModal">
-                                            <i class="fas fa-history"></i>
-                                        </button>
-                                    </td>
-                                </tr>
-                            <?php endforeach; ?>
-                            </tbody>
-                        </table>
-                    </div>
-                </form>
+                                </td>
+                                <td>
+                                    <button class="btn btn-sm btn-warning edit-user"
+                                            data-id="<?= $user['UserID'] ?>"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#editUserModal">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-danger delete-user"
+                                            data-id="<?= $user['UserID'] ?>"
+                                            data-name="<?= htmlspecialchars($user['Name']) ?>">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-info view-activity"
+                                            data-id="<?= $user['UserID'] ?>"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#activityModal">
+                                        <i class="fas fa-history"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        <?php endforeach; ?>
+                        </tbody>
+                    </table>
+                </div>
 
                 <!-- Add User Modal -->
                 <div class="modal fade" id="addUserModal" tabindex="-1">
@@ -580,24 +580,6 @@ $conn->close();
                         </div>
                     </div>
                 </div>
-
-                <!-- Notification System -->
-                <div class="notification-wrapper">
-                    <div class="notification-bell" id="notificationBell">
-                        <i class="fas fa-bell"></i>
-                        <span class="notification-count" id="notificationCount">0</span>
-                    </div>
-                    <div class="notification-panel" id="notificationPanel">
-                        <div class="notification-header">
-                            <h3>Notifications</h3>
-                            <button id="markAllReadBtn" class="mark-all-read">Mark All Read</button>
-                        </div>
-                        <div class="notification-list" id="notificationList">
-                            <!-- Notifications will be inserted here -->
-                            <div class="empty-notification">No notifications</div>
-                        </div>
-                    </div>
-                </div>
             </div>
         </div>
     </div>
@@ -660,7 +642,7 @@ $conn->close();
                 }
             });
         });
-        $(document).ready(function() {
+
             // Initialize sidebar state from localStorage
             function initializeSidebar() {
                 const isCollapsed = localStorage.getItem('layoutMenuCollapsed') === 'true';
@@ -704,16 +686,22 @@ $conn->close();
             });
 
 
-            // Select all checkboxes
-        $('#selectAll, #selectAllRows').click(function() {
-            $('input[name="selected_users[]"]').prop('checked', this.checked);
+        // Select all checkboxes
+        $(document).on('change', '#selectAll, #selectAllRows', function() {
+            const isChecked = $(this).prop('checked');
+            $('input[name="selected_users[]"]').prop('checked', isChecked);
         });
 
         // Edit user modal
-        $('.edit-user').click(function() {
+        $(document).on('click', '.edit-user', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
             const userId = $(this).data('id');
-            $('#editUserModalContent').load('get_user.php?id=' + userId, function() {
+            $.get('get_user.php?id=' + userId, function(data) {
+                $('#editUserModalContent').html(data);
                 $('#editUserModal').modal('show');
+            }).fail(function() {
+                alert('Failed to load user data. Please try again.');
             });
         });
 
@@ -726,30 +714,31 @@ $conn->close();
         });
 
         // Delete user
-        $('.delete-user').click(function() {
-            const userId = $(this).data('id');
-            const userName = $(this).data('name');
+            $(document).on('click', '.delete-user', function(e) {
+                e.preventDefault();
+                const userId = $(this).data('id');
+                const userName = $(this).data('name');
 
-            if (confirm('Are you sure you want to delete ' + userName + '?')) {
-                $.ajax({
-                    url: 'delete_user.php',
-                    type: 'POST',
-                    dataType: 'json',
-                    data: {id: userId},
-                    success: function(response) {
-                        if (response.success) {
-                            location.reload();
-                        } else {
-                            alert('Delete failed: ' + (response.error || 'Unknown error'));
+                if (confirm('Are you sure you want to delete ' + userName + '?')) {
+                    $.ajax({
+                        url: 'delete_user.php',
+                        type: 'POST',
+                        dataType: 'json',
+                        data: {id: userId},
+                        success: function(response) {
+                            if (response.success) {
+                                location.reload();
+                            } else {
+                                alert('Delete failed: ' + (response.error || 'Unknown error'));
+                            }
+                        },
+                        error: function() {
+                            alert('Request failed. Please try again.');
                         }
-                    },
-                    error: function() {
-                        alert('Request failed. Please try again.');
-                    }
-                });
-            }
-        });
-
+                    });
+                }
+            });
+    });
         // Handle add user form submission
         $('#addUserForm').on('submit', function(e) {
             e.preventDefault();
@@ -772,7 +761,7 @@ $conn->close();
                     alert('Error adding user. Please try again.');
                 }
             });
-        });
+
 
         // Handle edit form submission
         $(document).on('submit', '#editUserForm', function(e) {
