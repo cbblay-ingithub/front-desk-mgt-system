@@ -26,7 +26,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             if ($status !== 'active') {
                 // Log inactive account attempt
                 $auditLogger->logLogin($userID, $role, false, "Inactive account attempted login");
-                echo "Your account is inactive. Please contact administrator.";
+                header("Location: Dashboards/401- page.html");
+                exit;
             } else {
                 $success = true;
                 $_SESSION['userID'] = $userID;
@@ -64,8 +65,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
 
         // Legacy login attempt tracking (optional - can be removed if using audit logs)
+        // Change this section:
         $attemptStmt = $conn->prepare("INSERT INTO login_attempts (user_id, success, ip_address) VALUES (?, ?, ?)");
-        $attemptStmt->bind_param("iis", $userID, (int)$success, $ip);
+        $successInt = (int)$success; // Create a variable first
+        $attemptStmt->bind_param("iis", $userID, $successInt, $ip);
         $attemptStmt->execute();
         $attemptStmt->close();
     } else {
