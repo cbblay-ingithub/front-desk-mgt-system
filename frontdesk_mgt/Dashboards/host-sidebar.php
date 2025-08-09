@@ -129,8 +129,8 @@ $currentPage = basename($_SERVER['PHP_SELF']);
     <!-- Menu Items -->
     <ul class="menu-inner py-1">
         <!-- Dashboard -->
-        <li class="menu-item <?= ($currentPage == 'host_dash.php') ? 'active' : '' ?>">
-            <a href="host_dash.php" class="menu-link" data-tooltip="Dashboard">
+        <li class="menu-item <?= ($currentPage == 'host_analytics.php') ? 'active' : '' ?>">
+            <a href="host_analytics.php" class="menu-link" data-tooltip="Dashboard">
                 <i class="menu-icon icon-base bx bx-home-smile"></i>
                 <div data-i18n="Dashboard">Dashboard</div>
             </a>
