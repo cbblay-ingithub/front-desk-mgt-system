@@ -9,8 +9,9 @@
       data-assets-path="../Sneat/assets/"
       data-template="horizontal-menu-template">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="utf-8" />
+    <meta name="viewport"
+            content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
     <title>Audit Logs - Admin Panel</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -34,6 +35,15 @@
             min-height: 100vh;
             width: 100%;
             overflow: hidden !important;
+        }
+        #layout-navbar {
+            position: sticky;
+            top: 0;
+            z-index: 999; /* Ensure it stays above other content */
+            background-color: var(--bs-body-bg); /* Match your theme background */
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Optional: adds subtle shadow */
+            padding-top: 0.5rem;
+            padding-bottom: 0.5rem;
         }
 
         #layout-menu {
