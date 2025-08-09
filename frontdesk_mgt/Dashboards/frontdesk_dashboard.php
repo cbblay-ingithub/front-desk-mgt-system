@@ -573,7 +573,7 @@ $conn->close();
                         <div class="card h-100">
                             <div class="card-header d-flex justify-content-between align-items-center">
                                 <h5 class="card-title mb-0">Upcoming Appointments</h5>
-                                <a href="appointments.php" class="btn btn-sm btn-outline-primary">View All</a>
+                                <a href="FD_frontend_dash.php" class="btn btn-sm btn-outline-primary">View All</a>
                             </div>
                             <div class="card-body">
                                 <?php if (empty($recentData['recent_appointments'])): ?>
@@ -617,7 +617,7 @@ $conn->close();
                         <div class="card h-100">
                             <div class="card-header d-flex justify-content-between align-items-center">
                                 <h5 class="card-title mb-0">Recent Tickets</h5>
-                                <a href="help_desk.php" class="btn btn-sm btn-outline-primary">View All</a>
+                                <a href="FD_tickets.php" class="btn btn-sm btn-outline-primary">View All</a>
                             </div>
                             <div class="card-body">
                                 <?php if (empty($recentData['recent_tickets'])): ?>
