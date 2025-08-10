@@ -28,6 +28,44 @@
     flex: 1;
     width: 100%;
 }
+#layout-menu {
+    width: 260px !important;
+    min-width: 260px !important;
+    max-width: 260px !important;
+    flex: 0 0 260px !important;
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    height: 100vh !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    z-index: 1000 !important;
+}
+
+.layout-menu-collapsed #layout-menu {
+    width: 78px !important;
+    min-width: 78px !important;
+    max-width: 78px !important;
+    flex: 0 0 78px !important;
+}
+
+.layout-content {
+    flex: 1 1 auto;
+    min-width: 0;
+    margin-left: 260px !important;
+    width: calc(100% - 260px) !important;
+    height: 100vh !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    transition: margin-left 0.3s ease, width 0.3s ease !important;
+    padding-top: 70px; /* Add padding to account for fixed navbar */
+}
+
+.layout-menu-collapsed .layout-content {
+    margin-left: 78px !important;
+    width: calc(100% - 78px) !important;
+}
+
 
 /* Table container fixes */
 .table-responsive {

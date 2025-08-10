@@ -1739,6 +1739,48 @@ RECENT TICKETS (Last 5):
     document.addEventListener('DOMContentLoaded', () => {
         new HelpDeskChatBot();
     });
+    // Handle sidebar toggle
+    document.getElementById('sidebarToggle').addEventListener('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+
+        const html = document.documentElement;
+        const sidebar = document.getElementById('layout-menu');
+        const toggleIcon = document.getElementById('toggleIcon');
+
+        this.style.pointerEvents = 'none';
+        html.classList.toggle('layout-menu-collapsed');
+        const isCollapsed = html.classList.contains('layout-menu-collapsed');
+
+        // Update icon
+        if (isCollapsed) {
+            toggleIcon.classList.remove('bx-chevron-left');
+            toggleIcon.classList.add('bx-chevron-right');
+        } else {
+            toggleIcon.classList.remove('bx-chevron-right');
+            toggleIcon.classList.add('bx-chevron-left');
+        }
+
+        // Store state
+        localStorage.setItem('sidebarCollapsed', isCollapsed);
+
+        setTimeout(() => {
+            this.style.pointerEvents = 'auto';
+        }, 300);
+    });
+
+    // Restore sidebar state on load
+    document.addEventListener('DOMContentLoaded', function() {
+        const isCollapsed = localStorage.getItem('sidebarCollapsed') === 'true';
+        if (isCollapsed) {
+            document.documentElement.classList.add('layout-menu-collapsed');
+            const toggleIcon = document.getElementById('toggleIcon');
+            if (toggleIcon) {
+                toggleIcon.classList.remove('bx-chevron-left');
+                toggleIcon.classList.add('bx-chevron-right');
+            }
+        }
+    });
 
 
 
