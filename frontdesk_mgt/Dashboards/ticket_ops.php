@@ -181,7 +181,7 @@ function autoCloseOldTickets($conn) {
     // First, identify tickets that will be auto-closed
     $findSql = "SELECT TicketID, CreatedBy, AssignedTo FROM Help_Desk 
                 WHERE Status != 'closed' 
-                AND DATEDIFF(NOW(), IFNULL(LastUpdated, CreatedDate)) > 14";
+                AND DATEDIFF(NOW(), IFNULL(LastUpdated, CreatedDate)) > 30";
     $result = $conn->query($findSql);
 
     $ticketsToClose = [];
