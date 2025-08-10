@@ -193,7 +193,7 @@ function autoCloseOldTickets($conn) {
     $updateSql = "UPDATE Help_Desk 
                   SET Status = 'closed', 
                       LastUpdated = NOW(), 
-                      ResolutionNotes = CONCAT(IFNULL(ResolutionNotes, ''), ' [Auto-closed after 14 days of inactivity]'),
+                      ResolutionNotes = CONCAT(IFNULL(ResolutionNotes, ''), ' [Auto-closed after 30 days of inactivity]'),
                       TimeSpent = IF(TimeSpent IS NULL, TIMESTAMPDIFF(MINUTE, CreatedDate, NOW()), TimeSpent)
                   WHERE Status != 'closed' 
                   AND DATEDIFF(NOW(), IFNULL(LastUpdated, CreatedDate)) > 7";
