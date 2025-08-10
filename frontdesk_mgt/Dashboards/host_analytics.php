@@ -180,35 +180,114 @@ $conn->close();
 
     <style>
         /* Custom styles for dashboard cards */
+        /* Replace the existing stat-card styles with these */
         .stat-card {
-            border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border-radius: 0.5rem;
+            box-shadow: none;
+            transition: all 0.3s ease;
             height: 100%;
-            padding: 1.5rem;
-            color: white;
+            padding: 1.25rem;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(0, 0, 0, 0.05);
         }
 
         .stat-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            transform: translateY(-3px);
+            box-shadow: 0 4px 20px 0 rgba(0, 0, 0, 0.05);
+        }
+
+        .stat-card .card-icon {
+            position: absolute;
+            right: 20px;
+            top: 20px;
+            font-size: 1.75rem;
+            opacity: 0.2;
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover .card-icon {
+            opacity: 0.3;
+            transform: scale(1.1);
         }
 
         .stat-card .count {
-            font-size: 2rem;
+            font-size: 1.75rem;
             font-weight: 600;
-            margin-bottom: 0.5rem;
+            margin-bottom: 0.25rem;
+            color: var(--bs-heading-color);
         }
 
         .stat-card .label {
-            font-size: 0.9rem;
-            opacity: 0.9;
+            font-size: 0.875rem;
+            color: var(--bs-secondary-color);
+            margin-bottom: 0.5rem;
         }
 
-        .stat-card .icon {
-            font-size: 2.5rem;
-            opacity: 0.7;
-            margin-bottom: 1rem;
+        .stat-card .trend {
+            display: flex;
+            align-items: center;
+            font-size: 0.8125rem;
+            font-weight: 500;
+        }
+
+        .stat-card .trend i {
+            font-size: 1rem;
+            margin-right: 0.25rem;
+        }
+
+        .trend-up {
+            color: #28a745;
+        }
+
+        .trend-down {
+            color: #dc3545;
+        }
+
+        /* Card color variants */
+        .card-primary {
+            background-color: rgba(105, 108, 255, 0.1);
+            border-color: rgba(105, 108, 255, 0.2);
+        }
+
+        .card-primary .card-icon {
+            color: #696cff;
+        }
+
+        .card-success {
+            background-color: rgba(40, 199, 111, 0.1);
+            border-color: rgba(40, 199, 111, 0.2);
+        }
+
+        .card-success .card-icon {
+            color: #28c76f;
+        }
+
+        .card-info {
+            background-color: rgba(0, 207, 232, 0.1);
+            border-color: rgba(0, 207, 232, 0.2);
+        }
+
+        .card-info .card-icon {
+            color: #00cfe8;
+        }
+
+        .card-warning {
+            background-color: rgba(255, 171, 0, 0.1);
+            border-color: rgba(255, 171, 0, 0.2);
+        }
+
+        .card-warning .card-icon {
+            color: #ffab00;
+        }
+
+        .card-danger {
+            background-color: rgba(234, 84, 85, 0.1);
+            border-color: rgba(234, 84, 85, 0.2);
+        }
+
+        .card-danger .card-icon {
+            color: #ea5455;
         }
 
         .chart-container {
@@ -405,62 +484,86 @@ $conn->close();
 
             <div class="container-fluid container-p-y">
                 <!-- Stats Cards -->
-                <div class="row">
-                    <!-- Appointments Card -->
-                    <div class="col-md-6 col-lg-3 mb-4">
-                        <div class="stat-card appointments">
-                            <div class="icon">
+                <div class="row g-4 mb-4">
+                    <!-- Total Appointments Card -->
+                    <div class="col-md-6 col-lg-3">
+                        <div class="stat-card card-primary">
+                            <div class="card-icon">
                                 <i class="fas fa-calendar-check"></i>
                             </div>
                             <div class="count"><?= $stats['appointments']['total_appointments'] ?? 0 ?></div>
                             <div class="label">Total Appointments</div>
+                            <div class="trend trend-up">
+                                <i class="fas fa-chevron-up"></i>
+                                <span>12.8%</span>
+                            </div>
                         </div>
                     </div>
 
                     <!-- Upcoming Appointments Card -->
-                    <div class="col-md-6 col-lg-3 mb-4">
-                        <div class="stat-card upcoming">
-                            <div class="icon">
+                    <div class="col-md-6 col-lg-3">
+                        <div class="stat-card card-info">
+                            <div class="card-icon">
                                 <i class="fas fa-clock"></i>
                             </div>
                             <div class="count"><?= $stats['appointments']['upcoming'] ?? 0 ?></div>
                             <div class="label">Upcoming</div>
+                            <div class="trend trend-up">
+                                <i class="fas fa-chevron-up"></i>
+                                <span>8.2%</span>
+                            </div>
                         </div>
                     </div>
 
                     <!-- Ongoing Appointments Card -->
-                    <div class="col-md-6 col-lg-3 mb-4">
-                        <div class="stat-card ongoing">
-                            <div class="icon">
+                    <div class="col-md-6 col-lg-3">
+                        <div class="stat-card card-warning">
+                            <div class="card-icon">
                                 <i class="fas fa-user-clock"></i>
                             </div>
                             <div class="count"><?= $stats['appointments']['ongoing'] ?? 0 ?></div>
                             <div class="label">Ongoing</div>
+                            <div class="trend trend-down">
+                                <i class="fas fa-chevron-down"></i>
+                                <span>3.1%</span>
+                            </div>
                         </div>
                     </div>
 
                     <!-- Tickets Card -->
-                    <div class="col-md-6 col-lg-3 mb-4">
-                        <div class="stat-card tickets">
-                            <div class="icon">
+                    <div class="col-md-6 col-lg-3">
+                        <div class="stat-card card-danger">
+                            <div class="card-icon">
                                 <i class="fas fa-ticket-alt"></i>
                             </div>
                             <div class="count"><?= $stats['tickets']['total_tickets'] ?? 0 ?></div>
                             <div class="label">Assigned Tickets</div>
+                            <div class="trend trend-up">
+                                <i class="fas fa-chevron-up"></i>
+                                <span>5.7%</span>
+                            </div>
                         </div>
                     </div>
                 </div>
-
                 <!-- Charts Row -->
-                <div class="row">
+                <div class="row g-4 mb-4">
                     <!-- Appointment Status Chart -->
-                    <div class="col-lg-6 mb-4">
-                        <div class="card">
-                            <div class="card-header">
+                    <div class="col-lg-6">
+                        <div class="card h-100">
+                            <div class="card-header d-flex justify-content-between align-items-center">
                                 <h5 class="card-title mb-0">Appointment Status</h5>
+                                <div class="dropdown">
+                                    <button class="btn p-0" type="button" id="appointmentStatusDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                        <i class="icon-base bx bx-dots-vertical-rounded"></i>
+                                    </button>
+                                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="appointmentStatusDropdown">
+                                        <li><a class="dropdown-item" href="javascript:void(0);">Refresh</a></li>
+                                        <li><a class="dropdown-item" href="javascript:void(0);">Export</a></li>
+                                    </ul>
+                                </div>
                             </div>
                             <div class="card-body">
-                                <div class="chart-container">
+                                <div class="chart-container" style="height: 300px;">
                                     <canvas id="appointmentStatusChart"></canvas>
                                 </div>
                             </div>
@@ -468,13 +571,22 @@ $conn->close();
                     </div>
 
                     <!-- Ticket Status Chart -->
-                    <div class="col-lg-6 mb-4">
-                        <div class="card">
-                            <div class="card-header">
+                    <div class="col-lg-6">
+                        <div class="card h-100">
+                            <div class="card-header d-flex justify-content-between align-items-center">
                                 <h5 class="card-title mb-0">Ticket Status</h5>
+                                <div class="dropdown">
+                                    <button class="btn p-0" type="button" id="ticketStatusDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                        <i class="icon-base bx bx-dots-vertical-rounded"></i>
+                                    </button>
+                                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="ticketStatusDropdown">
+                                        <li><a class="dropdown-item" href="javascript:void(0);">Refresh</a></li>
+                                        <li><a class="dropdown-item" href="javascript:void(0);">Export</a></li>
+                                    </ul>
+                                </div>
                             </div>
                             <div class="card-body">
-                                <div class="chart-container">
+                                <div class="chart-container" style="height: 300px;">
                                     <canvas id="ticketStatusChart"></canvas>
                                 </div>
                             </div>

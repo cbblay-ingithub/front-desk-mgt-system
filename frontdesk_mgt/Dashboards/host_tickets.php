@@ -85,7 +85,6 @@ $conn->close();
         .sidebar { width: 250px; background: #343a40; color: white; padding: 20px; }
         .sidebar a { color: white; display: block; padding: 10px; text-decoration: none; }
         .sidebar a:hover { background: #495057; }
-        .container { flex: 1; padding: 20px; }
         .ticket-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
         .ticket-table th, .ticket-table td { border: 1px solid #dee2e6; padding: 10px; text-align: left; }
         .ticket-table th { background: #f8f9fa; }
@@ -484,11 +483,19 @@ $conn->close();
         #layout-navbar {
             position: sticky;
             top: 0;
-            z-index: 999; /* Ensure it stays above other content */
-            background-color: var(--bs-body-bg); /* Match your theme background */
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Optional: adds subtle shadow */
-            padding-top: 0.5rem;
+            z-index: 999;
+            background-color: var(--bs-body-bg);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding-top: 0.5rem; /* Reduce top padding */
             padding-bottom: 0.5rem;
+            margin-top: 0; /* Ensure no margin above */
+        }
+
+
+
+        .container-p-y {
+            padding-top: 0.5rem !important; /* Reduce top padding */
+            padding-bottom: 1rem !important;
         }
 
         .layout-menu-collapsed #layout-menu {
@@ -506,6 +513,7 @@ $conn->close();
             height: 100vh !important;
             overflow-y: auto !important;
             overflow-x: hidden !important;
+            padding-top: 0.8rem; /* Remove any padding above content */
         }
 
         .layout-menu-collapsed .layout-content {
