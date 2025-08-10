@@ -69,7 +69,8 @@ $conn->close();
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
     <title>Help Desk - Host</title>
     <link rel="stylesheet" href="../../Sneat/assets/vendor/libs/select2/select2.css" />
     <link rel="stylesheet" href="../../Sneat/assets/vendor/fonts/iconify-icons.css" />
