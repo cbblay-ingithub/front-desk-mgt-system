@@ -744,7 +744,6 @@ $conn->close();
                     });
                 }
             });
-    });
         // Handle add user form submission
         $('#addUserForm').on('submit', function(e) {
             e.preventDefault();
@@ -767,6 +766,7 @@ $conn->close();
                     alert('Error adding user. Please try again.');
                 }
             });
+        });
 
 
 
@@ -830,6 +830,7 @@ $conn->close();
         });
 
     });
+
 </script>
 </body>
 </html>
