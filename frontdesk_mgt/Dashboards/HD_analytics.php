@@ -433,7 +433,7 @@ $conn->close();
                     <div class="navbar-nav-right d-flex align-items-center justify-content-end" id="navbar-collapse">
                         <div class="navbar-nav align-items-center me-auto">
                             <div class="nav-item">
-                                <h4 class="mb-0 fw-bold ms-2">Support Dashboard</h4>
+                                <h4 class="mb-0 fw-bold ms-2">Dashboard</h4>
                             </div>
                         </div>
 
