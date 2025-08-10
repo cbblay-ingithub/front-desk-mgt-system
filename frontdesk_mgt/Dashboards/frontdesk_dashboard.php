@@ -190,110 +190,64 @@ $conn->close();
             width: calc(100% - 78px) !important;
         }
 
-        /* Enhanced Modern Dashboard Cards - UPDATED */
-        .stats-card {
-            background: white;
-            border-radius: 20px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.08);
+        /* Card Enhancements */
+        .card {
             border: none;
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            position: relative;
-            overflow: hidden;
-            height: 200px;
+            box-shadow: 0 4px 24px 0 rgba(34, 41, 47, 0.1);
+            transition: all 0.3s ease;
         }
 
-        .stats-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 4px;
-            background: var(--card-gradient);
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px 0 rgba(34, 41, 47, 0.15);
         }
 
-        .stats-card:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 20px 60px rgba(0,0,0,0.12);
+        .card-header {
+            border-bottom: none;
+            padding: 1.5rem;
         }
 
-        .stats-card.visitors {
-            --card-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            --card-color: #667eea;
+        .card-body {
+            padding: 1.5rem;
         }
 
-        .stats-card.appointments {
-            --card-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-            --card-color: #f093fb;
-        }
-
-        .stats-card.tickets {
-            --card-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-            --card-color: #4facfe;
-        }
-
-        .card-icon-container {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            width: 60px;
-            height: 60px;
-            border-radius: 16px;
-            background: var(--card-gradient);
+        .avatar-initial {
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+            width: 40px;
+            height: 40px;
         }
 
-        .card-icon {
-            font-size: 24px;
-            color: white;
-        }
-
-        .main-stat {
-            font-size: 3.5rem;
-            font-weight: 800;
-            color: #1a202c;
-            line-height: 1;
-            margin-bottom: 0.5rem;
-        }
-
-        .main-label {
-            font-size: 1.1rem;
-            color: #64748b;
-            font-weight: 600;
-            margin-bottom: 1rem;
-        }
-
-        .sub-stats {
-            display: flex;
-            gap: 1rem;
-            flex-wrap: wrap;
-        }
-
-        .sub-stat {
-            background: #f1f5f9;
-            padding: 8px 12px;
-            border-radius: 10px;
-            flex: 1;
-            min-width: 80px;
-            text-align: center;
-        }
-
-        .sub-stat-number {
-            font-size: 1.2rem;
-            font-weight: 700;
-            color: var(--card-color);
-            display: block;
-        }
-
-        .sub-stat-label {
-            font-size: 0.75rem;
-            color: #64748b;
+        /* Badge Styles */
+        .badge {
             font-weight: 500;
-            text-transform: uppercase;
-            letter-spacing: 0.025em;
+            padding: 0.35em 0.65em;
+        }
+
+        .bg-label-primary {
+            background-color: rgba(105, 108, 255, 0.16) !important;
+            color: #696cff !important;
+        }
+
+        .bg-label-success {
+            background-color: rgba(72, 187, 120, 0.16) !important;
+            color: #48bb78 !important;
+        }
+
+        .bg-label-warning {
+            background-color: rgba(255, 171, 0, 0.16) !important;
+            color: #ffab00 !important;
+        }
+
+        .bg-label-info {
+            background-color: rgba(0, 207, 232, 0.16) !important;
+            color: #00cfe8 !important;
+        }
+
+        .bg-label-white {
+            background-color: rgba(255, 255, 255, 0.16) !important;
+            color: #fff !important;
         }
 
         /* Other styles - UNCHANGED */
@@ -406,21 +360,56 @@ $conn->close();
                 <div class="row mb-4">
                     <!-- Visitors Card -->
                     <div class="col-md-4 mb-4">
-                        <div class="stats-card visitors">
-                            <div class="card-icon-container">
-                                <i class="fas fa-users card-icon"></i>
-                            </div>
-                            <div class="card-body p-4">
-                                <div class="main-stat"><?= $stats['total_visitors'] ?></div>
-                                <div class="main-label">Total Visitors</div>
-                                <div class="sub-stats">
-                                    <div class="sub-stat">
-                                        <span class="sub-stat-number"><?= $stats['checked_in_visitors'] ?></span>
-                                        <div class="sub-stat-label">Checked In</div>
+                        <div class="card h-100">
+                            <div class="card-header d-flex align-items-center justify-content-between pb-2" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                                <div class="d-flex align-items-center">
+                                    <div class="avatar flex-shrink-0 me-3">
+                        <span class="avatar-initial rounded bg-label-white">
+                            <i class="fas fa-users"></i>
+                        </span>
                                     </div>
-                                    <div class="sub-stat">
-                                        <span class="sub-stat-number"><?= $stats['today_visitors'] ?></span>
-                                        <div class="sub-stat-label">Today</div>
+                                    <h5 class="card-title text-white mb-0">Visitors</h5>
+                                </div>
+                                <div class="dropdown">
+                                    <button class="btn p-0 text-white" type="button" id="visitorsDropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        <i class="icon-base bx bx-dots-vertical-rounded"></i>
+                                    </button>
+                                    <div class="dropdown-menu dropdown-menu-end" aria-labelledby="visitorsDropdown">
+                                        <a class="dropdown-item" href="visitor-mgt.php">View All Visitors</a>
+                                        <a class="dropdown-item" href="visitor_logs.php">View Logs</a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <div>
+                                        <h3 class="mb-0"><?= $stats['total_visitors'] ?></h3>
+                                        <small class="text-muted">Total Visitors</small>
+                                    </div>
+                                    <div class="badge bg-label-success rounded-pill">+12.6%</div>
+                                </div>
+                                <div class="row g-4">
+                                    <div class="col-6">
+                                        <div class="d-flex align-items-center">
+                                            <div class="badge bg-label-primary rounded-pill p-2 me-2">
+                                                <i class="fas fa-user-check"></i>
+                                            </div>
+                                            <div>
+                                                <h6 class="mb-0"><?= $stats['checked_in_visitors'] ?></h6>
+                                                <small>Checked In</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="d-flex align-items-center">
+                                            <div class="badge bg-label-info rounded-pill p-2 me-2">
+                                                <i class="fas fa-calendar-day"></i>
+                                            </div>
+                                            <div>
+                                                <h6 class="mb-0"><?= $stats['today_visitors'] ?></h6>
+                                                <small>Today</small>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -429,25 +418,52 @@ $conn->close();
 
                     <!-- Appointments Card -->
                     <div class="col-md-4 mb-4">
-                        <div class="stats-card appointments">
-                            <div class="card-icon-container">
-                                <i class="fas fa-calendar-check card-icon"></i>
+                        <div class="card h-100">
+                            <div class="card-header d-flex align-items-center justify-content-between pb-2" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+                                <div class="d-flex align-items-center">
+                                    <div class="avatar flex-shrink-0 me-3">
+                        <span class="avatar-initial rounded bg-label-white">
+                            <i class="fas fa-calendar-check"></i>
+                        </span>
+                                    </div>
+                                    <h5 class="card-title text-white mb-0">Appointments</h5>
+                                </div>
+                                <div class="dropdown">
+                                    <button class="btn p-0 text-white" type="button" id="appointmentsDropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        <i class="icon-base bx bx-dots-vertical-rounded"></i>
+                                    </button>
+                                    <div class="dropdown-menu dropdown-menu-end" aria-labelledby="appointmentsDropdown">
+                                        <a class="dropdown-item" href="FD_frontend_dash.php">View All</a>
+                                        <a class="dropdown-item" href="FD_frontend_dash.php?action=add">Add New</a>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="card-body p-4">
-                                <div class="main-stat"><?= $stats['total'] ?></div>
-                                <div class="main-label">Today's Appointments</div>
-                                <div class="sub-stats">
-                                    <div class="sub-stat">
-                                        <span class="sub-stat-number"><?= $stats['upcoming'] ?></span>
-                                        <div class="sub-stat-label">Upcoming</div>
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <div>
+                                        <h3 class="mb-0"><?= $stats['total'] ?></h3>
+                                        <small class="text-muted">Today's Appointments</small>
                                     </div>
-                                    <div class="sub-stat">
-                                        <span class="sub-stat-number"><?= $stats['ongoing'] ?></span>
-                                        <div class="sub-stat-label">Ongoing</div>
+                                    <div class="badge bg-label-warning rounded-pill">-2.4%</div>
+                                </div>
+                                <div class="row g-4">
+                                    <div class="col-4">
+                                        <div class="d-flex flex-column align-items-center">
+                                            <h6 class="mb-0"><?= $stats['upcoming'] ?></h6>
+                                            <small class="text-muted">Upcoming</small>
+                                        </div>
                                     </div>
-                                    <div class="sub-stat">
-                                        <span class="sub-stat-number"><?= $stats['completed'] ?></span>
-                                        <div class="sub-stat-label">Completed</div>
+                                    <div class="col-4">
+                                        <div class="d-flex flex-column align-items-center">
+                                            <h6 class="mb-0"><?= $stats['ongoing'] ?></h6>
+                                            <small class="text-muted">Ongoing</small>
+                                        </div>
+                                    </div>
+                                    <div class="col-4">
+                                        <div class="d-flex flex-column align-items-center">
+                                            <h6 class="mb-0"><?= $stats['completed'] ?></h6>
+                                            <small class="text-muted">Completed</small>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -456,30 +472,58 @@ $conn->close();
 
                     <!-- Tickets Card -->
                     <div class="col-md-4 mb-4">
-                        <div class="stats-card tickets">
-                            <div class="card-icon-container">
-                                <i class="fas fa-ticket-alt card-icon"></i>
+                        <div class="card h-100">
+                            <div class="card-header d-flex align-items-center justify-content-between pb-2" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
+                                <div class="d-flex align-items-center">
+                                    <div class="avatar flex-shrink-0 me-3">
+                        <span class="avatar-initial rounded bg-label-white">
+                            <i class="fas fa-ticket-alt"></i>
+                        </span>
+                                    </div>
+                                    <h5 class="card-title text-white mb-0">Tickets</h5>
+                                </div>
+                                <div class="dropdown">
+                                    <button class="btn p-0 text-white" type="button" id="ticketsDropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        <i class="icon-base bx bx-dots-vertical-rounded"></i>
+                                    </button>
+                                    <div class="dropdown-menu dropdown-menu-end" aria-labelledby="ticketsDropdown">
+                                        <a class="dropdown-item" href="FD_tickets.php">View All</a>
+                                        <a class="dropdown-item" href="FD_tickets.php?action=add">Create New</a>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="card-body p-4">
-                                <div class="main-stat"><?= $stats['total_tickets'] ?></div>
-                                <div class="main-label">Recent Tickets (7d)</div>
-                                <div class="sub-stats">
-                                    <div class="sub-stat">
-                                        <span class="sub-stat-number"><?= $stats['open_tickets'] ?></span>
-                                        <div class="sub-stat-label">Open</div>
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <div>
+                                        <h3 class="mb-0"><?= $stats['total_tickets'] ?></h3>
+                                        <small class="text-muted">Recent (7 days)</small>
                                     </div>
-                                    <div class="sub-stat">
-                                        <span class="sub-stat-number"><?= $stats['in_progress_tickets'] ?></span>
-                                        <div class="sub-stat-label">In Progress</div>
+                                    <div class="badge bg-label-success rounded-pill">+18.2%</div>
+                                </div>
+                                <div class="row g-4">
+                                    <div class="col-4">
+                                        <div class="d-flex flex-column align-items-center">
+                                            <h6 class="mb-0"><?= $stats['open_tickets'] ?></h6>
+                                            <small class="text-muted">Open</small>
+                                        </div>
                                     </div>
-                                    <div class="sub-stat">
-                                        <span class="sub-stat-number"><?= $stats['resolved_tickets'] ?></span>
-                                        <div class="sub-stat-label">Resolved</div>
+                                    <div class="col-4">
+                                        <div class="d-flex flex-column align-items-center">
+                                            <h6 class="mb-0"><?= $stats['in_progress_tickets'] ?></h6>
+                                            <small class="text-muted">In Progress</small>
+                                        </div>
+                                    </div>
+                                    <div class="col-4">
+                                        <div class="d-flex flex-column align-items-center">
+                                            <h6 class="mb-0"><?= $stats['resolved_tickets'] ?></h6>
+                                            <small class="text-muted">Resolved</small>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
+                </div>
 
                 <!-- Quick Actions -->
                 <div class="row mb-4">

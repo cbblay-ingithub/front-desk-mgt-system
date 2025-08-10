@@ -1,7 +1,7 @@
 <?php
 session_start();
 require_once '../dbConfig.php';
-require_once __DIR__ . '/audit_logger.php';
+require_once  '../audit_logger.php';
 global $conn;
 
 // Check if user is logged in and has Front Desk role
@@ -856,6 +856,18 @@ function checkTimeConflict($hostId, $appointmentTime, $excludeAppointmentId = nu
             font-size: 13px;
             border-left: 4px solid #c33;
         }
+        /* Add this to your existing CSS */
+        .fc-event-title {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 100%;
+            display: block;
+        }
+
+        .fc-event {
+            padding: 2px 4px !important;
+        }
     </style>
 </head>
 <body>
@@ -1443,7 +1455,14 @@ function checkTimeConflict($hostId, $appointmentTime, $excludeAppointmentId = nu
                                 action: 'getAppointmentsForCalendar'
                             },
                             success: function(response) {
-                                successCallback(response);
+                                // Process response to create shorter titles
+                                const processedEvents = response.map(event => {
+                                    return {
+                                        ...event
+                                         // Shorter format
+                                    };
+                                });
+                                successCallback(processedEvents);
                             },
                             error: function(error) {
                                 console.error('Error loading calendar events:', error);
