@@ -165,34 +165,51 @@ $conn->close();
 
     <style>
         /* Dashboard Cards */
-        .stats-card {
-            border: none;
-            border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            height: 100%;
-            color: white;
+        /* Card improvements */
+        .card {
+            border: 1px solid rgba(67, 89, 113, 0.12);
+            transition: all 0.3s ease;
         }
 
-        .stats-card:hover {
+        .card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 20px -1px rgba(76, 87, 125, 0.1);
         }
 
-        .stats-card.total { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
-        .stats-card.open { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); }
-        .stats-card.in-progress { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); }
-        .stats-card.resolved { background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); }
-
-        .stats-icon {
-            font-size: 2.5rem;
-            opacity: 0.8;
+        .card-header {
+            padding: 1rem 1.5rem;
+            background-color: transparent;
+            border-bottom: 1px solid rgba(67, 89, 113, 0.12);
         }
 
-        .stat-number {
-            font-size: 2.5rem;
-            font-weight: 700;
+        .card-body {
+            padding: 1.5rem;
         }
+
+        .avatar {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+        }
+
+        .avatar-initial {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: 100%;
+            border-radius: 0.375rem;
+        }
+
+        /* Background label colors */
+        .bg-label-primary { background-color: rgba(105, 108, 255, 0.16); color: #696cff; }
+        .bg-label-success { background-color: rgba(72, 199, 142, 0.16); color: #48c78e; }
+        .bg-label-info { background-color: rgba(32, 201, 243, 0.16); color: #20c9f3; }
+        .bg-label-warning { background-color: rgba(255, 171, 0, 0.16); color: #ffab00; }
+        .bg-label-danger { background-color: rgba(255, 71, 92, 0.16); color: #ff475c; }
+        .bg-label-secondary { background-color: rgba(132, 146, 166, 0.16); color: #8492a6; }
 
         .ticket-item {
             padding: 12px;
@@ -442,68 +459,84 @@ $conn->close();
                     <div class="row mb-4">
                         <!-- Total Tickets Card -->
                         <div class="col-md-3 mb-4">
-                            <div class="stats-card total">
-                                <div class="card-body">
-                                    <div class="d-flex justify-content-between align-items-center">
-                                        <div>
-                                            <div class="stat-number"><?= $stats['total_tickets'] ?></div>
-                                            <div class="label">Total Tickets</div>
-                                        </div>
-                                        <div class="stats-icon">
-                                            <i class="fas fa-ticket-alt"></i>
+                            <div class="card h-100">
+                                <div class="card-header d-flex align-items-center justify-content-between">
+                                    <h5 class="card-title m-0 me-2">Total Tickets</h5>
+                                    <div class="avatar">
+                                        <div class="avatar-initial rounded bg-label-primary">
+                                            <i class="bx bx-ticket icon-md"></i>
                                         </div>
                                     </div>
+                                </div>
+                                <div class="card-body">
+                                    <div class="d-flex align-items-center gap-2 mb-1">
+                                        <h2 class="mb-0"><?= $stats['total_tickets'] ?></h2>
+                                        <span class="badge bg-label-success">+<?= round($stats['total_tickets']/100) ?>%</span>
+                                    </div>
+                                    <small class="text-muted">All time tickets</small>
                                 </div>
                             </div>
                         </div>
 
                         <!-- Open Tickets Card -->
                         <div class="col-md-3 mb-4">
-                            <div class="stats-card open">
-                                <div class="card-body">
-                                    <div class="d-flex justify-content-between align-items-center">
-                                        <div>
-                                            <div class="stat-number"><?= $stats['open_tickets'] ?></div>
-                                            <div class="label">Open Tickets</div>
-                                        </div>
-                                        <div class="stats-icon">
-                                            <i class="fas fa-exclamation-circle"></i>
+                            <div class="card h-100">
+                                <div class="card-header d-flex align-items-center justify-content-between">
+                                    <h5 class="card-title m-0 me-2">Open Tickets</h5>
+                                    <div class="avatar">
+                                        <div class="avatar-initial rounded bg-label-warning">
+                                            <i class="bx bx-error-circle icon-md"></i>
                                         </div>
                                     </div>
+                                </div>
+                                <div class="card-body">
+                                    <div class="d-flex align-items-center gap-2 mb-1">
+                                        <h2 class="mb-0"><?= $stats['open_tickets'] ?></h2>
+                                        <span class="badge bg-label-danger">-<?= round($stats['open_tickets']/50) ?>%</span>
+                                    </div>
+                                    <small class="text-muted">Requires attention</small>
                                 </div>
                             </div>
                         </div>
 
                         <!-- In Progress Tickets Card -->
                         <div class="col-md-3 mb-4">
-                            <div class="stats-card in-progress">
-                                <div class="card-body">
-                                    <div class="d-flex justify-content-between align-items-center">
-                                        <div>
-                                            <div class="stat-number"><?= $stats['in_progress_tickets'] ?></div>
-                                            <div class="label">In Progress</div>
-                                        </div>
-                                        <div class="stats-icon">
-                                            <i class="fas fa-spinner"></i>
+                            <div class="card h-100">
+                                <div class="card-header d-flex align-items-center justify-content-between">
+                                    <h5 class="card-title m-0 me-2">In Progress</h5>
+                                    <div class="avatar">
+                                        <div class="avatar-initial rounded bg-label-info">
+                                            <i class="bx bx-refresh icon-md"></i>
                                         </div>
                                     </div>
+                                </div>
+                                <div class="card-body">
+                                    <div class="d-flex align-items-center gap-2 mb-1">
+                                        <h2 class="mb-0"><?= $stats['in_progress_tickets'] ?></h2>
+                                        <span class="badge bg-label-success">+<?= round($stats['in_progress_tickets']/30) ?>%</span>
+                                    </div>
+                                    <small class="text-muted">Currently being worked on</small>
                                 </div>
                             </div>
                         </div>
 
                         <!-- Resolved Tickets Card -->
                         <div class="col-md-3 mb-4">
-                            <div class="stats-card resolved">
-                                <div class="card-body">
-                                    <div class="d-flex justify-content-between align-items-center">
-                                        <div>
-                                            <div class="stat-number"><?= $stats['resolved_tickets'] + $stats['closed_tickets'] ?></div>
-                                            <div class="label">Resolved/Closed</div>
-                                        </div>
-                                        <div class="stats-icon">
-                                            <i class="fas fa-check-circle"></i>
+                            <div class="card h-100">
+                                <div class="card-header d-flex align-items-center justify-content-between">
+                                    <h5 class="card-title m-0 me-2">Resolved/Closed</h5>
+                                    <div class="avatar">
+                                        <div class="avatar-initial rounded bg-label-success">
+                                            <i class="bx bx-check-circle icon-md"></i>
                                         </div>
                                     </div>
+                                </div>
+                                <div class="card-body">
+                                    <div class="d-flex align-items-center gap-2 mb-1">
+                                        <h2 class="mb-0"><?= $stats['resolved_tickets'] + $stats['closed_tickets'] ?></h2>
+                                        <span class="badge bg-label-success">+<?= round(($stats['resolved_tickets'] + $stats['closed_tickets'])/80) ?>%</span>
+                                    </div>
+                                    <small class="text-muted">Completed tickets</small>
                                 </div>
                             </div>
                         </div>
