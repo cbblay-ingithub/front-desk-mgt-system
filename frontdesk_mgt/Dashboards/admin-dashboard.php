@@ -326,32 +326,72 @@ $conn->close();
             transition: margin-left 0.3s ease, width 0.3s ease !important;
         }
 
-        /* Dashboard Cards */
-        .stats-card {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        /* Analytics Cards Styles */
+        .analytics-card {
             border: none;
-            color: white;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
             border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            height: 100%;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
         }
 
-        .stats-card:hover {
+        .analytics-card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
         }
 
-        .stats-card.users { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
-        .stats-card.tickets { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); }
-        .stats-card.visitors { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); }
-        .stats-card.items { background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); }
-        .stats-card.active-users { background: linear-gradient(135deg, #ff9a9e 0%, #fad0c4 100%); }
-        .stats-card.time { background: linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%); }
+        .analytics-card .avatar {
+            width: 44px;
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
 
-        .stats-icon {
-            font-size: 2.5rem;
-            opacity: 0.8;
+        .analytics-card .avatar-initial {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+        }
+
+        .analytics-card h4 {
+            font-size: 1.75rem;
+            font-weight: 600;
+            margin-top: 0.5rem;
+        }
+
+        /* Background label colors */
+        .bg-label-primary { background-color: rgba(102, 126, 234, 0.1); color: #667eea; }
+        .bg-label-success { background-color: rgba(67, 233, 123, 0.1); color: #43e97b; }
+        .bg-label-warning { background-color: rgba(255, 171, 0, 0.1); color: #ffab00; }
+        .bg-label-info { background-color: rgba(79, 172, 254, 0.1); color: #4facfe; }
+        .bg-label-danger { background-color: rgba(255, 107, 107, 0.1); color: #ff6b6b; }
+
+        /* Badge styles */
+        .badge {
+            font-size: 0.75rem;
+            font-weight: 500;
+            padding: 0.35em 0.65em;
+        }
+
+        /* Animation for numbers */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .analytics-card h4 {
+            animation: fadeInUp 0.5s ease-out forwards;
         }
 
         .chart-container {
@@ -516,7 +556,7 @@ $conn->close();
                 <div class="navbar-nav-right d-flex align-items-center justify-content-end" id="navbar-collapse">
                     <div class="navbar-nav align-items-center me-auto">
                         <div class="nav-item">
-                            <h4 class="mb-0 fw-bold ms-2">Admin Dashboard</h4>
+                            <h4 class="mb-0 fw-bold ms-2"> Dashboard</h4>
                         </div>
                     </div>
 
@@ -526,10 +566,9 @@ $conn->close();
                                 <i class="fas fa-user-circle me-1"></i> <?php echo $_SESSION['name'] ?? 'Admin'; ?>
                             </button>
                             <ul class="dropdown-menu dropdown-menu-end">
-                                <li><a class="dropdown-item" href="profile.php"><i class="fas fa-user me-2"></i> Profile</a></li>
                                 <li><a class="dropdown-item" href="settings.php"><i class="fas fa-cog me-2"></i> Settings</a></li>
                                 <li><hr class="dropdown-divider"></li>
-                                <li><a class="dropdown-item" href="../logout.php"><i class="fas fa-sign-out-alt me-2"></i> Logout</a></li>
+                                <li><a class="dropdown-item" href="../Logout.php"><i class="fas fa-sign-out-alt me-2"></i> Logout</a></li>
                             </ul>
                         </div>
                     </div>
@@ -540,116 +579,105 @@ $conn->close();
             <div class="container-fluid container-p-y">
                 <!-- First Row of Stats Cards (from first version) -->
                 <div class="row mb-4">
+                    <!-- Total Users Card -->
                     <div class="col-md-6 col-lg-3 mb-4">
-                        <div class="stat-card card bg-primary text-white">
+                        <div class="card analytics-card">
                             <div class="card-body">
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <div>
-                                        <div class="count"><?php echo $stats['total_users']; ?></div>
-                                        <div class="label text-white">Total Users</div>
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <div class="avatar flex-shrink-0">
+                                        <div class="avatar-initial bg-label-primary rounded">
+                                            <i class="fas fa-users"></i>
+                                        </div>
                                     </div>
-                                    <div class="icon">
-                                        <i class="fas fa-users"></i>
+                                    <div class="text-end">
+                                        <small class="text-muted">Total Users</small>
+                                        <h4 class="mb-0"><?php echo $stats['total_users']; ?></h4>
                                     </div>
+                                </div>
+                                <div class="d-flex align-items-center mt-3">
+                                    <div class="badge bg-label-primary p-1 rounded">
+                                        <i class="fas fa-arrow-up"></i>
+                                        <span class="ms-1"><?php echo round(($stats['active_users']/$stats['total_users'])*100); ?>%</span>
+                                    </div>
+                                    <small class="text-muted ms-2">Active Users</small>
                                 </div>
                             </div>
                         </div>
                     </div>
 
+                    <!-- Active Visitors Card -->
                     <div class="col-md-6 col-lg-3 mb-4">
-                        <div class="stat-card card bg-success text-white">
+                        <div class="card analytics-card">
                             <div class="card-body">
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <div>
-                                        <div class="count"><?php echo $stats['active_users']; ?></div>
-                                        <div class="label text-white">Active Users</div>
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <div class="avatar flex-shrink-0">
+                                        <div class="avatar-initial bg-label-success rounded">
+                                            <i class="fas fa-user-check"></i>
+                                        </div>
                                     </div>
-                                    <div class="icon">
-                                        <i class="fas fa-user-check"></i>
+                                    <div class="text-end">
+                                        <small class="text-muted">Active Visitors</small>
+                                        <h4 class="mb-0"><?php echo $stats['checked_in_visitors']; ?></h4>
                                     </div>
+                                </div>
+                                <div class="d-flex align-items-center mt-3">
+                                    <div class="badge bg-label-success p-1 rounded">
+                                        <i class="fas fa-arrow-up"></i>
+                                        <span class="ms-1"><?php echo $stats['total_visitors']; ?></span>
+                                    </div>
+                                    <small class="text-muted ms-2">Total Visitors</small>
                                 </div>
                             </div>
                         </div>
                     </div>
 
+                    <!-- Open Tickets Card -->
                     <div class="col-md-6 col-lg-3 mb-4">
-                        <div class="stat-card card bg-info text-white">
+                        <div class="card analytics-card">
                             <div class="card-body">
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <div>
-                                        <div class="count"><?php echo $stats['total_visitors']; ?></div>
-                                        <div class="label text-white">Total Visitors</div>
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <div class="avatar flex-shrink-0">
+                                        <div class="avatar-initial bg-label-warning rounded">
+                                            <i class="fas fa-ticket-alt"></i>
+                                        </div>
                                     </div>
-                                    <div class="icon">
-                                        <i class="fas fa-address-book"></i>
+                                    <div class="text-end">
+                                        <small class="text-muted">Open Tickets</small>
+                                        <h4 class="mb-0"><?php echo $stats['open_tickets']; ?></h4>
                                     </div>
+                                </div>
+                                <div class="d-flex align-items-center mt-3">
+                                    <div class="badge bg-label-warning p-1 rounded">
+                                        <i class="fas fa-arrow-up"></i>
+                                        <span class="ms-1"><?php echo $stats['total_tickets']; ?></span>
+                                    </div>
+                                    <small class="text-muted ms-2">Total Tickets</small>
                                 </div>
                             </div>
                         </div>
                     </div>
 
+                    <!-- Appointments Card -->
                     <div class="col-md-6 col-lg-3 mb-4">
-                        <div class="stat-card card bg-warning text-dark">
+                        <div class="card analytics-card">
                             <div class="card-body">
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <div>
-                                        <div class="count text-white"><?php echo $stats['checked_in_visitors']; ?></div>
-                                        <div class="label text-white">Checked In Now</div>
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <div class="avatar flex-shrink-0">
+                                        <div class="avatar-initial bg-label-info rounded">
+                                            <i class="fas fa-calendar-check"></i>
+                                        </div>
                                     </div>
-                                    <div class="icon">
-                                        <i class="fas fa-door-open"></i>
+                                    <div class="text-end">
+                                        <small class="text-muted">Avg Appointments</small>
+                                        <h4 class="mb-0"><?php echo $stats['average_appointments']; ?>/day</h4>
                                     </div>
                                 </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Second Row of Stats Cards (from first version) -->
-                <div class="row mb-4">
-                    <div class="col-md-6 col-lg-4 mb-4">
-                        <div class="stat-card card bg-danger text-white">
-                            <div class="card-body">
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <div>
-                                        <div class="count"><?php echo $stats['open_tickets']; ?></div>
-                                        <div class="label text-white">Open Tickets</div>
-                                    </div>
-                                    <div class="icon">
-                                        <i class="fas fa-ticket-alt"></i>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="col-md-6 col-lg-4 mb-4">
-                        <div class="stat-card card bg-secondary text-white">
-                            <div class="card-body">
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <div>
-                                        <div class="count"><?php echo $stats['average_appointments']; ?></div>
-                                        <div class="label text-white">Avg Appointments/Day (30d)</div>
-                                    </div>
-                                    <div class="icon">
-                                        <i class="fas fa-calendar-check"></i>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="col-md-6 col-lg-4 mb-4">
-                        <div class="stat-card card bg-dark text-white">
-                            <div class="card-body">
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <div>
-                                        <div class="count"><?php echo date('H:i'); ?></div>
-                                        <div class="label text-white">Current Time</div>
-                                    </div>
-                                    <div class="icon">
+                                <div class="d-flex align-items-center mt-3">
+                                    <div class="badge bg-label-info p-1 rounded">
                                         <i class="fas fa-clock"></i>
+                                        <span class="ms-1">30d</span>
                                     </div>
+                                    <small class="text-muted ms-2">Time Period</small>
                                 </div>
                             </div>
                         </div>

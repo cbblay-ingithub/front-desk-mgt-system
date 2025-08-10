@@ -359,17 +359,22 @@ $conn->close();
                         </div>
                     </div>
 
-                    <!--Filter Button-->
+                    <!-- Filter Button -->
                     <div class="navbar-nav align-items-center me-3">
                         <div class="dropdown">
-                            <button class="btn btn-outline-primary dropdown-toggle" type="button" id="filterDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                                <i class="fas fa-filter me-1"></i>
+                            <button class="btn btn-outline-primary dropdown-toggle position-relative" type="button" id="filterDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="fas fa-filter me-1"></i> Filters
+                                <span id="filterBadge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger d-none">0</span>
                             </button>
-                            <div class="dropdown-menu dropdown-menu-end filter-dropdown" aria-labelledby="filterDropdown">
+                            <div class="dropdown-menu dropdown-menu-end p-3 filter-dropdown" aria-labelledby="filterDropdown" style="width: 320px;">
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <h5 class="mb-0">Filter Users</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="dropdown" aria-label="Close"></button>
+                                </div>
                                 <form method="GET" id="filterForm">
-                                    <div class="form-group">
-                                        <label class="form-label">Role</label>
-                                        <select name="role" class="form-select">
+                                    <div class="mb-3">
+                                        <label class="form-label small text-muted mb-1">ROLE</label>
+                                        <select name="role" class="form-select form-select-sm">
                                             <option value="">All Roles</option>
                                             <?php foreach ($roles as $role): ?>
                                                 <option value="<?= $role['Role'] ?>" <?= $roleFilter === $role['Role'] ? 'selected' : '' ?>>
@@ -379,24 +384,23 @@ $conn->close();
                                         </select>
                                     </div>
 
-                                    <div class="form-group">
-                                        <label class="form-label">Status</label>
-                                        <select name="status" class="form-select">
+                                    <div class="mb-3">
+                                        <label class="form-label small text-muted mb-1">STATUS</label>
+                                        <select name="status" class="form-select form-select-sm">
                                             <option value="">All Statuses</option>
                                             <option value="active" <?= $statusFilter === 'active' ? 'selected' : '' ?>>Active</option>
                                             <option value="inactive" <?= $statusFilter === 'inactive' ? 'selected' : '' ?>>Inactive</option>
                                         </select>
                                     </div>
 
-                                    <div class="form-group">
-                                        <label class="form-label">Search</label>
-                                        <input type="text" name="search" class="form-control"
-                                               placeholder="Search by name or email" value="<?= htmlspecialchars($searchTerm) ?>">
+                                    <div class="d-flex justify-content-between mt-4">
+                                        <button type="reset" class="btn btn-sm btn-outline-secondary" id="resetFilters">
+                                            <i class="fas fa-undo me-1"></i> Reset
+                                        </button>
+                                        <button type="submit" class="btn btn-sm btn-primary">
+                                            <i class="fas fa-check me-1"></i> Apply Filters
+                                        </button>
                                     </div>
-
-                                    <button type="submit" class="btn btn-primary btn-apply mt-2">
-                                        <i class="fas fa-check me-1"></i> Apply Filters
-                                    </button>
                                 </form>
                             </div>
                         </div>
