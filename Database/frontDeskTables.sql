@@ -160,5 +160,26 @@ CREATE TABLE user_activity_log (
    FOREIGN KEY (user_id) REFERENCES users(UserID)
 );
 
+-- 14. audit_logs table
+CREATE TABLE audit_logs
+(
+    log_id          CHAR(8) PRIMARY KEY,
+    user_id         INT                         NOT NULL,
+    user_role       VARCHAR(20)                 NOT NULL, -- admin, front_desk, host, support
+    action_type     VARCHAR(50)                 NOT NULL,
+    action_category VARCHAR(30)                 NOT NULL,
+    table_affected  VARCHAR(50),
+    record_id       INT,
+    old_value       JSON,
+    new_value       JSON,
+    ip_address      VARCHAR(45)                 NOT NULL,
+    user_agent      VARCHAR(255),
+    session_id      VARCHAR(64),
+    status          ENUM ('SUCCESS', 'FAILURE') NOT NULL DEFAULT 'SUCCESS',
+    description     VARCHAR(500),                         -- Human-readable description
+    created_at      TIMESTAMP                            DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(UserID)
+);
+
 
 
