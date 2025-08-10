@@ -98,6 +98,15 @@ $conn->close();
             height: 100%;
             overflow-x: hidden !important;
         }
+        /* Add this to your existing styles */
+        #layout-navbar {
+            padding-top: 0.25rem !important;  /* Reduced from 0.5rem */
+            padding-bottom: 0.25rem !important;
+        }
+
+        .layout-content {
+            padding-top: 0 !important;
+        }
 
         .layout-wrapper {
             display: flex;
@@ -111,6 +120,7 @@ $conn->close();
             min-height: 100vh;
             width: 100%;
             overflow: hidden !important;
+            margin-top: 0 !important;
         }
 
         /* Sidebar width fixes */
