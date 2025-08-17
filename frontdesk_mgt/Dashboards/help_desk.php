@@ -15,7 +15,7 @@ require_once 'view_ticket.php';
 // Start session to access user role and ID
 session_start();
 $userRole = $_SESSION['role'] ?? 'host'; // Default to host if role not set
-$userId = $_SESSION['user_id'] ?? null;
+$userId = $_SESSION['userID'] ?? null;
 
 // Process ticket creation
 $result = createTicket($conn);
@@ -32,15 +32,10 @@ if (isset($opResult['error']) && $opResult['error']) {
 }
 
 // Add JSON response for AJAX requests
-if (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest') {
+if (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest') {
     header('Content-Type: application/json');
-    if (isset($error) && $error) {
-        error_log('Ticket creation error: ' . $error);
-        echo json_encode(['success' => false, 'error' => $error]);
-    } else {
-        error_log('Ticket creation success: ' . $message);
-        echo json_encode(['success' => true, 'message' => $message]);
-    }
+    ob_clean();
+    echo json_encode($result); // Use the $result from the first createTicket call
     exit;
 }
 
@@ -565,7 +560,7 @@ $conn->close();
 
     </style>
 </head>
-<div data-user-id="<?php echo $_SESSION['$userID'] ?? ''; ?>">
+<div data-user-id="<?php echo $_SESSION['$user_id'] ?? ''; ?>">
     <div class="layout-wrapper layout-content-navbar">
         <div class="layout-container">
             <?php include 'sidebar.php'; ?>
@@ -776,67 +771,61 @@ $conn->close();
     </div>
 </div>
 
-<!-- Create Ticket Modal -->
-<div id="createTicketModal" class="modal">
-    <div class="modal-content">
-        <span class="close">&times;</span>
-        <h2>Create New Ticket</h2>
-        <form method="POST" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>">
-            <input type="hidden" name="action" value="create_ticket">
+    <!-- Create Ticket Modal -->
+    <div id="createTicketModal" class="modal">
+        <div class="modal-content" style="max-width: 700px;">
+            <span class="close">&times;</span>
+            <h2>Create New Ticket</h2>
+            <form id="createTicketForm" method="POST" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>">
+                <input type= "hidden" name="action" value="create_ticket">
+                <div class="form-row" style="display: flex; gap: 20px; margin-bottom: 15px;">
+                    <div class="form-group" style="flex: 1;">
+                        <label for="assigned_to">Assigned To:</label>
+                        <select id="assigned_to" name="assigned_to" class="form-control">
+                            <option value="">Select User</option>
+                            <?php foreach ($users as $id => $name): ?>
+                                <option value="<?php echo htmlspecialchars($id); ?>"><?php echo htmlspecialchars($name); ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
 
-            <div class="form-row">
-                <div class="form-group">
-                    <label for="created_by">Created By:</label>
-                    <select id="created_by" name="created_by" required>
-                        <option value="">Select User</option>
-                        <?php foreach ($users as $id => $name): ?>
-                            <option value="<?php echo htmlspecialchars($id); ?>"><?php echo htmlspecialchars($name); ?></option>
-                        <?php endforeach; ?>
-                    </select>
+                    <div class="form-group" style="flex: 1;">
+                        <label for="category_id">Category:</label>
+                        <select id="category_id" name="category_id" class="form-control">
+                            <option value="">Select Category</option>
+                            <?php foreach ($categories as $id => $name): ?>
+                                <option value="<?php echo htmlspecialchars($id); ?>"><?php echo htmlspecialchars($name); ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
                 </div>
 
-                <div class="form-group">
-                    <label for="assigned_to">Assigned To:</label>
-                    <select id="assigned_to" name="assigned_to">
-                        <option value="">Select User</option>
-                        <?php foreach ($users as $id => $name): ?>
-                            <option value="<?php echo htmlspecialchars($id); ?>"><?php echo htmlspecialchars($name); ?></option>
-                        <?php endforeach; ?>
-                    </select>
-                </div>
-            </div>
-
-            <div class="form-row">
-                <div class="form-group">
-                    <label for="category_id">Category:</label>
-                    <select id="category_id" name="category_id">
-                        <option value="">Select Category</option>
-                        <?php foreach ($categories as $id => $name): ?>
-                            <option value="<?php echo htmlspecialchars($id); ?>"><?php echo htmlspecialchars($name); ?></option>
-                        <?php endforeach; ?>
-                    </select>
+                <div class="form-row" style="display: flex; gap: 20px; margin-bottom: 15px;">
+                    <div class="form-group" style="flex: 1;">
+                        <label for="priority">Priority:</label>
+                        <select id="priority" name="priority" required class="form-control">
+                            <option value="low">Low</option>
+                            <option value="medium" selected>Medium</option>
+                            <option value="high">High</option>
+                            <option value="critical">Critical</option>
+                        </select>
+                    </div>
                 </div>
 
-                <div class="form-group">
-                    <label for="priority">Priority:</label>
-                    <select id="priority" name="priority" required>
-                        <option value="low">Low</option>
-                        <option value="medium" selected>Medium</option>
-                        <option value="high">High</option>
-                        <option value="critical">Critical</option>
-                    </select>
+                <div class="form-group" style="margin-bottom: 15px;">
+                    <label for="description">Description:</label>
+                    <textarea id="description" name="description" required class="form-control" style="min-height: 100px;"></textarea>
                 </div>
-            </div>
 
-            <div class="form-group">
-                <label for="description">Description:</label>
-                <textarea id="description" name="description" required></textarea>
-            </div>
-
-            <button type="submit" class="submit-btn">Create Ticket</button>
-        </form>
+                <div class="form-group" style="text-align: right;">
+                    <button type="button" id="submitTicketBtn" class="btn btn-primary">
+                        <i class="fas fa-plus me-2"></i>Create Ticket
+                    </button>
+                </div>
+            </form>
+            <div id="formFeedback" style="margin-top: 15px;"></div>
+        </div>
     </div>
-</div>
 
 <!-- View Ticket Modal -->
 <div id="viewTicketModal" class="modal">
@@ -1233,6 +1222,116 @@ $conn->close();
             console.log('Opening create ticket modal');
             document.getElementById('createTicketModal').style.display = 'block';
         });
+        //existing form submission handler with
+        document.addEventListener('DOMContentLoaded', function() {
+            const createTicketForm = document.getElementById('createTicketForm');
+
+            if (createTicketForm) {
+                createTicketForm.addEventListener('submit', async function(e) {
+                    e.preventDefault();
+
+                    const form = e.target;
+                    const formData = new FormData(form);
+                    const submitBtn = form.querySelector('button[type="submit"]');
+                    const feedbackDiv = document.getElementById('formFeedback');
+
+                    // Show loading state
+                    submitBtn.disabled = true;
+                    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Creating...';
+                    feedbackDiv.innerHTML = '';
+                    feedbackDiv.className = '';
+
+                    try {
+                        // Convert FormData to JSON for better debugging
+                        const formJson = {};
+                        formData.forEach((value, key) => formJson[key] = value);
+                        console.log('Submitting form data:', formJson);
+
+                        const response = await fetch('help_desk.php', {
+                            method: 'POST',
+                            body: formData,
+                            headers: {
+                                'X-Requested-With': 'XMLHttpRequest' // Identify as AJAX request
+                            }
+                        });
+
+                        if (!response.ok) {
+                            throw new Error(`HTTP error! status: ${response.status}`);
+                        }
+
+                        const data = await response.json();
+                        console.log('Response data:', data);
+
+                        if (data.success) {
+                            feedbackDiv.innerHTML = `<div class="alert alert-success">${data.message}</div>`;
+                            form.reset();
+                            setTimeout(() => {
+                                document.getElementById('createTicketModal').style.display = 'none';
+                                window.location.reload();
+                            }, 2000);
+                        } else {
+                            feedbackDiv.innerHTML = `<div class="alert alert-danger">${data.error || 'Error creating ticket'}</div>`;
+                        }
+                    } catch (error) {
+                        console.error('Error:', error);
+                        feedbackDiv.innerHTML = `<div class="alert alert-danger">Error: ${error.message}</div>`;
+                    } finally {
+                        submitBtn.disabled = false;
+                        submitBtn.innerHTML = '<i class="fas fa-plus me-2"></i>Create Ticket';
+                    }
+                });
+            }
+        });
+        // Add this to your JavaScript section
+        document.getElementById('submitTicketBtn').addEventListener('click', function(e) {
+            e.preventDefault();
+            const form = document.getElementById('createTicketForm');
+            const formData = new FormData(form);
+            const submitBtn = this;
+            const feedbackDiv = document.getElementById('formFeedback');
+
+            // Show loading state
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Creating...';
+            feedbackDiv.innerHTML = '';
+            feedbackDiv.className = '';
+
+            fetch('help_desk.php', {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        return response.text().then(text => {
+                            throw new Error(`Server error: ${response.status} - ${text}`);
+                        });
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.success) {
+                        feedbackDiv.innerHTML = `<div class="alert alert-success">${data.message}</div>`;
+                        // Close modal and refresh after short delay
+                        setTimeout(() => {
+                            document.getElementById('createTicketModal').style.display = 'none';
+                            window.location.reload();
+                        }, 1000);
+                    } else {
+                        feedbackDiv.innerHTML = `<div class="alert alert-danger">${data.error || 'Error creating ticket'}</div>`;
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    feedbackDiv.innerHTML = `<div class="alert alert-danger">Error: ${error.message}</div>`;
+                })
+                .finally(() => {
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = '<i class="fas fa-plus me-2"></i>Create Ticket';
+                });
+        });
 
         // Close modals
         document.querySelectorAll('.close').forEach(function(closeBtn) {
@@ -1563,24 +1662,24 @@ RECENT TICKETS (Last 5):
         // NEW: Format detailed ticket information
         formatTicketDetails(ticket) {
             let details = `**Ticket #${ticket.TicketID} Details:**
-- **Description:** ${ticket.Description}
-- **Priority:** ${ticket.Priority}
-- **Status:** ${ticket.Status}
-- **Created:** ${new Date(ticket.CreatedDate).toLocaleDateString()}`;
+            - **Description:** ${ticket.Description}
+            - **Priority:** ${ticket.Priority}
+            - **Status:** ${ticket.Status}
+            - **Created:** ${new Date(ticket.CreatedDate).toLocaleDateString()}`;
 
             if (this.userRole === 'Front Desk Staff') {
                 details += `
-- **Created By:** ${ticket.CreatedByName || 'Unknown'}
-- **Assigned To:** ${ticket.AssignedToName || 'Unassigned'}
-- **Category:** ${ticket.CategoryName || 'Uncategorized'}`;
+            - **Created By:** ${ticket.CreatedByName || 'Unknown'}
+            - **Assigned To:** ${ticket.AssignedToName || 'Unassigned'}
+            - **Category:** ${ticket.CategoryName || 'Uncategorized'}`;
             }
 
             // Add suggested actions based on status
             if (ticket.Status === 'open') {
                 details += `\n\n**Suggested Actions:**
-- Assign this ticket to a staff member
-- Set priority if not already set
-- Add category for better organization`;
+                - Assign this ticket to a staff member
+                - Set priority if not already set
+                - Add category for better organization`;
             } else if (ticket.Status === 'in-progress') {
                 details += `\n\n**Current Status:** This ticket is being worked on.`;
             } else if (ticket.Status === 'resolved') {
@@ -1646,7 +1745,7 @@ RECENT TICKETS (Last 5):
         }
 
         formatMessage(text) {
-            // Basic markdown formatting
+            // Basic mark down formatting
             return text
                 .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
                 .replace(/\*(.*?)\*/g, '<em>$1</em>')

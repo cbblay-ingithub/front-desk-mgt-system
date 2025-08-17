@@ -7,50 +7,69 @@ function createTicket($conn) {
     $message = null;
     $error = null;
 
+    // Debug: Log incoming POST data
+    error_log("Checking for ticket creation POST data: " . print_r($_POST, true));
+
     if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['action']) && $_POST['action'] == 'create_ticket') {
-        $createdBy = $_POST['created_by'];
-        $description = $_POST['description'];
-        $assignedTo = !empty($_POST['assigned_to']) ? $_POST['assigned_to'] : "NULL";
-        $categoryID = !empty($_POST['category_id']) ? $_POST['category_id'] : "NULL";
+        error_log("Session data: " . print_r($_SESSION, true));
+
+        $createdBy = $_SESSION['userID'] ?? null;
+        error_log("Created by user ID: " . $createdBy);
+
+        if (!$createdBy) {
+            error_log("No user ID in session");
+            return ['error' => 'You must be logged in to create a ticket'];
+        }
+
+        $description = trim($_POST['description']);
         $priority = $_POST['priority'];
+        $assignedTo = !empty($_POST['assigned_to']) ? (int)$_POST['assigned_to'] : null;
+        $categoryID = !empty($_POST['category_id']) ? (int)$_POST['category_id'] : null;
 
-        // Set status to 'in-progress' if a user is assigned, otherwise 'open'
-        $status = ($assignedTo != "NULL") ? "in-progress" : "open";
+        // Set status based on assignment
+        $status = $assignedTo ? 'in-progress' : 'open';
 
-        $sql = "INSERT INTO Help_Desk (CreatedBy, Description, AssignedTo, CategoryID, Priority, Status, CreatedDate) 
-                VALUES (?, ?, " . ($assignedTo == "NULL" ? "NULL" : "?") . ", " . ($categoryID == "NULL" ? "NULL" : "?") . ", ?, ?, NOW())";
+        try {
+            // Prepare the SQL statement
+            $sql = "INSERT INTO Help_Desk (CreatedBy, Description, AssignedTo, CategoryID, Priority, Status, CreatedDate) 
+                    VALUES (?, ?, ?, ?, ?, ?, NOW())";
 
-        $stmt = $conn->prepare($sql);
+            $stmt = $conn->prepare($sql);
+            if (!$stmt) {
+                throw new Exception("Prepare failed: " . $conn->error);
+            }
 
-        // Dynamically bind parameters based on NULL values
-        $types = "ss";
-        $params = [$createdBy, $description];
+            // Bind parameters
+            $stmt->bind_param("isiiss",
+                $createdBy,
+                $description,
+                $assignedTo,
+                $categoryID,
+                $priority,
+                $status
+            );
 
-        if ($assignedTo != "NULL") {
-            $types .= "i";
-            $params[] = $assignedTo;
+            // Execute the statement
+            if ($stmt->execute()) {
+                $newTicketId = $conn->insert_id;
+                $message = "Ticket #$newTicketId created successfully!";
+
+                // Return success response without notification
+                return ['success' => true, 'message' => $message];
+            } else {
+                throw new Exception("Execute failed: " . $stmt->error);
+            }
+        } catch (Exception $e) {
+            error_log("Error creating ticket: " . $e->getMessage());
+            return [
+                'success' => false,
+                'error' => 'Error creating ticket: ' . $e->getMessage()
+            ];
+        } finally {
+            if (isset($stmt)) {
+                $stmt->close();
+            }
         }
-
-        if ($categoryID != "NULL") {
-            $types .= "i";
-            $params[] = $categoryID;
-        }
-
-        $types .= "ss";
-        $params[] = $priority;
-        $params[] = $status; // Add status parameter
-
-        $stmt->bind_param($types, ...$params);
-
-        // Bind parameters and execute (adjust as per your implementation)
-        if ($stmt->execute()) {
-            $newTicketId = $conn->insert_id;
-            error_log("Ticket created: #$newTicketId at " . date('Y-m-d H:i:s') . " with action: " . $_POST['action'] . " and POST data: " . json_encode($_POST));
-            $message = "Ticket created successfully!";
-        } else {
-            $error = "Error creating ticket.";
-        }
-        $stmt->close();
     }
 
     return ['message' => $message, 'error' => $error];
@@ -94,7 +113,7 @@ function processTicketOperation($conn) {
         $ticketId = $_POST['ticket_id'];
         $resolution = $_POST['resolution'];
 
-        // Update ticket status to "resolved", set ResolvedDate, and calculate TimeSpent
+        // Update ticket status to "resolved", set ResolvedDate, and calculate Time Spent
         // TimeSpent is the difference in minutes between CreatedDate and now (ResolvedDate)
         $sql = "UPDATE Help_Desk 
             SET Status = 'resolved', 
