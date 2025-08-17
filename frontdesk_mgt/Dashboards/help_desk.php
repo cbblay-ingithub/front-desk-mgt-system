@@ -44,6 +44,7 @@ $users = getUsers($conn);
 $categories = getCategories($conn);
 
 // Modify ticket retrieval based on role
+// Modify ticket retrieval based on role
 if ($userRole == 'host') {
     $sql = "SELECT t.TicketID, t.Description, t.Priority, t.Status, t.CreatedDate,
             u1.Name as CreatedByName,
@@ -66,7 +67,11 @@ if ($userRole == 'host') {
     $tickets = $result->fetch_all(MYSQLI_ASSOC);
     $stmt->close();
 } else {
+    // For other roles, ensure getTickets() is working properly
     $tickets = getTickets($conn);
+
+    // Debug output - remove this after testing
+    error_log("Retrieved tickets: " . print_r($tickets, true));
 }
 
 // Handle ticket details view
@@ -635,7 +640,7 @@ $conn->close();
                     </div>
                 </nav>
 
-                        <div class="container-fluid container-p-y">
+                        <div class="container-fluid container-p-y" style="overflow-y: auto; max-height: 90vh;" >
                             <table class="ticket-table">
                                 <thead>
                                 <tr>
