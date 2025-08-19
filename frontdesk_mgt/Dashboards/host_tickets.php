@@ -32,15 +32,10 @@ if (isset($opResult['error']) && $opResult['error']) {
 }
 
 // Add JSON response for AJAX requests
-if (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest') {
+if (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest') {
     header('Content-Type: application/json');
-    if (isset($error) && $error) {
-        error_log('Ticket creation error: ' . $error);
-        echo json_encode(['success' => false, 'error' => $error]);
-    } else {
-        error_log('Ticket creation success: ' . $message);
-        echo json_encode(['success' => true, 'message' => $message]);
-    }
+    ob_clean();
+    echo json_encode($result);
     exit;
 }
 
@@ -668,56 +663,57 @@ $conn->close();
 
 <!-- Create Ticket Modal -->
 <div id="createTicketModal" class="modal">
-    <div class="modal-content">
-        <span class="close">×</span>
+    <div class="modal-content" style="max-width: 700px;">
+        <span class="close">&times;</span>
         <h2>Create New Ticket</h2>
-        <form id="createTicketForm" method="POST" action="FD_tickets.php">
+        <form id="createTicketForm" method="POST" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>">
             <input type="hidden" name="action" value="create_ticket">
-            <input type="hidden" name="created_by" value="<?php echo $userId; ?>">
-            <div class="form-group">
-                <label for="created_by">Created By:</label>
-                <select id="created_by" name="created_by" required>
-                    <option value="">Select User</option>
-                    <?php foreach ($users as $id => $name): ?>
-                        <option value="<?php echo $id; ?>"><?php echo htmlspecialchars($name); ?></option>
-                    <?php endforeach; ?>
-                </select>
-            </div>
-            <div class="form-row">
-                <div class="form-group">
+            <div class="form-row" style="display: flex; gap: 20px; margin-bottom: 15px;">
+                <div class="form-group" style="flex: 1;">
                     <label for="assigned_to">Assigned To:</label>
-                    <select id="assigned_to" name="assigned_to">
-                        <option value="">Select Assignee</option>
+                    <select id="assigned_to" name="assigned_to" class="form-control">
+                        <option value="">Select User</option>
                         <?php foreach ($users as $id => $name): ?>
-                            <option value="<?php echo $id; ?>"><?php echo htmlspecialchars($name); ?></option>
+                            <option value="<?php echo htmlspecialchars($id); ?>"><?php echo htmlspecialchars($name); ?></option>
                         <?php endforeach; ?>
                     </select>
                 </div>
-                <div class="form-group">
+
+                <div class="form-group" style="flex: 1;">
                     <label for="category_id">Category:</label>
-                    <select id="category_id" name="category_id">
+                    <select id="category_id" name="category_id" class="form-control">
                         <option value="">Select Category</option>
                         <?php foreach ($categories as $id => $name): ?>
-                            <option value="<?php echo $id; ?>"><?php echo htmlspecialchars($name); ?></option>
+                            <option value="<?php echo htmlspecialchars($id); ?>"><?php echo htmlspecialchars($name); ?></option>
                         <?php endforeach; ?>
                     </select>
                 </div>
             </div>
-            <div class="form-group">
+
+            <div class="form-row" style="display: flex; gap: 20px; margin-bottom: 15px;">
+                <div class="form-group" style="flex: 1;">
+                    <label for="priority">Priority:</label>
+                    <select id="priority" name="priority" required class="form-control">
+                        <option value="low">Low</option>
+                        <option value="medium" selected>Medium</option>
+                        <option value="high">High</option>
+                        <option value="critical">Critical</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group" style="margin-bottom: 15px;">
                 <label for="description">Description:</label>
-                <textarea id="description" name="description" required placeholder="Describe the issue..."></textarea>
+                <textarea id="description" name="description" required class="form-control" style="min-height: 100px;"></textarea>
             </div>
-            <div class="form-group">
-                <label for="priority">Priority:</label>
-                <select id="priority" name="priority" required>
-                    <option value="low">Low</option>
-                    <option value="medium" selected>Medium</option>
-                    <option value="high">High</option>
-                    <option value="critical">Critical</option>
-                </select>
+
+            <div class="form-group" style="text-align: right;">
+                <button type="button" id="submitTicketBtn" class="btn btn-primary">
+                    <i class="fas fa-plus me-2"></i>Create Ticket
+                </button>
             </div>
-            <button type="submit" class="submit-btn">Create Ticket</button>
         </form>
+        <div id="formFeedback" style="margin-top: 15px;"></div>
     </div>
 </div>
 
@@ -729,7 +725,6 @@ $conn->close();
             <div id="ticketDetails"><?php echo $ticketDetailsHTML; ?></div>
         </div>
     </div>
-</div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
 <script src="../../Sneat/assets/vendor/libs/fullcalendar/fullcalendar.js"></script>
@@ -741,81 +736,9 @@ $conn->close();
 <script src="../../Sneat/assets/vendor/js/menu.js"></script>
 <script src="../../Sneat/assets/js/main.js"></script>
 <script>
-    $(document).ready(function() {
-        // Sidebar toggle functionality
-        $(document).ready(function() {
-            // Restore sidebar state
-            const isCollapsed = localStorage.getItem('sidebarCollapsed') === 'true';
-            if (isCollapsed) {
-                $('html').addClass('layout-menu-collapsed');
-                $('#toggleIcon').removeClass('bx-chevron-left').addClass('bx-chevron-right');
-            }
-
-            // Handle sidebar toggle
-            $('#sidebarToggle').on('click', function(e) {
-                e.preventDefault();
-                e.stopPropagation();
-
-                const $html = $('html');
-                const $sidebar = $('#layout-menu');
-                const $toggleIcon = $('#toggleIcon');
-
-                $(this).css('pointer-events', 'none');
-                $html.toggleClass('layout-menu-collapsed');
-                const isCollapsed = $html.hasClass('layout-menu-collapsed');
-
-                // Update icon
-                if (isCollapsed) {
-                    $toggleIcon.removeClass('bx-chevron-left').addClass('bx-chevron-right');
-                } else {
-                    $toggleIcon.removeClass('bx-chevron-right').addClass('bx-chevron-left');
-                }
-
-                // Store state
-                localStorage.setItem('sidebarCollapsed', isCollapsed);
-
-                setTimeout(() => {
-                    $(this).css('pointer-events', 'auto');
-                }, 300);
-            });
-
-            // Handle menu link tooltips in collapsed state
-            $(document).on('mouseenter', '.layout-menu-collapsed .menu-link', function() {
-                if ($('html').hasClass('layout-menu-collapsed')) {
-                    $(this).attr('title', $(this).data('tooltip'));
-                }
-            }).on('mouseleave', '.layout-menu-collapsed .menu-link', function() {
-                $(this).removeAttr('title');
-            });
-        });
-            localStorage.setItem('layoutMenuCollapsed', isCollapsed);
-
-            setTimeout(() => {
-                $toggle.css('pointer-events', 'auto');
-            }, 300);
-        });
-
-        const isCollapsed = localStorage.getItem('layoutMenuCollapsed') === 'true';
-        if (isCollapsed) {
-            $('html').addClass('layout-menu-collapsed');
-            $('#layout-menu').css({
-                'width': '78px',
-                'min-width': '78px',
-                'max-width': '78px'
-            });
-        } else {
-            $('#layout-menu').css({
-                'width': '260px',
-                'min-width': '260px',
-                'max-width': '260px'
-            });
-        }
-
-        updateTooltip();
-
-    });
-    document.addEventListener('DOMContentLoaded', function() {
-        console.log('DOM loaded, initializing event listeners');
+    // Initialize modal functionality
+    function initializeModalEvents() {
+        console.log('Initializing modal events');
 
         // Open create ticket modal
         const createTicketBtn = document.getElementById('createTicketBtn');
@@ -826,51 +749,6 @@ $conn->close();
             });
         } else {
             console.error('Create ticket button not found');
-        }
-
-        // Handle create ticket form submission
-        const createTicketForm = document.getElementById('createTicketForm');
-        if (createTicketForm) {
-            createTicketForm.addEventListener('submit', function(e) {
-                e.preventDefault();
-                console.log('Submitting create ticket form');
-                const formData = new FormData(this);
-                const actionUrl = window.location.pathname.split('/').pop(); // Get current script name (staff_tickets.php)
-                console.log('Form action URL:', actionUrl);
-                fetch(actionUrl, {
-                    method: 'POST',
-                    body: formData,
-                    headers: {
-                        'X-Requested-With': 'XMLHttpRequest' // Explicitly set AJAX header
-                    }
-                })
-                    .then(response => {
-                        console.log('Response status:', response.status);
-                        if (!response.ok) {
-                            return response.text().then(text => {
-                                console.log('Raw response:', text); // Log raw response for debugging
-                                throw new Error(`HTTP error ${response.status}: ${text}`);
-                            });
-                        }
-                        return response.json();
-                    })
-                    .then(data => {
-                        console.log('Create ticket response:', data);
-                        if (data.success) {
-                            alert(data.message || 'Ticket created successfully!');
-                            document.getElementById('createTicketModal').style.display = 'none';
-                            window.location.reload();
-                        } else {
-                            alert(data.error || 'Error creating ticket');
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Error creating ticket:', error);
-                        alert('Error creating ticket: ' + error.message);
-                    });
-            });
-        } else {
-            console.error('Create ticket form not found');
         }
 
         // Close modals
@@ -886,6 +764,69 @@ $conn->close();
             if (event.target.classList.contains('modal')) {
                 console.log('Closing modal via outside click');
                 event.target.style.display = 'none';
+            }
+        });
+    }
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('DOM loaded, initializing event listeners');
+
+        // Initialize modals
+        initializeModalEvents();
+
+        // Create ticket form submission
+        document.addEventListener('DOMContentLoaded', function() {
+            const createTicketForm = document.getElementById('createTicketForm');
+            const submitBtn = document.getElementById('submitTicketBtn');
+
+            if (submitBtn) {
+                submitBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const form = document.getElementById('createTicketForm');
+                    const formData = new FormData(form);
+                    const feedbackDiv = document.getElementById('formFeedback');
+
+                    // Show loading state
+                    submitBtn.disabled = true;
+                    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Creating...';
+                    feedbackDiv.innerHTML = '';
+                    feedbackDiv.className = '';
+
+                    fetch('host_tickets.php', {
+                        method: 'POST',
+                        body: formData,
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest'
+                        }
+                    })
+                        .then(response => {
+                            if (!response.ok) {
+                                return response.text().then(text => {
+                                    throw new Error(`Server error: ${response.status} - ${text}`);
+                                });
+                            }
+                            return response.json();
+                        })
+                        .then(data => {
+                            if (data.success) {
+                                feedbackDiv.innerHTML = `<div class="alert alert-success">${data.message}</div>`;
+                                // Close modal and refresh after short delay
+                                setTimeout(() => {
+                                    document.getElementById('createTicketModal').style.display = 'none';
+                                    window.location.reload();
+                                }, 1000);
+                            } else {
+                                feedbackDiv.innerHTML = `<div class="alert alert-danger">${data.error || 'Error creating ticket'}</div>`;
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                            feedbackDiv.innerHTML = `<div class="alert alert-danger">Error: ${error.message}</div>`;
+                        })
+                        .finally(() => {
+                            submitBtn.disabled = false;
+                            submitBtn.innerHTML = '<i class="fas fa-plus me-2"></i>Create Ticket';
+                        });
+                });
             }
         });
 
@@ -1425,25 +1366,25 @@ RECENT TICKETS (Last 5):
         // NEW: Format detailed ticket information
         formatTicketDetails(ticket) {
             let details = `**Ticket #${ticket.TicketID} Details:**
-- **Description:** ${ticket.Description}
-- **Priority:** ${ticket.Priority}
-- **Status:** ${ticket.Status}
-- **Created:** ${new Date(ticket.CreatedDate).toLocaleDateString()}`;
+        - **Description:** ${ticket.Description}
+        - **Priority:** ${ticket.Priority}
+        - **Status:** ${ticket.Status}
+        - **Created:** ${new Date(ticket.CreatedDate).toLocaleDateString()}`;
 
             if (this.userRole === 'Front Desk Staff') {
                 details += `
-- **Created By:** ${ticket.CreatedByName || 'Unknown'}
-- **Assigned To:** ${ticket.AssignedToName || 'Unassigned'}
-- **Category:** ${ticket.CategoryName || 'Uncategorized'}`;
+            - **Created By:** ${ticket.CreatedByName || 'Unknown'}
+            - **Assigned To:** ${ticket.AssignedToName || 'Unassigned'}
+            - **Category:** ${ticket.CategoryName || 'Uncategorized'}`;
             }
 
             // Add suggested actions based on status
             if (ticket.Status === 'open') {
                 details += `\n\n**Suggested Actions:**
-- Assign this ticket to a staff member
-- Set priority if not already set
-- Add category for better organization`;
-            } else if (ticket.Status === 'in-progress') {
+    - Assign this ticket to a staff member
+    - Set priority if not already set
+    - Add category for better organization`;
+                } else if (ticket.Status === 'in-progress') {
                 details += `\n\n**Current Status:** This ticket is being worked on.`;
             } else if (ticket.Status === 'resolved') {
                 details += `\n\n**Status:** This ticket has been resolved and can be closed if the solution is satisfactory.`;
@@ -1600,6 +1541,15 @@ RECENT TICKETS (Last 5):
     // Initialize the chatbot when the page loads
     document.addEventListener('DOMContentLoaded', () => {
         new HelpDeskChatBot();
+    });
+    // Temporary test - add this at the bottom of your page
+    console.log('Button exists:', document.getElementById('createTicketBtn') !== null);
+    console.log('Modal exists:', document.getElementById('createTicketModal') !== null);
+
+    // Simple test click handler
+    document.getElementById('createTicketBtn').addEventListener('click', function() {
+        console.log('Button clicked!');
+        document.getElementById('createTicketModal').style.display = 'block';
     });
 </script>
 </body>
