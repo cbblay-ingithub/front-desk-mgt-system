@@ -44,7 +44,6 @@ $users = getUsers($conn);
 $categories = getCategories($conn);
 
 // Modify ticket retrieval based on role
-// Modify ticket retrieval based on role
 if ($userRole == 'host') {
     $sql = "SELECT t.TicketID, t.Description, t.Priority, t.Status, t.CreatedDate,
             u1.Name as CreatedByName,
