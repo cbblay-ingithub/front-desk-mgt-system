@@ -15,7 +15,7 @@ require_once 'view_ticket.php';
 // Start session to access user role and ID
 session_start();
 $userRole = $_SESSION['role'] ?? 'host'; // Default to host if role not set
-$userId = $_SESSION['user_id'] ?? null;
+$userId = $_SESSION['userID'] ?? null;
 
 // Process ticket creation
 $result = createTicket($conn);
@@ -774,60 +774,54 @@ $conn->close();
         initializeModalEvents();
 
         // Create ticket form submission
-        document.addEventListener('DOMContentLoaded', function() {
-            const createTicketForm = document.getElementById('createTicketForm');
-            const submitBtn = document.getElementById('submitTicketBtn');
+        document.getElementById('submitTicketBtn').addEventListener('click', function(e) {
+            e.preventDefault();
+            const form = document.getElementById('createTicketForm');
+            const formData = new FormData(form);
+            const submitBtn = this;
+            const feedbackDiv = document.getElementById('formFeedback');
 
-            if (submitBtn) {
-                submitBtn.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    const form = document.getElementById('createTicketForm');
-                    const formData = new FormData(form);
-                    const feedbackDiv = document.getElementById('formFeedback');
+            // Show loading state
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Creating...';
+            feedbackDiv.innerHTML = '';
+            feedbackDiv.className = '';
 
-                    // Show loading state
-                    submitBtn.disabled = true;
-                    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Creating...';
-                    feedbackDiv.innerHTML = '';
-                    feedbackDiv.className = '';
-
-                    fetch('host_tickets.php', {
-                        method: 'POST',
-                        body: formData,
-                        headers: {
-                            'X-Requested-With': 'XMLHttpRequest'
-                        }
-                    })
-                        .then(response => {
-                            if (!response.ok) {
-                                return response.text().then(text => {
-                                    throw new Error(`Server error: ${response.status} - ${text}`);
-                                });
-                            }
-                            return response.json();
-                        })
-                        .then(data => {
-                            if (data.success) {
-                                feedbackDiv.innerHTML = `<div class="alert alert-success">${data.message}</div>`;
-                                // Close modal and refresh after short delay
-                                setTimeout(() => {
-                                    document.getElementById('createTicketModal').style.display = 'none';
-                                    window.location.reload();
-                                }, 1000);
-                            } else {
-                                feedbackDiv.innerHTML = `<div class="alert alert-danger">${data.error || 'Error creating ticket'}</div>`;
-                            }
-                        })
-                        .catch(error => {
-                            console.error('Error:', error);
-                            feedbackDiv.innerHTML = `<div class="alert alert-danger">Error: ${error.message}</div>`;
-                        })
-                        .finally(() => {
-                            submitBtn.disabled = false;
-                            submitBtn.innerHTML = '<i class="fas fa-plus me-2"></i>Create Ticket';
+            fetch('host_tickets.php', {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        return response.text().then(text => {
+                            throw new Error(`Server error: ${response.status} - ${text}`);
                         });
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.success) {
+                        feedbackDiv.innerHTML = `<div class="alert alert-success">${data.message}</div>`;
+                        // Close modal and refresh after short delay
+                        setTimeout(() => {
+                            document.getElementById('createTicketModal').style.display = 'none';
+                            window.location.reload();
+                        }, 1000);
+                    } else {
+                        feedbackDiv.innerHTML = `<div class="alert alert-danger">${data.error || 'Error creating ticket'}</div>`;
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    feedbackDiv.innerHTML = `<div class="alert alert-danger">Error: ${error.message}</div>`;
+                })
+                .finally(() => {
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = '<i class="fas fa-plus me-2"></i>Create Ticket';
                 });
-            }
         });
 
         // Dropdown menu handling
