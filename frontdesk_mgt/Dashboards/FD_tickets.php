@@ -622,7 +622,7 @@ $conn->close();
                     <!--Page Title-->
                     <div class="navbar-nav align-items-center me-auto">
                         <div class="nav-item">
-                            <h4 class="mb-0 fw-bold ms-2">Help Desk Tickets</h4>
+                            <h4 class="mb-0 fw-bold ms-2">Manage Tickets</h4>
                         </div>
                     </div>
                     <!-- In the navbar section -->
