@@ -14,7 +14,7 @@ require_once 'view_ticket.php';
 // Start session to access user role and ID
 session_start();
 $userRole = $_SESSION['role'] ?? 'host'; // Default to host if role not set
-$userId = $_SESSION['user_id'] ?? null;
+$userId = $_SESSION['userID'] ?? null;
 
 // Process ticket creation
 $result = createTicket($conn);
@@ -195,7 +195,6 @@ $conn->close();
         .filter-btn.active { background: #007bff; color: white; border-color: #007bff; }
         .filter-btn:hover { background: #e9ecef; }
         .filter-btn.active:hover { background: #0056b3; }
-        /* Dropdown menu styles */
         /* Dropdown menu styles */
         .dropdown {
             position: relative;
@@ -698,7 +697,6 @@ $conn->close();
                     <table class="table table-bordered table-striped align-middle">
                         <thead class="table-dark">
                         <tr>
-                            <th>Ticket ID</th>
                             <th>Description</th>
                             <th>Created By</th>
                             <th>Assigned To</th>
@@ -715,7 +713,6 @@ $conn->close();
                         <?php else: ?>
                             <?php foreach ($tickets as $ticket): ?>
                                 <tr data-status="<?php echo $ticket['Status']; ?>" data-priority="<?php echo $ticket['Priority']; ?>">
-                                    <td><?php echo $ticket['TicketID']; ?></td>
                                     <td>
                                         <?php
                                         $description = htmlspecialchars($ticket['Description']);
@@ -825,56 +822,59 @@ $conn->close();
 
 <!-- Create Ticket Modal -->
 <div id="createTicketModal" class="modal">
-    <div class="modal-content">
+    <div class="modal-content" style="max-width: 700px;">
         <span class="close">×</span>
         <h2>Create New Ticket</h2>
         <form id="createTicketForm" method="POST" action="FD_tickets.php">
             <input type="hidden" name="action" value="create_ticket">
             <input type="hidden" name="created_by" value="<?php echo $userId; ?>">
-            <div class="form-group">
-                <label for="created_by">Created By:</label>
-                <select id="created_by" name="created_by" required>
-                    <option value="">Select User</option>
-                    <?php foreach ($users as $id => $name): ?>
-                        <option value="<?php echo $id; ?>"><?php echo htmlspecialchars($name); ?></option>
-                    <?php endforeach; ?>
-                </select>
-            </div>
-            <div class="form-row">
-                <div class="form-group">
+
+            <div class="form-row" style="display: flex; gap: 20px; margin-bottom: 15px;">
+                <div class="form-group" style="flex: 1;">
                     <label for="assigned_to">Assigned To:</label>
-                    <select id="assigned_to" name="assigned_to">
+                    <select id="assigned_to" name="assigned_to" class="form-control">
                         <option value="">Select User</option>
                         <?php foreach ($users as $id => $name): ?>
-                            <option value="<?php echo $id; ?>"><?php echo htmlspecialchars($name); ?></option>
+                            <option value="<?php echo htmlspecialchars($id); ?>"><?php echo htmlspecialchars($name); ?></option>
                         <?php endforeach; ?>
                     </select>
                 </div>
-                <div class="form-group">
+
+                <div class="form-group" style="flex: 1;">
                     <label for="category_id">Category:</label>
-                    <select id="category_id" name="category_id">
+                    <select id="category_id" name="category_id" class="form-control">
                         <option value="">Select Category</option>
                         <?php foreach ($categories as $id => $name): ?>
-                            <option value="<?php echo $id; ?>"><?php echo htmlspecialchars($name); ?></option>
+                            <option value="<?php echo htmlspecialchars($id); ?>"><?php echo htmlspecialchars($name); ?></option>
                         <?php endforeach; ?>
                     </select>
                 </div>
             </div>
-            <div class="form-group">
+
+            <div class="form-row" style="display: flex; gap: 20px; margin-bottom: 15px;">
+                <div class="form-group" style="flex: 1;">
+                    <label for="priority">Priority:</label>
+                    <select id="priority" name="priority" required class="form-control">
+                        <option value="low">Low</option>
+                        <option value="medium" selected>Medium</option>
+                        <option value="high">High</option>
+                        <option value="critical">Critical</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group" style="margin-bottom: 15px;">
                 <label for="description">Description:</label>
-                <textarea id="description" name="description" required placeholder="Describe the issue..."></textarea>
+                <textarea id="description" name="description" required class="form-control" style="min-height: 100px;"></textarea>
             </div>
-            <div class="form-group">
-                <label for="priority">Priority:</label>
-                <select id="priority" name="priority" required>
-                    <option value="low">Low</option>
-                    <option value="medium" selected>Medium</option>
-                    <option value="high">High</option>
-                    <option value="critical">Critical</option>
-                </select>
+
+            <div class="form-group" style="text-align: right;">
+                <button type="submit" id="submitTicketBtn" class="btn btn-primary">
+                    <i class="fas fa-plus me-2"></i>Create Ticket
+                </button>
             </div>
-            <button type="submit" class="submit-btn">Create Ticket</button>
         </form>
+        <div id="formFeedback" style="margin-top: 15px;"></div>
     </div>
 </div>
 
@@ -917,21 +917,29 @@ $conn->close();
             createTicketForm.addEventListener('submit', function(e) {
                 e.preventDefault();
                 console.log('Submitting create ticket form');
+
+                const submitBtn = document.getElementById('submitTicketBtn');
+                const feedbackDiv = document.getElementById('formFeedback');
+
+                // Show loading state
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Creating...';
+                feedbackDiv.innerHTML = '';
+                feedbackDiv.className = '';
+
                 const formData = new FormData(this);
-                const actionUrl = window.location.pathname.split('/').pop(); // Get current script name (staff_tickets.php)
-                console.log('Form action URL:', actionUrl);
-                fetch(actionUrl, {
+
+                fetch('FD_tickets.php', {
                     method: 'POST',
                     body: formData,
                     headers: {
-                        'X-Requested-With': 'XMLHttpRequest' // Explicitly set AJAX header
+                        'X-Requested-With': 'XMLHttpRequest'
                     }
                 })
                     .then(response => {
                         console.log('Response status:', response.status);
                         if (!response.ok) {
                             return response.text().then(text => {
-                                console.log('Raw response:', text); // Log raw response for debugging
                                 throw new Error(`HTTP error ${response.status}: ${text}`);
                             });
                         }
@@ -940,16 +948,23 @@ $conn->close();
                     .then(data => {
                         console.log('Create ticket response:', data);
                         if (data.success) {
-                            alert(data.message || 'Ticket created successfully!');
-                            document.getElementById('createTicketModal').style.display = 'none';
-                            window.location.reload();
+                            feedbackDiv.innerHTML = `<div class="alert alert-success">${data.message}</div>`;
+                            // Close modal and refresh after short delay
+                            setTimeout(() => {
+                                document.getElementById('createTicketModal').style.display = 'none';
+                                window.location.reload();
+                            }, 1000);
                         } else {
-                            alert(data.error || 'Error creating ticket');
+                            feedbackDiv.innerHTML = `<div class="alert alert-danger">${data.error || 'Error creating ticket'}</div>`;
                         }
                     })
                     .catch(error => {
                         console.error('Error creating ticket:', error);
-                        alert('Error creating ticket: ' + error.message);
+                        feedbackDiv.innerHTML = `<div class="alert alert-danger">Error: ${error.message}</div>`;
+                    })
+                    .finally(() => {
+                        submitBtn.disabled = false;
+                        submitBtn.innerHTML = '<i class="fas fa-plus me-2"></i>Create Ticket';
                     });
             });
         } else {
