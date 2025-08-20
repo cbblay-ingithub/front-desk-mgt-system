@@ -968,7 +968,10 @@ function checkTimeConflict($hostId, $appointmentTime, $excludeAppointmentId = nu
                                          data-host="<?= $appointment['HostName']?>"
                                          data-host-id="<?= $appointment['HostID'] ?>"
                                          data-date="<?= date('Y-m-d', strtotime($appointment['AppointmentTime'])) ?>"
+
                                          data-search="<?= strtolower($appointment['VisitorName'] . ' ' . $appointment['VisitorEmail'] . ' ' . $appointment['HostName']) ?>">
+
+
                                         <div class="card appointment-card h-100">
                                             <div class="card-header d-flex justify-content-between align-items-center">
                                                 <?php
@@ -1017,10 +1020,7 @@ function checkTimeConflict($hostId, $appointmentTime, $excludeAppointmentId = nu
                                                         </button>
                                                     </div>
                                                 <?php elseif ($appointment['Status'] === 'Ongoing'): ?>
-                                                    <button class="btn btn-sm btn-outline-warning complete-session-btn"
-                                                            data-id="<?= $appointment['AppointmentID'] ?>">
-                                                        <i class="fas fa-check-double me-1"></i> Complete
-                                                    </button>
+
                                                 <?php endif; ?>
 
                                                 <?php if ($appointment['Status'] === 'Cancelled' && !empty($appointment['CancellationReason'])): ?>
