@@ -1431,7 +1431,7 @@ function checkTimeConflict($hostId, $appointmentTime, $excludeAppointmentId = nu
                 }
             }, 100);
         });
-    // CALENDAR INITIALIZATION FUNCTION
+        // CALENDAR INITIALIZATION FUNCTION
         function initializeCalendar() {
             console.log('Initializing calendar...');
             const calendarEl = document.getElementById('calendar');
@@ -1462,7 +1462,7 @@ function checkTimeConflict($hostId, $appointmentTime, $excludeAppointmentId = nu
                                 const processedEvents = response.map(event => {
                                     return {
                                         ...event
-                                         // Shorter format
+                                        // Shorter format
                                     };
                                 });
                                 successCallback(processedEvents);
@@ -1557,70 +1557,70 @@ function checkTimeConflict($hostId, $appointmentTime, $excludeAppointmentId = nu
             return buttons;
         }
 
-    // CALENDAR FILTER FUNCTIONALITY
-    $(document).on('change', '.input-filter', function() {
-        console.log('Calendar filter changed');
-        if (calendar && typeof calendar.getEvents === 'function') {
-            updateCalendarFilters();
-        }
-    });
-
-    $(document).on('change', '.select-all', function() {
-        const isChecked = $(this).is(':checked');
-        $('.input-filter').prop('checked', isChecked);
-        if (calendar && typeof calendar.getEvents === 'function') {
-            updateCalendarFilters();
-        }
-    });
-
-    function updateCalendarFilters() {
-        if (!calendar || typeof calendar.getEvents !== 'function') {
-            console.warn('Calendar not available for filtering');
-            return;
-        }
-
-        const checkedFilters = $('.input-filter:checked').map(function() {
-            return $(this).data('value');
-        }).get();
-
-        console.log('Applying calendar filters:', checkedFilters);
-
-        const events = calendar.getEvents();
-        console.log('Total events to filter:', events.length);
-
-        events.forEach(function(event) {
-            const status = event.extendedProps.status.toLowerCase();
-            const shouldShow = checkedFilters.includes(status) || checkedFilters.includes('all');
-
-            console.log(`Event: ${event.title}, Status: ${status}, Show: ${shouldShow}`);
-
-            if (shouldShow) {
-                event.setProp('display', 'auto');
-            } else {
-                event.setProp('display', 'none');
+        // CALENDAR FILTER FUNCTIONALITY
+        $(document).on('change', '.input-filter', function() {
+            console.log('Calendar filter changed');
+            if (calendar && typeof calendar.getEvents === 'function') {
+                updateCalendarFilters();
             }
         });
-    }
 
-    // Initialize inline calendar
-    setTimeout(() => {
-        try {
-            // Initialize inline calendar
-            flatpickr(".inline-calendar", {
-                inline: true,
-                onChange: function(selectedDates) {
-                    if (calendar && selectedDates[0]) {
-                        calendar.gotoDate(selectedDates[0]);
-                    }
+        $(document).on('change', '.select-all', function() {
+            const isChecked = $(this).is(':checked');
+            $('.input-filter').prop('checked', isChecked);
+            if (calendar && typeof calendar.getEvents === 'function') {
+                updateCalendarFilters();
+            }
+        });
+
+        function updateCalendarFilters() {
+            if (!calendar || typeof calendar.getEvents !== 'function') {
+                console.warn('Calendar not available for filtering');
+                return;
+            }
+
+            const checkedFilters = $('.input-filter:checked').map(function() {
+                return $(this).data('value');
+            }).get();
+
+            console.log('Applying calendar filters:', checkedFilters);
+
+            const events = calendar.getEvents();
+            console.log('Total events to filter:', events.length);
+
+            events.forEach(function(event) {
+                const status = event.extendedProps.status.toLowerCase();
+                const shouldShow = checkedFilters.includes(status) || checkedFilters.includes('all');
+
+                console.log(`Event: ${event.title}, Status: ${status}, Show: ${shouldShow}`);
+
+                if (shouldShow) {
+                    event.setProp('display', 'auto');
+                } else {
+                    event.setProp('display', 'none');
                 }
             });
-            console.log('Inline calendar initialized');
-        } catch (e) {
-            console.error('Flatpickr initialization failed:', e);
         }
-    }, 300);
 
-    // Button handlers for calendar modal
+        // Initialize inline calendar
+        setTimeout(() => {
+            try {
+                // Initialize inline calendar
+                flatpickr(".inline-calendar", {
+                    inline: true,
+                    onChange: function(selectedDates) {
+                        if (calendar && selectedDates[0]) {
+                            calendar.gotoDate(selectedDates[0]);
+                        }
+                    }
+                });
+                console.log('Inline calendar initialized');
+            } catch (e) {
+                console.error('Flatpickr initialization failed:', e);
+            }
+        }, 300);
+
+        // Button handlers for calendar modal
         $(document).on('click', '.check-in-btn, .reschedule-btn, .cancel-btn, .complete-btn', function() {
             const appointmentId = $(this).data('id');
             const action = $(this).hasClass('check-in-btn') ? 'checkIn' :
@@ -1649,7 +1649,7 @@ function checkTimeConflict($hostId, $appointmentTime, $excludeAppointmentId = nu
 
 
 
-    // Search and filter handlers
+        // Search and filter handlers
         $('#searchInput').on('keyup', function() {
             filterAppointments();
         });
