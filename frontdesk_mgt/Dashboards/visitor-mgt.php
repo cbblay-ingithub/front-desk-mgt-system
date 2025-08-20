@@ -7,8 +7,10 @@ global $conn;
 $sql = "SELECT v.*, 
         (SELECT COUNT(*) FROM visitor_Logs vl 
          WHERE vl.VisitorID = v.VisitorID 
-         AND vl.CheckOutTime IS NULL) AS is_checked_in 
-        FROM visitors v";
+         AND vl.CheckOutTime IS NULL) AS is_checked_in,
+         a.BadgeNumber
+        FROM visitors v
+        LEFT JOIN appointments a ON v.VisitorID = a.VisitorID";
 $visitors = [];
 $result = $conn->query($sql);
 while ($row = $result->fetch_assoc()) {
@@ -115,6 +117,130 @@ while ($row = $result->fetch_assoc()) {
         .no-transition {
             transition: none !important;
         }
+
+        /* Search and filter styles */
+        .search-filter-section {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 25px;
+            border: 1px solid #e0e0e0;
+        }
+
+        .search-input {
+            border-radius: 25px;
+            border: 2px solid #e0e0e0;
+            padding: 10px 20px;
+            transition: all 0.3s ease;
+        }
+
+        .search-input:focus {
+            border-color: #007bff;
+            box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+        }
+
+        .filter-btn {
+            border-radius: 20px;
+            padding: 8px 16px;
+            margin: 0 5px;
+            transition: all 0.3s ease;
+        }
+
+        .filter-btn.active {
+            background-color: #007bff;
+            color: white;
+            border-color: #007bff;
+        }
+
+        /* Table enhancements */
+        .table th {
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            letter-spacing: 0.5px;
+        }
+
+        .badge-number {
+            background: linear-gradient(45deg, #007bff, #0056b3);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-weight: bold;
+            font-size: 0.85rem;
+        }
+
+        .status-badge {
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .status-checked-in {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .status-not-checked-in {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .action-btn {
+            margin: 2px;
+            padding: 6px 10px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+        }
+
+        /* Modal enhancements */
+        .visitor-detail-modal .modal-content {
+            border-radius: 15px;
+            border: none;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .visitor-detail-modal .modal-header {
+            background: linear-gradient(45deg, #007bff, #0056b3);
+            color: white;
+            border-radius: 15px 15px 0 0;
+        }
+
+        .detail-item {
+            padding: 12px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .detail-item:last-child {
+            border-bottom: none;
+        }
+
+        .detail-label {
+            font-weight: 600;
+            color: #495057;
+            margin-bottom: 4px;
+        }
+
+        .detail-value {
+            color: #212529;
+            font-size: 1.1rem;
+        }
+
+        /* No results message */
+        .no-results {
+            text-align: center;
+            padding: 40px;
+            color: #6c757d;
+            font-style: italic;
+        }
+
+        /* Loading animation */
+        .loading {
+            opacity: 0.6;
+            pointer-events: none;
+        }
     </style>
 </head>
 <body>
@@ -129,19 +255,19 @@ while ($row = $result->fetch_assoc()) {
                         <i class="icon-base bx bx-menu icon-md"></i>
                     </a>
                 </div>
-                <div class="navbar-nav-right d-flex align-items-center justify-content-end" id="navbar-collapse"">
-                <!--Page Title-->
-                <div class="navbar-nav align-items-center me-auto">
-                    <div class="nav-item">
-                        <h4 class="mb-0 fw-bold ms-2"> Manage Visitors</h4>
+                <div class="navbar-nav-right d-flex align-items-center justify-content-end" id="navbar-collapse">
+                    <!--Page Title-->
+                    <div class="navbar-nav align-items-center me-auto">
+                        <div class="nav-item">
+                            <h4 class="mb-0 fw-bold ms-2"> Manage Visitors</h4>
+                        </div>
                     </div>
-                </div>
-                <!--Check-In button-->
-                <div class="navbar-nav align-items-center me-3">
-                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#checkInModal">
-                        <i class="fas fa-plus-circle me-2"></i> Check-In Visitor
-                    </button>
-                </div>
+                    <!--Check-In button-->
+                    <div class="navbar-nav align-items-center me-3">
+                        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#checkInModal">
+                            <i class="fas fa-plus-circle me-2"></i> Check-In Visitor
+                        </button>
+                    </div>
 
             </nav>
             <div class="container-fluid container-p-y">
@@ -158,30 +284,77 @@ while ($row = $result->fetch_assoc()) {
                     </div>
                 <?php endif; ?>
 
+                <!-- Search and Filter Section -->
+                <div class="search-filter-section">
+                    <div class="row align-items-center">
+                        <div class="col-md-6 mb-3 mb-md-0">
+                            <div class="input-group">
+                                <span class="input-group-text bg-white border-end-0">
+                                    <i class="fas fa-search text-muted"></i>
+                                </span>
+                                <input type="text" id="searchInput" class="form-control search-input border-start-0"
+                                       placeholder="Search by name, email, badge number, phone, or ID number...">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="d-flex justify-content-end flex-wrap">
+                                <button class="btn btn-outline-primary filter-btn active" data-filter="all">
+                                    <i class="fas fa-users me-1"></i> All (<span id="count-all">0</span>)
+                                </button>
+                                <button class="btn btn-outline-success filter-btn" data-filter="checked-in">
+                                    <i class="fas fa-check-circle me-1"></i> Checked In (<span id="count-checked-in">0</span>)
+                                </button>
+                                <button class="btn btn-outline-danger filter-btn" data-filter="not-checked-in">
+                                    <i class="fas fa-times-circle me-1"></i> Not Checked In (<span id="count-not-checked-in">0</span>)
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Visitors Table -->
                 <div class="table-responsive">
-                    <table class="table table-bordered table-striped align-middle">
+                    <table class="table table-bordered table-striped align-middle" id="visitorsTable">
                         <thead class="table-dark">
                         <tr>
-                            <th>Name</th><th>Email</th><th>Phone</th>
-                            <th>ID Type</th><th>ID Number</th><th>Status</th><th>Actions</th>
+                            <th>Badge</th>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Phone</th>
+                            <th>Status</th>
+                            <th>Actions</th>
                         </tr>
                         </thead>
-                        <tbody>
+                        <tbody id="visitorsTableBody">
                         <?php foreach ($visitors as $v): ?>
-                            <tr>
+                            <tr data-status="<?= $v['is_checked_in'] > 0 ? 'checked-in' : 'not-checked-in' ?>">
+                                <td>
+                                    <span class="badge-number"><?= htmlspecialchars($v['BadgeNumber']) ?></span>
+                                </td>
                                 <td><?= htmlspecialchars($v['Name']) ?></td>
                                 <td><?= htmlspecialchars($v['Email']) ?></td>
                                 <td><?= htmlspecialchars($v['Phone']) ?></td>
-                                <td><?= htmlspecialchars($v['IDType']) ?></td>
-                                <td><?= htmlspecialchars($v['IDNumber']) ?></td>
-                                <td><?= $v['is_checked_in'] > 0 ? 'Checked In' : 'Not Checked In' ?></td>
                                 <td>
+                                    <span class="status-badge <?= $v['is_checked_in'] > 0 ? 'status-checked-in' : 'status-not-checked-in' ?>">
+                                        <?= $v['is_checked_in'] > 0 ? 'Checked In' : 'Not Checked In' ?>
+                                    </span>
+                                </td>
+                                <td>
+                                    <!-- View Details Button -->
+                                    <button class="btn btn-info action-btn"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#visitorDetailModal"
+                                            onclick="showVisitorDetails(<?= htmlspecialchars(json_encode($v)) ?>)">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+
                                     <?php if ($v['is_checked_in'] > 0): ?>
                                         <form method="POST" action="process_visit.php" class="d-inline">
                                             <input type="hidden" name="action" value="check_out">
                                             <input type="hidden" name="visitor_id" value="<?= $v['VisitorID'] ?>">
-                                            <button type="submit" class="btn btn-danger btn-sm">Check Out</button>
+                                            <button type="submit" class="btn btn-danger action-btn">
+                                                <i class="fas fa-sign-out-alt"></i> Check Out
+                                            </button>
                                         </form>
                                     <?php endif; ?>
                                 </td>
@@ -189,9 +362,19 @@ while ($row = $result->fetch_assoc()) {
                         <?php endforeach ?>
                         </tbody>
                     </table>
+
+                    <!-- No Results Message -->
+                    <div id="noResults" class="no-results" style="display: none;">
+                        <i class="fas fa-search fa-3x mb-3 text-muted"></i>
+                        <h5>No visitors found</h5>
+                        <p>Try adjusting your search criteria or filters</p>
+                    </div>
                 </div>
+
                 <form action="generate_report.php" method="POST" class="mt-4 text-end">
-                    <button type="submit" class="btn btn-outline-dark btn-sm">Generate Visitor Logs</button>
+                    <button type="submit" class="btn btn-outline-dark btn-sm">
+                        <i class="fas fa-file-export me-2"></i>Generate Visitor Logs
+                    </button>
                 </form>
             </div>
 
@@ -229,6 +412,74 @@ while ($row = $result->fetch_assoc()) {
                     </form>
                 </div>
             </div>
+
+            <!-- Visitor Details Modal -->
+            <div class="modal fade visitor-detail-modal" id="visitorDetailModal" tabindex="-1" aria-labelledby="visitorDetailModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="visitorDetailModalLabel">
+                                <i class="fas fa-user-circle me-2"></i>Visitor Details
+                            </h5>
+                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="detail-item">
+                                        <div class="detail-label">
+                                            <i class="fas fa-id-badge me-2 text-primary"></i>Badge Number
+                                        </div>
+                                        <div class="detail-value" id="modal-badge"></div>
+                                    </div>
+                                    <div class="detail-item">
+                                        <div class="detail-label">
+                                            <i class="fas fa-user me-2 text-primary"></i>Full Name
+                                        </div>
+                                        <div class="detail-value" id="modal-name"></div>
+                                    </div>
+                                    <div class="detail-item">
+                                        <div class="detail-label">
+                                            <i class="fas fa-envelope me-2 text-primary"></i>Email Address
+                                        </div>
+                                        <div class="detail-value" id="modal-email"></div>
+                                    </div>
+                                    <div class="detail-item">
+                                        <div class="detail-label">
+                                            <i class="fas fa-phone me-2 text-primary"></i>Phone Number
+                                        </div>
+                                        <div class="detail-value" id="modal-phone"></div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="detail-item">
+                                        <div class="detail-label">
+                                            <i class="fas fa-id-card me-2 text-primary"></i>ID Type
+                                        </div>
+                                        <div class="detail-value" id="modal-id-type"></div>
+                                    </div>
+                                    <div class="detail-item">
+                                        <div class="detail-label">
+                                            <i class="fas fa-hashtag me-2 text-primary"></i>ID Number
+                                        </div>
+                                        <div class="detail-value" id="modal-id-number"></div>
+                                    </div>
+                                    <div class="detail-item">
+                                        <div class="detail-label">
+                                            <i class="fas fa-info-circle me-2 text-primary"></i>Current Status
+                                        </div>
+                                        <div class="detail-value" id="modal-status"></div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>
@@ -244,8 +495,14 @@ while ($row = $result->fetch_assoc()) {
 <script src="../../Sneat/assets/js/main.js"></script>
 
 <script>
-    // Sidebar toggle functionality matching host_dashboard
+    // Global variables for filtering and searching
+    let currentFilter = 'all';
+    let currentSearch = '';
+
     $(document).ready(function() {
+        // Initialize counts
+        updateCounts();
+
         // Restore sidebar state
         const isCollapsed = localStorage.getItem('sidebarCollapsed') === 'true';
         if (isCollapsed) {
@@ -289,6 +546,125 @@ while ($row = $result->fetch_assoc()) {
         }).on('mouseleave', '.layout-menu-collapsed .menu-link', function() {
             $(this).removeAttr('title');
         });
+
+        // Search functionality
+        $('#searchInput').on('input', function() {
+            currentSearch = $(this).val().toLowerCase();
+            filterAndSearch();
+        });
+
+        // Filter functionality
+        $('.filter-btn').on('click', function() {
+            $('.filter-btn').removeClass('active');
+            $(this).addClass('active');
+            currentFilter = $(this).data('filter');
+            filterAndSearch();
+        });
+    });
+
+    // Function to filter and search visitors
+    function filterAndSearch() {
+        const rows = $('#visitorsTableBody tr');
+        let visibleCount = 0;
+
+        rows.each(function() {
+            const $row = $(this);
+            const status = $row.data('status');
+            const text = $row.text().toLowerCase();
+
+            // Check filter
+            let matchesFilter = false;
+            if (currentFilter === 'all') {
+                matchesFilter = true;
+            } else if (currentFilter === 'checked-in') {
+                matchesFilter = status === 'checked-in';
+            } else if (currentFilter === 'not-checked-in') {
+                matchesFilter = status === 'not-checked-in';
+            }
+
+            // Check search
+            const matchesSearch = currentSearch === '' || text.includes(currentSearch);
+
+            // Show/hide row
+            if (matchesFilter && matchesSearch) {
+                $row.show();
+                visibleCount++;
+            } else {
+                $row.hide();
+            }
+        });
+
+        // Show/hide no results message
+        if (visibleCount === 0) {
+            $('#noResults').show();
+        } else {
+            $('#noResults').hide();
+        }
+
+        updateCounts();
+    }
+
+    // Function to update counts in filter buttons
+    function updateCounts() {
+        const allRows = $('#visitorsTableBody tr');
+        const checkedInRows = $('#visitorsTableBody tr[data-status="checked-in"]');
+        const notCheckedInRows = $('#visitorsTableBody tr[data-status="not-checked-in"]');
+
+        $('#count-all').text(allRows.length);
+        $('#count-checked-in').text(checkedInRows.length);
+        $('#count-not-checked-in').text(notCheckedInRows.length);
+    }
+
+    // Function to show visitor details in modal
+    function showVisitorDetails(visitor) {
+        $('#modal-badge').text(visitor.BadgeNumber || 'N/A');
+        $('#modal-name').text(visitor.Name || 'N/A');
+        $('#modal-email').text(visitor.Email || 'N/A');
+        $('#modal-phone').text(visitor.Phone || 'N/A');
+        $('#modal-id-type').text(visitor.IDType || 'N/A');
+        $('#modal-id-number').text(visitor.IDNumber || 'N/A');
+
+        // Format status with badge
+        const isCheckedIn = visitor.is_checked_in > 0;
+        const statusHtml = `<span class="status-badge ${isCheckedIn ? 'status-checked-in' : 'status-not-checked-in'}">
+            ${isCheckedIn ? 'Checked In' : 'Not Checked In'}
+        </span>`;
+        $('#modal-status').html(statusHtml);
+
+        // Format registration date if available
+        const regDate = visitor.CreatedAt || visitor.created_at || 'N/A';
+        if (regDate !== 'N/A') {
+            const formattedDate = new Date(regDate).toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+            $('#modal-registration').text(formattedDate);
+        } else {
+            $('#modal-registration').text('N/A');
+        }
+    }
+
+    // Add some visual feedback for loading states
+    function showLoading() {
+        $('#visitorsTable').addClass('loading');
+    }
+
+    function hideLoading() {
+        $('#visitorsTable').removeClass('loading');
+    }
+
+    // Enhanced search with debouncing for better performance
+    let searchTimeout;
+    $('#searchInput').on('input', function() {
+        clearTimeout(searchTimeout);
+        showLoading();
+
+        searchTimeout = setTimeout(function() {
+            currentSearch = $('#searchInput').val().toLowerCase();
+            filterAndSearch();
+            hideLoading();
+        }, 300); // Wait 300ms after user stops typing
     });
 </script>
 </body>

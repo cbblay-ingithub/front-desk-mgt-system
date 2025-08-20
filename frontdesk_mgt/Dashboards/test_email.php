@@ -25,7 +25,9 @@ echo "<h3>Scheduled Email Template:</h3>";
 $scheduledTemplate = getScheduledEmailTemplate(
     'John Doe',
     'Dr. Smith',
-    '2025-05-01 14:30:00'
+    '2025-05-01 14:30:00',
+    'B-0000945'
+
 );
 echo $scheduledTemplate;
 

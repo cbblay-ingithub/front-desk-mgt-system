@@ -346,7 +346,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
 
             if (!isValidAppointmentTime($appointmentTime)) {
-                echo json_encode(['success' => false, 'message' => 'Appointment time is outside allowed hours (9:30 AM–11:30 AM or 1:00 PM–4:30 PM).']);
+                echo json_encode(['success' => false, 'message' => 'Appointment time is outside allowed hours (9:30 AM—11:30 AM or 1:00 PM—4:30 PM).']);
                 break;
             }
 
@@ -376,24 +376,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 }
 
                 $status = 'Upcoming';
-                $sql = "INSERT INTO appointments (VisitorID, HostID, AppointmentTime, Status,ScheduledBy) 
-                        VALUES (?, ?, ?, ?, ?)";
+                // Remove AppointmentTime from INSERT since the trigger will create the BadgeNumber
+                $sql = "INSERT INTO appointments (VisitorID, HostID, AppointmentTime, Status, ScheduledBy) 
+                VALUES (?, ?, ?, ?, ?)";
                 $stmt = $conn->prepare($sql);
-                $stmt->bind_param("iissi", $visitorId, $hostId, $appointmentTime, $status,$frontDeskId);
+                $stmt->bind_param("iissi", $visitorId, $hostId, $appointmentTime, $status, $frontDeskId);
                 $stmt->execute();
 
-                $conn->commit();
                 $appointmentId = $conn->insert_id;
+                $conn->commit();
+
+                // Get the badge number that was created by the trigger
+                $badgeNumber = getExistingBadgeNumber($conn, $appointmentId);
 
                 // Send emails
                 $visitorInfo = getVisitorById($visitorId);
                 $hostInfo = getHostById($hostId);
 
-                if ($visitorInfo && $hostInfo) {
+                if ($visitorInfo && $hostInfo && $badgeNumber) {
                     $emailBody = getScheduledEmailTemplate(
                         $visitorInfo['Name'],
                         $hostInfo['Name'],
-                        $appointmentTime
+                        $appointmentTime,
+                        $badgeNumber
                     );
                     sendAppointmentEmail(
                         $visitorInfo['Email'],
@@ -404,7 +409,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $hostEmailBody = getHostScheduledEmailTemplate(
                         $visitorInfo['Name'],
                         $hostInfo['Name'],
-                        $appointmentTime
+                        $appointmentTime,
+                        $badgeNumber,
+                        $visitorInfo['Email']
                     );
                     sendAppointmentEmail(
                         $hostInfo['Email'],
@@ -419,6 +426,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
             break;
 
+        // Improved reschedule case with better error handling
         case 'reschedule':
             if (!isset($_POST['appointmentId']) || !isset($_POST['newTime'])) {
                 echo json_encode(['success' => false, 'message' => 'Missing required fields']);
@@ -435,87 +443,112 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
 
             if (!isValidAppointmentTime($newTime)) {
-                echo json_encode(['success' => false, 'message' => 'New appointment time is outside allowed hours (9:30 AM–11:30 AM or 1:00 PM–4:30 PM).']);
+                echo json_encode(['success' => false, 'message' => 'New appointment time is outside allowed hours (9:30 AM—11:30 AM or 1:00 PM—4:30 PM).']);
                 break;
             }
 
-            $sql = "SELECT HostID FROM appointments WHERE AppointmentID = ?";
+            // Get current appointment details BEFORE updating
+            $sql = "SELECT a.AppointmentTime, a.VisitorID, a.HostID, a.BadgeNumber,
+                   v.Name AS VisitorName, v.Email AS VisitorEmail,
+                   u.Name AS HostName, u.Email AS HostEmail
+            FROM appointments a
+            JOIN visitors v ON a.VisitorID = v.VisitorID
+            JOIN users u ON a.HostID = u.UserID
+            WHERE a.AppointmentID = ?";
             $stmt = $conn->prepare($sql);
             $stmt->bind_param("i", $appointmentId);
             $stmt->execute();
             $result = $stmt->get_result();
 
-            if ($result->num_rows > 0) {
-                $hostId = $result->fetch_assoc()['HostID'];
-
-                $startTime = date('Y-m-d H:i:s', strtotime($newTime) - (45 * 60));
-                $endTime = date('Y-m-d H:i:s', strtotime($newTime) + (45 * 60));
-
-                $sql = "SELECT AppointmentID FROM appointments 
-                        WHERE HostID = ? 
-                        AND AppointmentTime BETWEEN ? AND ? 
-                        AND Status IN ('Upcoming', 'Overdue', 'Ongoing')
-                        AND AppointmentID != ?";
-                $stmt = $conn->prepare($sql);
-                $stmt->bind_param("issi", $hostId, $startTime, $endTime, $appointmentId);
-                $stmt->execute();
-                $conflictResult = $stmt->get_result();
-
-                if ($conflictResult->num_rows > 0) {
-                    echo json_encode(['success' => false, 'message' => 'The selected host already has an appointment scheduled within 45 minutes of this time.']);
-                    break;
-                }
-                $sql = "SELECT AppointmentTime, VisitorID, HostID FROM appointments WHERE AppointmentID = ?";
-                $stmt = $conn->prepare($sql);
-                $stmt->bind_param("i", $appointmentId);
-                $stmt->execute();
-                $result = $stmt->get_result();
-                $oldAppointment = $result->fetch_assoc();
-                $oldTime = $oldAppointment['AppointmentTime'];
-                $visitorId = $oldAppointment['VisitorID'];
-                $hostId = $oldAppointment['HostID'];
-
-                $sql = "UPDATE appointments SET AppointmentTime = ?, Status = 'Upcoming' WHERE AppointmentID = ?";
-                $stmt = $conn->prepare($sql);
-                $stmt->bind_param("si", $newTime, $appointmentId);
-
-                $visitorInfo = getVisitorById($visitorId);
-                $hostInfo = getHostById($hostId);
-
-                if ($visitorInfo && $hostInfo) {
-                    $emailBody = getRescheduledEmailTemplate(
-                        $visitorInfo['Name'],
-                        $hostInfo['Name'],
-                        $oldTime,
-                        $newTime
-                    );
-                    sendAppointmentEmail(
-                        $visitorInfo['Email'],
-                        'Appointment Rescheduled',
-                        $emailBody
-                    );
-
-                    $hostEmailBody = getHostRescheduledEmailTemplate(
-                        $visitorInfo['Name'],
-                        $hostInfo['Name'],
-                        $newTime
-                    );
-                    sendAppointmentEmail(
-                        $hostInfo['Email'],
-                        'Appointment Rescheduled',
-                        $hostEmailBody
-                    );
-                }
-
-                if ($stmt->execute()) {
-                    echo json_encode(['success' => true]);
-                } else {
-                    echo json_encode(['success' => false, 'message' => 'Failed to reschedule appointment']);
-                }
-            } else {
+            if ($result->num_rows === 0) {
                 echo json_encode(['success' => false, 'message' => 'Appointment not found']);
+                break;
+            }
+
+            $appointment = $result->fetch_assoc();
+            $hostId = $appointment['HostID'];
+            $oldTime = $appointment['AppointmentTime'];
+            $badgeNumber = $appointment['BadgeNumber'];
+
+            // Check for conflicts (excluding current appointment)
+            $startTime = date('Y-m-d H:i:s', strtotime($newTime) - (45 * 60));
+            $endTime = date('Y-m-d H:i:s', strtotime($newTime) + (45 * 60));
+
+            $sql = "SELECT AppointmentID FROM appointments 
+            WHERE HostID = ? 
+            AND AppointmentTime BETWEEN ? AND ? 
+            AND Status IN ('Upcoming', 'Overdue', 'Ongoing')
+            AND AppointmentID != ?";
+            $stmt = $conn->prepare($sql);
+            $stmt->bind_param("issi", $hostId, $startTime, $endTime, $appointmentId);
+            $stmt->execute();
+            $conflictResult = $stmt->get_result();
+
+            if ($conflictResult->num_rows > 0) {
+                echo json_encode(['success' => false, 'message' => 'The selected host already has an appointment scheduled within 45 minutes of this time.']);
+                break;
+            }
+
+            // Update the appointment
+            $sql = "UPDATE appointments SET AppointmentTime = ?, Status = 'Upcoming' WHERE AppointmentID = ?";
+            $stmt = $conn->prepare($sql);
+            $stmt->bind_param("si", $newTime, $appointmentId);
+
+            if ($stmt->execute()) {
+                // Send emails with error logging
+                try {
+                    if ($appointment && $badgeNumber) {
+                        // Send visitor email
+                        $visitorEmailBody = getRescheduledEmailTemplate(
+                            $appointment['VisitorName'],
+                            $appointment['HostName'],
+                            $oldTime,
+                            $newTime,
+                            $badgeNumber
+                        );
+
+                        $visitorEmailSent = sendAppointmentEmail(
+                            $appointment['VisitorEmail'],
+                            'Appointment Rescheduled',
+                            $visitorEmailBody
+                        );
+
+                        if (!$visitorEmailSent) {
+                            error_log("Failed to send reschedule email to visitor: " . $appointment['VisitorEmail']);
+                        }
+
+                        // Send host email
+                        $hostEmailBody = getHostRescheduledEmailTemplate(
+                            $appointment['VisitorName'],
+                            $appointment['HostName'],
+                            $newTime,
+                            $badgeNumber
+                        );
+
+                        $hostEmailSent = sendAppointmentEmail(
+                            $appointment['HostEmail'],
+                            'Appointment Rescheduled',
+                            $hostEmailBody
+                        );
+
+                        if (!$hostEmailSent) {
+                            error_log("Failed to send reschedule email to host: " . $appointment['HostEmail']);
+                        }
+
+                        error_log("Reschedule emails sent - Visitor: " . ($visitorEmailSent ? "SUCCESS" : "FAILED") . ", Host: " . ($hostEmailSent ? "SUCCESS" : "FAILED"));
+                    } else {
+                        error_log("Missing appointment data or badge number for reschedule email");
+                    }
+                } catch (Exception $e) {
+                    error_log("Error sending reschedule emails: " . $e->getMessage());
+                }
+
+                echo json_encode(['success' => true]);
+            } else {
+                echo json_encode(['success' => false, 'message' => 'Failed to reschedule appointment']);
             }
             break;
+
 
         case 'checkIn':
             if (!isset($_POST['appointmentId'])) {
@@ -645,6 +678,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
             break;
 
+        // Improved cancel case with better error handling
         case 'cancelAppointment':
             if (!isset($_POST['appointmentId']) || !isset($_POST['reason'])) {
                 echo json_encode(['success' => false, 'message' => 'Missing appointment ID or reason']);
@@ -655,49 +689,81 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $reason = $_POST['reason'];
             $status = 'Cancelled';
 
-            $sql = "SELECT a.AppointmentTime, v.VisitorID, v.Name AS visitorName, v.Email AS visitorEmail, 
-                       u.UserID AS hostId, u.Name AS hostName, u.Email AS hostEmail 
-                    FROM appointments a
-                    JOIN visitors v ON a.VisitorID = v.VisitorID
-                    JOIN users u ON a.HostID = u.UserID
-                    WHERE a.AppointmentID = ?";
+            // Get appointment details BEFORE updating
+            $sql = "SELECT a.AppointmentTime, a.BadgeNumber,
+                   v.VisitorID, v.Name AS VisitorName, v.Email AS VisitorEmail, 
+                   u.UserID AS HostID, u.Name AS HostName, u.Email AS HostEmail 
+            FROM appointments a
+            JOIN visitors v ON a.VisitorID = v.VisitorID
+            JOIN users u ON a.HostID = u.UserID
+            WHERE a.AppointmentID = ?";
             $stmt = $conn->prepare($sql);
             $stmt->bind_param("i", $appointmentId);
             $stmt->execute();
             $result = $stmt->get_result();
-            $appointment = $result->fetch_assoc();
 
+            if ($result->num_rows === 0) {
+                echo json_encode(['success' => false, 'message' => 'Appointment not found']);
+                break;
+            }
+
+            $appointment = $result->fetch_assoc();
+            $badgeNumber = $appointment['BadgeNumber'];
+
+            // Update appointment status
             $sql = "UPDATE appointments SET Status = ?, CancellationReason = ? WHERE AppointmentID = ?";
             $stmt = $conn->prepare($sql);
             $stmt->bind_param("ssi", $status, $reason, $appointmentId);
 
-            // After successful update
-            if ($appointment) {
-                $emailBody = getCancelledByHostEmailTemplate(
-                    $appointment['visitorName'],
-                    $appointment['hostName'],
-                    $appointment['AppointmentTime'],
-                    $reason
-                );
-                sendAppointmentEmail(
-                    $appointment['visitorEmail'],
-                    'Appointment Cancelled',
-                    $emailBody
-                );
-
-                $hostEmailBody = getHostCancelledEmailTemplate(
-                    $appointment['visitorName'],
-                    $appointment['hostName'],
-                    $appointment['AppointmentTime']
-                );
-                sendAppointmentEmail(
-                    $appointment['hostEmail'],
-                    'Appointment Cancelled',
-                    $hostEmailBody
-                );
-            }
-
             if ($stmt->execute()) {
+                // Send emails with error logging
+                try {
+                    if ($appointment && $badgeNumber) {
+                        // Send visitor cancellation email
+                        $visitorEmailBody = getCancelledByHostEmailTemplate(
+                            $appointment['VisitorName'],
+                            $appointment['HostName'],
+                            $appointment['AppointmentTime'],
+                            $reason,
+                            $badgeNumber
+                        );
+
+                        $visitorEmailSent = sendAppointmentEmail(
+                            $appointment['VisitorEmail'],
+                            'Appointment Cancelled',
+                            $visitorEmailBody
+                        );
+
+                        if (!$visitorEmailSent) {
+                            error_log("Failed to send cancellation email to visitor: " . $appointment['VisitorEmail']);
+                        }
+
+                        // Send host cancellation email
+                        $hostEmailBody = getHostCancelledEmailTemplate(
+                            $appointment['VisitorName'],
+                            $appointment['HostName'],
+                            $appointment['AppointmentTime'],
+                            $badgeNumber
+                        );
+
+                        $hostEmailSent = sendAppointmentEmail(
+                            $appointment['HostEmail'],
+                            'Appointment Cancelled',
+                            $hostEmailBody
+                        );
+
+                        if (!$hostEmailSent) {
+                            error_log("Failed to send cancellation email to host: " . $appointment['HostEmail']);
+                        }
+
+                        error_log("Cancellation emails sent - Visitor: " . ($visitorEmailSent ? "SUCCESS" : "FAILED") . ", Host: " . ($hostEmailSent ? "SUCCESS" : "FAILED"));
+                    } else {
+                        error_log("Missing appointment data or badge number for cancellation email");
+                    }
+                } catch (Exception $e) {
+                    error_log("Error sending cancellation emails: " . $e->getMessage());
+                }
+
                 echo json_encode(['success' => true]);
             } else {
                 echo json_encode(['success' => false, 'message' => 'Failed to cancel appointment']);
