@@ -206,6 +206,81 @@ $conn->close();
             border-top: none;
             border-radius: 0 0 8px 8px;
         }
+        /* Add this to your existing <style> section */
+
+        /* Chart container improvements */
+        .chart-container {
+            position: relative;
+            background: #fff;
+            border-radius: 8px;
+            padding: 1.5rem;
+            border: 1px solid #eceef1;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        /* Loading states */
+        .chart-loading {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 300px;
+            color: #a1acb8;
+        }
+
+        .loading-spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #696cff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Chart specific styling */
+        #ticketStatusChart, #categoryBreakdownChart {
+            min-height: 350px;
+        }
+
+        /* Alert styling within charts */
+        .chart-container .alert {
+            margin: 0;
+            border: none;
+            background: transparent;
+        }
+
+        .chart-container .alert-info {
+            color: #0f5132;
+            background-color: #d1ecf1;
+            border-color: #bee5eb;
+        }
+
+        .chart-container .alert-warning {
+            color: #664d03;
+            background-color: #fff3cd;
+            border-color: #ffecb5;
+        }
+
+        .chart-container .alert-danger {
+            color: #721c24;
+            background-color: #f8d7da;
+            border-color: #f5c6cb;
+        }
+
+        /* Responsive improvements */
+        @media (max-width: 768px) {
+            .chart-container {
+                padding: 1rem;
+            }
+
+            #ticketStatusChart, #categoryBreakdownChart {
+                min-height: 250px;
+            }
+        }
 
         /* Navbar styles (from user_management.php) */
         .navbar-detached {
@@ -609,12 +684,13 @@ $conn->close();
                 <!-- Support Staff Reports Tab -->
                 <div class="tab-pane fade <?= $activeTab === 'support' ? 'show active' : '' ?>" id="supportTab">
                     <?php if ($activeTab === 'support') : ?>
+
                         <!-- Team Metrics -->
                         <div class="card mb-4">
                             <div class="card-header d-flex align-items-center justify-content-between">
                                 <h5 class="card-title m-0 me-2">Support Team Overview</h5>
                                 <form method="POST" action="generate_report.php" style="display: inline;">
-                                    <input type="hidden" name="report_type" value="frontdesk">
+                                    <input type="hidden" name="report_type" value="support">
                                     <input type="hidden" name="start_date" value="<?= $startDate ?>">
                                     <input type="hidden" name="end_date" value="<?= $endDate ?>">
                                     <button type="submit" class="btn btn-light btn-sm">
@@ -623,6 +699,7 @@ $conn->close();
                                 </form>
                             </div>
                             <div class="card-body">
+                                <!-- Summary Cards -->
                                 <div class="row g-4 mb-4">
                                     <div class="col-sm-6 col-lg-3">
                                         <div class="card h-100">
@@ -667,9 +744,9 @@ $conn->close();
                                             <div class="card-body">
                                                 <div class="d-flex justify-content-between align-items-start">
                                                     <div>
-                                        <span class="badge bg-label-warning rounded p-2 mb-3">
-                                            <i class="bx bx-time-five bx-sm"></i>
-                                        </span>
+                                                        <span class="badge bg-label-warning rounded p-2 mb-3">
+                                                            <i class="bx bx-time-five bx-sm"></i>
+                                                        </span>
                                                         <h5 class="mb-1">Avg. Resolution</h5>
                                                         <h3 class="mb-2"><?= $teamReports['resolution_times']['avg_resolution_hours'] ? round($teamReports['resolution_times']['avg_resolution_hours']) : 'N/A' ?>h</h3>
                                                         <p class="mb-0 text-danger">
@@ -690,9 +767,9 @@ $conn->close();
                                             <i class="bx bx-refresh bx-sm"></i>
                                         </span>
                                                         <h5 class="mb-1">Reopened Rate</h5>
-                                                        <h3 class="mb-2"><?= isset($individualReports) ? round(array_sum(array_column($individualReports, 'reopened_rate')) / count($individualReports)) : 0 ?>%</h3>
+                                                        <h3 class="mb-2"><?= isset($individualReports) && !empty($individualReports) ? round(array_sum(array_column($individualReports, 'reopened_rate')) / count($individualReports)) : 0 ?>%</h3>
                                                         <p class="mb-0 text-success">
-                                                            <span>-<?= round((isset($individualReports) ? (array_sum(array_column($individualReports, 'reopened_rate')) / count($individualReports)) : 0) * 0.03) ?>%</span>
+                                                            <span>-<?= round((isset($individualReports) && !empty($individualReports) ? (array_sum(array_column($individualReports, 'reopened_rate')) / count($individualReports)) : 0) * 0.03) ?>%</span>
                                                             <span>vs last month</span>
                                                         </p>
                                                     </div>
@@ -702,47 +779,32 @@ $conn->close();
                                     </div>
                                 </div>
 
-                                <div class="row">
-                                    <!-- Ticket Status Chart -->
+                                <!-- Charts Row - This is the critical section -->
+                                < <div class="row">
+                                    <!-- Enhanced Status Distribution Chart -->
                                     <div class="col-md-6 mb-4">
-                                        <div class="card h-100">
-                                            <div class="card-header d-flex justify-content-between">
-                                                <h5 class="card-title mb-0">Ticket Status</h5>
-                                                <div class="dropdown">
-                                                    <button class="btn p-0" type="button" id="ticketStatus" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                                        <i class="bx bx-dots-vertical-rounded"></i>
-                                                    </button>
-                                                    <div class="dropdown-menu dropdown-menu-end" aria-labelledby="ticketStatus">
-                                                        <a class="dropdown-item" href="javascript:void(0);">Last 28 Days</a>
-                                                        <a class="dropdown-item" href="javascript:void(0);">Last Month</a>
-                                                        <a class="dropdown-item" href="javascript:void(0);">Last Year</a>
-                                                    </div>
-                                                </div>
+                                        <div class="chart-container">
+                                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                                <h5 class="mb-0">Ticket Status Distribution</h5>
                                             </div>
-                                            <div class="card-body">
-                                                <div id="ticketStatusChart"></div>
+                                            <div id="ticketStatusChart">
+                                                <div class="chart-loading">
+                                                    <div class="loading-spinner"></div>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
 
-                                    <!-- Category Breakdown -->
+                                    <!-- Enhanced Category Breakdown Chart -->
                                     <div class="col-md-6 mb-4">
-                                        <div class="card h-100">
-                                            <div class="card-header d-flex justify-content-between">
-                                                <h5 class="card-title mb-0">Issue Categories</h5>
-                                                <div class="dropdown">
-                                                    <button class="btn p-0" type="button" id="issueCategories" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                                        <i class="bx bx-dots-vertical-rounded"></i>
-                                                    </button>
-                                                    <div class="dropdown-menu dropdown-menu-end" aria-labelledby="issueCategories">
-                                                        <a class="dropdown-item" href="javascript:void(0);">Last 28 Days</a>
-                                                        <a class="dropdown-item" href="javascript:void(0);">Last Month</a>
-                                                        <a class="dropdown-item" href="javascript:void(0);">Last Year</a>
-                                                    </div>
-                                                </div>
+                                        <div class="chart-container">
+                                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                                <h5 class="mb-0">Issue Categories</h5>
                                             </div>
-                                            <div class="card-body">
-                                                <div id="categoryBreakdownChart"></div>
+                                            <div id="categoryBreakdownChart">
+                                                <div class="chart-loading">
+                                                    <div class="loading-spinner"></div>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -750,20 +812,10 @@ $conn->close();
                             </div>
                         </div>
 
-                        <!-- Individual Performance Cards -->
+                        <!-- Individual Staff Performance Cards (keep your existing code here) -->
                         <div class="card">
                             <div class="card-header d-flex align-items-center justify-content-between">
                                 <h5 class="card-title m-0 me-2">Individual Staff Performance</h5>
-                                <div class="dropdown">
-                                    <button class="btn p-0" type="button" id="staffPerformance" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                        <i class="bx bx-dots-vertical-rounded"></i>
-                                    </button>
-                                    <div class="dropdown-menu dropdown-menu-end" aria-labelledby="staffPerformance">
-                                        <a class="dropdown-item" href="javascript:void(0);">Sort by Name</a>
-                                        <a class="dropdown-item" href="javascript:void(0);">Sort by Performance</a>
-                                        <a class="dropdown-item" href="javascript:void(0);">Sort by Resolution Time</a>
-                                    </div>
-                                </div>
                             </div>
                             <div class="card-body">
                                 <?php if (empty($users)): ?>
@@ -774,7 +826,7 @@ $conn->close();
                                             $metrics = $individualReports[$user['UserID']];
                                             $resolved = $metrics['status_breakdown']['resolved'] ?? 0;
                                             $total = $metrics['total_tickets'] ?? 1;
-                                            $resolutionRate = round(($resolved / $total) * 100);
+                                            $resolutionRate = $total > 0 ? round(($resolved / $total) * 100) : 0;
                                             ?>
                                             <div class="col-md-6 col-lg-4 col-xl-3">
                                                 <div class="card h-100">
@@ -782,7 +834,7 @@ $conn->close();
                                                         <div class="avatar avatar-xl mb-3">
                                                             <span class="avatar-initial rounded-circle bg-label-primary"><?= substr($user['Name'], 0, 1) ?></span>
                                                         </div>
-                                                        <h5 class="mb-1"><?= $user['Name'] ?></h5>
+                                                        <h5 class="mb-1"><?= htmlspecialchars($user['Name']) ?></h5>
                                                         <span class="text-body-secondary">Support Staff</span>
 
                                                         <div class="my-4">
@@ -1080,76 +1132,77 @@ $conn->close();
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/apexcharts@3.35.0/dist/apexcharts.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
-<script>
-    $(document).ready(function() {
-        // Real-time status update for current admin (from user_management.php)
-        function updateAdminStatus() {
-            $.ajax({
-                url: 'update_activity.php',
-                type: 'GET',
-                success: function() {
-                    // Status indicator would be updated here if needed
+    <script>
+        $(document).ready(function() {
+            // Real-time status update for current admin (from user_management.php)
+            function updateAdminStatus() {
+                $.ajax({
+                    url: 'update_activity.php',
+                    type: 'GET',
+                    success: function() {
+                        // Status indicator would be updated here if needed
+                    }
+                });
+            }
+
+            // Update immediately and every minute
+            updateAdminStatus();
+            setInterval(updateAdminStatus, 60000);
+
+            // Sidebar toggle functionality (from user_management.php)
+            $('.layout-menu-toggle').off('click').on('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+
+                const $html = $('html');
+                const $sidebar = $('#layout-menu');
+                const $toggle = $(this);
+
+                $toggle.css('pointer-events', 'none');
+                $html.toggleClass('layout-menu-collapsed');
+                const isCollapsed = $html.hasClass('layout-menu-collapsed');
+
+                if (isCollapsed) {
+                    $sidebar.css({
+                        'width': '78px',
+                        'min-width': '78px',
+                        'max-width': '78px'
+                    });
+                } else {
+                    $sidebar.css({
+                        'width': '260px',
+                        'min-width': '260px',
+                        'max-width': '260px'
+                    });
                 }
+
+                localStorage.setItem('layoutMenuCollapsed', isCollapsed);
+
+                setTimeout(() => {
+                    $toggle.css('pointer-events', 'auto');
+                }, 300);
             });
-        }
 
-        // Update immediately and every minute
-        updateAdminStatus();
-        setInterval(updateAdminStatus, 60000);
-
-        // Sidebar toggle functionality (from user_management.php)
-        $('.layout-menu-toggle').off('click').on('click', function(e) {
-            e.preventDefault();
-            e.stopPropagation();
-
-            const $html = $('html');
-            const $sidebar = $('#layout-menu');
-            const $toggle = $(this);
-
-            $toggle.css('pointer-events', 'none');
-            $html.toggleClass('layout-menu-collapsed');
-            const isCollapsed = $html.hasClass('layout-menu-collapsed');
-
+            // Initialize sidebar state from localStorage (from user_management.php)
+            const isCollapsed = localStorage.getItem('layoutMenuCollapsed') === 'true';
             if (isCollapsed) {
-                $sidebar.css({
+                $('html').addClass('layout-menu-collapsed');
+                $('#layout-menu').css({
                     'width': '78px',
                     'min-width': '78px',
                     'max-width': '78px'
                 });
             } else {
-                $sidebar.css({
+                $('#layout-menu').css({
                     'width': '260px',
                     'min-width': '260px',
                     'max-width': '260px'
                 });
             }
-
-            localStorage.setItem('layoutMenuCollapsed', isCollapsed);
-
-            setTimeout(() => {
-                $toggle.css('pointer-events', 'auto');
-            }, 300);
         });
 
-        // Initialize sidebar state from localStorage (from user_management.php)
-        const isCollapsed = localStorage.getItem('layoutMenuCollapsed') === 'true';
-        if (isCollapsed) {
-            $('html').addClass('layout-menu-collapsed');
-            $('#layout-menu').css({
-                'width': '78px',
-                'min-width': '78px',
-                'max-width': '78px'
-            });
-        } else {
-            $('#layout-menu').css({
-                'width': '260px',
-                'min-width': '260px',
-                'max-width': '260px'
-            });
-        }
-    });
-    $(document).ready(function() {
         // Host Appointments Chart
+        <?php if ($activeTab === 'host') : ?>
         var hostAppointmentsOptions = {
             series: [{
                 name: 'Appointments',
@@ -1190,10 +1243,7 @@ $conn->close();
                 }
             }
         };
-        var hostAppointmentsChart = new ApexCharts(document.querySelector("#hostAppointmentsChart"), hostAppointmentsOptions);
-        hostAppointmentsChart.render();
 
-        // Host Status Chart (pie/donut)
         var hostStatusOptions = {
             series: [
                 <?= $teamReports['appointment_metrics']['completed'] ?? 0 ?>,
@@ -1217,158 +1267,472 @@ $conn->close();
                 }
             }
         };
-        var hostStatusChart = new ApexCharts(document.querySelector("#hostStatusChart"), hostStatusOptions);
-        hostStatusChart.render();
-    });
-    $(document).ready(function() {
+
+        // Only initialize charts if elements exist
+        if (document.querySelector("#hostAppointmentsChart")) {
+            var hostAppointmentsChart = new ApexCharts(document.querySelector("#hostAppointmentsChart"), hostAppointmentsOptions);
+            hostAppointmentsChart.render();
+        }
+
+        if (document.querySelector("#hostStatusChart")) {
+            var hostStatusChart = new ApexCharts(document.querySelector("#hostStatusChart"), hostStatusOptions);
+            hostStatusChart.render();
+        }
+        <?php endif; ?>
+
+        // Support Charts
         <?php if ($activeTab === 'support') : ?>
-        // Ticket Status Chart
-        var ticketStatusOptions = {
-            series: [
-                <?= $teamReports['status_breakdown']['open'] ?? 0 ?>,
-                <?= $teamReports['status_breakdown']['in-progress'] ?? 0 ?>,
-                <?= $teamReports['status_breakdown']['resolved'] ?? 0 ?>,
-                <?= $teamReports['status_breakdown']['closed'] ?? 0 ?>
-            ],
-            chart: {
-                type: 'donut',
-                height: 350
-            },
-            labels: ['Open', 'In Progress', 'Resolved', 'Closed'],
-            colors: ['#696cff', '#8592a3', '#71dd37', '#03c3ec'],
-            responsive: [{
-                breakpoint: 480,
-                options: {
-                    chart: {
-                        width: 200
-                    },
-                    legend: {
-                        position: 'bottom'
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Initializing support charts...');
+
+            // Get the data from PHP with proper JSON encoding
+            var statusBreakdown = <?= json_encode($teamReports['status_breakdown'] ?? [], JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP) ?>;
+            var categoryBreakdown = <?= json_encode($teamReports['category_breakdown'] ?? [], JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP) ?>;
+            var totalTickets = <?= $teamReports['total_tickets'] ?? 0 ?>;
+
+            console.log('Raw Status Breakdown:', statusBreakdown);
+            console.log('Raw Category Breakdown:', categoryBreakdown);
+            console.log('Total Tickets:', totalTickets);
+
+            // Function to safely initialize charts
+            function initializeSupportCharts() {
+                // === TICKET STATUS CHART ===
+                var statusContainer = document.getElementById('ticketStatusChart');
+                if (statusContainer) {
+                    console.log('Initializing status chart...');
+
+                    // Clear any existing content
+                    statusContainer.innerHTML = '';
+
+                    try {
+                        var statusData = [];
+                        var statusLabels = [];
+                        var statusColors = [];
+
+                        // Prepare status data with better error handling
+                        if (statusBreakdown && typeof statusBreakdown === 'object') {
+                            // Convert object to arrays
+                            var statusMapping = {
+                                'open': { label: 'Open', color: '#ff9f43' },
+                                'in_progress': { label: 'In Progress', color: '#00cfe8' },
+                                'in-progress': { label: 'In Progress', color: '#00cfe8' },
+                                'resolved': { label: 'Resolved', color: '#28a745' },
+                                'closed': { label: 'Closed', color: '#6c757d' },
+                                'pending': { label: 'Pending', color: '#ffc107' }
+                            };
+
+                            Object.keys(statusBreakdown).forEach(function(status) {
+                                var count = parseInt(statusBreakdown[status]) || 0;
+                                if (count > 0) {
+                                    var mapping = statusMapping[status.toLowerCase()] || {
+                                        label: status.charAt(0).toUpperCase() + status.slice(1),
+                                        color: '#696cff'
+                                    };
+                                    statusLabels.push(mapping.label);
+                                    statusData.push(count);
+                                    statusColors.push(mapping.color);
+                                }
+                            });
+                        }
+
+                        console.log('Processed Status Data:', statusData);
+                        console.log('Status Labels:', statusLabels);
+
+                        if (statusData.length > 0 && statusData.some(val => val > 0)) {
+                            var statusOptions = {
+                                series: statusData,
+                                chart: {
+                                    type: 'donut',
+                                    height: 350,
+                                    fontFamily: 'Public Sans, -apple-system, BlinkMacSystemFont, "Segoe UI", Oxygen, Ubuntu, Cantarell, "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif',
+                                    animations: {
+                                        enabled: true,
+                                        easing: 'easeinout',
+                                        speed: 800
+                                    }
+                                },
+                                labels: statusLabels,
+                                colors: statusColors,
+                                legend: {
+                                    position: 'bottom',
+                                    fontSize: '13px',
+                                    fontFamily: 'inherit',
+                                    markers: {
+                                        width: 8,
+                                        height: 8,
+                                        offsetX: -3
+                                    }
+                                },
+                                plotOptions: {
+                                    pie: {
+                                        donut: {
+                                            size: '70%',
+                                            labels: {
+                                                show: true,
+                                                name: {
+                                                    show: true,
+                                                    fontSize: '16px',
+                                                    fontFamily: 'inherit',
+                                                    color: '#566a7f'
+                                                },
+                                                value: {
+                                                    show: true,
+                                                    fontSize: '24px',
+                                                    fontFamily: 'inherit',
+                                                    fontWeight: 600,
+                                                    color: '#566a7f'
+                                                },
+                                                total: {
+                                                    show: true,
+                                                    showAlways: true,
+                                                    label: 'Total',
+                                                    fontSize: '14px',
+                                                    fontFamily: 'inherit',
+                                                    color: '#a1acb8',
+                                                    formatter: function() {
+                                                        return totalTickets.toString();
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                },
+                                dataLabels: {
+                                    enabled: true,
+                                    formatter: function(val) {
+                                        return Math.round(val) + '%';
+                                    },
+                                    style: {
+                                        fontSize: '12px',
+                                        fontFamily: 'inherit',
+                                        fontWeight: 500
+                                    }
+                                },
+                                tooltip: {
+                                    style: {
+                                        fontSize: '12px',
+                                        fontFamily: 'inherit'
+                                    },
+                                    y: {
+                                        formatter: function(val) {
+                                            return val + ' tickets';
+                                        }
+                                    }
+                                },
+                                stroke: {
+                                    width: 0
+                                },
+                                responsive: [{
+                                    breakpoint: 480,
+                                    options: {
+                                        chart: {
+                                            height: 300
+                                        },
+                                        legend: {
+                                            position: 'bottom'
+                                        }
+                                    }
+                                }]
+                            };
+
+                            console.log('Creating status chart...');
+                            var statusChart = new ApexCharts(statusContainer, statusOptions);
+                            statusChart.render().then(function() {
+                                console.log('Status chart rendered successfully');
+                            }).catch(function(error) {
+                                console.error('Status chart render error:', error);
+                                statusContainer.innerHTML = '<div class="text-center p-4"><div class="alert alert-warning">Unable to load status chart</div></div>';
+                            });
+
+                        } else {
+                            console.log('No status data available');
+                            statusContainer.innerHTML = '<div class="text-center p-4"><div class="alert alert-info"><i class="bx bx-info-circle me-2"></i>No ticket status data available</div></div>';
+                        }
+
+                    } catch (error) {
+                        console.error('Error creating status chart:', error);
+                        statusContainer.innerHTML = '<div class="text-center p-4"><div class="alert alert-danger">Error loading status chart</div></div>';
                     }
                 }
-            }],
-            legend: {
-                position: 'right',
-                offsetY: 0,
-                height: 230,
-            }
-        };
-        var ticketStatusChart = new ApexCharts(document.querySelector("#ticketStatusChart"), ticketStatusOptions);
-        ticketStatusChart.render();
 
-        // Category Breakdown Chart
-        var categories = <?= json_encode(array_column($teamReports['category_breakdown'], 'category')) ?>;
-        var counts = <?= json_encode(array_column($teamReports['category_breakdown'], 'count')) ?>;
+                // === CATEGORY BREAKDOWN CHART ===
+                var categoryContainer = document.getElementById('categoryBreakdownChart');
+                if (categoryContainer) {
+                    console.log('Initializing category chart...');
 
-        var categoryOptions = {
-            series: [{
-                data: counts
-            }],
-            chart: {
-                type: 'bar',
-                height: 350
-            },
-            colors: ['#696cff'],
-            plotOptions: {
-                bar: {
-                    borderRadius: 4,
-                    horizontal: true,
+                    // Clear any existing content
+                    categoryContainer.innerHTML = '';
+
+                    try {
+                        var categories = [];
+                        var counts = [];
+
+                        // Prepare category data with better error handling
+                        if (categoryBreakdown && Array.isArray(categoryBreakdown) && categoryBreakdown.length > 0) {
+                            categoryBreakdown.forEach(function(item) {
+                                if (item && item.category && (item.count > 0 || item.total > 0)) {
+                                    var categoryName = item.category || item.Category || 'Unknown';
+                                    var categoryCount = parseInt(item.count || item.total || 0);
+                                    if (categoryCount > 0) {
+                                        categories.push(categoryName);
+                                        counts.push(categoryCount);
+                                    }
+                                }
+                            });
+                        } else if (categoryBreakdown && typeof categoryBreakdown === 'object') {
+                            // Handle case where it might be an object instead of array
+                            Object.keys(categoryBreakdown).forEach(function(key) {
+                                var count = parseInt(categoryBreakdown[key]) || 0;
+                                if (count > 0) {
+                                    categories.push(key.charAt(0).toUpperCase() + key.slice(1));
+                                    counts.push(count);
+                                }
+                            });
+                        }
+
+                        console.log('Processed Categories:', categories);
+                        console.log('Category Counts:', counts);
+
+                        if (categories.length > 0 && counts.length > 0) {
+                            var categoryOptions = {
+                                series: [{
+                                    name: 'Tickets',
+                                    data: counts
+                                }],
+                                chart: {
+                                    type: 'bar',
+                                    height: 350,
+                                    fontFamily: 'Public Sans, -apple-system, BlinkMacSystemFont, "Segoe UI", Oxygen, Ubuntu, Cantarell, "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif',
+                                    toolbar: {
+                                        show: false
+                                    },
+                                    animations: {
+                                        enabled: true,
+                                        easing: 'easeinout',
+                                        speed: 800
+                                    }
+                                },
+                                plotOptions: {
+                                    bar: {
+                                        borderRadius: 6,
+                                        horizontal: true,
+                                        barHeight: '60%',
+                                        dataLabels: {
+                                            position: 'center'
+                                        }
+                                    }
+                                },
+                                dataLabels: {
+                                    enabled: true,
+                                    style: {
+                                        colors: ['#fff'],
+                                        fontSize: '12px',
+                                        fontFamily: 'inherit',
+                                        fontWeight: 500
+                                    },
+                                    formatter: function(val) {
+                                        return val;
+                                    }
+                                },
+                                xaxis: {
+                                    categories: categories,
+                                    labels: {
+                                        style: {
+                                            fontFamily: 'inherit',
+                                            fontSize: '12px',
+                                            colors: '#a1acb8'
+                                        }
+                                    },
+                                    axisBorder: {
+                                        show: false
+                                    },
+                                    axisTicks: {
+                                        show: false
+                                    }
+                                },
+                                yaxis: {
+                                    labels: {
+                                        style: {
+                                            fontFamily: 'inherit',
+                                            fontSize: '12px',
+                                            colors: '#a1acb8'
+                                        }
+                                    }
+                                },
+                                colors: ['#696cff'],
+                                grid: {
+                                    borderColor: '#eceef1',
+                                    strokeDashArray: 6,
+                                    xaxis: {
+                                        lines: {
+                                            show: true
+                                        }
+                                    },
+                                    yaxis: {
+                                        lines: {
+                                            show: false
+                                        }
+                                    }
+                                },
+                                tooltip: {
+                                    style: {
+                                        fontSize: '12px',
+                                        fontFamily: 'inherit'
+                                    },
+                                    y: {
+                                        formatter: function(val) {
+                                            return val + ' tickets';
+                                        }
+                                    }
+                                }
+                            };
+
+                            console.log('Creating category chart...');
+                            var categoryChart = new ApexCharts(categoryContainer, categoryOptions);
+                            categoryChart.render().then(function() {
+                                console.log('Category chart rendered successfully');
+                            }).catch(function(error) {
+                                console.error('Category chart render error:', error);
+                                categoryContainer.innerHTML = '<div class="text-center p-4"><div class="alert alert-warning">Unable to load category chart</div></div>';
+                            });
+
+                        } else {
+                            console.log('No category data available');
+                            categoryContainer.innerHTML = '<div class="text-center p-4"><div class="alert alert-info"><i class="bx bx-info-circle me-2"></i>No category data available</div></div>';
+                        }
+
+                    } catch (error) {
+                        console.error('Error creating category chart:', error);
+                        categoryContainer.innerHTML = '<div class="text-center p-4"><div class="alert alert-danger">Error loading category chart</div></div>';
+                    }
                 }
-            },
-            dataLabels: {
-                enabled: false
-            },
-            xaxis: {
-                categories: categories,
             }
-        };
-        var categoryChart = new ApexCharts(document.querySelector("#categoryBreakdownChart"), categoryOptions);
-        categoryChart.render();
-        <?php endif; ?>
-    });
-    // Initialize charts when the tab is shown
-    document.addEventListener('DOMContentLoaded', function() {
-        // Client Type Pie Chart
-        if (document.getElementById('clientTypeChart')) {
-            var clientTypeOptions = {
-                series: [<?= $newPercentage ?>, <?= $returningPercentage ?>],
-                chart: {
-                    type: 'donut',
-                    height: 300
-                },
-                labels: ['New Clients', 'Returning Clients'],
-                colors: ['#696cff', '#71dd37'],
-                responsive: [{
-                    breakpoint: 480,
-                    options: {
-                        chart: {
-                            width: 200
-                        },
-                        legend: {
-                            position: 'bottom'
+
+            // Initialize charts with proper timing
+            if (typeof ApexCharts !== 'undefined') {
+                // ApexCharts is already loaded
+                initializeSupportCharts();
+            } else {
+                // Wait for ApexCharts to load
+                var checkApexCharts = setInterval(function() {
+                    if (typeof ApexCharts !== 'undefined') {
+                        clearInterval(checkApexCharts);
+                        initializeSupportCharts();
+                    }
+                }, 100);
+
+                // Timeout after 5 seconds
+                setTimeout(function() {
+                    clearInterval(checkApexCharts);
+                    if (typeof ApexCharts === 'undefined') {
+                        console.error('ApexCharts failed to load');
+                        var statusContainer = document.getElementById('ticketStatusChart');
+                        var categoryContainer = document.getElementById('categoryBreakdownChart');
+                        if (statusContainer) {
+                            statusContainer.innerHTML = '<div class="text-center p-4"><div class="alert alert-danger">Chart library failed to load</div></div>';
+                        }
+                        if (categoryContainer) {
+                            categoryContainer.innerHTML = '<div class="text-center p-4"><div class="alert alert-danger">Chart library failed to load</div></div>';
                         }
                     }
-                }]
-            };
+                }, 5000);
+            }
+        });
+        <?php endif; ?>
 
-            var clientTypeChart = new ApexCharts(document.getElementById("clientTypeChart"), clientTypeOptions);
-            clientTypeChart.render();
-        }
+        // Front Desk Charts
+        <?php if ($activeTab === 'frontdesk') : ?>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Client Type Pie Chart
+            <?php
+            $newClients = $teamReports['client_metrics']['new_clients'] ?? 0;
+            $returningClients = $teamReports['client_metrics']['returning_clients'] ?? 0;
+            $totalClients = $newClients + $returningClients;
+            $newPercentage = $totalClients > 0 ? round(($newClients / $totalClients) * 100) : 0;
+            $returningPercentage = $totalClients > 0 ? round(($returningClients / $totalClients) * 100) : 0;
+            ?>
 
-        // Appointment Status Chart
-        if (document.getElementById('appointmentStatusChart')) {
-            var statusOptions = {
-                series: [{
-                    name: 'Completed',
-                    data: [<?= $teamReports['scheduling_metrics']['completed'] ?? 0 ?>]
-                }, {
-                    name: 'Cancelled',
-                    data: [<?= $teamReports['scheduling_metrics']['cancelled'] ?? 0 ?>]
-                }],
-                chart: {
-                    type: 'bar',
-                    height: 300,
-                    stacked: true,
-                    toolbar: {
+            if (document.getElementById('clientTypeChart')) {
+                var clientTypeOptions = {
+                    series: [<?= $newPercentage ?>, <?= $returningPercentage ?>],
+                    chart: {
+                        type: 'donut',
+                        height: 300
+                    },
+                    labels: ['New Clients', 'Returning Clients'],
+                    colors: ['#696cff', '#71dd37'],
+                    responsive: [{
+                        breakpoint: 480,
+                        options: {
+                            chart: {
+                                width: 200
+                            },
+                            legend: {
+                                position: 'bottom'
+                            }
+                        }
+                    }]
+                };
+
+                var clientTypeChart = new ApexCharts(document.getElementById("clientTypeChart"), clientTypeOptions);
+                clientTypeChart.render();
+            }
+
+            // Appointment Status Chart
+            if (document.getElementById('appointmentStatusChart')) {
+                var statusOptions = {
+                    series: [{
+                        name: 'Completed',
+                        data: [<?= $teamReports['scheduling_metrics']['completed'] ?? 0 ?>]
+                    }, {
+                        name: 'Cancelled',
+                        data: [<?= $teamReports['scheduling_metrics']['cancelled'] ?? 0 ?>]
+                    }],
+                    chart: {
+                        type: 'bar',
+                        height: 300,
+                        stacked: true,
+                        toolbar: {
+                            show: false
+                        }
+                    },
+                    plotOptions: {
+                        bar: {
+                            horizontal: false,
+                            borderRadius: 4,
+                            columnWidth: '50%',
+                        },
+                    },
+                    colors: ['#71dd37', '#ff3e1d'],
+                    dataLabels: {
+                        enabled: false
+                    },
+                    xaxis: {
+                        categories: ['Appointments'],
+                        axisBorder: {
+                            show: false
+                        },
+                        axisTicks: {
+                            show: false
+                        }
+                    },
+                    yaxis: {
+                        show: false
+                    },
+                    legend: {
+                        position: 'top',
+                        horizontalAlign: 'left'
+                    },
+                    grid: {
                         show: false
                     }
-                },
-                plotOptions: {
-                    bar: {
-                        horizontal: false,
-                        borderRadius: 4,
-                        columnWidth: '50%',
-                    },
-                },
-                colors: ['#71dd37', '#ff3e1d'],
-                dataLabels: {
-                    enabled: false
-                },
-                xaxis: {
-                    categories: ['Appointments'],
-                    axisBorder: {
-                        show: false
-                    },
-                    axisTicks: {
-                        show: false
-                    }
-                },
-                yaxis: {
-                    show: false
-                },
-                legend: {
-                    position: 'top',
-                    horizontalAlign: 'left'
-                },
-                grid: {
-                    show: false
-                }
-            };
+                };
 
-            var statusChart = new ApexCharts(document.getElementById("appointmentStatusChart"), statusOptions);
-            statusChart.render();
-        }
-    });
-</script>
+                var statusChart = new ApexCharts(document.getElementById("appointmentStatusChart"), statusOptions);
+                statusChart.render();
+            }
+        });
+        <?php endif; ?>
+    </script>
 </body>
 </html>
