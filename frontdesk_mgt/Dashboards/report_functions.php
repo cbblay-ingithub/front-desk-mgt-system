@@ -89,6 +89,22 @@ function getIndividualSupportMetrics($supportId, $startDate = null, $endDate = n
 {
     global $conn;
 
+    // Check if we have any tickets for this support person
+    $checkSql = "SELECT COUNT(*) as ticket_count FROM Help_Desk WHERE AssignedTo = ?";
+    if ($startDate && $endDate) {
+        $checkSql .= " AND CreatedDate BETWEEN ? AND ?";
+        $stmt = $conn->prepare($checkSql);
+        $stmt->bind_param("iss", $supportId, $startDate, $endDate);
+    } else {
+        $stmt = $conn->prepare($checkSql);
+        $stmt->bind_param("i", $supportId);
+    }
+    $stmt->execute();
+    $ticketCount = $stmt->get_result()->fetch_assoc()['ticket_count'];
+
+    // Debug log
+    error_log("Support ID $supportId has $ticketCount tickets");
+
     // Fetch status breakdown of tickets assigned to the support staff
     $sql = "SELECT 
         Status,
@@ -99,6 +115,7 @@ function getIndividualSupportMetrics($supportId, $startDate = null, $endDate = n
         $sql .= " AND CreatedDate BETWEEN ? AND ?";
     }
     $sql .= " GROUP BY Status";
+
     $stmt = $conn->prepare($sql);
     if ($startDate && $endDate) {
         $stmt->bind_param("iss", $supportId, $startDate, $endDate);
@@ -164,7 +181,7 @@ function getIndividualSupportMetrics($supportId, $startDate = null, $endDate = n
     $reopenedData = $stmt->get_result()->fetch_assoc();
     $reopenedCount = $reopenedData['reopened_count'] ?? 0;
 
-// Get total tickets count separately
+    // Get total tickets count separately
     $totalSql = "SELECT COUNT(*) AS total_tickets 
     FROM Help_Desk 
     WHERE AssignedTo = ?";
@@ -183,6 +200,7 @@ function getIndividualSupportMetrics($supportId, $startDate = null, $endDate = n
     $totalTickets = $totalData['total_tickets'] ?? 0;
 
     $reopenedRate = $totalTickets > 0 ? round(($reopenedCount / $totalTickets) * 100, 2) : 0;
+
     return [
         'status_breakdown' => $statusBreakdown,
         'avg_resolution_hours' => $avgResolutionHours,
@@ -355,81 +373,163 @@ function getSupportReports($startDate = null, $endDate = null): array
 {
     global $conn;
 
+    // Initialize arrays
+    $statusBreakdown = [];
+    $categoryBreakdown = [];
+
     // Total tickets count
     $totalSql = "SELECT COUNT(*) AS total_tickets FROM Help_Desk";
     $params = [];
+    $types = "";
+
     if ($startDate && $endDate) {
         $totalSql .= " WHERE CreatedDate BETWEEN ? AND ?";
+        $types = "ss";
         $params = [$startDate, $endDate];
     }
+
     $stmt = $conn->prepare($totalSql);
     if (!empty($params)) {
-        $stmt->bind_param("ss", ...$params);
+        $stmt->bind_param($types, ...$params);
     }
     $stmt->execute();
     $totalTickets = $stmt->get_result()->fetch_assoc()['total_tickets'];
 
+    // Debug: Check if we have any tickets at all
+    error_log("Total tickets found: " . $totalTickets);
+
     // Resolution times
-    $resTimeSql = "SELECT 
-        AVG(TIMESTAMPDIFF(HOUR, CreatedDate, ResolvedDate)) AS avg_resolution_hours
-    FROM Help_Desk 
-    WHERE Status = 'resolved'";
-    $params = [];
+    $resTimeSql = "SELECT AVG(TIMESTAMPDIFF(HOUR, CreatedDate, ResolvedDate)) AS avg_resolution_hours
+                   FROM Help_Desk WHERE Status = 'resolved'";
     if ($startDate && $endDate) {
         $resTimeSql .= " AND CreatedDate BETWEEN ? AND ?";
-        $params = [$startDate, $endDate];
     }
+
     $stmt = $conn->prepare($resTimeSql);
     if (!empty($params)) {
-        $stmt->bind_param("ss", ...$params);
+        $stmt->bind_param($types, ...$params);
     }
     $stmt->execute();
     $resolutionTimes = $stmt->get_result()->fetch_assoc();
 
-    // Ticket status breakdown
-    $statusSql = "SELECT 
-        Status,
-        COUNT(*) AS count
-    FROM Help_Desk";
-    $params = [];
+    // Ticket status breakdown - More comprehensive approach
+    $statusSql = "SELECT Status, COUNT(*) AS count FROM Help_Desk";
     if ($startDate && $endDate) {
         $statusSql .= " WHERE CreatedDate BETWEEN ? AND ?";
-        $params = [$startDate, $endDate];
     }
     $statusSql .= " GROUP BY Status";
+
     $stmt = $conn->prepare($statusSql);
     if (!empty($params)) {
-        $stmt->bind_param("ss", ...$params);
+        $stmt->bind_param($types, ...$params);
     }
     $stmt->execute();
-    $statusBreakdown = [];
     $result = $stmt->get_result();
+
     while ($row = $result->fetch_assoc()) {
-        $statusBreakdown[$row['Status']] = $row['count'];
+        // Normalize status names to handle case variations
+        $normalizedStatus = strtolower(trim($row['Status']));
+        switch ($normalizedStatus) {
+            case 'open':
+            case 'pending':
+                $statusBreakdown['open'] = ($statusBreakdown['open'] ?? 0) + $row['count'];
+                break;
+            case 'in progress':
+            case 'in-progress':
+            case 'in_progress':
+            case 'working':
+                $statusBreakdown['in-progress'] = ($statusBreakdown['in-progress'] ?? 0) + $row['count'];
+                break;
+            case 'resolved':
+            case 'completed':
+                $statusBreakdown['resolved'] = ($statusBreakdown['resolved'] ?? 0) + $row['count'];
+                break;
+            case 'closed':
+            case 'finished':
+                $statusBreakdown['closed'] = ($statusBreakdown['closed'] ?? 0) + $row['count'];
+                break;
+            default:
+                // Handle any other status
+                $statusBreakdown[$row['Status']] = $row['count'];
+        }
     }
 
-    // Category breakdown
-    $catSql = "SELECT 
-        c.CategoryName AS category,
-        COUNT(*) AS count
-    FROM Help_Desk t
-    JOIN TicketCategories c ON t.CategoryID = c.CategoryID";
-    $params = [];
-    if ($startDate && $endDate) {
-        $catSql .= " WHERE t.CreatedDate BETWEEN ? AND ?";
-        $params = [$startDate, $endDate];
+    // Debug: Log status breakdown
+    error_log("Status breakdown: " . print_r($statusBreakdown, true));
+
+    // Category breakdown - Check if CategoryID column exists and handle missing categories
+    // First, check if we have a categories table
+    $checkCategoriesTable = "SHOW TABLES LIKE 'TicketCategories'";
+    $result = $conn->query($checkCategoriesTable);
+
+    if ($result && $result->num_rows > 0) {
+        // Table exists, check if tickets have categories
+        $catSql = "SELECT 
+            COALESCE(c.CategoryName, 'Uncategorized') AS category,
+            COUNT(*) AS count
+        FROM Help_Desk t
+        LEFT JOIN TicketCategories c ON t.CategoryID = c.CategoryID";
+
+        if ($startDate && $endDate) {
+            $catSql .= " WHERE t.CreatedDate BETWEEN ? AND ?";
+        }
+        $catSql .= " GROUP BY c.CategoryID, c.CategoryName ORDER BY count DESC";
+
+        $stmt = $conn->prepare($catSql);
+        if (!empty($params)) {
+            $stmt->bind_param($types, ...$params);
+        }
+
+        if ($stmt->execute()) {
+            $result = $stmt->get_result();
+            while ($row = $result->fetch_assoc()) {
+                $categoryBreakdown[] = $row;
+            }
+        }
+    } else {
+        // No categories table, or check if CategoryID column exists in Help_Desk
+        $checkCategoryColumn = "SHOW COLUMNS FROM Help_Desk LIKE 'CategoryID'";
+        $result = $conn->query($checkCategoryColumn);
+
+        if ($result && $result->num_rows > 0) {
+            // Column exists but no categories table, group by CategoryID
+            $catSql = "SELECT 
+                COALESCE(CategoryID, 'Uncategorized') AS category,
+                COUNT(*) AS count
+            FROM Help_Desk";
+
+            if ($startDate && $endDate) {
+                $catSql .= " WHERE CreatedDate BETWEEN ? AND ?";
+            }
+            $catSql .= " GROUP BY CategoryID ORDER BY count DESC";
+
+            $stmt = $conn->prepare($catSql);
+            if (!empty($params)) {
+                $stmt->bind_param($types, ...$params);
+            }
+
+            if ($stmt->execute()) {
+                $result = $stmt->get_result();
+                while ($row = $result->fetch_assoc()) {
+                    $categoryBreakdown[] = [
+                        'category' => $row['category'] ?: 'Uncategorized',
+                        'count' => $row['count']
+                    ];
+                }
+            }
+        } else {
+            // No category system at all, create a single "General" category
+            if ($totalTickets > 0) {
+                $categoryBreakdown[] = [
+                    'category' => 'General',
+                    'count' => $totalTickets
+                ];
+            }
+        }
     }
-    $catSql .= " GROUP BY c.CategoryID ORDER BY count DESC";
-    $stmt = $conn->prepare($catSql);
-    if (!empty($params)) {
-        $stmt->bind_param("ss", ...$params);
-    }
-    $stmt->execute();
-    $categoryBreakdown = [];
-    $result = $stmt->get_result();
-    while ($row = $result->fetch_assoc()) {
-        $categoryBreakdown[] = $row;
-    }
+
+    // Debug: Log category breakdown
+    error_log("Category breakdown: " . print_r($categoryBreakdown, true));
 
     return [
         'total_tickets' => $totalTickets,
