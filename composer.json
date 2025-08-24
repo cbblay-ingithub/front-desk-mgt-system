@@ -14,6 +14,7 @@
     "cboden/ratchet": "^0.4.4",
     "ext-mysqli": "*",
     "mpdf/mpdf": "^v8.2.5",
-    "ext-pdo": "*"
+    "ext-pdo": "*",
+    "tecnickcom/tcpdf": "^6.10"
   }
 }

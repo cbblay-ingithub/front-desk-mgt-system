@@ -29,6 +29,7 @@
       <excludeFolder url="file://$MODULE_DIR$/vendor/myclabs/deep-copy" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/paragonie/random_compat" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/psr/log" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/tecnickcom/tcpdf" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
@@ -42,5 +43,6 @@
     <orderEntry type="library" name="fullcalendar" level="application" />
     <orderEntry type="library" name="boxicons" level="application" />
     <orderEntry type="library" name="apexcharts" level="application" />
+    <orderEntry type="library" name="Chart.js" level="application" />
   </component>
 </module>

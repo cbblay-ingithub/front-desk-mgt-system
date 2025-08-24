@@ -472,7 +472,7 @@ $conn->close();
                                 </div>
                             </div>
                         <form method="POST" action="generate_report.php" style="display: inline;">
-                            <input type="hidden" name="report_type" value="frontdesk">
+                            <input type="hidden" name="report_type" value="host">
                             <input type="hidden" name="start_date" value="<?= $startDate ?>">
                             <input type="hidden" name="end_date" value="<?= $endDate ?>">
                             <button type="submit" class="btn btn-light btn-sm">
