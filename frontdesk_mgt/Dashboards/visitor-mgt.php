@@ -3,14 +3,26 @@ session_start();
 require_once '../dbConfig.php';
 
 global $conn;
-// Fetch visitors
-$sql = "SELECT v.*, 
-        (SELECT COUNT(*) FROM visitor_Logs vl 
-         WHERE vl.VisitorID = v.VisitorID 
-         AND vl.CheckOutTime IS NULL) AS is_checked_in,
-         a.BadgeNumber
+
+// FIXED QUERY: Properly checks if visitor is currently checked in
+$sql = "SELECT 
+            v.*,
+            -- Check if visitor has any active check-in (no checkout time)
+            CASE 
+                WHEN EXISTS (
+                    SELECT 1 FROM visitor_Logs vl 
+                    WHERE vl.VisitorID = v.VisitorID 
+                    AND vl.CheckOutTime IS NULL
+                ) THEN 1 
+                ELSE 0 
+            END AS is_checked_in,
+            -- Get the most recent badge number from appointments if exists
+            (SELECT a.BadgeNumber FROM appointments a 
+             WHERE a.VisitorID = v.VisitorID 
+             ORDER BY a.AppointmentID DESC LIMIT 1) AS BadgeNumber
         FROM visitors v
-        LEFT JOIN appointments a ON v.VisitorID = a.VisitorID";
+        ORDER BY v.Name";
+
 $visitors = [];
 $result = $conn->query($sql);
 while ($row = $result->fetch_assoc()) {
@@ -241,6 +253,11 @@ while ($row = $result->fetch_assoc()) {
             opacity: 0.6;
             pointer-events: none;
         }
+
+        /* Error alert styling */
+        .alert-danger {
+            border-left: 4px solid #dc3545;
+        }
     </style>
 </head>
 <body>
@@ -272,12 +289,14 @@ while ($row = $result->fetch_assoc()) {
             </nav>
             <div class="container-fluid container-p-y">
                 <?php if (isset($_GET['msg'])): ?>
-                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    <div class="alert <?= $_GET['msg'] === 'error' ? 'alert-danger' : 'alert-success' ?> alert-dismissible fade show" role="alert">
                         <?php
-                        if ($_GET['msg'] === 'checked_in') {
+                        if ($_GET['msg'] === 'checked-in') {
                             echo "Visitor successfully checked in.";
-                        } elseif ($_GET['msg'] === 'checked_out') {
+                        } elseif ($_GET['msg'] === 'checked-out') {
                             echo "Visitor successfully checked out.";
+                        } elseif ($_GET['msg'] === 'error' && isset($_GET['error'])) {
+                            echo "Error: " . htmlspecialchars($_GET['error']);
                         }
                         ?>
                         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
@@ -304,7 +323,7 @@ while ($row = $result->fetch_assoc()) {
                                 <button class="btn btn-outline-success filter-btn" data-filter="checked-in">
                                     <i class="fas fa-check-circle me-1"></i> Checked In (<span id="count-checked-in">0</span>)
                                 </button>
-                                <button class="btn btn-outline-danger filter-btn" data-filter="not-checked-in">
+                                <button class="btn btn-outline-warning filter-btn" data-filter="not-checked-in">
                                     <i class="fas fa-times-circle me-1"></i> Not Checked In (<span id="count-not-checked-in">0</span>)
                                 </button>
                             </div>
@@ -329,7 +348,7 @@ while ($row = $result->fetch_assoc()) {
                         <?php foreach ($visitors as $v): ?>
                             <tr data-status="<?= $v['is_checked_in'] > 0 ? 'checked-in' : 'not-checked-in' ?>">
                                 <td>
-                                    <span class="badge-number"><?= htmlspecialchars($v['BadgeNumber']) ?></span>
+                                    <span class="badge-number"><?= htmlspecialchars($v['BadgeNumber'] ?? 'N/A') ?></span>
                                 </td>
                                 <td><?= htmlspecialchars($v['Name']) ?></td>
                                 <td><?= htmlspecialchars($v['Email']) ?></td>
@@ -352,7 +371,8 @@ while ($row = $result->fetch_assoc()) {
                                         <form method="POST" action="process_visit.php" class="d-inline">
                                             <input type="hidden" name="action" value="check_out">
                                             <input type="hidden" name="visitor_id" value="<?= $v['VisitorID'] ?>">
-                                            <button type="submit" class="btn btn-danger action-btn">
+                                            <button type="submit" class="btn btn-danger action-btn"
+                                                    onclick="return confirm('Are you sure you want to check out this visitor?')">
                                                 <i class="fas fa-sign-out-alt"></i> Check Out
                                             </button>
                                         </form>
@@ -407,7 +427,7 @@ while ($row = $result->fetch_assoc()) {
                             </div>
                         </div>
                         <div class="modal-footer">
-                            <button type="submit" name="action" value="check_in" class="btn btn-success" href="front-staff-dash.php">Check In</button>
+                            <button type="submit" name="action" value="check_in" class="btn btn-success">Check In</button>
                         </div>
                     </form>
                 </div>
