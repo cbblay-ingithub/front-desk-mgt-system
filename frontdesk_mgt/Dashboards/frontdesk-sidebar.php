@@ -274,7 +274,7 @@ $currentPage = basename($_SERVER['PHP_SELF']);
       <i class="bx bx-receipt text-primary" style="font-size:25px;"></i>
     </span>
             <span class="app-brand-text demo menu-text fw-bold ms-1 text-nowrap">
-      FrontDesk Panel
+      Front Desk
     </span>
         </a>
     </div>
