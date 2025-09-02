@@ -58,6 +58,8 @@ function getAllAppointments() {
     return $appointments;
 }
 
+
+
 // Function to get appointment statistics
 function getAppointmentStats() {
     global $conn;

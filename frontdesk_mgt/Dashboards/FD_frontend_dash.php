@@ -72,7 +72,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                 break;
 
             case 'checkInWithDetails':
-                $required = ['appointmentId', 'visitorId', 'idType', 'idNumber', 'visitPurpose'];
+                $required = ['appointmentId', 'visitorId', 'idType', 'visitPurpose'];
                 foreach ($required as $field) {
                     if (empty($_POST[$field])) {
                         throw new Exception("$field is required");
@@ -231,7 +231,7 @@ function checkInVisitor($data) {
 
         // Record visitor check-in details
         $stmt = $conn->prepare("
-            INSERT INTO visitor_checkins (VisitorID, AppointmentID, IDType, IDNumber, Purpose, CheckedInBy)
+            INSERT INTO visitor_checkins (VisitorID, AppointmentID, IDType, Purpose, CheckedInBy)
             VALUES (?, ?, ?, ?, ?, ?)
         ");
         $checkedInBy = $_SESSION['userID'];
@@ -239,7 +239,6 @@ function checkInVisitor($data) {
             $data['visitorId'],
             $data['appointmentId'],
             $data['idType'],
-            $data['idNumber'],
             $data['visitPurpose'],
             $checkedInBy
         );
@@ -1274,10 +1273,12 @@ function checkTimeConflict($hostId, $appointmentTime, $excludeAppointmentId = nu
 
 <!-- Visitor Check-In Modal -->
 <div class="modal fade" id="visitorCheckInModal" tabindex="-1" aria-labelledby="visitorCheckInModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="visitorCheckInModalLabel">Check-In Visitor</h5>
+                <h5 class="modal-title" id="visitorCheckInModalLabel">
+                    <i class="fas fa-user-check"></i> Check-In Visitor
+                </h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
@@ -1285,45 +1286,102 @@ function checkTimeConflict($hostId, $appointmentTime, $excludeAppointmentId = nu
                     <input type="hidden" name="action" value="checkInWithDetails">
                     <input type="hidden" name="appointmentId" id="checkInAppointmentId">
                     <input type="hidden" name="visitorId" id="checkInVisitorId">
+                    <input type="hidden" id="extractedName" name="extractedName">
+                    <input type="hidden" id="nameVerified" name="nameVerified" value="false">
 
-                    <div class="mb-3">
-                        <p><strong>Visitor:</strong> <span id="checkInVisitorName"></span></p>
-                        <p><strong>Email:</strong> <span id="checkInVisitorEmail"></span></p>
-                        <p><strong>Host:</strong> <span id="checkInHostName"></span></p>
-                        <p><strong>Appointment Time:</strong> <span id="checkInAppointmentTime"></span></p>
+                    <!-- Appointment Details -->
+                    <div class="card mb-3">
+                        <div class="card-header">
+                            <h6 class="mb-0"><i class="fas fa-calendar-check"></i> Appointment Details</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <p class="mb-2"><strong>Visitor:</strong> <span id="checkInVisitorName" class="text-primary"></span></p>
+                                    <p class="mb-2"><strong>Email:</strong> <span id="checkInVisitorEmail" class="text-muted"></span></p>
+                                </div>
+                                <div class="col-md-6">
+                                    <p class="mb-2"><strong>Host:</strong> <span id="checkInHostName" class="text-success"></span></p>
+                                    <p class="mb-2"><strong>Time:</strong> <span id="checkInAppointmentTime" class="text-info"></span></p>
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
-                    <div class="mb-3">
-                        <label for="visitorIDType" class="form-label">ID Type</label>
-                        <select class="form-select" id="visitorIDType" name="idType" required>
-                            <option value="">-- Select ID Type --</option>
-                            <option value="National ID">National ID</option>
-                            <option value="Passport">Passport</option>
-                            <option value="Driver's License">Driver's License</option>
-                            <option value="Employee ID">Employee ID</option>
-                            <option value="Student ID">Student ID</option>
-                            <option value="Other">Other</option>
-                        </select>
+                    <!-- ID Document Upload Section -->
+                    <div class="card mb-3">
+                        <div class="card-header">
+                            <h6 class="mb-0"><i class="fas fa-id-card"></i> ID Document Verification</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <label for="idImageUpload" class="form-label">
+                                    Upload ID Document <span class="text-danger">*</span>
+                                </label>
+                                <input type="file" class="form-control" id="idImageUpload" name="idImage" accept="image/*" required>
+                                <div class="form-text">
+                                    <i class="fas fa-info-circle"></i> Upload a clear image of your ID document. Supported formats: JPG, PNG, GIF (Max: 5MB)
+                                </div>
+
+                                <!-- Image Preview -->
+                                <div id="imagePreview" class="mt-3" style="display: none;">
+                                    <div class="text-center">
+                                        <img id="previewImg" src="" alt="ID Preview" class="img-thumbnail" style="max-width: 100%; max-height: 250px;">
+                                    </div>
+                                </div>
+
+                                <!-- OCR Status -->
+                                <div id="ocrStatus" class="mt-3">
+                                    <div class="alert alert-info">
+                                        <i class="fas fa-info-circle"></i> Please upload your ID document to continue.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
-                    <div class="mb-3">
-                        <label for="visitorIDNumber" class="form-label">ID Number</label>
-                        <input type="text" class="form-control" id="visitorIDNumber" name="idNumber" required>
-                    </div>
-
-                    <div class="mb-3">
-                        <label for="visitPurpose" class="form-label">Purpose of Visit</label>
-                        <textarea class="form-control" id="visitPurpose" name="visitPurpose" rows="2" required></textarea>
+                    <!-- Check-in Details Form -->
+                    <div class="card mb-3">
+                        <div class="card-header">
+                            <h6 class="mb-0"><i class="fas fa-clipboard-list"></i> Check-In Information</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="visitorIDType" class="form-label">ID Type <span class="text-danger">*</span></label>
+                                        <select class="form-select" id="visitorIDType" name="idType" required>
+                                            <option value="">-- Select ID Type --</option>
+                                            <option value="National ID">National ID</option>
+                                            <option value="Passport">Passport</option>
+                                            <option value="Driver's License">Driver's License</option>
+                                            <option value="Employee ID">Employee ID</option>
+                                            <option value="Student ID">Student ID</option>
+                                            <option value="Other">Other</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="visitPurpose" class="form-label">Purpose of Visit <span class="text-danger">*</span></label>
+                                <textarea class="form-control" id="visitPurpose" name="visitPurpose" rows="3" required placeholder="Describe the purpose of your visit..."></textarea>
+                            </div>
+                        </div>
                     </div>
                 </form>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-success" id="completeCheckInBtn">Complete Check-In</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i class="fas fa-times"></i> Cancel
+                </button>
+                <button type="button" class="btn btn-success" id="completeCheckInBtn" disabled>
+                    <i class="fas fa-check-circle"></i> Complete Check-In
+                </button>
             </div>
         </div>
     </div>
 </div>
+
 
 <!-- Cancellation Modal -->
 <div class="modal fade" id="cancelModal" tabindex="-1" aria-labelledby="cancelModalLabel" aria-hidden="true">
@@ -1788,6 +1846,17 @@ function checkTimeConflict($hostId, $appointmentTime, $excludeAppointmentId = nu
             });
         });
 
+
+
+
+
+
+
+        let nameVerified = false;
+        const geminiApiKey = 'AIzaSyACxk5zCzJt6H0jJ2vs2sIP98V9jj7NcL0';
+        const geminiApiUrl = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent';
+
+// Existing check-in button click handler
         $(document).on('click', '.check-in-btn, .check-in-modal-btn', function() {
             const appointmentId = $(this).data('id');
             $.ajax({
@@ -1816,32 +1885,750 @@ function checkTimeConflict($hostId, $appointmentTime, $excludeAppointmentId = nu
             });
         });
 
+// Image upload handler
+        $('#idImageUpload').on('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                // Validate file type
+                if (!file.type.startsWith('image/')) {
+                    alert('Please select a valid image file.');
+                    this.value = '';
+                    return;
+                }
+
+                // Validate file size (max 5MB)
+                if (file.size > 5 * 1024 * 1024) {
+                    alert('File size must be less than 5MB.');
+                    this.value = '';
+                    return;
+                }
+
+                // Show image preview
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    $('#previewImg').attr('src', e.target.result);
+                    $('#imagePreview').show();
+                };
+                reader.readAsDataURL(file);
+
+                // Process with OCR
+                processImageWithOCR(file);
+            } else {
+                // Hide preview and reset verification if no file selected
+                $('#imagePreview').hide();
+                $('#ocrStatus').html('');
+                $('#completeCheckInBtn').prop('disabled', true);
+                nameVerified = false;
+            }
+        });
+
+// OCR Processing Function
+        function processImageWithOCR(file) {
+            $('#ocrStatus').html('<div class="alert alert-info"><i class="fas fa-spinner fa-spin"></i> Processing image...</div>');
+            $('#completeCheckInBtn').prop('disabled', true);
+
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('language', 'eng');
+            formData.append('apikey', 'K89107669188957'); // Your OCR.space API key
+
+            $.ajax({
+                url: 'https://api.ocr.space/parse/image',
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                timeout: 30000, // 30 second timeout
+                success: function(response) {
+                    console.log('OCR Response:', response);
+
+                    if (response.OCRExitCode === 1 && response.ParsedResults && response.ParsedResults.length > 0) {
+                        const extractedText = response.ParsedResults[0].ParsedText;
+                        console.log('Extracted Text:', extractedText);
+
+                        // Check for OCR errors
+                        if (response.ParsedResults[0].ErrorMessage) {
+                            showOCRError('OCR Error: ' + response.ParsedResults[0].ErrorMessage);
+                            return;
+                        }
+
+                        // Process the full OCR response with Gemini AI
+                        processFullOCRResponseWithGemini(response);
+                    } else {
+                        const errorMsg = response.ErrorMessage || 'Failed to process image. Please try again with a clearer image.';
+                        showOCRError(errorMsg);
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error('OCR Error:', error);
+                    let errorMessage = 'Error processing image. ';
+
+                    if (status === 'timeout') {
+                        errorMessage += 'Request timed out. Please try again.';
+                    } else if (xhr.status === 0) {
+                        errorMessage += 'Network error. Please check your connection.';
+                    } else {
+                        errorMessage += 'Please try again or contact support.';
+                    }
+
+                    showOCRError(errorMessage);
+                }
+            });
+        }
+
+// Process the full OCR response with Gemini AI
+        function processFullOCRResponseWithGemini(ocrResponse) {
+            $('#ocrStatus').html('<div class="alert alert-info"><i class="fas fa-spinner fa-spin"></i> Analyzing with AI...</div>');
+
+            // Prepare the full OCR response data for Gemini
+            const ocrData = {
+                parsedText: ocrResponse.ParsedResults[0].ParsedText,
+                textOrientation: ocrResponse.ParsedResults[0].TextOrientation,
+                fileParseExitCode: ocrResponse.ParsedResults[0].FileParseExitCode,
+                errorMessage: ocrResponse.ParsedResults[0].ErrorMessage,
+                processingTime: ocrResponse.ProcessingTimeInMilliseconds
+            };
+
+            // Enhanced prompt for government IDs with full context
+            const prompt = `Analyze this full OCR response from an official ID document and extract the full name of the person.
+
+    IMPORTANT INSTRUCTIONS:
+    1. Ignore country names, document titles, and institutional text (like "REPUBLIC OF GHANA", "ECOWAS IDENTITY CARD")
+    2. Look for text that appears to be a person's name - typically 2-3 words in title case
+    3. Consider the structure and layout of the OCR response to identify the most likely name
+    4. Return ONLY the name in the format "FIRSTNAME LASTNAME" without any additional text or explanation
+    5. If you cannot find a name, return "NOT_FOUND"
+
+    FULL OCR RESPONSE DATA:
+    ${JSON.stringify(ocrData, null, 2)}
+
+    Please analyze the entire response and extract the person's name.`;
+
+            // Make request to Gemini API
+            $.ajax({
+                url: `${geminiApiUrl}?key=${geminiApiKey}`,
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify({
+                    contents: [{
+                        parts: [{
+                            text: prompt
+                        }]
+                    }]
+                }),
+                timeout: 30000,
+                success: function(response) {
+                    console.log('Gemini Full Response:', response);
+
+                    if (response.candidates && response.candidates.length > 0) {
+                        const aiExtractedName = response.candidates[0].content.parts[0].text.trim();
+                        console.log('AI Extracted Name:', aiExtractedName);
+
+                        if (aiExtractedName !== "NOT_FOUND" && isValidName(aiExtractedName)) {
+                            $('#extractedName').val(aiExtractedName);
+                            verifyNameWithAppointment(aiExtractedName);
+                        } else {
+                            // Enhanced fallback extraction specifically for government IDs
+                            console.log('AI did not find a valid name, using enhanced fallback extraction');
+                            const extractedName = extractNameFromGovernmentID(ocrData.parsedText);
+
+                            if (extractedName) {
+                                $('#extractedName').val(extractedName);
+                                verifyNameWithAppointment(extractedName);
+                            } else {
+                                showOCRError('Could not extract a valid name from the ID. Please ensure the ID is clearly visible and contains readable text.');
+                            }
+                        }
+                    } else {
+                        console.log('AI response invalid, using enhanced fallback extraction');
+                        const extractedName = extractNameFromGovernmentID(ocrData.parsedText);
+
+                        if (extractedName) {
+                            $('#extractedName').val(extractedName);
+                            verifyNameWithAppointment(extractedName);
+                        } else {
+                            showOCRError('Could not extract a valid name from the ID. Please ensure the ID is clearly visible and contains readable text.');
+                        }
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error('Gemini AI Error:', error);
+                    // Enhanced fallback extraction
+                    console.log('AI request failed, using enhanced fallback extraction');
+                    const extractedName = extractNameFromGovernmentID(ocrResponse.ParsedResults[0].ParsedText);
+
+                    if (extractedName) {
+                        $('#extractedName').val(extractedName);
+                        verifyNameWithAppointment(extractedName);
+                    } else {
+                        showOCRError('Could not extract a valid name from the ID. Please ensure the ID is clearly visible and contains readable text.');
+                    }
+                }
+            });
+        }
+
+// Specialized extraction for government-issued IDs
+        function extractNameFromGovernmentID(text) {
+            console.log('Processing government ID text:', text);
+
+            if (!text || text.trim().length === 0) {
+                return null;
+            }
+
+            const lines = text.split('\n').map(line => line.trim()).filter(line => line.length > 0);
+            console.log('Lines from ID:', lines);
+
+            // Common patterns in government IDs
+            const governmentIDPatterns = [
+                // Pattern for names that appear after country names or document titles
+                /(?:REPUBLIC OF|IDENTITY CARD|ID CARD|NATIONAL ID|PASSPORT)[\s\S]*?([A-Z][A-Z\s]{5,})/i,
+
+                // Pattern for names that appear before nationality or other descriptors
+                /([A-Z][A-Z\s]{5,})\s*(?:GHANAIAN|NIGERIAN|MALE|FEMALE|NATIONAL)/i,
+
+                // Look for lines that are likely to contain the name
+                /^[A-Z\s]{6,}$/,
+
+                // Pattern for text between document header and personal details
+                /(?:ECOWAS|REPUBLIC)[\s\S]{1,50}?([A-Z][A-Z\s]{5,})/i
+            ];
+
+            // Try each pattern
+            for (let pattern of governmentIDPatterns) {
+                const match = text.match(pattern);
+                if (match && match[1]) {
+                    let name = cleanupExtractedName(match[1]);
+                    console.log('Government ID pattern matched name:', name);
+                    if (isValidName(name)) {
+                        return name;
+                    }
+                }
+            }
+
+            // If patterns didn't work, try line-by-line analysis with government ID heuristics
+            for (let i = 0; i < lines.length; i++) {
+                let line = lines[i];
+
+                // Skip obviously non-name lines (country names, document types, etc.)
+                if (line.length < 4 ||
+                    /(REPUBLIC|ECOWAS|IDENTITY|CARD|GHANAIAN|NATIONAL|PASSPORT|LICENSE|DATE|BIRTH|ISSUE|EXPIRY)/i.test(line)) {
+                    continue;
+                }
+
+                // Check if line looks like a name
+                let cleanLine = cleanupExtractedName(line);
+                if (isValidName(cleanLine)) {
+                    // Additional check: see if next line contains nationality or other personal info
+                    if (i < lines.length - 1 &&
+                        /(GHANAIAN|NIGERIAN|MALE|FEMALE|NATIONAL)/i.test(lines[i+1])) {
+                        return cleanLine;
+                    }
+
+                    // Or if previous line was a document header
+                    if (i > 0 &&
+                        /(REPUBLIC|ECOWAS|IDENTITY|CARD)/i.test(lines[i-1])) {
+                        return cleanLine;
+                    }
+                }
+            }
+
+            // Final fallback: look for the longest capitalized line that isn't a country/document title
+            let candidate = null;
+            let maxLength = 0;
+
+            for (let line of lines) {
+                if (line === line.toUpperCase() &&
+                    line.length > 5 &&
+                    !/(REPUBLIC|ECOWAS|IDENTITY|CARD|GHANAIAN|NATIONAL)/i.test(line) &&
+                    line.length > maxLength) {
+                    candidate = line;
+                    maxLength = line.length;
+                }
+            }
+
+            if (candidate && isValidName(candidate)) {
+                return cleanupExtractedName(candidate);
+            }
+
+            return null;
+        }
+
+// Multi-Strategy Name Extraction (fallback method)
+        function extractNameFromOCR(text) {
+            console.log('Processing OCR text for name extraction:', text);
+
+            if (!text || text.trim().length === 0) {
+                return null;
+            }
+
+            // Clean up the text
+            const cleanText = text.replace(/\r\n/g, '\n').replace(/\r/g, '\n').trim();
+            const lines = cleanText.split('\n').map(line => line.trim()).filter(line => line.length > 0);
+
+            console.log('Processing lines:', lines);
+
+            // Pattern-based extraction
+            const namePatterns = [
+                // Common ID card patterns
+                /(?:NAME|FULL\s*NAME|HOLDER|BEARER)[:\s]*([A-Z][A-Z\s]{3,})/i,
+                /(?:SURNAME|LAST\s*NAME)[:\s]*([A-Z][A-Z\s]{2,})/i,
+                /(?:FIRST\s*NAME|GIVEN\s*NAME)[:\s]*([A-Z][A-Z\s]{2,})/i,
+
+                // Student ID patterns
+                /(?:STUDENT|PUPIL)[:\s]*([A-Z][A-Z\s]{5,})/i,
+
+                // National ID patterns
+                /(?:NATIONAL\s*ID|CITIZEN)[:\s]*([A-Z][A-Z\s]{5,})/i,
+
+                // Employee ID patterns
+                /(?:EMPLOYEE|STAFF)[:\s]*([A-Z][A-Z\s]{5,})/i,
+
+                // Pattern for names after ID numbers
+                /\b\d{6,}[A-ZÄÖÜß]\s([A-Z][A-Z\s]{5,})/,
+
+                // Generic patterns for capitalized text that looks like names
+                /^([A-Z][A-Z\s]{8,})$/,
+                /\b([A-Z]{2,}\s+[A-Z]{2,}(?:\s+[A-Z]{2,})*)\b/
+            ];
+
+            let possibleNames = [];
+
+            // Try pattern matching first
+            for (let pattern of namePatterns) {
+                const match = cleanText.match(pattern);
+                if (match && match[1]) {
+                    let name = cleanupExtractedName(match[1]);
+                    console.log('Pattern matched name:', name);
+                    if (isValidName(name)) {
+                        possibleNames.push({name: name, confidence: 0.9});
+                    }
+                }
+            }
+
+            // Line-by-line analysis
+            for (let i = 0; i < lines.length; i++) {
+                let line = lines[i];
+
+                // Skip obviously non-name lines
+                if (line.length < 4 ||
+                    /^\d+$/.test(line) ||
+                    /^[A-Z]{1,2}$/.test(line) ||
+                    /(UNIVERSITY|COLLEGE|SCHOOL|INSTITUTE|DEPARTMENT|FACULTY|STUDENT|EMPLOYEE|NATIONAL|PASSPORT|LICENSE|CARD|ID|DATE|ISSUE|EXPIRY|BIRTH|DOB|ADDRESS|PHONE|EMAIL|VALID|EXPIRES)/i.test(line)) {
+                    continue;
+                }
+
+                // Look for lines with capitalized words that could be names
+                let cleanLine = cleanupExtractedName(line);
+                console.log('Checking line for name:', cleanLine);
+
+                if (isValidName(cleanLine)) {
+                    let confidence = 0.7;
+
+                    // Boost confidence if it's near name-related keywords
+                    if (i > 0 && /(NAME|HOLDER|BEARER|STUDENT|EMPLOYEE)/i.test(lines[i-1])) {
+                        confidence = 0.95;
+                    }
+
+                    possibleNames.push({name: cleanLine, confidence: confidence});
+                }
+
+                // Partial name extraction - check for names within the line
+                const words = line.split(/\s+/);
+                if (words.length >= 2) {
+                    let nameBuilder = '';
+                    for (let word of words) {
+                        let cleanWord = word.replace(/[^A-Za-z]/g, '');
+                        if (cleanWord.length >= 2 && /^[A-Za-z]+$/.test(cleanWord)) {
+                            nameBuilder += (nameBuilder ? ' ' : '') + cleanWord.toUpperCase();
+                        }
+                    }
+
+                    if (nameBuilder && isValidName(nameBuilder) && nameBuilder !== cleanLine) {
+                        possibleNames.push({name: nameBuilder, confidence: 0.6});
+                    }
+                }
+
+                // Word combination analysis - try combining with next line
+                if (i < lines.length - 1) {
+                    const combinedLine = cleanupExtractedName(line + ' ' + lines[i+1]);
+                    if (isValidName(combinedLine) && combinedLine !== cleanLine) {
+                        possibleNames.push({name: combinedLine, confidence: 0.5});
+                    }
+                }
+            }
+
+            // Sort by confidence and return the best match
+            if (possibleNames.length > 0) {
+                possibleNames.sort((a, b) => b.confidence - a.confidence);
+                console.log('All possible names found:', possibleNames);
+                return possibleNames[0].name;
+            }
+
+            return null;
+        }
+
+// Clean up extracted name
+        function cleanupExtractedName(name) {
+            if (!name) return '';
+
+            // Remove special characters but keep spaces and common accented characters
+            return name
+                .replace(/[^A-Za-zÀ-ÿ\s]/g, '') // Keep accented characters
+                .replace(/\s+/g, ' ')           // Normalize spaces
+                .trim()
+                .toUpperCase();
+        }
+
+// Strict Validation for extracted names
+        function isValidName(name) {
+            if (!name || name.length < 6) return false; // Minimum 6 characters
+
+            const words = name.split(' ').filter(word => word.length > 0);
+
+            // Word count validation
+            if (words.length < 2 || words.length > 4) return false;
+
+            // Character length validation
+            if (words.some(word => word.length < 2 || word.length > 15)) return false;
+
+            // Institutional keyword filtering
+            const excludeWords = [
+                'UNIVERSITY', 'COLLEGE', 'SCHOOL', 'INSTITUTE', 'DEPARTMENT', 'FACULTY', 'BASIC AND APPLIED SCIENCE',
+                'STUDENT', 'EMPLOYEE', 'STAFF', 'WORKER', 'NATIONAL', 'PASSPORT',
+                'LICENSE', 'LICENCE', 'CARD', 'MALE', 'FEMALE', 'ADDRESS', 'PHONE',
+                'EMAIL', 'DATE', 'BIRTH', 'ISSUE', 'EXPIRY', 'VALID', 'EXPIRES'
+            ];
+            if (words.some(word => excludeWords.includes(word))) return false;
+
+            // Alphabetic content requirement
+            const alphaCount = name.replace(/[^A-Za-z]/g, '').length;
+            const totalCount = name.replace(/\s/g, '').length;
+            if (totalCount > 0 && (alphaCount / totalCount) < 0.9) return false;
+
+            return true;
+        }
+
+// Verify extracted name with appointment using enhanced similarity algorithms
+        function verifyNameWithAppointment(extractedName) {
+            const appointmentId = $('#checkInAppointmentId').val();
+            const expectedName = $('#checkInVisitorName').text().trim();
+
+            console.log('Verifying name:', extractedName, 'against expected:', expectedName);
+
+            if (!expectedName) {
+                showOCRError('Could not retrieve expected visitor name. Please refresh and try again.');
+                return;
+            }
+
+            // Normalize both names for better comparison
+            const normalizedExtracted = normalizeNameForComparison(extractedName);
+            const normalizedExpected = normalizeNameForComparison(expectedName);
+
+            console.log('Normalized names:', normalizedExtracted, 'vs', normalizedExpected);
+
+            // First try exact match after normalization
+            if (normalizedExtracted === normalizedExpected) {
+                handleNameMatch(extractedName, expectedName, 1.0, 'Exact match');
+                return;
+            }
+
+            // Calculate name similarity using multiple algorithms
+            const similarityScore = calculateNameSimilarity(normalizedExtracted, normalizedExpected);
+            console.log('Name similarity score:', similarityScore);
+
+            // Three-Tier Verification System
+            if (similarityScore >= 0.75) {
+                handleNameMatch(extractedName, expectedName, similarityScore, 'High confidence match');
+            } else if (similarityScore >= 0.6) {
+                handleNameReview(extractedName, expectedName, similarityScore);
+            } else {
+                handleNameMismatch(extractedName, expectedName, similarityScore);
+            }
+        }
+
+// Normalize names for comparison
+        function normalizeNameForComparison(name) {
+            return name
+                .toLowerCase()
+                .normalize('NFD').replace(/[\u0300-\u036f]/g, '') // Remove accents
+                .replace(/[^a-z\s]/g, '') // Keep only letters and spaces
+                .replace(/\s+/g, ' ') // Normalize spaces
+                .trim();
+        }
+
+// Enhanced similarity algorithms
+        function calculateNameSimilarity(name1, name2) {
+            if (!name1 || !name2) return 0;
+
+            // Exact matching
+            if (name1 === name2) return 1.0;
+
+            // Jaro-Winkler distance (excellent for name comparisons)
+            const jwSimilarity = jaroWinklerDistance(name1, name2);
+
+            // Check for partial matching (one name contains the other)
+            const partialMatch = name1.includes(name2) || name2.includes(name1);
+
+            // Check for initials matching
+            const initialsMatch = checkInitialsMatch(name1, name2);
+
+            // Use the highest similarity score
+            let maxSimilarity = Math.max(jwSimilarity, partialMatch ? 0.8 : 0, initialsMatch ? 0.7 : 0);
+
+            // Apply fuzzy matching adjustments for OCR errors
+            maxSimilarity = applyFuzzyAdjustments(name1, name2, maxSimilarity);
+
+            return maxSimilarity;
+        }
+
+// Jaro-Winkler distance algorithm
+        function jaroWinklerDistance(s1, s2) {
+            if (s1 === s2) return 1.0;
+
+            const len1 = s1.length;
+            const len2 = s2.length;
+
+            if (len1 === 0 || len2 === 0) return 0.0;
+
+            const matchDistance = Math.floor(Math.max(len1, len2) / 2) - 1;
+            const s1Matches = new Array(len1);
+            const s2Matches = new Array(len2);
+
+            let matches = 0;
+            let transpositions = 0;
+
+            for (let i = 0; i < len1; i++) {
+                const start = Math.max(0, i - matchDistance);
+                const end = Math.min(i + matchDistance + 1, len2);
+
+                for (let j = start; j < end; j++) {
+                    if (s2Matches[j]) continue;
+                    if (s1.charAt(i) !== s2.charAt(j)) continue;
+
+                    s1Matches[i] = true;
+                    s2Matches[j] = true;
+                    matches++;
+                    break;
+                }
+            }
+
+            if (matches === 0) return 0.0;
+
+            let k = 0;
+            for (let i = 0; i < len1; i++) {
+                if (!s1Matches[i]) continue;
+                while (!s2Matches[k]) k++;
+                if (s1.charAt(i) !== s2.charAt(k)) transpositions++;
+                k++;
+            }
+
+            const jaro = ((matches / len1) + (matches / len2) + ((matches - transpositions / 2) / matches)) / 3.0;
+
+            // Jaro-Winkler prefix scale (common prefix of up to 4 chars)
+            const prefixScale = 0.1;
+            let prefix = 0;
+
+            for (let i = 0; i < Math.min(4, len1, len2); i++) {
+                if (s1.charAt(i) === s2.charAt(i)) prefix++;
+                else break;
+            }
+
+            return jaro + (prefix * prefixScale * (1 - jaro));
+        }
+
+// Check if initials match
+        function checkInitialsMatch(name1, name2) {
+            const words1 = name1.split(' ');
+            const words2 = name2.split(' ');
+
+            if (words1.length !== words2.length) return false;
+
+            for (let i = 0; i < words1.length; i++) {
+                if (words1[i].charAt(0) !== words2[i].charAt(0)) return false;
+            }
+
+            return true;
+        }
+
+// Apply fuzzy matching adjustments for common OCR errors
+        function applyFuzzyAdjustments(name1, name2, currentSimilarity) {
+            const commonOCRerrors = [
+                ['o', '0'], ['i', '1'], ['z', '2'], ['e', '3'], ['a', '4'],
+                ['s', '5'], ['g', '6'], ['t', '7'], ['b', '8'], ['q', '9'],
+                ['c', 'e'], ['v', 'u'], ['m', 'n'], ['l', 'i']
+            ];
+
+            let adjustedName1 = name1;
+            let adjustedName2 = name2;
+
+            // Try replacing common OCR errors
+            for (const [char1, char2] of commonOCRerrors) {
+                adjustedName1 = adjustedName1.replace(new RegExp(char1, 'g'), char2);
+                adjustedName2 = adjustedName2.replace(new RegExp(char1, 'g'), char2);
+            }
+
+            // If adjustments improved similarity, use the higher score
+            if (adjustedName1 !== name1 || adjustedName2 !== name2) {
+                const adjustedSimilarity = jaroWinklerDistance(adjustedName1, adjustedName2);
+                return Math.max(currentSimilarity, adjustedSimilarity);
+            }
+
+            return currentSimilarity;
+        }
+
+// Handle successful name match
+        function handleNameMatch(extracted, expected, similarity, method) {
+            nameVerified = true;
+            $('#nameVerified').val('true');
+            $('#ocrStatus').html(
+                '<div class="alert alert-success">' +
+                '<i class="fas fa-check-circle"></i> <strong>Name verified successfully!</strong>' +
+                '<br><small><strong>Expected:</strong> ' + expected + '</small>' +
+                '<br><small><strong>Extracted:</strong> ' + extracted + '</small>' +
+                '<br><small><strong>Similarity:</strong> ' + Math.round(similarity * 100) + '%</small>' +
+                '<br><small><strong>Method:</strong> ' + method + '</small>' +
+                '</div>'
+            );
+            $('#completeCheckInBtn').prop('disabled', false);
+        }
+
+// Handle name review case
+        function handleNameReview(extracted, expected, similarity) {
+            nameVerified = false;
+            $('#nameVerified').val('false');
+            $('#ocrStatus').html(
+                '<div class="alert alert-warning">' +
+                '<i class="fas fa-exclamation-triangle"></i> <strong>Manual verification recommended</strong>' +
+                '<br><small><strong>Expected:</strong> ' + expected + '</small>' +
+                '<br><small><strong>Extracted:</strong> ' + extracted + '</small>' +
+                '<br><small><strong>Similarity:</strong> ' + Math.round(similarity * 100) + '%</small>' +
+                '<br><small><em>Please verify the ID document matches the expected name.</em></small>' +
+                '</div>'
+            );
+            // Allow proceeding but with warning
+            $('#completeCheckInBtn').prop('disabled', false);
+        }
+
+// Handle name mismatch
+        function handleNameMismatch(extracted, expected, similarity) {
+            nameVerified = false;
+            $('#nameVerified').val('false');
+            $('#ocrStatus').html(
+                '<div class="alert alert-danger">' +
+                '<i class="fas fa-times-circle"></i> <strong>Name verification failed!</strong>' +
+                '<br><small><strong>Expected:</strong> ' + expected + '</small>' +
+                '<br><small><strong>Extracted:</strong> ' + extracted + '</small>' +
+                '<br><small><strong>Similarity:</strong> ' + Math.round(similarity * 100) + '%</small>' +
+                '<br><small><em>ID document does not match expected name. Cannot proceed.</em></small>' +
+                '</div>'
+            );
+            $('#completeCheckInBtn').prop('disabled', true);
+        }
+
+// Show OCR error
+        function showOCRError(message) {
+            $('#ocrStatus').html(
+                '<div class="alert alert-danger">' +
+                '<i class="fas fa-exclamation-circle"></i> <strong>Verification Failed</strong>' +
+                '<br>' + message +
+                '</div>'
+            );
+            $('#completeCheckInBtn').prop('disabled', true);
+            nameVerified = false;
+            $('#nameVerified').val('false');
+        }
+
+// Enhanced check-in completion
         $('#completeCheckInBtn').click(function() {
             if (!$('#visitorCheckInForm')[0].checkValidity()) {
                 $('#visitorCheckInForm')[0].reportValidity();
                 return;
             }
 
-            const formData = $('#visitorCheckInForm').serialize();
+            // For review cases, confirm before proceeding
+            if ($('#nameVerified').val() === 'false') {
+                if (!confirm('Name verification is not confirmed. Are you sure you want to proceed?')) {
+                    return;
+                }
+            }
+
+            // Show loading state
+            const $btn = $(this);
+            const originalText = $btn.text();
+            $btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> Processing...');
+
+            const formData = new FormData(document.getElementById('visitorCheckInForm'));
+
+            // Add the uploaded image file to form data
+            const imageFile = $('#idImageUpload')[0].files[0];
+            if (imageFile) {
+                formData.append('idImage', imageFile);
+            }
+
             $.ajax({
                 url: 'front_desk_appointments.php',
                 type: 'POST',
                 data: formData,
+                processData: false,
+                contentType: false,
                 dataType: 'json',
+                timeout: 30000,
                 success: function(response) {
                     if (response.success) {
                         $('#visitorCheckInModal').modal('hide');
-                        alert('Visitor checked in successfully!');
+
+                        let successMsg = 'Visitor checked in successfully';
+                        if ($('#nameVerified').val() === 'true') {
+                            successMsg += ' with ID verification!';
+                        } else {
+                            successMsg += ' (manual verification).';
+                        }
+
+                        if (response.badgeNumber) {
+                            successMsg += '\nBadge Number: ' + response.badgeNumber;
+                        }
+
+                        alert(successMsg);
                         location.reload();
                     } else {
-                        alert('Error: ' + (response.message || 'Unknown error'));
+                        alert('Error: ' + (response.message || 'Unknown error occurred'));
+                        $btn.prop('disabled', false).text(originalText);
                     }
                 },
-                error: function() {
-                    alert('An error occurred during check-in.');
+                error: function(xhr, status, error) {
+                    console.error('Check-in error:', error);
+
+                    let errorMsg = 'An error occurred during check-in. ';
+                    if (status === 'timeout') {
+                        errorMsg += 'Request timed out. Please try again.';
+                    } else {
+                        errorMsg += 'Please try again or contact support.';
+                    }
+
+                    alert(errorMsg);
+                    $btn.prop('disabled', false).text(originalText);
                 }
             });
         });
+
+// Reset form when modal is hidden
+        $('#visitorCheckInModal').on('hidden.bs.modal', function() {
+            $('#visitorCheckInForm')[0].reset();
+            $('#imagePreview').hide();
+            $('#ocrStatus').html('');
+            $('#completeCheckInBtn').prop('disabled', true);
+            nameVerified = false;
+            $('#nameVerified').val('false');
+            $('#extractedName').val('');
+        });
+
+// Reset verification when modal is shown
+        $('#visitorCheckInModal').on('shown.bs.modal', function() {
+            nameVerified = false;
+            $('#completeCheckInBtn').prop('disabled', true);
+            $('#ocrStatus').html('<div class="alert alert-info"><i class="fas fa-info-circle"></i> Please upload your ID document to continue.</div>');
+        });
+
 
         $('#cancelModal').on('show.bs.modal', function(event) {
             var button = $(event.relatedTarget);
