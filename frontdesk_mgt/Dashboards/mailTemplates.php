@@ -28,7 +28,6 @@ if (!function_exists('getMailTemplateAppointmentDetails')) {
         }
     }
 }
-
 /**
  * Function to get appointment details by badge number (MySQLi version)
  *
@@ -656,6 +655,45 @@ function getHostCancelledEmailTemplate($visitorName, $hostName, $appointmentTime
                 </div>
                 
                 <p>Please adjust your schedule accordingly. The visitor's badge number <strong>$badgeNumber</strong> is no longer valid for check-in.</p>
+                
+                <p>Best regards,<br>
+                <strong>Hightel Consult Team</strong></p>
+            </div>
+        </div>
+    </body>
+    </html>
+    HTML;
+}
+/**
+ * Email template for temporary password
+ */
+function getTemporaryPasswordEmailTemplate($userName, $tempPassword): string
+{
+    return <<<HTML
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <meta charset="UTF-8">
+        <title>Your Temporary Password</title>
+    </head>
+    <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
+        <div style="max-width: 600px; margin: 0 auto; padding: 20px;">
+            <div style="text-align: center; padding: 20px 0;">
+                <h2 style="color: #2a5885;">Your Temporary Password</h2>
+            </div>
+            
+            <div style="padding: 20px; background-color: #f9f9f9; border-radius: 5px;">
+                <p>Dear $userName,</p>
+                
+                <p>Your password has been reset by an administrator. Here is your temporary password:</p>
+                
+                <div style="background-color: #e8f4fd; padding: 15px; border-radius: 5px; margin: 20px 0; text-align: center;">
+                    <div style="font-size: 20px; font-weight: bold; font-family: 'Courier New', monospace;">
+                        $tempPassword
+                    </div>
+                </div>
+                
+                <p><strong>Important:</strong> Please log in with this temporary password and you will be prompted to change it immediately for security reasons.</p>
                 
                 <p>Best regards,<br>
                 <strong>Hightel Consult Team</strong></p>

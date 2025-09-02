@@ -57,3 +57,18 @@ function sendAppointmentEmail($to, $subject, $body, $altBody = '')
         return false;
     }
 }
+/**
+ * Send temporary password email using PHPMailer
+ */
+function sendTemporaryPasswordEmail($email, $name, $tempPassword) {
+    try {
+        $subject = "Your Temporary Password";
+        $body = getTemporaryPasswordEmailTemplate($name, $tempPassword);
+
+        // Use the existing sendAppointmentEmail function
+        return sendAppointmentEmail($email, $subject, $body);
+    } catch (Exception $e) {
+        error_log("Error sending temporary password email: " . $e->getMessage());
+        return false;
+    }
+}
