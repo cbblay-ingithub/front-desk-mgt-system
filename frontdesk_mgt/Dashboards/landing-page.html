@@ -53,6 +53,20 @@
 
     <script src="../../Sneat/assets/js/front-config.js"></script>
 
+    <!--Start of Tawk.to Script-->
+    <script type="text/javascript">
+        var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
+        (function(){
+            var s1=document.createElement("script"),s0=document.getElementsByTagName("script")[0];
+            s1.async=true;
+            s1.src='https://embed.tawk.to/68b71fe10e49f131d3b4c836/1j45l931v';
+            s1.charset='UTF-8';
+            s1.setAttribute('crossorigin','*');
+            s0.parentNode.insertBefore(s1,s0);
+        })();
+    </script>
+    <!--End of Tawk.to Script-->
+
     <!-- Chatbot Styles -->
     <style>
         /* Chat Widget Styles */
@@ -1262,41 +1276,6 @@
 </footer>
 
 <!-- Chatbot Widget -->
-<div class="chat-widget">
-    <div class="chat-notification">1</div>
-    <button class="chat-toggle">
-        <i class="bx bx-message-rounded"></i>
-    </button>
-    <div class="chat-container">
-        <div class="chat-header">
-            <h3>Eloquent Support</h3>
-            <p>We're here to help you!</p>
-            <button class="chat-close">
-                <i class="bx bx-x"></i>
-            </button>
-        </div>
-        <div class="chat-messages">
-            <div class="welcome-message">
-                <h4>Welcome to Eloquent Marketing!</h4>
-                <p>How can we help you today? Ask us anything about our services, pricing, or how we can help grow your business.</p>
-            </div>
-            <!-- Messages will be dynamically inserted here -->
-        </div>
-        <div class="typing-indicator">
-            <div class="typing-dots">
-                <span></span>
-                <span></span>
-                <span></span>
-            </div>
-        </div>
-        <div class="chat-input-container">
-            <textarea class="chat-input" placeholder="Type your message..." rows="1"></textarea>
-            <button class="chat-send">
-                <i class="bx bx-send"></i>
-            </button>
-        </div>
-    </div>
-</div>
 
 <!-- Core JS -->
 <!-- build:js assets/vendor/js/theme.js  -->
@@ -1320,280 +1299,22 @@
 <!-- Page JS -->
 <script src="../../Sneat/assets/js/front-page-landing.js"></script>
 
-<!-- Chatbot Script -->
-<!-- Chatbot Script -->
-<script>
-    // Gemini-powered Marketing Assistant
-    class EloquentMarketingBot {
-        constructor() {
-            this.apiKey = 'AIzaSyACxk5zCzJt6H0jJ2vs2sIP98V9jj7NcL0';
-            this.apiUrl = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent';
-            this.isOpen = false;
-            this.conversationHistory = [];
 
-            this.initializeElements();
-            this.attachEventListeners();
-            this.showInitialMessage();
-        }
-
-        initializeElements() {
-            this.chatToggle = document.querySelector('.chat-toggle');
-            this.chatContainer = document.querySelector('.chat-container');
-            this.chatClose = document.querySelector('.chat-close');
-            this.chatMessages = document.querySelector('.chat-messages');
-            this.chatInput = document.querySelector('.chat-input');
-            this.chatSend = document.querySelector('.chat-send');
-            this.typingIndicator = document.querySelector('.typing-indicator');
-            this.notificationBadge = document.querySelector('.chat-notification');
-        }
-
-        attachEventListeners() {
-            // Toggle chat
-            this.chatToggle.addEventListener('click', () => this.toggleChat());
-            this.chatClose.addEventListener('click', () => this.closeChat());
-
-            // Send message
-            this.chatSend.addEventListener('click', () => this.handleSendMessage());
-
-            // Handle Enter key
-            this.chatInput.addEventListener('keydown', (e) => {
-                if (e.key === 'Enter' && !e.shiftKey) {
-                    e.preventDefault();
-                    this.handleSendMessage();
-                }
-            });
-
-            // Auto-resize textarea
-            this.chatInput.addEventListener('input', () => {
-                this.chatInput.style.height = 'auto';
-                this.chatInput.style.height = Math.min(this.chatInput.scrollHeight, 80) + 'px';
-            });
-        }
-
-        toggleChat() {
-            if (this.isOpen) {
-                this.closeChat();
-            } else {
-                this.openChat();
-            }
-        }
-
-        openChat() {
-            this.isOpen = true;
-            this.chatContainer.classList.add('active');
-            this.chatToggle.classList.add('active');
-            this.hideNotification();
-
-            // Focus input after animation
-            setTimeout(() => {
-                this.chatInput.focus();
-            }, 300);
-        }
-
-        closeChat() {
-            this.isOpen = false;
-            this.chatContainer.classList.remove('active');
-            this.chatToggle.classList.remove('active');
-        }
-
-        hideNotification() {
-            this.notificationBadge.style.display = 'none';
-        }
-
-        async handleSendMessage() {
-            const message = this.chatInput.value.trim();
-            if (!message) return;
-
-            // Clear input
-            this.chatInput.value = '';
-            this.chatInput.style.height = 'auto';
-
-            // Add user message
-            this.addMessage(message, 'user');
-
-            // Show typing indicator
-            this.showTyping();
-
-            try {
-                // Prepare system message with company context
-                const systemMessage = `You are a helpful AI assistant for Eloquent Marketing Agency, a professional marketing company.
-
-                Our services include:
-                - Events management and planning
-                - Marketing communications & advertisements
-                - Souvenirs & corporate gifts
-                - Bulk WhatsApp marketing
-                - Marketing advisory & brand building
-                - Digital marketing solutions
-
-                Contact Information:
-                - Email: getresults@eloquentmarketingagency.com
-                - Phone: +233 530 420 669
-                - Business hours: Monday to Friday, 9am to 5pm
-
-                You should help potential clients by:
-                - Providing information about our services
-                - Answering questions about pricing (explain it varies by scope)
-                - Directing them to contact us for detailed quotes
-                - Being professional but friendly
-                - Focusing on how we can help grow their business
-
-                Keep responses concise, helpful, and engaging. Current date: ${new Date().toLocaleDateString()}
-
-                User's message: ${message}`;
-
-                // Send to Gemini API
-                const response = await this.sendToGemini(systemMessage);
-                this.hideTyping();
-                this.addMessage(response, 'bot');
-
-                // Show notification if chat is closed
-                if (!this.isOpen) {
-                    this.notificationBadge.style.display = 'flex';
-                }
-            } catch (error) {
-                this.hideTyping();
-                this.addMessage('I apologize, but I\'m having trouble connecting right now. Please feel free to contact us directly at getresults@eloquentmarketingagency.com or call +233 530 420 669.', 'bot', true);
-                console.error('Gemini API Error:', error);
-            }
-        }
-
-        addMessage(content, sender, isError = false) {
-            const messageDiv = document.createElement('div');
-            messageDiv.className = `message ${sender}`;
-
-            const contentDiv = document.createElement('div');
-            contentDiv.className = 'message-content';
-
-            if (isError) {
-                contentDiv.style.backgroundColor = '#fee';
-                contentDiv.style.color = '#c33';
-                contentDiv.style.borderLeft = '4px solid #c33';
-            }
-
-            // Format message content (basic markdown support)
-            contentDiv.innerHTML = this.formatMessage(content);
-            messageDiv.appendChild(contentDiv);
-
-            // Remove welcome message if it exists
-            const welcomeMessage = this.chatMessages.querySelector('.welcome-message');
-            if (welcomeMessage) {
-                welcomeMessage.remove();
-            }
-
-            this.chatMessages.appendChild(messageDiv);
-            this.scrollToBottom();
-
-            // Store in conversation history
-            this.conversationHistory.push({
-                role: sender === 'user' ? 'user' : 'model',
-                parts: [{ text: content }]
-            });
-        }
-
-        formatMessage(text) {
-            // Basic markdown formatting
-            return text
-                .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-                .replace(/\*(.*?)\*/g, '<em>$1</em>')
-                .replace(/`(.*?)`/g, '<code style="background: #f1f1f1; padding: 2px 4px; border-radius: 3px;">$1</code>')
-                .replace(/\n/g, '<br>');
-        }
-
-        showTyping() {
-            this.typingIndicator.classList.add('active');
-            this.scrollToBottom();
-        }
-
-        hideTyping() {
-            this.typingIndicator.classList.remove('active');
-        }
-
-        scrollToBottom() {
-            setTimeout(() => {
-                this.chatMessages.scrollTop = this.chatMessages.scrollHeight;
-            }, 100);
-        }
-
-        async sendToGemini(message) {
-            // Prepare conversation context
-            const contents = [
-                {
-                    role: 'user',
-                    parts: [{ text: message }]
-                }
-            ];
-
-            // Add conversation history (last 10 messages to manage context length)
-            const recentHistory = this.conversationHistory.slice(-10);
-            if (recentHistory.length > 0) {
-                contents.unshift(...recentHistory);
-            }
-
-            const requestBody = {
-                contents: contents,
-                generationConfig: {
-                    temperature: 0.7,
-                    topK: 40,
-                    topP: 0.95,
-                    maxOutputTokens: 1024,
-                },
-                safetySettings: [
-                    {
-                        category: "HARM_CATEGORY_HARASSMENT",
-                        threshold: "BLOCK_MEDIUM_AND_ABOVE"
-                    },
-                    {
-                        category: "HARM_CATEGORY_HATE_SPEECH",
-                        threshold: "BLOCK_MEDIUM_AND_ABOVE"
-                    },
-                    {
-                        category: "HARM_CATEGORY_SEXUALLY_EXPLICIT",
-                        threshold: "BLOCK_MEDIUM_AND_ABOVE"
-                    },
-                    {
-                        category: "HARM_CATEGORY_DANGEROUS_CONTENT",
-                        threshold: "BLOCK_MEDIUM_AND_ABOVE"
-                    }
-                ]
-            };
-
-            const response = await fetch(`${this.apiUrl}?key=${this.apiKey}`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(requestBody)
-            });
-
-            if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(`API Error: ${response.status} - ${errorData.error?.message || 'Unknown error'}`);
-            }
-
-            const data = await response.json();
-
-            if (data.candidates && data.candidates[0] && data.candidates[0].content) {
-                return data.candidates[0].content.parts[0].text;
-            } else {
-                throw new Error('Unexpected API response format');
-            }
-        }
-
-        showInitialMessage() {
-            // Add initial welcome message from bot after a delay
-            setTimeout(() => {
-                if (this.chatMessages.querySelectorAll('.message').length === 0) {
-                    this.addMessage("Hi there! 👋 Welcome to Eloquent Marketing Agency. I'm here to help you learn about our marketing services and how we can help grow your business. What would you like to know?", 'bot');
-                }
-            }, 1500);
-        }
-    }
-
-    // Initialize the chatbot when the page loads
-    document.addEventListener('DOMContentLoaded', function() {
-        new EloquentMarketingBot();
-    });
+<!--Start of Tawk.to Script-->
+<script type="text/javascript">
+    var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
+    (function(){
+        var s1=document.createElement("script"),s0=document.getElementsByTagName("script")[0];
+        s1.async=true;
+        s1.src='https://embed.tawk.to/68b71fe10e49f131d3b4c836/1j45l931v';
+        s1.charset='UTF-8';
+        s1.setAttribute('crossorigin','*');
+        s0.parentNode.insertBefore(s1,s0);
+    })();
 </script>
+<!--End of Tawk.to Script-->
+<!-- Chatbot Script -->
+<!-- Chatbot Script -->
+
 </body>
 </html>
