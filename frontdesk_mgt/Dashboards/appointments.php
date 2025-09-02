@@ -156,6 +156,9 @@ function scheduleAppointment($appointmentTime, $hostId, $visitorId): array
     $stmt->bind_param("sii", $appointmentTime, $hostId, $visitorId);
 
     if ($stmt->execute()) {
+        $appointmentId = $conn->insert_id;
+        $badgeNumber = getExistingBadgeNumber($conn, $appointmentId);
+
         $visitorInfo = getVisitorById($visitorId);
         $hostInfo = getHostById($hostId);
 
@@ -163,7 +166,8 @@ function scheduleAppointment($appointmentTime, $hostId, $visitorId): array
             $emailBody = getScheduledEmailTemplate(
                 $visitorInfo['Name'],
                 $hostInfo['Name'],
-                $appointmentTime
+                $appointmentTime,
+                $badgeNumber
             );
             sendAppointmentEmail(
                 $visitorInfo['Email'],
@@ -174,7 +178,9 @@ function scheduleAppointment($appointmentTime, $hostId, $visitorId): array
             $hostEmailBody = getHostScheduledEmailTemplate(
                 $visitorInfo['Name'],
                 $hostInfo['Name'],
-                $appointmentTime
+                $appointmentTime,
+                $badgeNumber,
+                $visitorInfo['Email']
             );
             sendAppointmentEmail(
                 $hostInfo['Email'],
@@ -182,7 +188,7 @@ function scheduleAppointment($appointmentTime, $hostId, $visitorId): array
                 $hostEmailBody
             );
         }
-        return ["status" => "success", "message" => "Appointment scheduled successfully", "id" => $conn->insert_id];
+        return ["status" => "success", "message" => "Appointment scheduled successfully", "id" => $appointmentId];
     } else {
         return ["status" => "error", "message" => "Failed to schedule appointment: " . $conn->error];
     }
@@ -240,6 +246,7 @@ function rescheduleAppointment($appointmentId, $newTime): array
 
     $oldAppointmentInfo = getAppointmentById($appointmentId);
     $oldTime = $oldAppointmentInfo['AppointmentTime'];
+    $badgeNumber = $oldAppointmentInfo['BadgeNumber'] ?? null;
 
     $currentTime = date('Y-m-d H:i:s');
     if ($newTime <= $currentTime) {
@@ -293,12 +300,13 @@ function rescheduleAppointment($appointmentId, $newTime): array
         $visitorInfo = getVisitorById($visitorId);
         $hostInfo = getHostById($hostId);
 
-        if ($visitorInfo && $hostInfo) {
+        if ($visitorInfo && $hostInfo && $badgeNumber) {
             $emailBody = getRescheduledEmailTemplate(
                 $visitorInfo['Name'],
                 $hostInfo['Name'],
                 $oldTime,
-                $newTime
+                $newTime,
+                $badgeNumber
             );
             sendAppointmentEmail(
                 $visitorInfo['Email'],
@@ -309,7 +317,8 @@ function rescheduleAppointment($appointmentId, $newTime): array
             $hostEmailBody = getHostRescheduledEmailTemplate(
                 $visitorInfo['Name'],
                 $hostInfo['Name'],
-                $newTime
+                $newTime,
+                $badgeNumber
             );
             sendAppointmentEmail(
                 $hostInfo['Email'],
@@ -334,6 +343,7 @@ function cancelAppointment($appointmentId): array
     global $conn;
 
     $appointmentInfo = getAppointmentById($appointmentId);
+    $badgeNumber = $appointmentInfo['BadgeNumber'] ?? null;
 
     $sql = "SELECT Status FROM appointments WHERE AppointmentID = ?";
     $stmt = $conn->prepare($sql);
@@ -363,12 +373,13 @@ function cancelAppointment($appointmentId): array
         $visitorInfo = getVisitorById($visitorId);
         $hostInfo = getHostById($hostId);
 
-        if ($visitorInfo && $hostInfo) {
+        if ($visitorInfo && $hostInfo && $badgeNumber) {
             $emailBody = getCancelledByHostEmailTemplate(
                 $visitorInfo['Name'],
                 $hostInfo['Name'],
                 $appointmentInfo['AppointmentTime'],
-                $cancellationReason
+                $cancellationReason,
+                $badgeNumber
             );
             sendAppointmentEmail(
                 $visitorInfo['Email'],
@@ -379,7 +390,8 @@ function cancelAppointment($appointmentId): array
             $hostEmailBody = getHostCancelledEmailTemplate(
                 $visitorInfo['Name'],
                 $hostInfo['Name'],
-                $appointmentInfo['AppointmentTime']
+                $appointmentInfo['AppointmentTime'],
+                $badgeNumber
             );
             sendAppointmentEmail(
                 $hostInfo['Email'],
