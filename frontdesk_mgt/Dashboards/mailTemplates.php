@@ -667,7 +667,7 @@ function getHostCancelledEmailTemplate($visitorName, $hostName, $appointmentTime
 /**
  * Email template for temporary password
  */
-function getTemporaryPasswordEmailTemplate($userName, $tempPassword): string
+function getTemporaryPasswordEmailTemplate($userName, $tempPassword,$expiryHours): string
 {
     return <<<HTML
     <!DOCTYPE html>
@@ -694,9 +694,9 @@ function getTemporaryPasswordEmailTemplate($userName, $tempPassword): string
                 </div>
                 
                 <p><strong>Important:</strong> Please log in with this temporary password and you will be prompted to change it immediately for security reasons.</p>
-                
+                <p>This temporary password will expire in $expiryHours hours.</p>
                 <p>Best regards,<br>
-                <strong>Hightel Consult Team</strong></p>
+                <strong>Administration Team</strong></p>
             </div>
         </div>
     </body>

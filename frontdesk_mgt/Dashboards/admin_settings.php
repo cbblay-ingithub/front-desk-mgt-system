@@ -5,18 +5,72 @@ require_once 'mailTemplates.php';
 global $conn;
 session_start();
 
+// Get current password policy (get the first one if multiple exist)
+$policyStmt = $conn->prepare("SELECT * FROM password_policy ORDER BY id LIMIT 1");
+$policyStmt->execute();
+$policyResult = $policyStmt->get_result();
+$passwordPolicy = $policyResult->fetch_assoc();
+
+// If no policy exists, create a default one with proper ID format
+if (!$passwordPolicy) {
+    // Find the next available ID in PPXXXX format
+    $idStmt = $conn->prepare("SELECT MAX(CAST(SUBSTRING(id, 3) AS UNSIGNED)) as max_id FROM password_policy WHERE id LIKE 'PP%'");
+    $idStmt->execute();
+    $idResult = $idStmt->get_result();
+    $maxId = $idResult->fetch_assoc()['max_id'] ?? 0;
+    $nextId = 'PP' . str_pad($maxId + 1, 4, '0', STR_PAD_LEFT);
+
+    $defaultPolicy = [
+        'id' => $nextId,
+        'min_length' => 8,
+        'require_uppercase' => 1,
+        'require_lowercase' => 1,
+        'require_numbers' => 1,
+        'require_special_chars' => 0,
+        'temp_password_length' => 12,
+        'temp_password_expiry_hours' => 24
+    ];
+
+    // Insert default policy with proper ID format
+    $insertStmt = $conn->prepare("INSERT INTO password_policy 
+        (id, min_length, require_uppercase, require_lowercase, require_numbers, require_special_chars, temp_password_length, temp_password_expiry_hours) 
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+
+    $insertStmt->bind_param("siiiiiii",
+        $defaultPolicy['id'],
+        $defaultPolicy['min_length'],
+        $defaultPolicy['require_uppercase'],
+        $defaultPolicy['require_lowercase'],
+        $defaultPolicy['require_numbers'],
+        $defaultPolicy['require_special_chars'],
+        $defaultPolicy['temp_password_length'],
+        $defaultPolicy['temp_password_expiry_hours']
+    );
+
+    if ($insertStmt->execute()) {
+        $passwordPolicy = $defaultPolicy;
+    } else {
+        error_log("Error creating default password policy: " . $insertStmt->error);
+    }
+}
+
 // Process password reset requests
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_POST['reset_password'])) {
         $userId = intval($_POST['user_id']);
         $action = 'force_reset';
 
-        // Always generate a temporary password (regardless of the selected option)
-        $tempPassword = bin2hex(random_bytes(8)); // Generate a temporary password
+        // Generate temporary password based on policy settings
+        $tempPasswordLength = $passwordPolicy['temp_password_length'];
+        $tempPassword = generateTemporaryPassword($tempPasswordLength);
         $hashedPassword = password_hash($tempPassword, PASSWORD_DEFAULT);
 
-        $stmt = $conn->prepare("UPDATE users SET Password = ?, password_reset_token = NULL, token_expiration = NULL WHERE UserID = ?");
-        $stmt->bind_param("si", $hashedPassword, $userId);
+        // Calculate expiration time
+        $expiryHours = $passwordPolicy['temp_password_expiry_hours'];
+        $expirationTime = date('Y-m-d H:i:s', strtotime("+$expiryHours hours"));
+
+        $stmt = $conn->prepare("UPDATE users SET Password = ?, password_reset_token = NULL, token_expiration = ?, temp_password_expiry = ? WHERE UserID = ?");
+        $stmt->bind_param("sssi", $hashedPassword, $expirationTime, $expirationTime, $userId);
 
         if ($stmt->execute()) {
             // Get user email
@@ -27,17 +81,71 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $user = $result->fetch_assoc();
 
             // Send temporary password email
-            $emailSent = sendTemporaryPasswordEmail($user['Email'], $user['Name'], $tempPassword);
+            $emailSent = sendTemporaryPasswordEmail($user['Email'], $user['Name'], $tempPassword, $expiryHours);
 
             if ($emailSent) {
                 $successMsg = "Password reset successfully. Temporary password sent to " . $user['Email'];
                 // For testing, show the temporary password
-                $successMsg .= "<br><small>Test temporary password: $tempPassword</small>";
+                $successMsg .= "<br><small>Test temporary password: $tempPassword (expires in $expiryHours hours)</small>";
             } else {
-                $successMsg = "Password reset successfully. Temporary password: $tempPassword";
+                $successMsg = "Password reset successfully. Temporary password: $tempPassword (expires in $expiryHours hours)";
             }
         } else {
             $errorMsg = "Error resetting password.";
+        }
+    }
+
+    // Process password policy updates
+    if (isset($_POST['save_policy'])) {
+        $minLength = intval($_POST['min_length']);
+        $requireUppercase = isset($_POST['require_uppercase']) ? 1 : 0;
+        $requireLowercase = isset($_POST['require_lowercase']) ? 1 : 0;
+        $requireNumbers = isset($_POST['require_numbers']) ? 1 : 0;
+        $requireSpecial = isset($_POST['require_special']) ? 1 : 0;
+        $tempPasswordLength = intval($_POST['temp_password_length']);
+        $tempPasswordExpiry = intval($_POST['temp_password_expiry_hours']);
+
+        // Validate inputs
+        $minLength = max(6, min(20, $minLength));
+        $tempPasswordLength = max(8, min(20, $tempPasswordLength));
+        $tempPasswordExpiry = max(1, min(720, $tempPasswordExpiry)); // 1 hour to 30 days
+
+        // Use the existing policy ID
+        $policyId = $passwordPolicy['id'];
+
+        // Update existing policy
+        $stmt = $conn->prepare("UPDATE password_policy SET 
+            min_length = ?, 
+            require_uppercase = ?, 
+            require_lowercase = ?, 
+            require_numbers = ?, 
+            require_special_chars = ?,
+            temp_password_length = ?,
+            temp_password_expiry_hours = ?
+            WHERE id = ?");
+
+        $stmt->bind_param("iiiiiiss",
+            $minLength,
+            $requireUppercase,
+            $requireLowercase,
+            $requireNumbers,
+            $requireSpecial,
+            $tempPasswordLength,
+            $tempPasswordExpiry,
+            $policyId
+        );
+
+        if ($stmt->execute()) {
+            $policySuccessMsg = "Password policy updated successfully.";
+            // Refresh policy data
+            $policyStmt = $conn->prepare("SELECT * FROM password_policy WHERE id = ?");
+            $policyStmt->bind_param("s", $policyId);
+            $policyStmt->execute();
+            $policyResult = $policyStmt->get_result();
+            $passwordPolicy = $policyResult->fetch_assoc();
+        } else {
+            $policyErrorMsg = "Error updating password policy: " . $stmt->error;
+            error_log("Policy update error: " . $stmt->error);
         }
     }
 }
@@ -46,6 +154,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 $users = $conn->query("SELECT UserID, Name, Email, Role, status FROM users ORDER BY Name")->fetch_all(MYSQLI_ASSOC);
 
 $conn->close();
+
+// Function to generate temporary password
+function generateTemporaryPassword($length = 12): string {
+    $chars = '23456789abcdefghjkmnpqrstuvwxyzABCDEFGHJKMNPQRSTUVWXYZ';
+    $password = '';
+    $charCount = strlen($chars);
+
+    for ($i = 0; $i < $length; $i++) {
+        $password .= $chars[random_int(0, $charCount - 1)];
+    }
+
+    return $password;
+}
 ?>
 
 <!DOCTYPE html>
@@ -53,7 +174,7 @@ $conn->close();
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
-    <title>Password Reset Settings</title>
+    <title>Settings</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -210,7 +331,7 @@ $conn->close();
                 <div class="navbar-nav-right d-flex align-items-center justify-content-end" id="navbar-collapse">
                     <div class="navbar-nav align-items-center me-auto">
                         <div class="nav-item">
-                            <h4 class="mb-0 fw-bold ms-2">Password Reset Settings</h4>
+                            <h4 class="mb-0 fw-bold ms-2">Settings</h4>
                         </div>
                     </div>
                 </div>
@@ -232,60 +353,99 @@ $conn->close();
                     </div>
                 <?php endif; ?>
 
-                <div class="card-body">
-                    <form method="POST" id="passwordResetForm">
-                        <div class="row mb-3">
-                            <div class="col-md-12">
-                                <label class="form-label">Select User</label>
-                                <select name="user_id" class="form-select" required>
-                                    <option value="">Choose a user...</option>
-                                    <?php foreach ($users as $user): ?>
-                                        <option value="<?= $user['UserID'] ?>">
-                                            <?= htmlspecialchars($user['Name']) ?> (<?= htmlspecialchars($user['Email']) ?>) - <?= $user['Role'] ?>
-                                        </option>
-                                    <?php endforeach; ?>
-                                </select>
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="card-title">Reset User Password</h5>
+                    </div>
+                    <div class="card-body">
+                        <form method="POST" id="passwordResetForm">
+                            <div class="row mb-3">
+                                <div class="col-md-12">
+                                    <label class="form-label">Select User</label>
+                                    <select name="user_id" class="form-select" required>
+                                        <option value="">Choose a user...</option>
+                                        <?php foreach ($users as $user): ?>
+                                            <option value="<?= $user['UserID'] ?>">
+                                                <?= htmlspecialchars($user['Name']) ?> (<?= htmlspecialchars($user['Email']) ?>) - <?= $user['Role'] ?>
+                                            </option>
+                                        <?php endforeach; ?>
+                                    </select>
+                                </div>
                             </div>
-                        </div>
-                        <button type="submit" name="reset_password" class="btn btn-primary">Reset Password & Send Temporary Password</button>
-                    </form>
+                            <button type="submit" name="reset_password" class="btn btn-primary">Reset Password</button>
+                        </form>
+                    </div>
                 </div>
 
-                <div class="card mt-4">
+                <div class="card">
                     <div class="card-header">
                         <h5 class="card-title">Password Policy Settings</h5>
                     </div>
                     <div class="card-body">
+                        <?php if (isset($policySuccessMsg)): ?>
+                            <div class="alert alert-success alert-dismissible fade show mb-3" role="alert">
+                                <?= $policySuccessMsg ?>
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                        <?php endif; ?>
+
+                        <?php if (isset($policyErrorMsg)): ?>
+                            <div class="alert alert-danger alert-dismissible fade show mb-3" role="alert">
+                                <?= $policyErrorMsg ?>
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                        <?php endif; ?>
+
                         <form method="POST" id="passwordPolicyForm">
                             <div class="row mb-3">
                                 <div class="col-md-4">
                                     <label class="form-label">Minimum Password Length</label>
-                                    <input type="number" name="min_length" class="form-control" value="8" min="6" max="20">
+                                    <input type="number" name="min_length" class="form-control" value="<?= htmlspecialchars($passwordPolicy['min_length'] ?? 8) ?>" min="6" max="20" required>
                                 </div>
                                 <div class="col-md-4">
-                                    <label class="form-label">Password Expiration (days)</label>
-                                    <input type="number" name="expiration_days" class="form-control" value="90" min="30" max="365">
+                                    <label class="form-label">Temporary Password Length</label>
+                                    <input type="number" name="temp_password_length" class="form-control" value="<?= htmlspecialchars($passwordPolicy['temp_password_length'] ?? 12) ?>" min="8" max="20" required>
+                                    <small class="text-muted">Length of system-generated temporary passwords</small>
                                 </div>
                                 <div class="col-md-4">
-                                    <label class="form-label">Required Character Types</label>
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" name="require_uppercase" id="requireUppercase" checked>
-                                        <label class="form-check-label" for="requireUppercase">Uppercase letters</label>
-                                    </div>
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" name="require_lowercase" id="requireLowercase" checked>
-                                        <label class="form-check-label" for="requireLowercase">Lowercase letters</label>
-                                    </div>
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" name="require_numbers" id="requireNumbers" checked>
-                                        <label class="form-check-label" for="requireNumbers">Numbers</label>
-                                    </div>
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" name="require_special" id="requireSpecial">
-                                        <label class="form-check-label" for="requireSpecial">Special characters</label>
+                                    <label class="form-label">Temporary Password Expiry (hours)</label>
+                                    <input type="number" name="temp_password_expiry_hours" class="form-control" value="<?= htmlspecialchars($passwordPolicy['temp_password_expiry_hours'] ?? 24) ?>" min="1" max="720" required>
+                                    <small class="text-muted">Hours until temporary password expires</small>
+                                </div>
+                            </div>
+
+                            <div class="row mb-3">
+                                <div class="col-md-12">
+                                    <label class="form-label">Required Character Types (for user-chosen passwords)</label>
+                                    <div class="row">
+                                        <div class="col-md-3">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" name="require_uppercase" id="requireUppercase" <?= ($passwordPolicy['require_uppercase'] ?? 1) ? 'checked' : '' ?>>
+                                                <label class="form-check-label" for="requireUppercase">Uppercase letters</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" name="require_lowercase" id="requireLowercase" <?= ($passwordPolicy['require_lowercase'] ?? 1) ? 'checked' : '' ?>>
+                                                <label class="form-check-label" for="requireLowercase">Lowercase letters</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" name="require_numbers" id="requireNumbers" <?= ($passwordPolicy['require_numbers'] ?? 1) ? 'checked' : '' ?>>
+                                                <label class="form-check-label" for="requireNumbers">Numbers</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" name="require_special" id="requireSpecial" <?= ($passwordPolicy['require_special_chars'] ?? 0) ? 'checked' : '' ?>>
+                                                <label class="form-check-label" for="requireSpecial">Special characters</label>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
+
                             <button type="submit" name="save_policy" class="btn btn-primary">Save Policy</button>
                         </form>
                     </div>

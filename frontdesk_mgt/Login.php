@@ -10,7 +10,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $password = $_POST["password"];
     $ip = $_SERVER['REMOTE_ADDR'];
 
-    $stmt = $conn->prepare("SELECT UserID, Name, Password, Role, status FROM users WHERE Email = ?");
+    $stmt = $conn->prepare("SELECT UserID, Name, Password, Role, status, temp_password_expiry FROM users WHERE Email = ?");
     if ($stmt === false) die("Error preparing statement: " . $conn->error);
 
     $stmt->bind_param("s", $email);
@@ -18,45 +18,71 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $stmt->store_result();
 
     if ($stmt->num_rows > 0) {
-        $stmt->bind_result($userID, $name, $hashedPassword, $role, $status);
+        $stmt->bind_result($userID, $name, $hashedPassword, $role, $status, $tempPasswordExpiry);
         $stmt->fetch();
 
         $success = false;
+        $isTemporaryPassword = false;
+
         if (password_verify($password, $hashedPassword)) {
+            // Check if this is a temporary password (has an expiry date)
+            if ($tempPasswordExpiry !== null) {
+                // Check if temporary password is still valid
+                $currentTime = date('Y-m-d H:i:s');
+                if ($currentTime > $tempPasswordExpiry) {
+                    // Temporary password has expired
+                    $auditLogger->logLogin($userID, $role, false, "Expired temporary password used");
+                    header("Location: Dashboards/401-page.html?error=temp_password_expired");
+                    exit;
+                }
+
+                $isTemporaryPassword = true;
+            }
+
             if ($status !== 'active') {
                 // Log inactive account attempt
                 $auditLogger->logLogin($userID, $role, false, "Inactive account attempted login");
-                header("Location: Dashboards/401- page.html");
+                header("Location: Dashboards/401-page.html");
                 exit;
             } else {
                 $success = true;
-                $_SESSION['userID'] = $userID;
-                $_SESSION['name'] = $name;
-                $_SESSION['role'] = $role;
 
-                // Update user login tracking
-                $updateStmt = $conn->prepare("UPDATE users SET                      
-                    last_login = NOW(), 
-                    last_logout = NULL,
-                    last_activity = NOW(), 
-                    login_count = login_count + 1                      
-                    WHERE UserID = ?");
-                $updateStmt->bind_param("i", $userID);
-                $updateStmt->execute();
-                $updateStmt->close();
+                if ($isTemporaryPassword) {
+                    // Redirect to change password page for temporary password
+                    $_SESSION['temp_password_user'] = $userID;
+                    $_SESSION['temp_password_email'] = $email;
+                    header("Location: change_temp_password.php");
+                    exit;
+                } else {
+                    // Regular login process
+                    $_SESSION['userID'] = $userID;
+                    $_SESSION['name'] = $name;
+                    $_SESSION['role'] = $role;
 
-                // Log successful login
-                $auditLogger->logLogin($userID, $role, true);
+                    // Update user login tracking
+                    $updateStmt = $conn->prepare("UPDATE users SET                      
+                        last_login = NOW(), 
+                        last_logout = NULL,
+                        last_activity = NOW(), 
+                        login_count = login_count + 1                      
+                        WHERE UserID = ?");
+                    $updateStmt->bind_param("i", $userID);
+                    $updateStmt->execute();
+                    $updateStmt->close();
 
-                // Redirect based on role
-                switch ($role) {
-                    case 'Admin': header("Location: Dashboards/admin-dashboard.php"); break;
-                    case 'Host': header("Location: Dashboards/host_analytics.php"); break;
-                    case 'Front Desk Staff': header("Location: Dashboards/frontdesk_dashboard.php"); break;
-                    case 'Support Staff': header("Location: Dashboards/HD_analytics.php"); break;
-                    default: header("Location: Dashboards/401- page.html"); break;
+                    // Log successful login
+                    $auditLogger->logLogin($userID, $role, true);
+
+                    // Redirect based on role
+                    switch ($role) {
+                        case 'Admin': header("Location: Dashboards/admin-dashboard.php"); break;
+                        case 'Host': header("Location: Dashboards/host_analytics.php"); break;
+                        case 'Front Desk Staff': header("Location: Dashboards/frontdesk_dashboard.php"); break;
+                        case 'Support Staff': header("Location: Dashboards/HD_analytics.php"); break;
+                        default: header("Location: Dashboards/401-page.html"); break;
+                    }
+                    exit;
                 }
-                exit;
             }
         } else {
             // Log failed password attempt

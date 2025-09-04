@@ -60,10 +60,11 @@ function sendAppointmentEmail($to, $subject, $body, $altBody = '')
 /**
  * Send temporary password email using PHPMailer
  */
-function sendTemporaryPasswordEmail($email, $name, $tempPassword) {
+function sendTemporaryPasswordEmail($email, $name, $tempPassword,$expiryHours): bool
+{
     try {
         $subject = "Your Temporary Password";
-        $body = getTemporaryPasswordEmailTemplate($name, $tempPassword);
+        $body = getTemporaryPasswordEmailTemplate($name, $tempPassword,$expiryHours);
 
         // Use the existing sendAppointmentEmail function
         return sendAppointmentEmail($email, $subject, $body);

@@ -99,4 +99,13 @@ class AuditLogger {
             $newData
         );
     }
+    public function logPasswordChange($userId,$userRole, $success, $description = '') {
+        return $this->logEvent(
+            $userId,
+            $userRole, // User role will be filled in by the calling code
+            'PASSWORD_CHANGE',
+            $success ? 'SUCCESS' : 'FAILURE',
+            $description
+        );
+    }
 }
