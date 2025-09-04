@@ -180,6 +180,34 @@ CREATE TABLE audit_logs
     created_at      TIMESTAMP                            DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(UserID)
 );
+CREATE TABLE `password_policy` (
+   `id` CHAR(6) NOT NULL PRIMARY KEY,
+    -- Settings for USER-CHOSEN permanent passwords
+   `min_length` INT NOT NULL DEFAULT 8,
+   `require_uppercase` TINYINT NOT NULL DEFAULT 1,
+   `require_lowercase` TINYINT NOT NULL DEFAULT 1,
+   `require_numbers` TINYINT NOT NULL DEFAULT 1,
+   `require_special_chars` TINYINT NOT NULL DEFAULT 0,
 
+    -- Settings for SYSTEM-GENERATED temporary passwords
+   `temp_password_length` INT NOT NULL DEFAULT 12,
+   `temp_password_expiry_hours` INT NOT NULL DEFAULT 24,
+
+   `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+CREATE TABLE `password_reset_log` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `user_id` int NOT NULL,
+  `request_type` enum('user_requested','admin_forced') NOT NULL,
+  `requested_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `status` enum('pending','completed','expired') NOT NULL DEFAULT 'pending',
+  `handled_by_admin_id` int DEFAULT NULL,
+  `notes` TEXT DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `user_id` (`user_id`),
+  KEY `handled_by_admin_id` (`handled_by_admin_id`),
+  CONSTRAINT `password_reset_log_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`UserID`) ON DELETE CASCADE,
+  CONSTRAINT `password_reset_log_ibfk_2` FOREIGN KEY (`handled_by_admin_id`) REFERENCES `users` (`UserID`) ON DELETE SET NULL
+);
 
 
