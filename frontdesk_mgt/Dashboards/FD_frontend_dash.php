@@ -968,7 +968,7 @@ function checkTimeConflict($hostId, $appointmentTime, $excludeAppointmentId = nu
                                          data-host-id="<?= $appointment['HostID'] ?>"
                                          data-date="<?= date('Y-m-d', strtotime($appointment['AppointmentTime'])) ?>"
 
-                                         data-search="<?= strtolower($appointment['VisitorName'] . ' ' . $appointment['VisitorEmail'] . ' ' . $appointment['HostName']) ?>">
+                                         data-search="<?= strtolower($appointment['VisitorName'] . ' ' . $appointment['VisitorEmail'] . ' ' . $appointment['HostName'] . ' ' . $appointment['Purpose']) ?>">
 
 
                                         <div class="card appointment-card h-100">
@@ -995,9 +995,14 @@ function checkTimeConflict($hostId, $appointmentTime, $excludeAppointmentId = nu
                                                 <p class="card-text mb-1">
                                                     <i class="far fa-clock me-2"></i> <?= date('h:i A', strtotime($appointment['AppointmentTime'])) ?>
                                                 </p>
-                                                <p class="card-text mb-3">
+                                                <p class="card-text mb-1">
                                                     <i class="fas fa-user-tie me-2"></i> <?= htmlspecialchars($appointment['HostName']) ?>
                                                 </p>
+                                                <p class="card-text mb-3 text-muted small">
+                                                    <i class="fas fa-bullseye me-2"></i>
+                                                    <strong>Purpose:</strong> <?= !empty($appointment['Purpose']) ? htmlspecialchars($appointment['Purpose']) : 'Not specified' ?>
+                                                </p>
+
 
                                                 <?php if ($appointment['Status'] === 'Upcoming' || $appointment['Status'] === 'Overdue'): ?>
                                                     <div class="action-buttons">
@@ -1200,6 +1205,10 @@ function checkTimeConflict($hostId, $appointmentTime, $excludeAppointmentId = nu
                             <input type="tel" class="form-control" id="newVisitorPhone" name="newVisitorPhone">
                         </div>
                     </div>
+                    <div class="mb-3">
+                        <label for="visitPurpose" class="form-label">Purpose of Visit <span class="text-danger">*</span></label>
+                        <textarea class="form-control" id="visitPurpose" name="purpose" rows="3" required placeholder="Describe the purpose of the visit..."></textarea>
+                    </div>
                 </form>
             </div>
             <div class="modal-footer">
@@ -1250,14 +1259,47 @@ function checkTimeConflict($hostId, $appointmentTime, $excludeAppointmentId = nu
 
 <!-- Appointment Details Modal -->
 <div class="modal fade" id="appointmentDetailsModal" tabindex="-1" aria-labelledby="appointmentDetailsModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="appointmentDetailsModalLabel">Appointment Details</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <div id="appointmentDetails"></div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="detail-item">
+                            <div class="detail-label"><i class="fas fa-user me-2"></i>Visitor Name</div>
+                            <div class="detail-value" id="detail-visitor-name"></div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label"><i class="fas fa-envelope me-2"></i>Email</div>
+                            <div class="detail-value" id="detail-visitor-email"></div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label"><i class="fas fa-phone me-2"></i>Phone</div>
+                            <div class="detail-value" id="detail-visitor-phone"></div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="detail-item">
+                            <div class="detail-label"><i class="fas fa-user-tie me-2"></i>Host</div>
+                            <div class="detail-value" id="detail-host-name"></div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label"><i class="fas fa-calendar me-2"></i>Date & Time</div>
+                            <div class="detail-value" id="detail-appointment-time"></div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label"><i class="fas fa-bullseye me-2"></i>Purpose</div>
+                            <div class="detail-value" id="detail-purpose"></div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label"><i class="fas fa-info-circle me-2"></i>Status</div>
+                            <div class="detail-value" id="detail-status"></div>
+                        </div>
+                    </div>
+                </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -1358,10 +1400,6 @@ function checkTimeConflict($hostId, $appointmentTime, $excludeAppointmentId = nu
                                     </div>
                                 </div>
                             </div>
-                            <div class="mb-3">
-                                <label for="visitPurpose" class="form-label">Purpose of Visit <span class="text-danger">*</span></label>
-                                <textarea class="form-control" id="visitPurpose" name="visitPurpose" rows="3" required placeholder="Describe the purpose of your visit..."></textarea>
-                            </div>
                         </div>
                     </div>
                 </form>
@@ -1419,7 +1457,6 @@ function checkTimeConflict($hostId, $appointmentTime, $excludeAppointmentId = nu
 <script src="../../Sneat/assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.js"></script>
 <script src="../../Sneat/assets/vendor/js/menu.js"></script>
 <script src="../../Sneat/assets/js/main.js"></script>
-<script src="notification.js"></script>
 <script>
     $(document).ready(function() {
         const appointmentsData = {};
@@ -1512,11 +1549,15 @@ function checkTimeConflict($hostId, $appointmentTime, $excludeAppointmentId = nu
                                 action: 'getAppointmentsForCalendar'
                             },
                             success: function(response) {
-                                // Process response to create shorter titles
+                                // Process response to include purpose in extendedProps
                                 const processedEvents = response.map(event => {
                                     return {
-                                        ...event
-                                        // Shorter format
+                                        ...event,
+                                        extendedProps: {
+                                            ...event.extendedProps,
+                                            // Ensure purpose is included
+                                            purpose: event.extendedProps.purpose || 'No purpose specified'
+                                        }
                                     };
                                 });
                                 successCallback(processedEvents);
@@ -1529,27 +1570,30 @@ function checkTimeConflict($hostId, $appointmentTime, $excludeAppointmentId = nu
                     },
                     eventClick: function(info) {
                         const event = info.event;
+                        const purpose = event.extendedProps.purpose || 'No purpose specified';
+
                         const modalHtml = `
-                    <div class="modal fade" id="calendarEventModal" tabindex="-1">
-                        <div class="modal-dialog">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h5 class="modal-title">Appointment Details</h5>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                                </div>
-                                <div class="modal-body">
-                                    <p><strong>Visitor:</strong> ${event.extendedProps.visitorName}</p>
-                                    <p><strong>Host:</strong> ${event.extendedProps.hostName}</p>
-                                    <p><strong>Time:</strong> ${event.start.toLocaleString()}</p>
-                                    <p><strong>Status:</strong> <span class="badge bg-${getStatusBadgeClass(event.extendedProps.status)}">${event.extendedProps.status}</span></p>
-                                </div>
-                                <div class="modal-footer">
-                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                    ${getActionButtons(event.id, event.extendedProps.status)}
-                                </div>
+                <div class="modal fade" id="calendarEventModal" tabindex="-1">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Appointment Details</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                            </div>
+                            <div class="modal-body">
+                                <p><strong>Visitor:</strong> ${event.extendedProps.visitorName}</p>
+                                <p><strong>Host:</strong> ${event.extendedProps.hostName}</p>
+                                <p><strong>Time:</strong> ${event.start.toLocaleString()}</p>
+                                <p><strong>Purpose:</strong> ${purpose}</p>
+                                <p><strong>Status:</strong> <span class="badge bg-${getStatusBadgeClass(event.extendedProps.status)}">${event.extendedProps.status}</span></p>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                ${getActionButtons(event.id, event.extendedProps.status)}
                             </div>
                         </div>
                     </div>
+                </div>
                 `;
 
                         $('#calendarEventModal').remove();
@@ -1557,11 +1601,13 @@ function checkTimeConflict($hostId, $appointmentTime, $excludeAppointmentId = nu
                         $('#calendarEventModal').modal('show');
                     },
                     eventDidMount: function(info) {
-                        // Add tooltip
+                        // Add tooltip with purpose
+                        const purpose = info.event.extendedProps.purpose || 'No purpose specified';
                         $(info.el).tooltip({
-                            title: `${info.event.title}\nStatus: ${info.event.extendedProps.status}\nClick for details`,
+                            title: `${info.event.title}<br>Purpose: ${purpose}<br>Status: ${info.event.extendedProps.status}<br>Click for details`,
                             placement: 'top',
-                            trigger: 'hover'
+                            trigger: 'hover',
+                            html: true
                         });
                     }
                 });
@@ -1598,12 +1644,6 @@ function checkTimeConflict($hostId, $appointmentTime, $excludeAppointmentId = nu
             </button>
             <button class="btn btn-sm btn-danger cancel-btn" data-id="${appointmentId}">
                 <i class="fas fa-times me-1"></i> Cancel
-            </button>
-        `;
-            } else if (status === 'Ongoing') {
-                buttons += `
-            <button class="btn btn-sm btn-warning complete-btn" data-id="${appointmentId}">
-                <i class="fas fa-stop me-1"></i> Complete
             </button>
         `;
             }
@@ -1773,6 +1813,7 @@ function checkTimeConflict($hostId, $appointmentTime, $excludeAppointmentId = nu
 
             let formData = new FormData(document.querySelector('#scheduleForm'));
             formData.append('action', 'schedule');
+            formData.append('purpose', $('#visitPurpose').val());
 
             fetch('front_desk_appointments.php', {
                 method: 'POST',

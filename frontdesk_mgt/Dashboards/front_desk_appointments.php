@@ -38,7 +38,7 @@ function updateAppointmentStatuses() {
 function getAllAppointments() {
     global $conn;
 
-    $sql = "SELECT a.AppointmentID, a.AppointmentTime, a.Status, a.CancellationReason, 
+    $sql = "SELECT a.AppointmentID, a.AppointmentTime,a.Purpose, a.Status, a.CancellationReason, 
                    v.VisitorID, v.Name AS VisitorName, v.Email AS VisitorEmail, v.Phone AS VisitorPhone, 
                    u.UserID AS HostID, u.Name AS HostName 
             FROM appointments a
@@ -327,7 +327,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             break;
 
         case 'schedule':
-            if (!isset($_POST['hostId']) || !isset($_POST['appointmentTime'])) {
+            if (!isset($_POST['hostId']) || !isset($_POST['appointmentTime']) || !isset($_POST['purpose'])) {
                 echo json_encode(['success' => false, 'message' => 'Missing required fields']);
                 break;
             }
@@ -335,6 +335,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $hostId = $_POST['hostId'];
             $appointmentTime = $_POST['appointmentTime'];
             $isNewVisitor = $_POST['isNewVisitor'] ?? '0';
+            $purpose = $_POST['purpose'];
             if (empty($_SESSION['userID'])) {
                 echo json_encode(['success' => false, 'message' => 'Front desk staff not authenticated']);
                 break;
@@ -379,10 +380,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                 $status = 'Upcoming';
                 // Remove AppointmentTime from INSERT since the trigger will create the BadgeNumber
-                $sql = "INSERT INTO appointments (VisitorID, HostID, AppointmentTime, Status, ScheduledBy) 
-                VALUES (?, ?, ?, ?, ?)";
+                $sql = "INSERT INTO appointments (VisitorID, HostID, AppointmentTime, Status, ScheduledBy, Purpose) 
+            VALUES (?, ?, ?, ?, ?, ?)";
                 $stmt = $conn->prepare($sql);
-                $stmt->bind_param("iissi", $visitorId, $hostId, $appointmentTime, $status, $frontDeskId);
+                $stmt->bind_param("iissis", $visitorId, $hostId, $appointmentTime, $status, $frontDeskId, $purpose);
                 $stmt->execute();
 
                 $appointmentId = $conn->insert_id;
@@ -575,7 +576,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         case 'checkInWithDetails':
             if (!isset($_POST['appointmentId']) || !isset($_POST['visitorId']) ||
-                !isset($_POST['idType']) || !isset($_POST['idNumber']) || !isset($_POST['visitPurpose'])) {
+                !isset($_POST['idType'])){
                 echo json_encode(['success' => false, 'message' => 'Missing required fields']);
                 break;
             }
@@ -583,9 +584,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $appointmentId = $_POST['appointmentId'];
             $visitorId = $_POST['visitorId'];
             $idType = $_POST['idType'];
-            $idNumber = $_POST['idNumber'];
-            $visitPurpose = $_POST['visitPurpose'];
 
+            // Get the purpose from the appointment
+            $sql = "SELECT Purpose FROM appointments WHERE AppointmentID = ?";
+            $stmt = $conn->prepare($sql);
+            $stmt->bind_param("i", $appointmentId);
+            $stmt->execute();
+            $result = $stmt->get_result();
+
+            if ($result->num_rows === 0) {
+                echo json_encode(['success' => false, 'message' => 'Appointment not found']);
+                break;
+            }
+
+            $appointment = $result->fetch_assoc();
+            $visitPurpose = $appointment['Purpose'];
+
+            // Continue with the rest of the check-in process using $visitPurpose
             $sql = "SELECT HostID FROM appointments WHERE AppointmentID = ?";
             $stmt = $conn->prepare($sql);
             $stmt->bind_param("i", $appointmentId);
@@ -822,7 +837,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         'status' => $appointment['Status'],
                         'visitorName' => $appointment['VisitorName'],
                         'hostName' => $appointment['HostName'],
-                        'email' => $appointment['VisitorEmail']
+                        'email' => $appointment['VisitorEmail'],
+                        'purpose' => $appointment['Purpose']
                     )
                 );
             }
