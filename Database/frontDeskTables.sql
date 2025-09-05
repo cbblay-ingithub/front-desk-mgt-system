@@ -126,17 +126,21 @@ CREATE TABLE Help_Desk(
     FOREIGN KEY (CategoryID) REFERENCES TicketCategories (CategoryID)
 );
 -- 11. Notifications table
-CREATE TABLE Notifications (
-   NotificationID   INT AUTO_INCREMENT PRIMARY KEY,
-   UserID           INT NOT NULL,            -- who gets alerted
-   TicketID         INT NOT NULL,
-   Type             ENUM('assignment','info_request') NOT NULL,
-   Payload          JSON NOT NULL,           -- e.g. { "from":57, "message":"…" }
-   IsRead           BOOLEAN DEFAULT FALSE,
-   CreatedAt        TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-   FOREIGN KEY (UserID)   REFERENCES Users(UserID),
-   FOREIGN KEY (TicketID) REFERENCES Help_Desk(TicketID)
-);
+CREATE TABLE notifications (
+   id INT NOT NULL AUTO_INCREMENT,
+   user_id INT NOT NULL, -- The admin user ID who should see this notification
+   type VARCHAR(50) NOT NULL, -- e.g., 'password_reset_request'
+   title VARCHAR(255) NOT NULL,
+   message TEXT NOT NULL,
+   related_entity_type VARCHAR(50), -- e.g., 'user'
+   related_entity_id INT, -- e.g., the user ID who requested the reset
+   is_read TINYINT(1) DEFAULT 0,
+   created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+   PRIMARY KEY (id),
+   KEY user_id (user_id),
+   KEY is_read (is_read),
+   CONSTRAINT fk_notifications_user_id FOREIGN KEY (user_id) REFERENCES users (UserID) ON DELETE CASCADE
+)
 
 
 -- 11. Student-Visitor Junction table
