@@ -756,12 +756,17 @@ echo "<!-- Debug: " . count($appointments) . " appointments loaded -->";
                                             <p class="card-text mb-1">
                                                 <i class="far fa-envelope me-2"></i> <?= htmlspecialchars($appointment['Email']) ?>
                                             </p>
-                                            <p class="card-text mb-3">
+                                            <p class="card-text mb-1">
                                                 <i class="far fa-clock me-2"></i> <?= date('h:i A', strtotime($appointment['AppointmentTime'])) ?>
                                             </p>
-                                            <?php if ($appointment['Status'] == 'Cancelled'): ?>
-                                                <p><strong>Cancellation Reason:</strong> <?= htmlspecialchars($appointment['CancellationReason']) ?></p>
-                                            <?php endif; ?>
+                                                <?php if (!empty($appointment['Purpose'])): ?>
+                                                    <p class="card-text mb-3">
+                                                        <i class="fas fa-bullseye me-2"></i> <?= htmlspecialchars($appointment['Purpose']) ?>
+                                                    </p>
+                                                <?php endif; ?>
+                                                <?php if ($appointment['Status'] == 'Cancelled'): ?>
+                                                    <p><strong>Cancellation Reason:</strong> <?= htmlspecialchars($appointment['CancellationReason']) ?></p>
+                                                <?php endif; ?>
                                             <?php if ($appointment['Status'] !== 'Cancelled'): ?>
                                                 <div class="action-buttons">
                                                     <?php if ($appointment['Status'] === 'Upcoming'): ?>
@@ -935,6 +940,10 @@ echo "<!-- Debug: " . count($appointments) . " appointments loaded -->";
                         <label for="appointmentDateTime" class="form-label">Appointment Date & Time</label>
                         <input type="text" class="form-control" id="appointmentDateTime" name="appointmentTime" required>
                     </div>
+                    <div class="mb-3">
+                        <label for="purpose" class="form-label">Purpose of Visit</label>
+                        <textarea class="form-control" id="purpose" name="purpose" rows="3" required></textarea>
+                    </div>
                 </form>
             </div>
             <div class="modal-footer">
@@ -1091,6 +1100,10 @@ echo "<!-- Debug: " . count($appointments) . " appointments loaded -->";
                 }, 100);
             }, 350);
         });
+        function truncateText(text, maxLength = 10) {
+            if (text.length <= maxLength) return text;
+            return text.substring(0, maxLength) + '...';
+        }
 
         // CALENDAR INITIALIZATION FUNCTION
         function initializeCalendar() {
@@ -1115,10 +1128,13 @@ echo "<!-- Debug: " . count($appointments) . " appointments loaded -->";
                         'Cancelled': '#dc3545',     // Red
                         'Overdue': '#ffc107'        // Yellow
                     };
+                    const fullTitle = apt.Name + (apt.Purpose ? ' - ' + apt.Purpose : '');
+
+                    const truncatedTitle = truncateText(fullTitle);
 
                     const event = {
                         id: apt.AppointmentID.toString(),
-                        title: apt.Name,
+                        title: truncatedTitle,
                         start: apt.AppointmentTime,
                         allDay: false,
                         backgroundColor: statusColors[apt.Status] || '#6c757d',
@@ -1127,7 +1143,8 @@ echo "<!-- Debug: " . count($appointments) . " appointments loaded -->";
                         extendedProps: {
                             status: apt.Status,
                             email: apt.Email || '',
-                            appointmentId: apt.AppointmentID
+                            appointmentId: apt.AppointmentID,
+                            fullTitle: fullTitle
                         }
                     };
                     calendarEvents.push(event);
@@ -1152,8 +1169,9 @@ echo "<!-- Debug: " . count($appointments) . " appointments loaded -->";
                         showAppointmentDetails(info.event);
                     },
                     eventDidMount: function(info) {
-                        // Add tooltip
-                        const tooltipTitle = `${info.event.title} - ${info.event.extendedProps.status}\nTime: ${moment(info.event.start).format('h:mm A')}`;
+                        // Add tooltip with full details
+                        const fullTitle = info.event.extendedProps.fullTitle;
+                        const tooltipTitle = `${fullTitle} - ${info.event.extendedProps.status}\nTime: ${moment(info.event.start).format('h:mm A')}`;
                         info.el.setAttribute('title', tooltipTitle);
                         info.el.style.cursor = 'pointer';
                     }
@@ -1234,6 +1252,7 @@ echo "<!-- Debug: " . count($appointments) . " appointments loaded -->";
         function showAppointmentDetails(event) {
             const props = event.extendedProps;
             const appointmentId = props.appointmentId;
+            const fullTitle = props.fullTitle || event.title;
 
             const modalHtml = `
             <div class="modal fade" id="appointmentDetailModal" tabindex="-1">
@@ -1244,7 +1263,7 @@ echo "<!-- Debug: " . count($appointments) . " appointments loaded -->";
                             <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                         </div>
                         <div class="modal-body">
-                            <p><strong>Visitor:</strong> ${event.title}</p>
+                            <p><strong>Visitor:</strong> ${fullTitle}</p>
                             <p><strong>Email:</strong> ${props.email}</p>
                             <p><strong>Date & Time:</strong> ${moment(event.start).format('MMMM DD, YYYY [at] h:mm A')}</p>
                             <p><strong>Status:</strong> <span class="badge bg-${getStatusBadgeClass(props.status)}">${props.status}</span></p>
@@ -1705,7 +1724,8 @@ echo "<!-- Debug: " . count($appointments) . " appointments loaded -->";
 
         handleAppointmentQuery(message) {
             const lowerMessage = message.toLowerCase();
-            const today = new Date().toISOString().split('T')[0];
+            const today = new Date();
+            const currentYear = today.getFullYear();
             const now = new Date();
 
             // Helper function to format appointment details
@@ -1714,6 +1734,7 @@ echo "<!-- Debug: " . count($appointments) . " appointments loaded -->";
                 return `👤 ${appt.Name}\n` +
                     `📅 ${date.toLocaleDateString()}\n` +
                     `⏰ ${date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}\n` +
+                    (appt.Purpose ? `🎯 Purpose: ${appt.Purpose}\n` : '') +
                     `📧 ${appt.Email}\n` +
                     `📌 Status: ${appt.Status}\n` +
                     (appt.CancellationReason ? `❌ Reason: ${appt.CancellationReason}\n` : '') +
@@ -1839,9 +1860,120 @@ echo "<!-- Debug: " . count($appointments) . " appointments loaded -->";
                 return response;
             }
 
+            // 10. Check for month-specific queries
+            const months = [
+                'january', 'february', 'march', 'april', 'may', 'june',
+                'july', 'august', 'september', 'october', 'november', 'december'
+            ];
+
+            const monthQuery = months.find(month => lowerMessage.includes(month));
+            if (monthQuery) {
+                const monthIndex = months.indexOf(monthQuery);
+                const monthAppts = this.appointmentsData.filter(appt => {
+                    const apptDate = new Date(appt.AppointmentTime);
+                    return apptDate.getMonth() === monthIndex &&
+                        apptDate.getFullYear() === currentYear;
+                });
+
+                if (monthAppts.length === 0) {
+                    return `No appointments found for ${monthQuery}.`;
+                }
+
+                let response = `Appointments in ${monthQuery}:\n\n`;
+                monthAppts.forEach(appt => response += formatAppointment(appt));
+                return response;
+            }
+
+            // 11. Check for time-specific queries (hour-based)
+            const timeMatch = message.match(/\b(\d{1,2})(?::(\d{2}))?\s*(am|pm)?\b/i);
+            if (timeMatch) {
+                let hour = parseInt(timeMatch[1]);
+                const minutes = timeMatch[2] ? parseInt(timeMatch[2]) : 0;
+                const period = timeMatch[3] ? timeMatch[3].toLowerCase() : null;
+
+                // Convert to 24-hour format if needed
+                if (period === 'pm' && hour < 12) hour += 12;
+                if (period === 'am' && hour === 12) hour = 0;
+
+                const timeAppts = this.appointmentsData.filter(appt => {
+                    const apptDate = new Date(appt.AppointmentTime);
+                    const apptHour = apptDate.getHours();
+                    const apptMinutes = apptDate.getMinutes();
+
+                    // Allow for a 30-minute window around the specified time
+                    return Math.abs((apptHour * 60 + apptMinutes) - (hour * 60 + minutes)) <= 30;
+                });
+
+                if (timeAppts.length === 0) {
+                    return `No appointments found around ${timeMatch[0]}.`;
+                }
+
+                let response = `Appointments around ${timeMatch[0]}:\n\n`;
+                timeAppts.forEach(appt => response += formatAppointment(appt));
+                return response;
+            }
+
+            // 12. Check for relative time queries (next week, next month, etc.)
+            if (lowerMessage.includes('next week') || lowerMessage.includes('following week')) {
+                const nextWeekStart = new Date(today);
+                nextWeekStart.setDate(today.getDate() + (7 - today.getDay()));
+                const nextWeekEnd = new Date(nextWeekStart);
+                nextWeekEnd.setDate(nextWeekStart.getDate() + 7);
+
+                const nextWeekAppts = this.appointmentsData.filter(appt => {
+                    const apptDate = new Date(appt.AppointmentTime);
+                    return apptDate >= nextWeekStart && apptDate < nextWeekEnd;
+                });
+
+                if (nextWeekAppts.length === 0) {
+                    return "No appointments found for next week.";
+                }
+
+                let response = "Appointments next week:\n\n";
+                nextWeekAppts.forEach(appt => response += formatAppointment(appt));
+                return response;
+            }
+
+            if (lowerMessage.includes('next month')) {
+                const nextMonthStart = new Date(currentYear, today.getMonth() + 1, 1);
+                const nextMonthEnd = new Date(currentYear, today.getMonth() + 2, 0);
+
+                const nextMonthAppts = this.appointmentsData.filter(appt => {
+                    const apptDate = new Date(appt.AppointmentTime);
+                    return apptDate >= nextMonthStart && apptDate <= nextMonthEnd;
+                });
+
+                if (nextMonthAppts.length === 0) {
+                    return "No appointments found for next month.";
+                }
+
+                let response = "Appointments next month:\n\n";
+                nextMonthAppts.forEach(appt => response += formatAppointment(appt));
+                return response;
+            }
+
+            // 13. Check for day of week queries
+            const days = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+            const dayQuery = days.find(day => lowerMessage.includes(day));
+            if (dayQuery) {
+                const dayIndex = days.indexOf(dayQuery);
+                const dayAppts = this.appointmentsData.filter(appt => {
+                    const apptDate = new Date(appt.AppointmentTime);
+                    return apptDate.getDay() === dayIndex &&
+                        apptDate >= new Date(today.getFullYear(), today.getMonth(), today.getDate());
+                });
+
+                if (dayAppts.length === 0) {
+                    return `No upcoming appointments found on ${dayQuery}s.`;
+                }
+
+                let response = `Upcoming appointments on ${dayQuery}:\n\n`;
+                dayAppts.forEach(appt => response += formatAppointment(appt));
+                return response;
+            }
+
             return null;
         }
-
 
         getAppointmentCounts() {
             const counts = {
@@ -1995,9 +2127,17 @@ echo "<!-- Debug: " . count($appointments) . " appointments loaded -->";
                 role: 'user',
                 parts: [{
                     text: `You are an AI assistant for an appointment management system. The user is a host managing appointments.
-                    Current appointment stats: Total ${this.appointmentsData.length}, Upcoming: ${this.appointmentsData.filter(a => a.Status === 'Upcoming').length},
-                    Ongoing: ${this.appointmentsData.filter(a => a.Status === 'Ongoing').length}. Today is ${new Date().toLocaleDateString()}.
-                    You can help with appointment queries, scheduling, and general questions. Keep responses concise and helpful.`
+                Current appointment stats: Total ${this.appointmentsData.length}, Upcoming: ${this.appointmentsData.filter(a => a.Status === 'Upcoming').length},
+                Ongoing: ${this.appointmentsData.filter(a => a.Status === 'Ongoing').length}. Today is ${new Date().toLocaleDateString()}.
+                You can help with appointment queries, scheduling, and general questions. Keep responses concise and helpful.
+
+                The user can ask about appointments by:
+                - Month (e.g., "appointments in November")
+                - Time of day (e.g., "appointments at 2 PM")
+                - Day of week (e.g., "appointments on Monday")
+                - Relative time (e.g., "appointments next week")
+
+                If the user asks about appointments in a specific time period, try to provide details about those appointments.`
                 }]
             };
             contents.unshift(systemMessage);

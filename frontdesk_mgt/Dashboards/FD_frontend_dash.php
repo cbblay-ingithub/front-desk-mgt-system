@@ -1145,10 +1145,6 @@ function checkTimeConflict($hostId, $appointmentTime, $excludeAppointmentId = nu
         </div>
     </div>
 </div>
-
-
-
-
 <!-- Schedule Modal -->
 <div class="modal fade" id="scheduleModal" tabindex="-1" aria-labelledby="scheduleModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">

@@ -116,9 +116,10 @@ function startAppointment($appointmentId): array
  * @param string $appointmentTime DateTime of appointment
  * @param int $hostId Host ID
  * @param int $visitorId Visitor ID
+ * @param string $purpose Purpose of the visit
  * @return array Response with status and message
  */
-function scheduleAppointment($appointmentTime, $hostId, $visitorId): array
+function scheduleAppointment(string $appointmentTime, int $hostId, int $visitorId, string $purpose): array
 {
     global $conn;
 
@@ -150,10 +151,10 @@ function scheduleAppointment($appointmentTime, $hostId, $visitorId): array
         return ["status" => "error", "message" => "You already have an appointment scheduled within 45 minutes of this time"];
     }
 
-    $sql = "INSERT INTO appointments (AppointmentTime, Status, HostID, VisitorID) 
-            VALUES (?, 'Upcoming', ?, ?)";
+    $sql = "INSERT INTO appointments (AppointmentTime, Status, HostID, VisitorID, Purpose) 
+            VALUES (?, 'Upcoming', ?, ?, ?)";
     $stmt = $conn->prepare($sql);
-    $stmt->bind_param("sii", $appointmentTime, $hostId, $visitorId);
+    $stmt->bind_param("siis", $appointmentTime, $hostId, $visitorId, $purpose);
 
     if ($stmt->execute()) {
         $appointmentId = $conn->insert_id;
@@ -532,6 +533,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             case 'schedule':
                 $appointmentTime = $_POST['appointmentTime'];
                 $hostId = $_POST['hostId'];
+                $purpose = $_POST['purpose'] ?? '';
+
 
                 if (!empty($_POST['newVisitorName'])) {
                     $visitorResult = createVisitor(
@@ -550,7 +553,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     $visitorId = $_POST['visitorId'];
                 }
 
-                echo json_encode(scheduleAppointment($appointmentTime, $hostId, $visitorId));
+                echo json_encode(scheduleAppointment($appointmentTime, $hostId, $visitorId,$purpose));
                 break;
 
             case 'reschedule':
