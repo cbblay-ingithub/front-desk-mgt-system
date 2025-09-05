@@ -47,6 +47,12 @@ CREATE TABLE Appointments(
     CheckInTime DATETIME NULL, -- Check-in Time
     HostID INT, 	-- Identifier for Host
     VisitorID INT,	-- Identifier for Visitor
+    Purpose varchar(255) DEFAULT NULL,
+    SessionEndTime datetime DEFAULT NULL,
+    CancellationReason enum('No-Show','Visitor Cancelled','Host Cancelled','Scheduling Conflict','Emergency','Other') NOT NULL,
+    ScheduledBy int DEFAULT NULL,
+    BadgeNumber varchar(20) DEFAULT NULL,
+    IsCheckedIn tinyint(1) DEFAULT '0',
     FOREIGN KEY(VisitorID) REFERENCES Visitors(VisitorID) ON DELETE CASCADE,
     FOREIGN KEY(HostID) REFERENCES Users(UserID) ON DELETE SET NULL
 );

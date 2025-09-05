@@ -1432,3 +1432,88 @@
 [05-Sep-2025 20:39:17 Europe/Berlin] PHP Warning:  Undefined array key "Purpose" in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_frontend_dash.php on line 971
 [05-Sep-2025 20:39:17 Europe/Berlin] PHP Stack trace:
 [05-Sep-2025 20:39:17 Europe/Berlin] PHP   1. {main}() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_frontend_dash.php:0
+[05-Sep-2025 21:57:35 Europe/Berlin] Checking for ticket creation POST data: Array
+(
+)
+
+[05-Sep-2025 23:37:45 Europe/Berlin] PHP Warning:  Undefined array key "IsCheckedIn" in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_frontend_dash.php on line 1023
+[05-Sep-2025 23:37:45 Europe/Berlin] PHP Stack trace:
+[05-Sep-2025 23:37:45 Europe/Berlin] PHP   1. {main}() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_frontend_dash.php:0
+[05-Sep-2025 23:37:45 Europe/Berlin] PHP Warning:  Undefined array key "IsCheckedIn" in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_frontend_dash.php on line 1023
+[05-Sep-2025 23:37:45 Europe/Berlin] PHP Stack trace:
+[05-Sep-2025 23:37:45 Europe/Berlin] PHP   1. {main}() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_frontend_dash.php:0
+[05-Sep-2025 23:37:45 Europe/Berlin] PHP Warning:  Undefined array key "IsCheckedIn" in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_frontend_dash.php on line 1023
+[05-Sep-2025 23:37:45 Europe/Berlin] PHP Stack trace:
+[05-Sep-2025 23:37:45 Europe/Berlin] PHP   1. {main}() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_frontend_dash.php:0
+[05-Sep-2025 23:37:45 Europe/Berlin] PHP Warning:  Undefined array key "IsCheckedIn" in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_frontend_dash.php on line 1023
+[05-Sep-2025 23:37:45 Europe/Berlin] PHP Stack trace:
+[05-Sep-2025 23:37:45 Europe/Berlin] PHP   1. {main}() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_frontend_dash.php:0
+[05-Sep-2025 23:37:45 Europe/Berlin] PHP Warning:  Undefined array key "IsCheckedIn" in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_frontend_dash.php on line 1023
+[05-Sep-2025 23:37:45 Europe/Berlin] PHP Stack trace:
+[05-Sep-2025 23:37:45 Europe/Berlin] PHP   1. {main}() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_frontend_dash.php:0
+[05-Sep-2025 23:37:45 Europe/Berlin] PHP Warning:  Undefined array key "IsCheckedIn" in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_frontend_dash.php on line 1023
+[05-Sep-2025 23:37:45 Europe/Berlin] PHP Stack trace:
+[05-Sep-2025 23:37:45 Europe/Berlin] PHP   1. {main}() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_frontend_dash.php:0
+[05-Sep-2025 23:37:45 Europe/Berlin] PHP Warning:  Undefined array key "IsCheckedIn" in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_frontend_dash.php on line 1023
+[05-Sep-2025 23:37:45 Europe/Berlin] PHP Stack trace:
+[05-Sep-2025 23:37:45 Europe/Berlin] PHP   1. {main}() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_frontend_dash.php:0
+[05-Sep-2025 23:37:45 Europe/Berlin] PHP Warning:  Undefined array key "IsCheckedIn" in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_frontend_dash.php on line 1023
+[05-Sep-2025 23:37:45 Europe/Berlin] PHP Stack trace:
+[05-Sep-2025 23:37:45 Europe/Berlin] PHP   1. {main}() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_frontend_dash.php:0
+[05-Sep-2025 23:37:45 Europe/Berlin] PHP Warning:  Undefined array key "IsCheckedIn" in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_frontend_dash.php on line 1023
+[05-Sep-2025 23:37:45 Europe/Berlin] PHP Stack trace:
+[05-Sep-2025 23:37:45 Europe/Berlin] PHP   1. {main}() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_frontend_dash.php:0
+[05-Sep-2025 23:37:48 Europe/Berlin] PHP Warning:  Undefined array key "IsCheckedIn" in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_frontend_dash.php on line 1023
+[05-Sep-2025 23:37:48 Europe/Berlin] PHP Stack trace:
+[05-Sep-2025 23:37:48 Europe/Berlin] PHP   1. {main}() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_frontend_dash.php:0
+[05-Sep-2025 23:37:48 Europe/Berlin] PHP Warning:  Undefined array key "IsCheckedIn" in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_frontend_dash.php on line 1023
+[05-Sep-2025 23:37:48 Europe/Berlin] PHP Stack trace:
+[05-Sep-2025 23:37:48 Europe/Berlin] PHP   1. {main}() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_frontend_dash.php:0
+[05-Sep-2025 23:37:48 Europe/Berlin] PHP Warning:  Undefined array key "IsCheckedIn" in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_frontend_dash.php on line 1023
+[05-Sep-2025 23:37:48 Europe/Berlin] PHP Stack trace:
+[05-Sep-2025 23:37:48 Europe/Berlin] PHP   1. {main}() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_frontend_dash.php:0
+[05-Sep-2025 23:37:48 Europe/Berlin] PHP Warning:  Undefined array key "IsCheckedIn" in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_frontend_dash.php on line 1023
+[05-Sep-2025 23:37:48 Europe/Berlin] PHP Stack trace:
+[05-Sep-2025 23:37:48 Europe/Berlin] PHP   1. {main}() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_frontend_dash.php:0
+[05-Sep-2025 23:37:48 Europe/Berlin] PHP Warning:  Undefined array key "IsCheckedIn" in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_frontend_dash.php on line 1023
+[05-Sep-2025 23:37:48 Europe/Berlin] PHP Stack trace:
+[05-Sep-2025 23:37:48 Europe/Berlin] PHP   1. {main}() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_frontend_dash.php:0
+[05-Sep-2025 23:37:48 Europe/Berlin] PHP Warning:  Undefined array key "IsCheckedIn" in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_frontend_dash.php on line 1023
+[05-Sep-2025 23:37:48 Europe/Berlin] PHP Stack trace:
+[05-Sep-2025 23:37:48 Europe/Berlin] PHP   1. {main}() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_frontend_dash.php:0
+[05-Sep-2025 23:37:48 Europe/Berlin] PHP Warning:  Undefined array key "IsCheckedIn" in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_frontend_dash.php on line 1023
+[05-Sep-2025 23:37:48 Europe/Berlin] PHP Stack trace:
+[05-Sep-2025 23:37:48 Europe/Berlin] PHP   1. {main}() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_frontend_dash.php:0
+[05-Sep-2025 23:37:48 Europe/Berlin] PHP Warning:  Undefined array key "IsCheckedIn" in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_frontend_dash.php on line 1023
+[05-Sep-2025 23:37:48 Europe/Berlin] PHP Stack trace:
+[05-Sep-2025 23:37:48 Europe/Berlin] PHP   1. {main}() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_frontend_dash.php:0
+[05-Sep-2025 23:37:48 Europe/Berlin] PHP Warning:  Undefined array key "IsCheckedIn" in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_frontend_dash.php on line 1023
+[05-Sep-2025 23:37:48 Europe/Berlin] PHP Stack trace:
+[05-Sep-2025 23:37:48 Europe/Berlin] PHP   1. {main}() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_frontend_dash.php:0
+[05-Sep-2025 23:38:18 Europe/Berlin] PHP Warning:  Undefined array key "IsCheckedIn" in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_frontend_dash.php on line 1023
+[05-Sep-2025 23:38:18 Europe/Berlin] PHP Stack trace:
+[05-Sep-2025 23:38:18 Europe/Berlin] PHP   1. {main}() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_frontend_dash.php:0
+[05-Sep-2025 23:38:18 Europe/Berlin] PHP Warning:  Undefined array key "IsCheckedIn" in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_frontend_dash.php on line 1023
+[05-Sep-2025 23:38:18 Europe/Berlin] PHP Stack trace:
+[05-Sep-2025 23:38:18 Europe/Berlin] PHP   1. {main}() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_frontend_dash.php:0
+[05-Sep-2025 23:38:18 Europe/Berlin] PHP Warning:  Undefined array key "IsCheckedIn" in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_frontend_dash.php on line 1023
+[05-Sep-2025 23:38:18 Europe/Berlin] PHP Stack trace:
+[05-Sep-2025 23:38:18 Europe/Berlin] PHP   1. {main}() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_frontend_dash.php:0
+[05-Sep-2025 23:38:18 Europe/Berlin] PHP Warning:  Undefined array key "IsCheckedIn" in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_frontend_dash.php on line 1023
+[05-Sep-2025 23:38:18 Europe/Berlin] PHP Stack trace:
+[05-Sep-2025 23:38:18 Europe/Berlin] PHP   1. {main}() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_frontend_dash.php:0
+[05-Sep-2025 23:38:18 Europe/Berlin] PHP Warning:  Undefined array key "IsCheckedIn" in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_frontend_dash.php on line 1023
+[05-Sep-2025 23:38:18 Europe/Berlin] PHP Stack trace:
+[05-Sep-2025 23:38:18 Europe/Berlin] PHP   1. {main}() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_frontend_dash.php:0
+[05-Sep-2025 23:38:18 Europe/Berlin] PHP Warning:  Undefined array key "IsCheckedIn" in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_frontend_dash.php on line 1023
+[05-Sep-2025 23:38:18 Europe/Berlin] PHP Stack trace:
+[05-Sep-2025 23:38:18 Europe/Berlin] PHP   1. {main}() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_frontend_dash.php:0
+[05-Sep-2025 23:38:18 Europe/Berlin] PHP Warning:  Undefined array key "IsCheckedIn" in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_frontend_dash.php on line 1023
+[05-Sep-2025 23:38:18 Europe/Berlin] PHP Stack trace:
+[05-Sep-2025 23:38:18 Europe/Berlin] PHP   1. {main}() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_frontend_dash.php:0
+[05-Sep-2025 23:38:18 Europe/Berlin] PHP Warning:  Undefined array key "IsCheckedIn" in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_frontend_dash.php on line 1023
+[05-Sep-2025 23:38:18 Europe/Berlin] PHP Stack trace:
+[05-Sep-2025 23:38:18 Europe/Berlin] PHP   1. {main}() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_frontend_dash.php:0
+[05-Sep-2025 23:38:18 Europe/Berlin] PHP Warning:  Undefined array key "IsCheckedIn" in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_frontend_dash.php on line 1023
+[05-Sep-2025 23:38:18 Europe/Berlin] PHP Stack trace:
+[05-Sep-2025 23:38:18 Europe/Berlin] PHP   1. {main}() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_frontend_dash.php:0

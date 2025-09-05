@@ -1293,14 +1293,19 @@ echo "<!-- Debug: " . count($appointments) . " appointments loaded -->";
             return classes[status] || 'secondary';
         }
 
-        function getActionButtons(appointmentId, status) {
+        function getActionButtons(appointmentId, status,) {
             let buttons = '';
 
             if (status === 'Upcoming') {
                 buttons += `
-                <button class="btn btn-sm btn-outline-success start-session-btn" data-id="${appointmentId}">
-                    <i class="fas fa-play me-1"></i> Start Session
-                </button>
+                if (status === 'Upcoming' && IsCheckedIn === 'TRUE') {
+                    echo '
+                        <button class="btn btn-sm btn-success start-session-btn"
+                                data-id="'.$appointment['AppointmentID'].'">
+                            <i class="fas fa-play-circle me-1"></i> Start Session
+                        </button>
+                    ';
+                }
                 <button class="btn btn-sm btn-outline-primary reschedule-btn" data-id="${appointmentId}" data-bs-toggle="modal" data-bs-target="#rescheduleModal">
                     <i class="fas fa-calendar-alt me-1"></i> Reschedule
                 </button>

@@ -214,34 +214,48 @@ function rescheduleAppointment($data) {
 }
 
 // Function to check in a visitor
+// Function to check in a visitor - UPDATED to work with your table structure
 function checkInVisitor($data) {
     global $conn;
 
     $conn->begin_transaction();
 
     try {
-        // Update appointment status
+        // Update appointment status and check-in time
         $stmt = $conn->prepare("
             UPDATE appointments 
-            SET Status = 'Ongoing', CheckInTime = NOW(), UpdatedAt = NOW()
+            SET CheckInTime = NOW(),IsCheckedIn = 1, UpdatedAt = NOW()
             WHERE AppointmentID = ?
         ");
         $stmt->bind_param("i", $data['appointmentId']);
         $stmt->execute();
 
-        // Record visitor check-in details
+        // Get appointment details to extract HostID and Purpose
         $stmt = $conn->prepare("
-            INSERT INTO visitor_checkins (VisitorID, AppointmentID, IDType, Purpose, CheckedInBy)
-            VALUES (?, ?, ?, ?, ?, ?)
+            SELECT HostID, Purpose FROM appointments WHERE AppointmentID = ?
         ");
-        $checkedInBy = $_SESSION['userID'];
-        $stmt->bind_param("iisssi",
-            $data['visitorId'],
-            $data['appointmentId'],
-            $data['idType'],
-            $data['visitPurpose'],
-            $checkedInBy
-        );
+        $stmt->bind_param("i", $data['appointmentId']);
+        $stmt->execute();
+        $appointmentDetails = $stmt->get_result()->fetch_assoc();
+
+        $hostId = $appointmentDetails['HostID'];
+        $purpose = $appointmentDetails['Purpose'];
+
+        // Update visitor's ID type in visitors table
+        $stmt = $conn->prepare("
+            UPDATE visitors 
+            SET IDType = ?, VerificationStatus = 'Verified'
+            WHERE VisitorID = ?
+        ");
+        $stmt->bind_param("si", $data['idType'], $data['visitorId']);
+        $stmt->execute();
+
+        // Record visitor check-in in visitor_logs table (instead of visitor_checkins)
+        $stmt = $conn->prepare("
+            INSERT INTO visitor_logs (VisitorID, HostID, CheckInTime, Visit_Purpose, Status)
+            VALUES (?, ?, NOW(), ?, 'Checked In')
+        ");
+        $stmt->bind_param("iis", $data['visitorId'], $hostId, $purpose);
         $stmt->execute();
 
         $conn->commit();
@@ -963,11 +977,11 @@ function checkTimeConflict($hostId, $appointmentTime, $excludeAppointmentId = nu
                             <?php else: ?>
                                 <?php foreach ($appointments as $appointment): ?>
                                     <div class="col-md-6 col-lg-4 mb-4 appointment-item"
+                                         data-appointment-id="<?= $appointment['AppointmentID'] ?>"
                                          data-status="<?= $appointment['Status'] ?>"
                                          data-host="<?= $appointment['HostName']?>"
                                          data-host-id="<?= $appointment['HostID'] ?>"
                                          data-date="<?= date('Y-m-d', strtotime($appointment['AppointmentTime'])) ?>"
-
                                          data-search="<?= strtolower($appointment['VisitorName'] . ' ' . $appointment['VisitorEmail'] . ' ' . $appointment['HostName'] . ' ' . $appointment['Purpose']) ?>">
 
 
@@ -1005,24 +1019,32 @@ function checkTimeConflict($hostId, $appointmentTime, $excludeAppointmentId = nu
 
 
                                                 <?php if ($appointment['Status'] === 'Upcoming' || $appointment['Status'] === 'Overdue'): ?>
-                                                    <div class="action-buttons">
-                                                        <button class="btn btn-sm btn-outline-success check-in-btn"
-                                                                data-id="<?= $appointment['AppointmentID'] ?>">
-                                                            <i class="fas fa-check-circle me-1"></i> Check In
-                                                        </button>
-                                                        <button class="btn btn-sm btn-outline-primary reschedule-btn"
-                                                                data-id="<?= $appointment['AppointmentID'] ?>"
-                                                                data-bs-toggle="modal"
-                                                                data-bs-target="#rescheduleModal">
-                                                            <i class="fas fa-calendar-alt me-1"></i> Reschedule
-                                                        </button>
-                                                        <button class="btn btn-sm btn-outline-danger cancel-btn"
-                                                                data-id="<?= $appointment['AppointmentID'] ?>"
-                                                                data-bs-toggle="modal"
-                                                                data-bs-target="#cancelModal">
-                                                            <i class="fas fa-times-circle me-1"></i> Cancel
-                                                        </button>
-                                                    </div>
+                                                    <?php if (isset($appointment['IsCheckedIn']) && $appointment['IsCheckedIn']): ?>
+                                                        <div class="checked-in-status">
+                                                            <span class="badge-outline bg-info">
+                                                                <i class="fas fa-user-check me-1"></i> Checked In - Waiting for Host
+                                                            </span>
+                                                        </div>
+                                                    <?php else: ?>
+                                                        <div class="action-buttons">
+                                                            <button class="btn btn-sm btn-outline-success check-in-btn"
+                                                                    data-id="<?= $appointment['AppointmentID'] ?>">
+                                                                <i class="fas fa-check-circle me-1"></i> Check In
+                                                            </button>
+                                                            <button class="btn btn-sm btn-outline-primary reschedule-btn"
+                                                                    data-id="<?= $appointment['AppointmentID'] ?>"
+                                                                    data-bs-toggle="modal"
+                                                                    data-bs-target="#rescheduleModal">
+                                                                <i class="fas fa-calendar-alt me-1"></i> Reschedule
+                                                            </button>
+                                                            <button class="btn btn-sm btn-outline-danger cancel-btn"
+                                                                    data-id="<?= $appointment['AppointmentID'] ?>"
+                                                                    data-bs-toggle="modal"
+                                                                    data-bs-target="#cancelModal">
+                                                                <i class="fas fa-times-circle me-1"></i> Cancel
+                                                            </button>
+                                                        </div>
+                                                    <?php endif; ?>
                                                 <?php elseif ($appointment['Status'] === 'Ongoing'): ?>
 
                                                 <?php endif; ?>
@@ -1096,9 +1118,6 @@ function checkTimeConflict($hostId, $appointmentTime, $excludeAppointmentId = nu
         </div>
     </div>
 </div>
-
-
-
 
 <!-- Chat Widget -->
 <div class="chat-widget">
@@ -1406,10 +1425,10 @@ function checkTimeConflict($hostId, $appointmentTime, $excludeAppointmentId = nu
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                    <i class="fas fa-times"></i> Cancel
+                     Cancel
                 </button>
                 <button type="button" class="btn btn-success" id="completeCheckInBtn" disabled>
-                    <i class="fas fa-check-circle"></i> Complete Check-In
+                    Complete Check-In
                 </button>
             </div>
         </div>
@@ -1571,6 +1590,8 @@ function checkTimeConflict($hostId, $appointmentTime, $excludeAppointmentId = nu
                     eventClick: function(info) {
                         const event = info.event;
                         const purpose = event.extendedProps.purpose || 'No purpose specified';
+                        const isCheckedIn = event.extendedProps.isCheckedIn || false;
+
 
                         const modalHtml = `
                 <div class="modal fade" id="calendarEventModal" tabindex="-1">
@@ -1585,11 +1606,11 @@ function checkTimeConflict($hostId, $appointmentTime, $excludeAppointmentId = nu
                                 <p><strong>Host:</strong> ${event.extendedProps.hostName}</p>
                                 <p><strong>Time:</strong> ${event.start.toLocaleString()}</p>
                                 <p><strong>Purpose:</strong> ${purpose}</p>
-                                <p><strong>Status:</strong> <span class="badge bg-${getStatusBadgeClass(event.extendedProps.status)}">${event.extendedProps.status}</span></p>
+                                <p><strong>Status:</strong> <span class="badge bg-${getStatusBadgeClass(event.extendedProps.status, isCheckedIn)}">${getStatusDisplayText(event.extendedProps.status, isCheckedIn)}</span></p>
                             </div>
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                ${getActionButtons(event.id, event.extendedProps.status)}
+                                ${getActionButtons(event.id, event.extendedProps.status, isCheckedIn)}
                             </div>
                         </div>
                     </div>
@@ -1603,8 +1624,15 @@ function checkTimeConflict($hostId, $appointmentTime, $excludeAppointmentId = nu
                     eventDidMount: function(info) {
                         // Add tooltip with purpose
                         const purpose = info.event.extendedProps.purpose || 'No purpose specified';
+                        const isCheckedIn = info.event.extendedProps.isCheckedIn || false;
+                        const status = info.event.extendedProps.status;
+
+                        let statusText = status;
+                        if (status === 'Upcoming' && isCheckedIn) {
+                            statusText = 'Checked In';
+                        }
                         $(info.el).tooltip({
-                            title: `${info.event.title}<br>Purpose: ${purpose}<br>Status: ${info.event.extendedProps.status}<br>Click for details`,
+                            title: `${info.event.title}<br>Purpose: ${purpose}<br>Status: ${statusText}<br>Click for details`,
                             placement: 'top',
                             trigger: 'hover',
                             html: true
@@ -1620,21 +1648,49 @@ function checkTimeConflict($hostId, $appointmentTime, $excludeAppointmentId = nu
             }
         }
 
-        function getStatusBadgeClass(status) {
+        function getStatusBadgeClass(status, isCheckedIn) {
+            if (status === 'Upcoming' && isCheckedIn) {
+                return 'info'; // Different color for checked-in but not started
+            }
+
             const classes = {
                 'Cancelled': 'danger',
-                'Ongoing': 'info',
-                'Upcoming': 'primary',
-                'Completed': 'success',
+                'Ongoing': 'primary',
+                'Upcoming': 'success',
+                'Completed': 'secondary',
                 'Overdue': 'warning'
             };
             return classes[status] || 'secondary';
         }
 
-        function getActionButtons(appointmentId, status) {
-            let buttons = '';
+        function getStatusDisplayText(status, isCheckedIn) {
+            if (status === 'Upcoming' && isCheckedIn) {
+                return 'Checked In';
+            }
+            return status;
+        }
 
-            if (status === 'Upcoming' || status === 'Overdue') {
+        function getActionButtons(appointmentId, status, isCheckedIn) {
+            let buttons = '';
+            if (status === 'Upcoming') {
+                if (isCheckedIn) {
+                    // Show "Checked In - Waiting for Host" badge instead of action buttons
+                    buttons += `<span class="badge bg-info"><i class="fas fa-user-check"></i> Checked In - Waiting for Host</span>`;
+                } else {
+                    // Not checked in yet - show check-in button and other actions
+                    buttons += `
+                <button class="btn btn-sm btn-success check-in-btn" data-id="${appointmentId}">
+                    <i class="fas fa-check-circle me-1"></i> Check In
+                </button>
+                <button class="btn btn-sm btn-primary reschedule-btn" data-id="${appointmentId}">
+                    <i class="fas fa-calendar-alt me-1"></i> Reschedule
+                </button>
+                <button class="btn btn-sm btn-danger cancel-btn" data-id="${appointmentId}">
+                    <i class="fas fa-times me-1"></i> Cancel
+                </button>
+            `;
+                }
+            } else if (status === 'Overdue') {
                 buttons += `
             <button class="btn btn-sm btn-success check-in-btn" data-id="${appointmentId}">
                 <i class="fas fa-check-circle me-1"></i> Check In
@@ -1647,7 +1703,6 @@ function checkTimeConflict($hostId, $appointmentTime, $excludeAppointmentId = nu
             </button>
         `;
             }
-
             return buttons;
         }
 
@@ -1684,9 +1739,18 @@ function checkTimeConflict($hostId, $appointmentTime, $excludeAppointmentId = nu
 
             events.forEach(function(event) {
                 const status = event.extendedProps.status.toLowerCase();
-                const shouldShow = checkedFilters.includes(status) || checkedFilters.includes('all');
+                const isCheckedIn = event.extendedProps.isCheckedIn || false;
 
-                console.log(`Event: ${event.title}, Status: ${status}, Show: ${shouldShow}`);
+                // For checked-in appointments, treat them as a special filter
+                let shouldShow = false;
+
+                if (status === 'upcoming' && isCheckedIn && checkedFilters.includes('checkedin')) {
+                    shouldShow = true;
+                } else if (checkedFilters.includes(status) || checkedFilters.includes('all')) {
+                    shouldShow = true;
+                }
+
+                console.log(`Event: ${event.title}, Status: ${status}, CheckedIn: ${isCheckedIn}, Show: ${shouldShow}`);
 
                 if (shouldShow) {
                     event.setProp('display', 'auto');
@@ -1766,6 +1830,8 @@ function checkTimeConflict($hostId, $appointmentTime, $excludeAppointmentId = nu
 
             $('.appointment-item').each(function() {
                 let show = true;
+                const status = $(this).data('status');
+                const isCheckedIn = $(this).data('checked-in') === true;
 
                 if (searchTerm) {
                     const searchData = $(this).data('search').toString().toLowerCase();
@@ -1783,6 +1849,11 @@ function checkTimeConflict($hostId, $appointmentTime, $excludeAppointmentId = nu
                 if (show && statusFilter !== 'all') {
                     if (statusFilter === 'today') {
                         if ($(this).data('date') !== today) {
+                            show = false;
+                        }
+                    } else if (statusFilter === 'checkedin') {
+                        // Special handling for checked-in filter
+                        if (!(status === 'Upcoming' && isCheckedIn)) {
                             show = false;
                         }
                     } else if ($(this).data('status') !== statusFilter) {
@@ -1882,11 +1953,6 @@ function checkTimeConflict($hostId, $appointmentTime, $excludeAppointmentId = nu
                 }
             });
         });
-
-
-
-
-
 
 
         let nameVerified = false;
@@ -2620,13 +2686,13 @@ function checkTimeConflict($hostId, $appointmentTime, $excludeAppointmentId = nu
                         } else {
                             successMsg += ' (manual verification).';
                         }
-
-                        if (response.badgeNumber) {
-                            successMsg += '\nBadge Number: ' + response.badgeNumber;
+                        if (response.appointment) {
+                            updateAppointmentCard(response.appointment);
+                        } else {
+                            // Fallback: reload the page
+                            location.reload();
                         }
-
                         alert(successMsg);
-                        location.reload();
                     } else {
                         alert('Error: ' + (response.message || 'Unknown error occurred'));
                         $btn.prop('disabled', false).text(originalText);
@@ -2647,8 +2713,37 @@ function checkTimeConflict($hostId, $appointmentTime, $excludeAppointmentId = nu
                 }
             });
         });
+        // Function to update a specific appointment card
+        function updateAppointmentCard(appointmentData) {
+            const appointmentId = appointmentData.AppointmentID;
+            const $card = $(`.appointment-item[data-appointment-id="${appointmentId}"]`);
 
-// Reset form when modal is hidden
+            if ($card.length) {
+                // Update the card with new data
+                if (appointmentData.IsCheckedIn) {
+                    // Replace action buttons with checked-in status
+                    $card.find('.action-buttons').html(`
+                <div class="checked-in-status">
+                    <span class="badge bg-info">
+                        <i class="fas fa-user-check me-1"></i> Checked In - Waiting for Host
+                    </span>
+                </div>
+            `);
+                }
+
+                // Update other data if needed
+                if (appointmentData.Status) {
+                    $card.find('.badge').removeClass('bg-primary bg-warning').addClass(
+                        appointmentData.Status === 'Upcoming' ? 'bg-primary' :
+                            appointmentData.Status === 'Overdue' ? 'bg-warning' : ''
+                    ).text(appointmentData.Status);
+                }
+            } else {
+                // If card not found, reload the page
+                location.reload();
+            }
+        }
+    // Reset form when modal is hidden
         $('#visitorCheckInModal').on('hidden.bs.modal', function() {
             $('#visitorCheckInForm')[0].reset();
             $('#imagePreview').hide();
@@ -2659,7 +2754,7 @@ function checkTimeConflict($hostId, $appointmentTime, $excludeAppointmentId = nu
             $('#extractedName').val('');
         });
 
-// Reset verification when modal is shown
+        // Reset verification when modal is shown
         $('#visitorCheckInModal').on('shown.bs.modal', function() {
             nameVerified = false;
             $('#completeCheckInBtn').prop('disabled', true);

@@ -84,7 +84,7 @@ function startAppointment($appointmentId): array
 {
     global $conn;
 
-    $sql = "SELECT Status FROM appointments WHERE AppointmentID = ?";
+    $sql = "SELECT Status, IsCheckedIn FROM appointments WHERE AppointmentID = ?";
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("i", $appointmentId);
     $stmt->execute();
@@ -94,9 +94,12 @@ function startAppointment($appointmentId): array
         return ["status" => "error", "message" => "Appointment not found"];
     }
 
-    $status = $result->fetch_assoc()['Status'];
-    if ($status !== 'Upcoming') {
+    $appointment = $result->fetch_assoc();
+    if ($appointment['Status'] !== 'Upcoming') {
         return ["status" => "error", "message" => "Only upcoming appointments can be started"];
+    }
+    if (!$appointment['IsCheckedIn']) {
+        return ["status" => "error", "message" => "Visitor must be checked in before starting session"];
     }
 
     $sql = "UPDATE appointments SET Status = 'Ongoing' WHERE AppointmentID = ?";

@@ -38,7 +38,8 @@ function updateAppointmentStatuses() {
 function getAllAppointments() {
     global $conn;
 
-    $sql = "SELECT a.AppointmentID, a.AppointmentTime,a.Purpose, a.Status, a.CancellationReason, 
+    $sql = "SELECT a.AppointmentID, a.AppointmentTime, a.Purpose, a.Status, 
+                   a.CancellationReason, a.IsCheckedIn,
                    v.VisitorID, v.Name AS VisitorName, v.Email AS VisitorEmail, v.Phone AS VisitorPhone, 
                    u.UserID AS HostID, u.Name AS HostName 
             FROM appointments a
@@ -260,6 +261,24 @@ function processNextInQueue($hostId) {
         $conn->rollback();
         return ["success" => false, "message" => $e->getMessage()];
     }
+}
+// Helper function to get appointment by ID
+function getAppointmentById($appointmentId) {
+    global $conn;
+
+    $sql = "SELECT a.*, v.Name AS VisitorName, v.Email AS VisitorEmail, v.Phone AS VisitorPhone, 
+                   u.Name AS HostName 
+            FROM appointments a
+            JOIN visitors v ON a.VisitorID = v.VisitorID
+            JOIN users u ON a.HostID = u.UserID
+            WHERE a.AppointmentID = ?";
+
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("i", $appointmentId);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    return $result->fetch_assoc();
 }
 function getStatusColor($status) {
     return match ($status) {
@@ -585,8 +604,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $visitorId = $_POST['visitorId'];
             $idType = $_POST['idType'];
 
-            // Get the purpose from the appointment
-            $sql = "SELECT Purpose FROM appointments WHERE AppointmentID = ?";
+            // Get appointment details
+            $sql = "SELECT a.HostID, a.Purpose FROM appointments a WHERE a.AppointmentID = ?";
             $stmt = $conn->prepare($sql);
             $stmt->bind_param("i", $appointmentId);
             $stmt->execute();
@@ -598,41 +617,38 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
 
             $appointment = $result->fetch_assoc();
+            $hostId = $appointment['HostID'];
             $visitPurpose = $appointment['Purpose'];
-
-            // Continue with the rest of the check-in process using $visitPurpose
-            $sql = "SELECT HostID FROM appointments WHERE AppointmentID = ?";
-            $stmt = $conn->prepare($sql);
-            $stmt->bind_param("i", $appointmentId);
-            $stmt->execute();
-            $result = $stmt->get_result();
-            if ($result->num_rows == 0) {
-                echo json_encode(['success' => false, 'message' => 'Appointment not found']);
-                break;
-            }
-            $hostId = $result->fetch_assoc()['HostID'];
 
             $conn->begin_transaction();
             try {
-                $sql = "UPDATE visitors SET IDType = ?, IDNumber = ? WHERE VisitorID = ?";
+                // Update visitor ID information
+                $sql = "UPDATE visitors SET IDType = ?, VerificationStatus = 'Verified' WHERE VisitorID = ?";
                 $stmt = $conn->prepare($sql);
-                $stmt->bind_param("ssi", $idType, $idNumber, $visitorId);
+                $stmt->bind_param("si", $idType, $visitorId);
                 $stmt->execute();
 
-                $checkInTime = date('Y-m-d H:i:s');
-                $sql = "INSERT INTO visitor_Logs (CheckInTime, HostID, VisitorID, Visit_Purpose) 
-                        VALUES (?, ?, ?, ?)";
+                // Update appointments table - set CheckInTime and mark as checked in
+                $sql = "UPDATE appointments SET CheckInTime = NOW(), IsCheckedIn = 1 WHERE AppointmentID = ?";
                 $stmt = $conn->prepare($sql);
-                $stmt->bind_param("siis", $checkInTime, $hostId, $visitorId, $visitPurpose);
+                $stmt->bind_param("i", $appointmentId);
                 $stmt->execute();
 
-                $sql = "UPDATE appointments SET Status = 'Ongoing', CheckInTime = ? WHERE AppointmentID = ?";
+                // Record check-in in visitor_logs
+                $sql = "INSERT INTO visitor_logs (CheckInTime, HostID, VisitorID, Visit_Purpose, Status) 
+                VALUES (NOW(), ?, ?, ?, 'Checked In')";
                 $stmt = $conn->prepare($sql);
-                $stmt->bind_param("si", $checkInTime, $appointmentId);
+                $stmt->bind_param("iis", $hostId, $visitorId, $visitPurpose);
                 $stmt->execute();
 
                 $conn->commit();
-                echo json_encode(['success' => true, 'message' => 'Visitor checked in successfully']);
+                // Return the updated appointment data
+                $updatedAppointment = getAppointmentById($appointmentId);
+                echo json_encode([
+                    'success' => true,
+                    'message' => 'Visitor checked in successfully',
+                    'appointment' => $updatedAppointment
+                ]);
             } catch (Exception $e) {
                 $conn->rollback();
                 echo json_encode(['success' => false, 'message' => 'Check-in failed: ' . $e->getMessage()]);
