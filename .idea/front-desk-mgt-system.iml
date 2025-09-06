@@ -44,5 +44,6 @@
     <orderEntry type="library" name="boxicons" level="application" />
     <orderEntry type="library" name="apexcharts" level="application" />
     <orderEntry type="library" name="Chart.js" level="application" />
+    <orderEntry type="library" name="@popperjs/core" level="application" />
   </component>
 </module>

@@ -1,7 +1,22 @@
 <?php
+ini_set('session.cookie_domain', $_SERVER['HTTP_HOST']);
+ini_set('session.cookie_path', '/');
+ini_set('session.cookie_lifetime', 86400);
+ini_set('session.cookie_httponly', 1);
+ini_set('session.cookie_samesite', 'Lax');
+
+// For development on different ports, make cookie accessible to all ports
+if ($_SERVER['HTTP_HOST'] === 'localhost:63342') {
+    ini_set('session.cookie_domain', 'localhost');
+}
+
 require_once '../dbConfig.php';
 global $conn;
 session_start();
+
+// Debug: log session status
+error_log("Session ID: " . session_id());
+error_log("Session data: " . print_r($_SESSION, true));
 
 if (isset($_SESSION['userID'])) {
     $stmt = $conn->prepare("UPDATE users SET last_activity = NOW() WHERE UserID = ?");
@@ -193,7 +208,7 @@ $conn->close();
     <link href="https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="notification.css">
+
 
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -571,7 +586,43 @@ $conn->close();
                                 <li><a class="dropdown-item" href="../Logout.php"><i class="fas fa-sign-out-alt me-2"></i> Logout</a></li>
                             </ul>
                         </div>
+                        <!-- Inside the navbar-nav align-items-center div -->
+                        <ul class="navbar-nav">
+                            <li class="nav-item dropdown-notifications me-3">
+                                <a class="nav-link dropdown-toggle hide-arrow" href="javascript:void(0);" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <i class="fas fa-bell"></i>
+                                    <?php
+                                    $unreadCount = 0; // We'll fetch this via AJAX, but can also do it on page load
+                                    if ($unreadCount > 0) {
+                                        echo '<span class="badge bg-danger badge-notification">' . $unreadCount . '</span>';
+                                    }
+                                    ?>
+                                </a>
+                                <div class="dropdown-menu dropdown-menu-end py-0">
+                                    <div class="dropdown-menu-header">
+                                        <div class="dropdown-header d-flex justify-content-between align-items-center py-3">
+                                            <h5 class="text-body mb-0">Notifications</h5>
+                                            <?php if ($unreadCount > 0): ?>
+                                                <a href="javascript:void(0)" class="text-muted clear-notifications"><small>Clear All</small></a>
+                                            <?php endif; ?>
+                                        </div>
+                                    </div>
+                                    <div class="notification-list" id="notificationList">
+                                        <!-- Notifications will be loaded here via AJAX -->
+                                        <div class="text-center py-4">
+                                            <div class="spinner-border text-primary" role="status">
+                                                <span class="visually-hidden">Loading...</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="dropdown-menu-footer">
+                                        <a href="fetch-notifications.php" class="dropdown-item text-center text-primary">View all notifications</a>
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
                     </div>
+
                 </div>
             </nav>
 
@@ -724,7 +775,7 @@ $conn->close();
                                         </a>
                                     </div>
                                     <div class="col-lg-2 col-md-4 col-6 mb-3">
-                                        <a href="settings.php" class="quick-action-btn">
+                                        <a href="admin_settings.php" class="quick-action-btn">
                                             <i class="fas fa-cog"></i>
                                             <span>Settings</span>
                                         </a>
@@ -882,7 +933,6 @@ $conn->close();
 </div>
 
 <!-- Scripts -->
-<script src="notification.js"></script>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
@@ -963,9 +1013,6 @@ $conn->close();
             localStorage.setItem('layoutMenuCollapsed', $html.hasClass('layout-menu-collapsed'));
         });
 
-        // Update immediately and every minute
-        updateAdminStatus();
-        setInterval(updateAdminStatus, 60000);
     });
 
     function initializeCharts() {
@@ -1182,8 +1229,12 @@ $conn->close();
         }, 2000);
     });
 
-    // Add tooltips to chart elements
-    $('[data-bs-toggle="tooltip"]').tooltip();
+    // Initialize tooltips with jQuery
+    $(function () {
+        $('[data-bs-toggle="tooltip"]').each(function() {
+            new bootstrap.Tooltip(this);
+        });
+    });
 
     // Make cards clickable
     $('.stats-card.users').click(function() {
@@ -1213,6 +1264,158 @@ $conn->close();
             timeElement.textContent = now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
         }
     }
+    // Function to fetch and display notifications
+    function fetchNotifications() {
+        console.log("Polling for notifications...");
+        console.log("Current cookies:", document.cookie);
+
+        $.ajax({
+            url: 'fetch-notifications.php',
+            type: 'GET',
+            dataType: 'json',
+            timeout: 10000, // Add timeout
+            xhrFields: {
+                withCredentials: true
+            },
+            crossDomain: false,
+            beforeSend: function(xhr) {
+                // Ensure all cookies are sent
+                xhr.setRequestHeader('Cache-Control', 'no-cache');
+            },
+            success: function(response) {
+                console.log("Notification response:", response);
+                if (response.success) {
+                    updateNotificationUI(response.notifications, response.unread_count);
+                } else {
+                    console.error("Notification error:", response.error, response.debug);
+
+                    // If session is lost, try to redirect to login or reload page
+                    if (response.error === "No active session" || response.error === "Unauthorized") {
+                        console.warn("Session lost, consider redirecting to login");
+                        // Uncomment the next line if you want to redirect automatically
+                        // window.location.href = '../login.php';
+                    }
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error("AJAX request failed:", {
+                    status: status,
+                    error: error,
+                    responseText: xhr.responseText,
+                    statusCode: xhr.status
+                });
+            }
+        });
+    }
+    function debugSession() {
+        console.log("Current session info:");
+        console.log("Document cookies:", document.cookie);
+        console.log("Session name should contain:", "PHPSESSID");
+
+        // Test a simple authenticated request first
+        $.ajax({
+            url: 'test-session.php', // Create this file
+            type: 'GET',
+            xhrFields: {
+                withCredentials: true
+            },
+            success: function(response) {
+                console.log("Session test response:", response);
+            },
+            error: function(xhr, status, error) {
+                console.error("Session test failed:", error);
+            }
+        });
+    }
+
+    // Function to update the notification UI
+    function updateNotificationUI(notifications, unreadCount) {
+        const $notificationList = $('#notificationList');
+        const $badge = $('.badge-notification');
+
+        // Update the badge count
+        if (unreadCount > 0) {
+            $badge.text(unreadCount).show();
+        } else {
+            $badge.hide();
+        }
+
+        // Clear and repopulate the list
+        if (notifications.length === 0) {
+            $notificationList.html('<div class="text-center text-muted py-4">No new notifications</div>');
+            return;
+        }
+
+        let html = '';
+        notifications.forEach(notif => {
+            // Style based on type and read status
+            let iconClass = 'fas fa-bell';
+            if (notif.type === 'password_reset_request') {
+                iconClass = 'fas fa-key';
+            }
+            const isUnreadClass = notif.is_read ? '' : 'notification-unread';
+
+            html += `
+        <a href="javascript:void(0)" class="dropdown-item py-3 ${isUnreadClass}" data-id="${notif.id}" data-entity-type="${notif.related_entity_type}" data-entity-id="${notif.related_entity_id}">
+            <div class="d-flex">
+                <div class="flex-shrink-0 me-3">
+                    <div class="avatar">
+                        <span class="avatar-initial rounded-circle bg-label-${notif.type === 'password_reset_request' ? 'warning' : 'primary'}"><i class="${iconClass}"></i></span>
+                    </div>
+                </div>
+                <div class="flex-grow-1">
+                    <h6 class="mb-1">${notif.title}</h6>
+                    <p class="mb-0">${notif.message}</p>
+                    <small class="text-muted">${timeAgo(notif.created_at)}</small>
+                </div>
+                ${notif.is_read ? '' : '<div class="flex-shrink-0"><span class="badge dot bg-danger"></span></div>'}
+            </div>
+        </a>
+        <hr class="my-1">`;
+        });
+        $notificationList.html(html);
+
+        // Add click handler to mark as read and handle action
+        $notificationList.find('.dropdown-item').on('click', function() {
+            const notifId = $(this).data('id');
+            const entityType = $(this).data('entity-type');
+            const entityId = $(this).data('entity-id');
+
+            // 1. Mark notification as read via AJAX
+            markNotificationAsRead(notifId);
+
+            // 2. Handle the action based on type
+            if (entityType === 'user' && $(this).find('h6').text().includes('Password Reset')) {
+                // Redirect the admin to the user management page for that specific user
+                window.location.href = `user_management.php?action=force_reset&user_id=${entityId}`;
+            }
+        });
+    }
+
+    // Function to mark a notification as read
+    function markNotificationAsRead(notifId) {
+        $.ajax({
+            url: 'mark-notification-read.php',
+            type: 'POST',
+            data: { notification_id: notifId },
+            dataType: 'json'
+            // We don't need to do much on success, the UI is updated on the next poll
+        });
+    }
+
+    // Helper function for time ago
+    function timeAgo(dateTime) {
+        // ... (implement a function to convert ISO date to "5 min ago")
+        // You can use a library like `date-fns` or write a simple one.
+        return new Date(dateTime).toLocaleTimeString(); // Placeholder
+    }
+
+    // Poll every 30 seconds
+    $(document).ready(function() {
+        debugSession();
+        fetchNotifications();
+        setInterval(fetchNotifications, 30000);
+    });
 
     setInterval(updateTime, 60000);
 </script>
