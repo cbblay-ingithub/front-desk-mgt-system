@@ -15,8 +15,6 @@
     <link rel="stylesheet" href="../Sneat/assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.css" />
     <link rel="stylesheet" href="../Sneat/assets/vendor/libs/@form-validation/form-validation.css" />
     <link rel="stylesheet" href="../Sneat/assets/vendor/css/pages/page-auth.css" />
-    <!-- Add Font Awesome for eye icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
 
     <!-- Helpers -->
     <script src="../Sneat/assets/vendor/js/helpers.js"></script>
@@ -49,6 +47,18 @@
         .app-brand-text {
             display: inline-block;
             vertical-align: middle;
+        }
+
+        /* Custom validation styles */
+        .form-control.is-invalid {
+            border-color: #ff3e1d !important;
+        }
+
+        .invalid-feedback {
+            display: block;
+            color: #ff3e1d;
+            font-size: 0.875rem;
+            margin-top: 0.25rem;
         }
     </style>
 </head>
@@ -87,7 +97,7 @@
                     <h4 class="mb-2 text-center">Welcome! 👋</h4>
                     <p class="mb-4 text-center">Please sign-in to your account </p>
 
-                    <form method="POST" action="Login.php">
+                    <form id="formAuthentication" method="POST" action="Login.php">
                         <div class="mb-6 form-control-validation">
                             <label for="email" class="form-label">Email or Username</label>
                             <input
@@ -97,6 +107,7 @@
                                     name="email-username"
                                     placeholder="Enter your email or username"
                                     autofocus />
+                            <div class="invalid-feedback" id="emailError"></div>
                         </div>
                         <div class="mb-6 form-password-toggle form-control-validation">
                             <label class="form-label" for="password">Password</label>
@@ -108,8 +119,9 @@
                                         name="password"
                                         placeholder="&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;"
                                         aria-describedby="password" />
-                                <span class="input-group-text cursor-pointer"><i class="fas fa-eye"></i></span>
+                                <span class="input-group-text cursor-pointer"><i class="bx bx-hide"></i></span>
                             </div>
+                            <div class="invalid-feedback" id="passwordError"></div>
                         </div>
                         <div class="mb-7">
                             <div class="d-flex justify-content-between">
@@ -184,77 +196,69 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // Password visibility toggle
-        const passwordInput = document.getElementById('password');
-        const toggleButton = document.querySelector('.input-group-text.cursor-pointer');
+        // Wait for pages-auth.js to initialize
+        setTimeout(function() {
+            // Let pages-auth.js handle the password toggle functionality
+            // We'll just enhance the validation
 
-        if (passwordInput && toggleButton) {
-            toggleButton.addEventListener('click', function() {
-                const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
-                passwordInput.setAttribute('type', type);
+            const form = document.getElementById('formAuthentication');
+            if (form) {
+                // Store the original submit handler
+                const originalSubmit = form.onsubmit;
 
-                // Toggle eye icon
-                const eyeIcon = this.querySelector('i');
-                if (eyeIcon) {
-                    if (type === 'password') {
-                        eyeIcon.classList.remove('fa-eye-slash');
-                        eyeIcon.classList.add('fa-eye');
-                    } else {
-                        eyeIcon.classList.remove('fa-eye');
-                        eyeIcon.classList.add('fa-eye-slash');
+                // Add our custom validation
+                form.addEventListener('submit', function(e) {
+                    let isValid = true;
+
+                    // Reset errors
+                    document.querySelectorAll('.is-invalid').forEach(el => {
+                        el.classList.remove('is-invalid');
+                    });
+                    document.querySelectorAll('.invalid-feedback').forEach(el => {
+                        el.textContent = '';
+                    });
+
+                    // Validate email/username
+                    const emailInput = document.getElementById('email');
+                    const emailValue = emailInput.value.trim();
+
+                    if (!emailValue) {
+                        emailInput.classList.add('is-invalid');
+                        document.getElementById('emailError').textContent = 'Please enter your email or username';
+                        isValid = false;
+                    } else if (emailValue.includes('@') && !/\S+@\S+\.\S+/.test(emailValue)) {
+                        emailInput.classList.add('is-invalid');
+                        document.getElementById('emailError').textContent = 'Please enter a valid email address';
+                        isValid = false;
                     }
-                }
-            });
-        }
 
-        // Form validation
-        const form = document.querySelector('form[method="POST"]');
-        if (form) {
-            form.addEventListener('submit', function(e) {
-                let valid = true;
-                const email = document.getElementById('email').value.trim();
-                const password = document.getElementById('password').value.trim();
+                    // Validate password
+                    const passwordInput = document.getElementById('password');
+                    const passwordValue = passwordInput.value.trim();
 
-                // Reset errors
-                document.querySelectorAll('.is-invalid').forEach(el => {
-                    el.classList.remove('is-invalid');
+                    if (!passwordValue) {
+                        passwordInput.classList.add('is-invalid');
+                        document.getElementById('passwordError').textContent = 'Please enter your password';
+                        isValid = false;
+                    } else if (passwordValue.length < 6) {
+                        passwordInput.classList.add('is-invalid');
+                        document.getElementById('passwordError').textContent = 'Password must be at least 6 characters';
+                        isValid = false;
+                    }
+
+                    if (!isValid) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        return false;
+                    }
+
+                    // If valid, allow the original form validation to proceed
+                    if (originalSubmit) {
+                        return originalSubmit.call(this, e);
+                    }
                 });
-                document.querySelectorAll('.invalid-feedback').forEach(el => {
-                    el.remove();
-                });
-
-                // Validate email
-                if (!email) {
-                    document.getElementById('email').classList.add('is-invalid');
-                    const errorDiv = document.createElement('div');
-                    errorDiv.className = 'invalid-feedback';
-                    errorDiv.textContent = 'Please enter your email';
-                    document.getElementById('email').parentNode.appendChild(errorDiv);
-                    valid = false;
-                } else if (!/\S+@\S+\.\S+/.test(email)) {
-                    document.getElementById('email').classList.add('is-invalid');
-                    const errorDiv = document.createElement('div');
-                    errorDiv.className = 'invalid-feedback';
-                    errorDiv.textContent = 'Please enter a valid email';
-                    document.getElementById('email').parentNode.appendChild(errorDiv);
-                    valid = false;
-                }
-
-                // Validate password
-                if (!password) {
-                    document.getElementById('password').classList.add('is-invalid');
-                    const errorDiv = document.createElement('div');
-                    errorDiv.className = 'invalid-feedback';
-                    errorDiv.textContent = 'Please enter your password';
-                    document.getElementById('password').parentNode.appendChild(errorDiv);
-                    valid = false;
-                }
-
-                if (!valid) {
-                    e.preventDefault();
-                }
-            });
-        }
+            }
+        }, 100);
     });
 </script>
 </body>
