@@ -328,7 +328,7 @@ $currentPage = basename($_SERVER['PHP_SELF']);
         </li>
 
         <!-- Logout -->
-        <<li class="menu-item">
+        <li class="menu-item">
             <a href="javascript:void(0);" class="menu-link" data-tooltip="Logout" onclick="showLogoutModal()">
                 <i class="menu-icon icon-base bx bx-power-off"></i>
                 <div data-i18n="Logout">Logout</div>
