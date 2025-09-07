@@ -1,5 +1,6 @@
 <?php
 // Configure session settings
+global $conn;
 ini_set('session.cookie_domain', $_SERVER['HTTP_HOST']);
 ini_set('session.cookie_path', '/');
 ini_set('session.cookie_lifetime', 86400);
@@ -68,18 +69,75 @@ try {
     $stmt->close();
 
     // Get unread count
-    $countStmt = $conn->prepare("SELECT COUNT(*) as unread_count FROM notifications WHERE user_id = ? AND is_read = 0");
-    $countStmt->bind_param("i", $adminId);
-    $countStmt->execute();
-    $countResult = $countStmt->get_result()->fetch_assoc();
-    $unreadCount = $countResult['unread_count'] ?? 0;
-    $countStmt->close();
+    // Add these parameters at the top after session check
+    $filter = isset($_GET['filter']) ? $_GET['filter'] : 'all';
+    $page = isset($_GET['page']) ? max(1, intval($_GET['page'])) : 1;
+    $limit = isset($_GET['limit']) ? min(20, max(5, intval($_GET['limit']))) : 10;
+    $offset = ($page - 1) * $limit;
+    $countOnly = isset($_GET['count_only']) && $_GET['count_only'] === 'true';
 
-    header('Content-Type: application/json');
+    if ($countOnly) {
+        // Just return badge count
+        $countStmt = $conn->prepare("SELECT COUNT(*) as unread_count FROM notifications WHERE user_id = ? AND is_read = 0");
+        $countStmt->bind_param("i", $adminId);
+        $countStmt->execute();
+        $countResult = $countStmt->get_result()->fetch_assoc();
+        $unreadCount = $countResult['unread_count'] ?? 0;
+        $countStmt->close();
+
+        echo json_encode([
+            'success' => true,
+            'unread_count' => $unreadCount
+        ]);
+        exit;
+    }
+
+// Build query based on filter
+    $query = "SELECT id, type, title, message, related_entity_type, related_entity_id, is_read, created_at 
+          FROM notifications WHERE user_id = ?";
+    $params = [$adminId];
+    $types = "i";
+
+    if ($filter === 'unread') {
+        $query .= " AND is_read = 0";
+    } elseif ($filter === 'read') {
+        $query .= " AND is_read = 1";
+    }
+
+    $query .= " ORDER BY created_at DESC LIMIT ? OFFSET ?";
+    $params[] = $limit;
+    $params[] = $offset;
+    $types .= "ii";
+
+// Execute the query
+    $stmt = $conn->prepare($query);
+    $stmt->bind_param($types, ...$params);
+    $stmt->execute();
+    $notifications = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+    $stmt->close();
+
+// Get counts for filter badges
+    $countsStmt = $conn->prepare("
+    SELECT 
+        COUNT(*) as total,
+        SUM(CASE WHEN is_read = 0 THEN 1 ELSE 0 END) as unread,
+        SUM(CASE WHEN is_read = 1 THEN 1 ELSE 0 END) as read_count
+    FROM notifications WHERE user_id = ?
+");
+    $countsStmt->bind_param("i", $adminId);
+    $countsStmt->execute();
+    $countsResult = $countsStmt->get_result()->fetch_assoc();
+    $countsStmt->close();
+
     echo json_encode([
         'success' => true,
         'notifications' => $notifications,
-        'unread_count' => $unreadCount
+        'unread_count' => $countsResult['unread'],
+        'counts' => [
+            'total' => $countsResult['total'],
+            'unread' => $countsResult['unread'],
+            'read' => $countsResult['read_count']
+        ]
     ]);
 
 } catch (Exception $e) {

@@ -597,6 +597,46 @@ $conn->close();
             border-radius: 50%;
             font-weight: 600;
         }
+        /* Notification trigger styling */
+        .notification-trigger {
+            position: relative;
+            background: none;
+            border: none;
+            color: #6c757d;
+            font-size: 1.25rem;
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 0.375rem;
+            transition: all 0.2s ease;
+        }
+
+        .notification-trigger:hover {
+            background: rgba(0, 0, 0, 0.05);
+            color: #495057;
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: -2px;
+            right: -2px;
+            background: #dc3545;
+            color: white;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.6875rem;
+            font-weight: 600;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(220, 53, 69, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(220, 53, 69, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(220, 53, 69, 0); }
+        }
     </style>
 </head>
 
@@ -634,14 +674,16 @@ $conn->close();
                         <!-- Inside the navbar-nav align-items-center div -->
                         <ul class="navbar-nav">
                             <!-- Replace the current notification dropdown with this -->
-                            <li class="nav-item dropdown-notifications me-3">
-                                <a class="nav-link dropdown-toggle hide-arrow" href="javascript:void(0);" role="button"
-                                   data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" id="notificationDropdown">
+                            <li class="nav-item me-3">
+                                <button class="notification-trigger" id="notificationTrigger">
                                     <i class="fas fa-bell"></i>
-                                    <span class="badge bg-danger badge-notification" id="notificationBadge"
-                                          style="display: <?= $unreadCount > 0 ? 'inline-block' : 'none' ?>;">
-            <?= $unreadCount > 0 ? $unreadCount : '' ?>
-        </span>
+                                    <span class="notification-badge" id="notificationBadge"
+                                          style="display: <?= $unreadCount > 0 ? 'inline-flex' : 'none' ?>;">
+                                        <?= $unreadCount > 0 ? $unreadCount : '' ?>
+                                    </span>
+                                </button>
+                            </li>
+                            </span>
                                 </a>
                                 <div class="dropdown-menu dropdown-menu-end py-0" aria-labelledby="notificationDropdown">
                                     <div class="dropdown-menu-header">
@@ -988,6 +1030,7 @@ $conn->close();
     $(document).ready(function() {
         // Initialize charts
         initializeCharts();
+        const notificationPanel = new NotificationPanel();
 
         // Sidebar toggle functionality
         $('.layout-menu-toggle').off('click').on('click', function(e) {
@@ -1312,7 +1355,8 @@ $conn->close();
             timeElement.textContent = now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
         }
     }
-    // Enhanced notification functions
+
+    /*
     // Enhanced notification functions
     let lastUnreadCount = 0;
     function fetchNotifications() {
@@ -1565,8 +1609,9 @@ $conn->close();
         // Show loading state
         $('#notificationList').html('<div class="text-center py-4"><div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div></div>');
     });
-
+    */
     setInterval(updateTime, 60000);
 </script>
+<?php include 'notification-panel.html'; ?>
 </body>
 </html>

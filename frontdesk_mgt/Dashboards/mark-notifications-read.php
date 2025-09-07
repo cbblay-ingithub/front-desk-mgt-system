@@ -1,5 +1,5 @@
 <?php
-// Configure session settings
+// Use the same session configuration as your existing files
 global $conn;
 ini_set('session.cookie_domain', $_SERVER['HTTP_HOST']);
 ini_set('session.cookie_path', '/');
@@ -13,8 +13,7 @@ if ($_SERVER['HTTP_HOST'] === 'localhost:63342') {
 
 session_start();
 
-// Check if user is logged in and is admin
-if (!isset($_SESSION['userID']) || ($_SESSION['Role'] ?? '') !== 'admin') {
+if (!isset($_SESSION['userID'])) {
     header('Content-Type: application/json');
     echo json_encode(['success' => false, 'error' => 'Unauthorized']);
     exit;
@@ -24,7 +23,7 @@ require_once '../dbConfig.php';
 $adminId = $_SESSION['userID'];
 
 try {
-    $stmt = $conn->prepare("UPDATE notifications SET is_read = 1 WHERE user_id = ?");
+    $stmt = $conn->prepare("UPDATE notifications SET is_read = 1 WHERE user_id = ? AND is_read = 0");
     $stmt->bind_param("i", $adminId);
     $stmt->execute();
     $affectedRows = $stmt->affected_rows;
