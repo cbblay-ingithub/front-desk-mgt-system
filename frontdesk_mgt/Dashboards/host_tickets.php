@@ -1,6 +1,7 @@
 <?php
+session_start();
+
 // Enable error reporting for debugging
-ini_set('display_errors', 0); // Hide errors from users
 ini_set('log_errors', 1); // Log errors
 ini_set('error_log', 'php_errors.log'); // Specify your error log path
 
@@ -13,7 +14,7 @@ require_once 'ticket_ops.php';
 require_once 'view_ticket.php';
 
 // Start session to access user role and ID
-session_start();
+
 $userRole = $_SESSION['role'] ?? 'host'; // Default to host if role not set
 $userId = $_SESSION['userID'] ?? null;
 
@@ -523,7 +524,7 @@ $conn->close();
 <body>
 <div class="layout-wrapper layout-content-navbar">
     <div class="layout-container">
-        <?php include 'host-sidebar.php'; ?>
+        <?php include __DIR__ . '/host-sidebar.php'; ?>
         <div class="layout-content">
             <!-- Navbar -->
             <nav class="layout-navbar container-xxl navbar-detached navbar navbar-expand-xl align-items-center bg-navbar-theme" id="layout-navbar">

@@ -1,6 +1,5 @@
 <?php
 // Ticket operations for the Help Desk System
-require_once 'notif_functions.php'; //includes notification functions
 
 // Process ticket creation form submission
 function createTicket($conn) {
@@ -270,7 +269,8 @@ function generateAssignTicketModalHTML($ticketId, $users) {
     return $html;
 }
 // Function to create the Resolve Ticket modal HTML
-function generateResolveTicketModalHTML($ticketId) {
+function generateResolveTicketModalHTML($ticketId): string
+{
     return '
     <div id="resolveTicketModal" class="modal">
         <div class="modal-content">

@@ -1,4 +1,6 @@
 <?php
+session_start();
+
 // Enable error reporting for debugging
 ini_set('display_errors', 0); // Hide errors from users
 ini_set('log_errors', 1); // Log errors
@@ -7,13 +9,11 @@ ini_set('error_log', 'php_errors.log'); // Specify your error log path
 // Include database configuration and core ticket functions
 global $conn;
 require_once '../dbConfig.php';
-
 require_once 'ticket_functions.php';
 require_once 'ticket_ops.php';
 require_once 'view_ticket.php';
 
-// Start session to access user role and ID
-session_start();
+
 $userRole = $_SESSION['role'] ?? 'host'; // Default to host if role not set
 $userId = $_SESSION['userID'] ?? null;
 
@@ -120,7 +120,6 @@ $conn->close();
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="help_desk.css">
-    <link rel="stylesheet" href="notification.css">
     <style>
         /* Dropdown menu styles */
         .dropdown {
@@ -564,10 +563,10 @@ $conn->close();
 
     </style>
 </head>
-<div data-user-id="<?php echo $_SESSION['$user_id'] ?? ''; ?>">
+<div data-user-id="<?php echo $userId ?? ''; ?>">
     <div class="layout-wrapper layout-content-navbar">
         <div class="layout-container">
-            <?php include 'sidebar.php'; ?>
+            <?php include __DIR__ . '/sidebar.php'; ?>
             <div class="layout-page">
                 <!-- Navbar -->
                 <nav class="layout-navbar container-xxl navbar-detached navbar navbar-expand-xl align-items-center bg-navbar-theme" id="layout-navbar">
@@ -851,7 +850,6 @@ $conn->close();
     <?php endif; ?>
 </div>
 
-<script src="notification.js"></script>
 <script src="../../Sneat/assets/vendor/js/helpers.js"></script>
 <script src="../../Sneat/assets/vendor/js/menu.js"></script>
 <script src="../../Sneat/assets/js/main.js"></script>
