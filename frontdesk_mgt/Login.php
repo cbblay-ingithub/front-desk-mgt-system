@@ -32,7 +32,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 if ($currentTime > $tempPasswordExpiry) {
                     // Temporary password has expired
                     $auditLogger->logLogin($userID, $role, false, "Expired temporary password used");
-                    header("Location: Dashboards/401-page.html?error=temp_password_expired");
+                    header("Location: Auth.html?error=temp_password_expired");
                     exit;
                 }
 
@@ -42,7 +42,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             if ($status !== 'active') {
                 // Log inactive account attempt
                 $auditLogger->logLogin($userID, $role, false, "Inactive account attempted login");
-                header("Location: Dashboards/401-page.html");
+                header("Location: Auth.html?error=inactive_account");
                 exit;
             } else {
                 $success = true;
@@ -87,19 +87,25 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         } else {
             // Log failed password attempt
             $auditLogger->logLogin($userID ?? 0, $role ?? 'unknown', false, "Incorrect password");
-            echo "Incorrect password.";
+
+            // Redirect back to log in with error message
+            header("Location: Auth.html?error=invalid_credentials&message=Incorrect password");
+            exit;
         }
 
-        // Legacy login attempt tracking (optional - can be removed if using audit logs)
+        // Legacy login attempt tracking
         $attemptStmt = $conn->prepare("INSERT INTO login_attempts (user_id, success, ip_address) VALUES (?, ?, ?)");
-        $successInt = (int)$success; // Create a variable first
+        $successInt = (int)$success;
         $attemptStmt->bind_param("iis", $userID, $successInt, $ip);
         $attemptStmt->execute();
         $attemptStmt->close();
     } else {
         // Log non-existent user attempt
         $auditLogger->logLogin(0, 'unknown', false, "Attempted login with non-existent email: $email");
-        echo "No account found with that email.";
+
+        // Redirect back to login with error message
+        header("Location: Auth.html?error=invalid_credentials&message=No account found with that email");
+        exit;
     }
     $stmt->close();
 }

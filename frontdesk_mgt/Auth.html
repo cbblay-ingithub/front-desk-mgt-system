@@ -60,6 +60,31 @@
             font-size: 0.875rem;
             margin-top: 0.25rem;
         }
+        /* Error alert styling */
+        .alert-error {
+            background-color: #ffebee;
+            color: #c62828;
+            border: 1px solid #ef9a9a;
+            border-radius: 6px;
+            padding: 12px 16px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .alert-error.show {
+            display: block;
+            animation: fadeIn 0.3s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .alert-icon {
+            margin-right: 8px;
+            vertical-align: middle;
+        }
     </style>
 </head>
 <body>
@@ -68,6 +93,11 @@
         <div class="authentication-inner">
             <div class="card px-sm-6 px-0">
                 <div class="card-body">
+                    <!-- Error Alert (initially hidden) -->
+                    <div id="errorAlert" class="alert-error">
+                        <span class="alert-icon">⚠️</span>
+                        <span id="errorMessage"></span>
+                    </div>
                     <!-- Logo -->
                     <div class="app-brand mb-8 text-center">
                         <a href="Auth.html" class="app-brand-link">
@@ -99,13 +129,13 @@
 
                     <form id="formAuthentication" method="POST" action="Login.php">
                         <div class="mb-6 form-control-validation">
-                            <label for="email" class="form-label">Email or Username</label>
+                            <label for="email" class="form-label">Email</label>
                             <input
                                     type="text"
                                     class="form-control"
                                     id="email"
                                     name="email-username"
-                                    placeholder="Enter your email or username"
+                                    placeholder="Enter your email address"
                                     autofocus />
                             <div class="invalid-feedback" id="emailError"></div>
                         </div>
@@ -198,9 +228,38 @@
     document.addEventListener('DOMContentLoaded', function() {
         // Wait for pages-auth.js to initialize
         setTimeout(function() {
-            // Let pages-auth.js handle the password toggle functionality
+            // Pages-auth.js handles the password toggle functionality
             // We'll just enhance the validation
+            // Check for URL parameters with error messages
+            const urlParams = new URLSearchParams(window.location.search);
+            const error = urlParams.get('error');
+            const errorMessage = urlParams.get('message');
 
+            if (error) {
+                // Show error alert with appropriate message
+                const errorAlert = document.getElementById('errorAlert');
+                const errorMessageElement = document.getElementById('errorMessage');
+
+                switch(error) {
+                    case 'invalid_credentials':
+                        errorMessageElement.textContent = errorMessage || 'Invalid email or password. Please try again.';
+                        break;
+                    case 'inactive_account':
+                        errorMessageElement.textContent = 'Your account is inactive. Please contact support.';
+                        break;
+                    case 'temp_password_expired':
+                        errorMessageElement.textContent = 'Your temporary password has expired. Please request a new one.';
+                        break;
+                    default:
+                        errorMessageElement.textContent = errorMessage || 'An error occurred during login. Please try again.';
+                }
+
+                errorAlert.classList.add('show');
+
+                // Clear the error from URL without reloading
+                const newUrl = window.location.pathname;
+                window.history.replaceState({}, document.title, newUrl);
+            }
             const form = document.getElementById('formAuthentication');
             if (form) {
                 // Store the original submit handler
@@ -224,7 +283,7 @@
 
                     if (!emailValue) {
                         emailInput.classList.add('is-invalid');
-                        document.getElementById('emailError').textContent = 'Please enter your email or username';
+                        document.getElementById('emailError').textContent = 'Please enter your email ';
                         isValid = false;
                     } else if (emailValue.includes('@') && !/\S+@\S+\.\S+/.test(emailValue)) {
                         emailInput.classList.add('is-invalid');
