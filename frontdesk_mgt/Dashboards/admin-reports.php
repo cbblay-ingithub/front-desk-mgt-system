@@ -79,7 +79,6 @@ $conn->close();
             overflow-y: auto !important;
             overflow-x: hidden !important;
             z-index: 1000 !important;
-            padding-top: 1rem;
         }
         #layout-navbar {
             position: sticky;
