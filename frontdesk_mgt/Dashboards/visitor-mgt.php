@@ -7,15 +7,13 @@ global $conn;
 // FIXED QUERY: Properly checks if visitor is currently checked in
 $sql = "SELECT 
             v.*,
-            -- Check if visitor has any active check-in (no checkout time)
-            CASE 
-                WHEN EXISTS (
+            -- Check if visitor has any active check-in (no checkout time AND status is 'Checked In')
+            IF(EXISTS (
                     SELECT 1 FROM visitor_Logs vl 
                     WHERE vl.VisitorID = v.VisitorID 
                     AND vl.CheckOutTime IS NULL
-                ) THEN 1 
-                ELSE 0 
-            END AS is_checked_in,
+                    AND vl.Status = 'Checked In'
+                ), 1, 0) AS is_checked_in,
             -- Get the most recent badge number from appointments if exists
             (SELECT a.BadgeNumber FROM appointments a 
              WHERE a.VisitorID = v.VisitorID 
@@ -40,7 +38,7 @@ while ($row = $result->fetch_assoc()) {
     <!-- Main CSS Libraries -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="notification.css">
+
 
     <!-- Sneat CSS (same as host_dashboard) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -173,10 +171,8 @@ while ($row = $result->fetch_assoc()) {
         }
 
         .badge-number {
-            background: linear-gradient(45deg, #007bff, #0056b3);
-            color: white;
+            color: #495057;
             padding: 5px 10px;
-            border-radius: 15px;
             font-weight: bold;
             font-size: 0.85rem;
         }
@@ -194,10 +190,15 @@ while ($row = $result->fetch_assoc()) {
             border: 1px solid #c3e6cb;
         }
 
-        .status-not-checked-in {
+        .status-checked-out {
             background-color: #f8d7da;
             color: #721c24;
             border: 1px solid #f5c6cb;
+        }
+        .status-not-checked-in {
+            background-color: #fada7d;
+            color: #72541c;
+            border: 1px solid #fada7d;
         }
 
         .action-btn {
@@ -368,14 +369,10 @@ while ($row = $result->fetch_assoc()) {
                                     </button>
 
                                     <?php if ($v['is_checked_in'] > 0): ?>
-                                        <form method="POST" action="process_visit.php" class="d-inline">
-                                            <input type="hidden" name="action" value="check_out">
-                                            <input type="hidden" name="visitor_id" value="<?= $v['VisitorID'] ?>">
-                                            <button type="submit" class="btn btn-danger action-btn"
-                                                    onclick="return confirm('Are you sure you want to check out this visitor?')">
-                                                <i class="fas fa-sign-out-alt"></i> Check Out
-                                            </button>
-                                        </form>
+                                        <button type="button" class="btn btn-danger action-btn"
+                                                onclick="return checkOutVisitor(<?= $v['VisitorID'] ?>, this)">
+                                            <i class="fas fa-sign-out-alt"></i> Check Out
+                                        </button>
                                     <?php endif; ?>
                                 </td>
                             </tr>
@@ -391,11 +388,6 @@ while ($row = $result->fetch_assoc()) {
                     </div>
                 </div>
 
-                <form action="generate_report.php" method="POST" class="mt-4 text-end">
-                    <button type="submit" class="btn btn-outline-dark btn-sm">
-                        <i class="fas fa-file-export me-2"></i>Generate Visitor Logs
-                    </button>
-                </form>
             </div>
 
             <!-- Check In Modal -->
@@ -504,7 +496,6 @@ while ($row = $result->fetch_assoc()) {
     </div>
 </div>
 
-<script src="notification.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <!-- Include Sneat JS files like host_dashboard does -->
 <script src="../../Sneat/assets/vendor/libs/jquery/jquery.js"></script>
@@ -599,7 +590,7 @@ while ($row = $result->fetch_assoc()) {
             } else if (currentFilter === 'checked-in') {
                 matchesFilter = status === 'checked-in';
             } else if (currentFilter === 'not-checked-in') {
-                matchesFilter = status === 'not-checked-in';
+                matchesFilter = status === 'not-checked-in' || status === 'checked-out';
             }
 
             // Check search
@@ -673,6 +664,79 @@ while ($row = $result->fetch_assoc()) {
     function hideLoading() {
         $('#visitorsTable').removeClass('loading');
     }
+    // Add this function to your existing JavaScript
+    // Add this function to handle check-outs
+    function checkOutVisitor(visitorId, buttonElement) {
+        if (!confirm('Are you sure you want to check out this visitor?')) {
+            return false;
+        }
+
+        // Disable button during request
+        const $button = $(buttonElement);
+        $button.prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> Processing...');
+
+        $.ajax({
+            url: 'process_visit.php',
+            method: 'POST',
+            data: {
+                action: 'check_out',
+                visitor_id: visitorId
+            },
+            success: function(response) {
+                if (response.success) {
+                    // Find the row and update status to "Checked Out"
+                    const $row = $button.closest('tr');
+                    $row.attr('data-status', 'checked-out');
+
+                    // Update status badge
+                    $row.find('.status-badge')
+                        .removeClass('status-checked-in status-not-checked-in')
+                        .addClass('status-checked-out')
+                        .text('Checked Out');
+
+                    // Remove the check-out button since visitor is now checked out
+                    $button.remove();
+
+                    // Show success message
+                    showNotification(response.message, 'success');
+
+                    // Update filter counts
+                    updateCounts();
+                } else {
+                    showNotification(response.message, 'error');
+                    $button.prop('disabled', false).html('<i class="fas fa-sign-out-alt"></i> Check Out');
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error('AJAX Error:', error);
+                showNotification('Error checking out visitor: ' + error, 'error');
+                $button.prop('disabled', false).html('<i class="fas fa-sign-out-alt"></i> Check Out');
+            }
+        });
+
+        return false; // Prevent default form submission
+    }
+
+    // Update the notification function to handle both types
+    function showNotification(message, type = 'success') {
+        const alertClass = type === 'success' ? 'alert-success' : 'alert-danger';
+        const icon = type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle';
+
+        const $alert = $(`<div class="alert ${alertClass} alert-dismissible fade show" role="alert">
+        <i class="fas ${icon} me-2"></i>${message}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>`);
+
+        // Prepend to container
+        $('.container-p-y').prepend($alert);
+
+        // Auto-remove after 5 seconds
+        setTimeout(() => {
+            $alert.alert('close');
+        }, 5000);
+    }
+
+
 
     // Enhanced search with debouncing for better performance
     let searchTimeout;

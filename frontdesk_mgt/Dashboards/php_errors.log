@@ -4894,3 +4894,7 @@ Stack trace:
 [10-Sep-2025 12:10:02 Europe/Berlin] PHP   1. {main}() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\help_desk.php:0
 [10-Sep-2025 12:10:02 Europe/Berlin] Failed to create notification: Cannot add or update a child row: a foreign key constraint fails (`frontdesk`.`notifications`, CONSTRAINT `fk_notifications_user_id` FOREIGN KEY (`user_id`) REFERENCES `users` (`UserID`) ON DELETE CASCADE)
 [10-Sep-2025 12:10:02 Europe/Berlin] Failed to create assignment notification: Cannot add or update a child row: a foreign key constraint fails (`frontdesk`.`notifications`, CONSTRAINT `fk_notifications_user_id` FOREIGN KEY (`user_id`) REFERENCES `users` (`UserID`) ON DELETE CASCADE)
+[10-Sep-2025 14:01:28 Europe/Berlin] Checking for ticket creation POST data: Array
+(
+)
+
