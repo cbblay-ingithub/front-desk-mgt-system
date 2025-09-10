@@ -19,6 +19,7 @@
     <link rel="stylesheet" href="../../Sneat/assets/vendor/fonts/iconify-icons.css" />
     <link rel="stylesheet" href="../../Sneat/assets/vendor/css/core.css" />
     <link rel="stylesheet" href="../../Sneat/assets/css/demo.css" />
+    <link rel="stylesheet" href="notification-styles.css">
     <style>
         html, body {
             overflow-x: hidden !important;
@@ -483,7 +484,7 @@
         }
     </style>
 </head>
-<body>
+<body class="admin-page">
 <div class="layout-wrapper layout-content-navbar">
     <div class="layout-container">
         <?php include 'admin-sidebar.php'; ?>
@@ -663,6 +664,7 @@
     <script src="../../Sneat/assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.js"></script>
     <script src="../../Sneat/assets/vendor/js/menu.js"></script>
     <script src="../../Sneat/assets/js/main.js"></script>
+    <script src="global-notification-system.js"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         // Initialize the menu

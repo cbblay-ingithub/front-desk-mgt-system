@@ -11,6 +11,8 @@ if ($_SERVER['HTTP_HOST'] === 'localhost:63342') {
 }
 
 require_once '../dbConfig.php';
+require_once 'NotificationCreator.php';
+
 global $conn;
 global $unreadCount;
 session_start();
@@ -89,6 +91,8 @@ function getDashboardStats($conn) {
 
     return $stats;
 }
+
+
 
 // Get chart data
 function getChartData($conn) {
@@ -219,7 +223,7 @@ $conn->close();
     <link href="https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-
+    <link rel="stylesheet" href="notification-styles.css">
 
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -640,7 +644,7 @@ $conn->close();
     </style>
 </head>
 
-<body>
+<body class="admin-page">
 <div class="layout-wrapper layout-content-navbar">
     <div class="layout-container">
         <?php include 'admin-sidebar.php'; ?>
@@ -666,7 +670,7 @@ $conn->close();
                                 <i class="fas fa-user-circle me-1"></i> <?php echo $_SESSION['name'] ?? 'Admin'; ?>
                             </button>
                             <ul class="dropdown-menu dropdown-menu-end">
-                                <li><a class="dropdown-item" href="settings.php"><i class="fas fa-cog me-2"></i> Settings</a></li>
+                                <li><a class="dropdown-item" href="admin_settings.php"><i class="fas fa-cog me-2"></i> Settings</a></li>
                                 <li><hr class="dropdown-divider"></li>
                                 <li><a class="dropdown-item" href="../Logout.php"><i class="fas fa-sign-out-alt me-2"></i> Logout</a></li>
                             </ul>
@@ -1025,12 +1029,11 @@ $conn->close();
 <!-- Scripts -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-
+<script src="global-notification-system.js"></script>
 <script>
     $(document).ready(function() {
         // Initialize charts
         initializeCharts();
-        const notificationPanel = new NotificationPanel();
 
         // Sidebar toggle functionality
         $('.layout-menu-toggle').off('click').on('click', function(e) {

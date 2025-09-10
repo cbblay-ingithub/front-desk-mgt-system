@@ -177,6 +177,7 @@ function generateTemporaryPassword($length = 12): string {
     <title>Settings</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="notification-styles.css">
     <style>
         /* Reuse your existing sidebar styles */
         /* Add any additional styles needed for this page */
@@ -317,7 +318,7 @@ function generateTemporaryPassword($length = 12): string {
         }
     </style>
 </head>
-<body>
+<body class="admin-page">
 <div class="layout-wrapper layout-content-navbar">
     <div class="layout-container">
         <?php include 'admin-sidebar.php'; ?>
@@ -457,6 +458,7 @@ function generateTemporaryPassword($length = 12): string {
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="global-notification-system.js"></script>
 <script>
     $(document).ready(function() {
         // Sidebar toggle functionality

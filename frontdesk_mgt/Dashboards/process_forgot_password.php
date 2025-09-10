@@ -7,6 +7,7 @@ error_reporting(E_ALL);
 ob_start();
 global $conn;
 require_once '../dbConfig.php';
+require_once 'NotificationCreator.php';
 session_start();
 
 // Set header to return JSON
@@ -31,6 +32,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $callStmt = $conn->prepare("CALL LogPasswordResetRequest(?, ?, ?)");
         $callStmt->bind_param("iss", $user['UserID'], $user['Email'], $user['Name']);
         $callStmt->execute();
+
+        // 4. Create notification for all admins
+        $notificationCreator = new NotificationCreator($conn);
+        $notificationResult = $notificationCreator->notifyUserEvent(
+            $user['UserID'],
+            'password_reset_request',
+            $user['UserID'],
+            ['email' => $user['Email'], 'name' => $user['Name']]
+        );
+
+        if (!$notificationResult['success']) {
+            error_log("Failed to create notification: " . $notificationResult['error']);
+        }
 
         $response['success'] = true;
         $response['message'] = "If your email is registered, you will receive a reset mail shortly. Please also wait for an admin to assist you.";

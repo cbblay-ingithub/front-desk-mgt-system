@@ -1521,3 +1521,2072 @@
 (
 )
 
+[08-Sep-2025 09:07:28 Europe/Berlin] PHP Warning:  require_once(notif_functions.php): Failed to open stream: No such file or directory in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\ticket_ops.php on line 3
+[08-Sep-2025 09:07:28 Europe/Berlin] PHP Stack trace:
+[08-Sep-2025 09:07:28 Europe/Berlin] PHP   1. {main}() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\help_desk.php:0
+[08-Sep-2025 09:07:28 Europe/Berlin] PHP   2. require_once() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\help_desk.php:12
+[08-Sep-2025 09:07:28 Europe/Berlin] PHP Fatal error:  Uncaught Error: Failed opening required 'notif_functions.php' (include_path='C:\xampp\php\PEAR') in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\ticket_ops.php:3
+Stack trace:
+#0 C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\help_desk.php(12): require_once()
+#1 {main}
+  thrown in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\ticket_ops.php on line 3
+[08-Sep-2025 09:07:33 Europe/Berlin] PHP Warning:  require_once(notif_functions.php): Failed to open stream: No such file or directory in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\ticket_ops.php on line 3
+[08-Sep-2025 09:07:33 Europe/Berlin] PHP Stack trace:
+[08-Sep-2025 09:07:33 Europe/Berlin] PHP   1. {main}() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\help_desk.php:0
+[08-Sep-2025 09:07:33 Europe/Berlin] PHP   2. require_once() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\help_desk.php:12
+[08-Sep-2025 09:07:33 Europe/Berlin] PHP Fatal error:  Uncaught Error: Failed opening required 'notif_functions.php' (include_path='C:\xampp\php\PEAR') in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\ticket_ops.php:3
+Stack trace:
+#0 C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\help_desk.php(12): require_once()
+#1 {main}
+  thrown in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\ticket_ops.php on line 3
+[08-Sep-2025 09:07:49 Europe/Berlin] PHP Warning:  require_once(notif_functions.php): Failed to open stream: No such file or directory in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\ticket_ops.php on line 3
+[08-Sep-2025 09:07:49 Europe/Berlin] PHP Stack trace:
+[08-Sep-2025 09:07:49 Europe/Berlin] PHP   1. {main}() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\help_desk.php:0
+[08-Sep-2025 09:07:49 Europe/Berlin] PHP   2. require_once() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\help_desk.php:12
+[08-Sep-2025 09:07:49 Europe/Berlin] PHP Fatal error:  Uncaught Error: Failed opening required 'notif_functions.php' (include_path='C:\xampp\php\PEAR') in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\ticket_ops.php:3
+Stack trace:
+#0 C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\help_desk.php(12): require_once()
+#1 {main}
+  thrown in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\ticket_ops.php on line 3
+[08-Sep-2025 09:07:55 Europe/Berlin] PHP Warning:  require_once(notif_functions.php): Failed to open stream: No such file or directory in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\ticket_ops.php on line 3
+[08-Sep-2025 09:07:55 Europe/Berlin] PHP Stack trace:
+[08-Sep-2025 09:07:55 Europe/Berlin] PHP   1. {main}() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\help_desk.php:0
+[08-Sep-2025 09:07:55 Europe/Berlin] PHP   2. require_once() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\help_desk.php:12
+[08-Sep-2025 09:07:55 Europe/Berlin] PHP Fatal error:  Uncaught Error: Failed opening required 'notif_functions.php' (include_path='C:\xampp\php\PEAR') in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\ticket_ops.php:3
+Stack trace:
+#0 C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\help_desk.php(12): require_once()
+#1 {main}
+  thrown in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\ticket_ops.php on line 3
+[08-Sep-2025 09:08:29 Europe/Berlin] PHP Warning:  require_once(notif_functions.php): Failed to open stream: No such file or directory in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\ticket_ops.php on line 3
+[08-Sep-2025 09:08:29 Europe/Berlin] PHP Stack trace:
+[08-Sep-2025 09:08:29 Europe/Berlin] PHP   1. {main}() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\help_desk.php:0
+[08-Sep-2025 09:08:29 Europe/Berlin] PHP   2. require_once() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\help_desk.php:12
+[08-Sep-2025 09:08:29 Europe/Berlin] PHP Fatal error:  Uncaught Error: Failed opening required 'notif_functions.php' (include_path='C:\xampp\php\PEAR') in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\ticket_ops.php:3
+Stack trace:
+#0 C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\help_desk.php(12): require_once()
+#1 {main}
+  thrown in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\ticket_ops.php on line 3
+[08-Sep-2025 09:09:07 Europe/Berlin] PHP Warning:  require_once(notif_functions.php): Failed to open stream: No such file or directory in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\ticket_ops.php on line 3
+[08-Sep-2025 09:09:07 Europe/Berlin] PHP Stack trace:
+[08-Sep-2025 09:09:07 Europe/Berlin] PHP   1. {main}() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_tickets.php:0
+[08-Sep-2025 09:09:07 Europe/Berlin] PHP   2. require_once() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_tickets.php:11
+[08-Sep-2025 09:09:07 Europe/Berlin] PHP Fatal error:  Uncaught Error: Failed opening required 'notif_functions.php' (include_path='C:\xampp\php\PEAR') in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\ticket_ops.php:3
+Stack trace:
+#0 C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_tickets.php(11): require_once()
+#1 {main}
+  thrown in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\ticket_ops.php on line 3
+[08-Sep-2025 09:09:22 Europe/Berlin] PHP Warning:  require_once(notif_functions.php): Failed to open stream: No such file or directory in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\ticket_ops.php on line 3
+[08-Sep-2025 09:09:22 Europe/Berlin] PHP Stack trace:
+[08-Sep-2025 09:09:22 Europe/Berlin] PHP   1. {main}() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\help_desk.php:0
+[08-Sep-2025 09:09:22 Europe/Berlin] PHP   2. require_once() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\help_desk.php:12
+[08-Sep-2025 09:09:22 Europe/Berlin] PHP Fatal error:  Uncaught Error: Failed opening required 'notif_functions.php' (include_path='C:\xampp\php\PEAR') in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\ticket_ops.php:3
+Stack trace:
+#0 C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\help_desk.php(12): require_once()
+#1 {main}
+  thrown in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\ticket_ops.php on line 3
+[08-Sep-2025 09:10:00 Europe/Berlin] PHP Warning:  require_once(notif_functions.php): Failed to open stream: No such file or directory in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\ticket_ops.php on line 3
+[08-Sep-2025 09:10:00 Europe/Berlin] PHP Stack trace:
+[08-Sep-2025 09:10:00 Europe/Berlin] PHP   1. {main}() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\help_desk.php:0
+[08-Sep-2025 09:10:00 Europe/Berlin] PHP   2. require_once() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\help_desk.php:12
+[08-Sep-2025 09:10:00 Europe/Berlin] PHP Fatal error:  Uncaught Error: Failed opening required 'notif_functions.php' (include_path='C:\xampp\php\PEAR') in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\ticket_ops.php:3
+Stack trace:
+#0 C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\help_desk.php(12): require_once()
+#1 {main}
+  thrown in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\ticket_ops.php on line 3
+[08-Sep-2025 09:10:12 Europe/Berlin] PHP Warning:  require_once(notif_functions.php): Failed to open stream: No such file or directory in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\ticket_ops.php on line 3
+[08-Sep-2025 09:10:12 Europe/Berlin] PHP Stack trace:
+[08-Sep-2025 09:10:12 Europe/Berlin] PHP   1. {main}() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\help_desk.php:0
+[08-Sep-2025 09:10:12 Europe/Berlin] PHP   2. require_once() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\help_desk.php:12
+[08-Sep-2025 09:10:12 Europe/Berlin] PHP Fatal error:  Uncaught Error: Failed opening required 'notif_functions.php' (include_path='C:\xampp\php\PEAR') in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\ticket_ops.php:3
+Stack trace:
+#0 C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\help_desk.php(12): require_once()
+#1 {main}
+  thrown in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\ticket_ops.php on line 3
+[08-Sep-2025 09:11:23 Europe/Berlin] PHP Warning:  require_once(notif_functions.php): Failed to open stream: No such file or directory in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\ticket_ops.php on line 3
+[08-Sep-2025 09:11:23 Europe/Berlin] PHP Stack trace:
+[08-Sep-2025 09:11:23 Europe/Berlin] PHP   1. {main}() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\help_desk.php:0
+[08-Sep-2025 09:11:23 Europe/Berlin] PHP   2. require_once() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\help_desk.php:12
+[08-Sep-2025 09:11:23 Europe/Berlin] PHP Fatal error:  Uncaught Error: Failed opening required 'notif_functions.php' (include_path='C:\xampp\php\PEAR') in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\ticket_ops.php:3
+Stack trace:
+#0 C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\help_desk.php(12): require_once()
+#1 {main}
+  thrown in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\ticket_ops.php on line 3
+[08-Sep-2025 09:12:26 Europe/Berlin] PHP Warning:  require_once(notif_functions.php): Failed to open stream: No such file or directory in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\ticket_ops.php on line 3
+[08-Sep-2025 09:12:26 Europe/Berlin] PHP Stack trace:
+[08-Sep-2025 09:12:26 Europe/Berlin] PHP   1. {main}() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\help_desk.php:0
+[08-Sep-2025 09:12:26 Europe/Berlin] PHP   2. require_once() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\help_desk.php:12
+[08-Sep-2025 09:12:26 Europe/Berlin] PHP Fatal error:  Uncaught Error: Failed opening required 'notif_functions.php' (include_path='C:\xampp\php\PEAR') in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\ticket_ops.php:3
+Stack trace:
+#0 C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\help_desk.php(12): require_once()
+#1 {main}
+  thrown in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\ticket_ops.php on line 3
+[08-Sep-2025 09:12:37 Europe/Berlin] PHP Warning:  require_once(notif_functions.php): Failed to open stream: No such file or directory in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\ticket_ops.php on line 3
+[08-Sep-2025 09:12:37 Europe/Berlin] PHP Stack trace:
+[08-Sep-2025 09:12:37 Europe/Berlin] PHP   1. {main}() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_tickets.php:0
+[08-Sep-2025 09:12:37 Europe/Berlin] PHP   2. require_once() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_tickets.php:11
+[08-Sep-2025 09:12:37 Europe/Berlin] PHP Fatal error:  Uncaught Error: Failed opening required 'notif_functions.php' (include_path='C:\xampp\php\PEAR') in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\ticket_ops.php:3
+Stack trace:
+#0 C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_tickets.php(11): require_once()
+#1 {main}
+  thrown in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\ticket_ops.php on line 3
+[08-Sep-2025 09:12:41 Europe/Berlin] PHP Warning:  require_once(notif_functions.php): Failed to open stream: No such file or directory in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\ticket_ops.php on line 3
+[08-Sep-2025 09:12:41 Europe/Berlin] PHP Stack trace:
+[08-Sep-2025 09:12:41 Europe/Berlin] PHP   1. {main}() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_tickets.php:0
+[08-Sep-2025 09:12:41 Europe/Berlin] PHP   2. require_once() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_tickets.php:11
+[08-Sep-2025 09:12:41 Europe/Berlin] PHP Fatal error:  Uncaught Error: Failed opening required 'notif_functions.php' (include_path='C:\xampp\php\PEAR') in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\ticket_ops.php:3
+Stack trace:
+#0 C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_tickets.php(11): require_once()
+#1 {main}
+  thrown in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\ticket_ops.php on line 3
+[08-Sep-2025 09:13:04 Europe/Berlin] PHP Warning:  require_once(notif_functions.php): Failed to open stream: No such file or directory in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\ticket_ops.php on line 3
+[08-Sep-2025 09:13:04 Europe/Berlin] PHP Stack trace:
+[08-Sep-2025 09:13:04 Europe/Berlin] PHP   1. {main}() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\help_desk.php:0
+[08-Sep-2025 09:13:04 Europe/Berlin] PHP   2. require_once() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\help_desk.php:12
+[08-Sep-2025 09:13:04 Europe/Berlin] PHP Fatal error:  Uncaught Error: Failed opening required 'notif_functions.php' (include_path='C:\xampp\php\PEAR') in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\ticket_ops.php:3
+Stack trace:
+#0 C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\help_desk.php(12): require_once()
+#1 {main}
+  thrown in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\ticket_ops.php on line 3
+[08-Sep-2025 09:13:16 Europe/Berlin] PHP Warning:  require_once(notif_functions.php): Failed to open stream: No such file or directory in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\ticket_ops.php on line 3
+[08-Sep-2025 09:13:16 Europe/Berlin] PHP Stack trace:
+[08-Sep-2025 09:13:16 Europe/Berlin] PHP   1. {main}() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\help_desk.php:0
+[08-Sep-2025 09:13:16 Europe/Berlin] PHP   2. require_once() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\help_desk.php:12
+[08-Sep-2025 09:13:16 Europe/Berlin] PHP Fatal error:  Uncaught Error: Failed opening required 'notif_functions.php' (include_path='C:\xampp\php\PEAR') in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\ticket_ops.php:3
+Stack trace:
+#0 C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\help_desk.php(12): require_once()
+#1 {main}
+  thrown in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\ticket_ops.php on line 3
+[08-Sep-2025 09:14:47 Europe/Berlin] PHP Warning:  require_once(notif_functions.php): Failed to open stream: No such file or directory in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\ticket_ops.php on line 3
+[08-Sep-2025 09:14:47 Europe/Berlin] PHP Stack trace:
+[08-Sep-2025 09:14:47 Europe/Berlin] PHP   1. {main}() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\help_desk.php:0
+[08-Sep-2025 09:14:47 Europe/Berlin] PHP   2. require_once() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\help_desk.php:15
+[08-Sep-2025 09:14:47 Europe/Berlin] PHP Fatal error:  Uncaught Error: Failed opening required 'notif_functions.php' (include_path='C:\xampp\php\PEAR') in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\ticket_ops.php:3
+Stack trace:
+#0 C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\help_desk.php(15): require_once()
+#1 {main}
+  thrown in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\ticket_ops.php on line 3
+[08-Sep-2025 09:16:45 Europe/Berlin] PHP Warning:  require_once(notif_functions.php): Failed to open stream: No such file or directory in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\ticket_ops.php on line 3
+[08-Sep-2025 09:16:45 Europe/Berlin] PHP Stack trace:
+[08-Sep-2025 09:16:45 Europe/Berlin] PHP   1. {main}() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\help_desk.php:0
+[08-Sep-2025 09:16:45 Europe/Berlin] PHP   2. require_once() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\help_desk.php:15
+[08-Sep-2025 09:16:45 Europe/Berlin] PHP Fatal error:  Uncaught Error: Failed opening required 'notif_functions.php' (include_path='C:\xampp\php\PEAR') in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\ticket_ops.php:3
+Stack trace:
+#0 C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\help_desk.php(15): require_once()
+#1 {main}
+  thrown in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\ticket_ops.php on line 3
+[08-Sep-2025 09:22:33 Europe/Berlin] PHP Warning:  require_once(notif_functions.php): Failed to open stream: No such file or directory in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\ticket_ops.php on line 3
+[08-Sep-2025 09:22:33 Europe/Berlin] PHP Stack trace:
+[08-Sep-2025 09:22:33 Europe/Berlin] PHP   1. {main}() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\help_desk.php:0
+[08-Sep-2025 09:22:33 Europe/Berlin] PHP   2. require_once() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\help_desk.php:15
+[08-Sep-2025 09:22:33 Europe/Berlin] PHP Fatal error:  Uncaught Error: Failed opening required 'notif_functions.php' (include_path='C:\xampp\php\PEAR') in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\ticket_ops.php:3
+Stack trace:
+#0 C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\help_desk.php(15): require_once()
+#1 {main}
+  thrown in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\ticket_ops.php on line 3
+[08-Sep-2025 09:23:17 Europe/Berlin] PHP Warning:  require_once(notif_functions.php): Failed to open stream: No such file or directory in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\ticket_ops.php on line 3
+[08-Sep-2025 09:23:17 Europe/Berlin] PHP Stack trace:
+[08-Sep-2025 09:23:17 Europe/Berlin] PHP   1. {main}() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\help_desk.php:0
+[08-Sep-2025 09:23:17 Europe/Berlin] PHP   2. require_once() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\help_desk.php:15
+[08-Sep-2025 09:23:17 Europe/Berlin] PHP Fatal error:  Uncaught Error: Failed opening required 'notif_functions.php' (include_path='C:\xampp\php\PEAR') in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\ticket_ops.php:3
+Stack trace:
+#0 C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\help_desk.php(15): require_once()
+#1 {main}
+  thrown in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\ticket_ops.php on line 3
+[08-Sep-2025 09:24:46 Europe/Berlin] PHP Warning:  require_once(notif_functions.php): Failed to open stream: No such file or directory in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\ticket_ops.php on line 3
+[08-Sep-2025 09:24:46 Europe/Berlin] PHP Stack trace:
+[08-Sep-2025 09:24:46 Europe/Berlin] PHP   1. {main}() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\help_desk.php:0
+[08-Sep-2025 09:24:46 Europe/Berlin] PHP   2. require_once() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\help_desk.php:15
+[08-Sep-2025 09:24:46 Europe/Berlin] PHP Fatal error:  Uncaught Error: Failed opening required 'notif_functions.php' (include_path='C:\xampp\php\PEAR') in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\ticket_ops.php:3
+Stack trace:
+#0 C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\help_desk.php(15): require_once()
+#1 {main}
+  thrown in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\ticket_ops.php on line 3
+[08-Sep-2025 09:24:51 Europe/Berlin] PHP Warning:  require_once(notif_functions.php): Failed to open stream: No such file or directory in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\ticket_ops.php on line 3
+[08-Sep-2025 09:24:51 Europe/Berlin] PHP Stack trace:
+[08-Sep-2025 09:24:51 Europe/Berlin] PHP   1. {main}() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\help_desk.php:0
+[08-Sep-2025 09:24:51 Europe/Berlin] PHP   2. require_once() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\help_desk.php:15
+[08-Sep-2025 09:24:51 Europe/Berlin] PHP Fatal error:  Uncaught Error: Failed opening required 'notif_functions.php' (include_path='C:\xampp\php\PEAR') in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\ticket_ops.php:3
+Stack trace:
+#0 C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\help_desk.php(15): require_once()
+#1 {main}
+  thrown in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\ticket_ops.php on line 3
+[08-Sep-2025 09:24:54 Europe/Berlin] PHP Warning:  require_once(notif_functions.php): Failed to open stream: No such file or directory in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\ticket_ops.php on line 3
+[08-Sep-2025 09:24:54 Europe/Berlin] PHP Stack trace:
+[08-Sep-2025 09:24:54 Europe/Berlin] PHP   1. {main}() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\help_desk.php:0
+[08-Sep-2025 09:24:54 Europe/Berlin] PHP   2. require_once() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\help_desk.php:15
+[08-Sep-2025 09:24:54 Europe/Berlin] PHP Fatal error:  Uncaught Error: Failed opening required 'notif_functions.php' (include_path='C:\xampp\php\PEAR') in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\ticket_ops.php:3
+Stack trace:
+#0 C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\help_desk.php(15): require_once()
+#1 {main}
+  thrown in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\ticket_ops.php on line 3
+[08-Sep-2025 09:24:57 Europe/Berlin] PHP Warning:  require_once(notif_functions.php): Failed to open stream: No such file or directory in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\ticket_ops.php on line 3
+[08-Sep-2025 09:24:57 Europe/Berlin] PHP Stack trace:
+[08-Sep-2025 09:24:57 Europe/Berlin] PHP   1. {main}() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\help_desk.php:0
+[08-Sep-2025 09:24:57 Europe/Berlin] PHP   2. require_once() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\help_desk.php:15
+[08-Sep-2025 09:24:57 Europe/Berlin] PHP Fatal error:  Uncaught Error: Failed opening required 'notif_functions.php' (include_path='C:\xampp\php\PEAR') in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\ticket_ops.php:3
+Stack trace:
+#0 C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\help_desk.php(15): require_once()
+#1 {main}
+  thrown in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\ticket_ops.php on line 3
+[08-Sep-2025 09:25:09 Europe/Berlin] PHP Warning:  require_once(notif_functions.php): Failed to open stream: No such file or directory in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\ticket_ops.php on line 3
+[08-Sep-2025 09:25:09 Europe/Berlin] PHP Stack trace:
+[08-Sep-2025 09:25:09 Europe/Berlin] PHP   1. {main}() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\help_desk.php:0
+[08-Sep-2025 09:25:09 Europe/Berlin] PHP   2. require_once() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\help_desk.php:15
+[08-Sep-2025 09:25:09 Europe/Berlin] PHP Fatal error:  Uncaught Error: Failed opening required 'notif_functions.php' (include_path='C:\xampp\php\PEAR') in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\ticket_ops.php:3
+Stack trace:
+#0 C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\help_desk.php(15): require_once()
+#1 {main}
+  thrown in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\ticket_ops.php on line 3
+[08-Sep-2025 09:26:29 Europe/Berlin] PHP Warning:  require_once(notif_functions.php): Failed to open stream: No such file or directory in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\ticket_ops.php on line 3
+[08-Sep-2025 09:26:29 Europe/Berlin] PHP Stack trace:
+[08-Sep-2025 09:26:29 Europe/Berlin] PHP   1. {main}() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\help_desk.php:0
+[08-Sep-2025 09:26:29 Europe/Berlin] PHP   2. require_once() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\help_desk.php:15
+[08-Sep-2025 09:26:29 Europe/Berlin] PHP Fatal error:  Uncaught Error: Failed opening required 'notif_functions.php' (include_path='C:\xampp\php\PEAR') in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\ticket_ops.php:3
+Stack trace:
+#0 C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\help_desk.php(15): require_once()
+#1 {main}
+  thrown in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\ticket_ops.php on line 3
+[08-Sep-2025 09:26:37 Europe/Berlin] PHP Warning:  require_once(notif_functions.php): Failed to open stream: No such file or directory in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\ticket_ops.php on line 3
+[08-Sep-2025 09:26:37 Europe/Berlin] PHP Stack trace:
+[08-Sep-2025 09:26:37 Europe/Berlin] PHP   1. {main}() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\help_desk.php:0
+[08-Sep-2025 09:26:37 Europe/Berlin] PHP   2. require_once() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\help_desk.php:15
+[08-Sep-2025 09:26:37 Europe/Berlin] PHP Fatal error:  Uncaught Error: Failed opening required 'notif_functions.php' (include_path='C:\xampp\php\PEAR') in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\ticket_ops.php:3
+Stack trace:
+#0 C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\help_desk.php(15): require_once()
+#1 {main}
+  thrown in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\ticket_ops.php on line 3
+[08-Sep-2025 09:28:23 Europe/Berlin] PHP Warning:  require_once(notif_functions.php): Failed to open stream: No such file or directory in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\ticket_ops.php on line 3
+[08-Sep-2025 09:28:23 Europe/Berlin] PHP Stack trace:
+[08-Sep-2025 09:28:23 Europe/Berlin] PHP   1. {main}() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\help_desk.php:0
+[08-Sep-2025 09:28:23 Europe/Berlin] PHP   2. require_once() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\help_desk.php:13
+[08-Sep-2025 09:28:23 Europe/Berlin] PHP Fatal error:  Uncaught Error: Failed opening required 'notif_functions.php' (include_path='C:\xampp\php\PEAR') in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\ticket_ops.php:3
+Stack trace:
+#0 C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\help_desk.php(13): require_once()
+#1 {main}
+  thrown in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\ticket_ops.php on line 3
+[08-Sep-2025 09:31:08 Europe/Berlin] PHP Warning:  require_once(notif_functions.php): Failed to open stream: No such file or directory in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\ticket_ops.php on line 3
+[08-Sep-2025 09:31:08 Europe/Berlin] PHP Stack trace:
+[08-Sep-2025 09:31:08 Europe/Berlin] PHP   1. {main}() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\help_desk.php:0
+[08-Sep-2025 09:31:08 Europe/Berlin] PHP   2. require_once() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\help_desk.php:13
+[08-Sep-2025 09:31:08 Europe/Berlin] PHP Fatal error:  Uncaught Error: Failed opening required 'notif_functions.php' (include_path='C:\xampp\php\PEAR') in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\ticket_ops.php:3
+Stack trace:
+#0 C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\help_desk.php(13): require_once()
+#1 {main}
+  thrown in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\ticket_ops.php on line 3
+[08-Sep-2025 10:13:22 Europe/Berlin] PHP Warning:  require_once(notif_functions.php): Failed to open stream: No such file or directory in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\ticket_ops.php on line 3
+[08-Sep-2025 10:13:22 Europe/Berlin] PHP Stack trace:
+[08-Sep-2025 10:13:22 Europe/Berlin] PHP   1. {main}() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\help_desk.php:0
+[08-Sep-2025 10:13:22 Europe/Berlin] PHP   2. require_once() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\help_desk.php:13
+[08-Sep-2025 10:13:22 Europe/Berlin] PHP Fatal error:  Uncaught Error: Failed opening required 'notif_functions.php' (include_path='C:\xampp\php\PEAR') in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\ticket_ops.php:3
+Stack trace:
+#0 C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\help_desk.php(13): require_once()
+#1 {main}
+  thrown in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\ticket_ops.php on line 3
+[08-Sep-2025 10:13:29 Europe/Berlin] PHP Warning:  require_once(notif_functions.php): Failed to open stream: No such file or directory in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\ticket_ops.php on line 3
+[08-Sep-2025 10:13:29 Europe/Berlin] PHP Stack trace:
+[08-Sep-2025 10:13:29 Europe/Berlin] PHP   1. {main}() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\help_desk.php:0
+[08-Sep-2025 10:13:29 Europe/Berlin] PHP   2. require_once() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\help_desk.php:13
+[08-Sep-2025 10:13:29 Europe/Berlin] PHP Fatal error:  Uncaught Error: Failed opening required 'notif_functions.php' (include_path='C:\xampp\php\PEAR') in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\ticket_ops.php:3
+Stack trace:
+#0 C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\help_desk.php(13): require_once()
+#1 {main}
+  thrown in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\ticket_ops.php on line 3
+[08-Sep-2025 10:13:43 Europe/Berlin] PHP Warning:  require_once(notif_functions.php): Failed to open stream: No such file or directory in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\ticket_ops.php on line 3
+[08-Sep-2025 10:13:43 Europe/Berlin] PHP Stack trace:
+[08-Sep-2025 10:13:43 Europe/Berlin] PHP   1. {main}() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\help_desk.php:0
+[08-Sep-2025 10:13:43 Europe/Berlin] PHP   2. require_once() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\help_desk.php:13
+[08-Sep-2025 10:13:43 Europe/Berlin] PHP Fatal error:  Uncaught Error: Failed opening required 'notif_functions.php' (include_path='C:\xampp\php\PEAR') in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\ticket_ops.php:3
+Stack trace:
+#0 C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\help_desk.php(13): require_once()
+#1 {main}
+  thrown in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\ticket_ops.php on line 3
+[08-Sep-2025 10:15:02 Europe/Berlin] PHP Warning:  require_once(notif_functions.php): Failed to open stream: No such file or directory in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\ticket_ops.php on line 3
+[08-Sep-2025 10:15:02 Europe/Berlin] PHP Stack trace:
+[08-Sep-2025 10:15:02 Europe/Berlin] PHP   1. {main}() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\help_desk.php:0
+[08-Sep-2025 10:15:02 Europe/Berlin] PHP   2. require_once() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\help_desk.php:13
+[08-Sep-2025 10:15:02 Europe/Berlin] PHP Fatal error:  Uncaught Error: Failed opening required 'notif_functions.php' (include_path='C:\xampp\php\PEAR') in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\ticket_ops.php:3
+Stack trace:
+#0 C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\help_desk.php(13): require_once()
+#1 {main}
+  thrown in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\ticket_ops.php on line 3
+[08-Sep-2025 10:15:28 Europe/Berlin] PHP Warning:  require_once(notif_functions.php): Failed to open stream: No such file or directory in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\ticket_ops.php on line 3
+[08-Sep-2025 10:15:28 Europe/Berlin] PHP Stack trace:
+[08-Sep-2025 10:15:28 Europe/Berlin] PHP   1. {main}() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\help_desk.php:0
+[08-Sep-2025 10:15:28 Europe/Berlin] PHP   2. require_once() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\help_desk.php:13
+[08-Sep-2025 10:15:28 Europe/Berlin] PHP Fatal error:  Uncaught Error: Failed opening required 'notif_functions.php' (include_path='C:\xampp\php\PEAR') in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\ticket_ops.php:3
+Stack trace:
+#0 C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\help_desk.php(13): require_once()
+#1 {main}
+  thrown in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\ticket_ops.php on line 3
+[08-Sep-2025 10:16:28 Europe/Berlin] PHP Warning:  require_once(notif_functions.php): Failed to open stream: No such file or directory in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\ticket_ops.php on line 3
+[08-Sep-2025 10:16:28 Europe/Berlin] PHP Stack trace:
+[08-Sep-2025 10:16:28 Europe/Berlin] PHP   1. {main}() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\help_desk.php:0
+[08-Sep-2025 10:16:28 Europe/Berlin] PHP   2. require_once() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\help_desk.php:13
+[08-Sep-2025 10:16:28 Europe/Berlin] PHP Fatal error:  Uncaught Error: Failed opening required 'notif_functions.php' (include_path='C:\xampp\php\PEAR') in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\ticket_ops.php:3
+Stack trace:
+#0 C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\help_desk.php(13): require_once()
+#1 {main}
+  thrown in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\ticket_ops.php on line 3
+[08-Sep-2025 10:17:17 Europe/Berlin] PHP Warning:  require_once(notif_functions.php): Failed to open stream: No such file or directory in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\ticket_ops.php on line 3
+[08-Sep-2025 10:17:17 Europe/Berlin] PHP Stack trace:
+[08-Sep-2025 10:17:17 Europe/Berlin] PHP   1. {main}() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\help_desk.php:0
+[08-Sep-2025 10:17:17 Europe/Berlin] PHP   2. require_once() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\help_desk.php:13
+[08-Sep-2025 10:17:17 Europe/Berlin] PHP Fatal error:  Uncaught Error: Failed opening required 'notif_functions.php' (include_path='C:\xampp\php\PEAR') in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\ticket_ops.php:3
+Stack trace:
+#0 C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\help_desk.php(13): require_once()
+#1 {main}
+  thrown in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\ticket_ops.php on line 3
+[08-Sep-2025 10:17:36 Europe/Berlin] PHP Warning:  require_once(notif_functions.php): Failed to open stream: No such file or directory in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\ticket_ops.php on line 3
+[08-Sep-2025 10:17:36 Europe/Berlin] PHP Stack trace:
+[08-Sep-2025 10:17:36 Europe/Berlin] PHP   1. {main}() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\help_desk.php:0
+[08-Sep-2025 10:17:36 Europe/Berlin] PHP   2. require_once() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\help_desk.php:13
+[08-Sep-2025 10:17:36 Europe/Berlin] PHP Fatal error:  Uncaught Error: Failed opening required 'notif_functions.php' (include_path='C:\xampp\php\PEAR') in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\ticket_ops.php:3
+Stack trace:
+#0 C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\help_desk.php(13): require_once()
+#1 {main}
+  thrown in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\ticket_ops.php on line 3
+[08-Sep-2025 10:18:20 Europe/Berlin] PHP Warning:  require_once(notif_functions.php): Failed to open stream: No such file or directory in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\ticket_ops.php on line 3
+[08-Sep-2025 10:18:20 Europe/Berlin] PHP Stack trace:
+[08-Sep-2025 10:18:20 Europe/Berlin] PHP   1. {main}() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\host_tickets.php:0
+[08-Sep-2025 10:18:20 Europe/Berlin] PHP   2. require_once() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\host_tickets.php:13
+[08-Sep-2025 10:18:20 Europe/Berlin] PHP Fatal error:  Uncaught Error: Failed opening required 'notif_functions.php' (include_path='C:\xampp\php\PEAR') in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\ticket_ops.php:3
+Stack trace:
+#0 C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\host_tickets.php(13): require_once()
+#1 {main}
+  thrown in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\ticket_ops.php on line 3
+[08-Sep-2025 10:19:05 Europe/Berlin] Checking for ticket creation POST data: Array
+(
+)
+
+[08-Sep-2025 10:19:18 Europe/Berlin] Checking for ticket creation POST data: Array
+(
+)
+
+[08-Sep-2025 10:19:18 Europe/Berlin] Retrieved tickets: Array
+(
+    [0] => Array
+        (
+            [TicketID] => 41
+            [Description] => WiFi  Access has been down 
+            [Priority] => critical
+            [Status] => closed
+            [CreatedDate] => 2025-07-30 05:57:12
+            [CreatedByName] => James Best
+            [AssignedToName] => Lawrence Danso Abiam
+            [CategoryName] => Network
+        )
+
+    [1] => Array
+        (
+            [TicketID] => 52
+            [Description] => Connectivity issues on the ground floor
+            [Priority] => high
+            [Status] => closed
+            [CreatedDate] => 2025-08-19 12:36:14
+            [CreatedByName] => Annabel Mensah
+            [AssignedToName] => Abena Banson
+            [CategoryName] => Network
+        )
+
+    [2] => Array
+        (
+            [TicketID] => 50
+            [Description] => the PCs at the front desk are faulty
+            [Priority] => high
+            [Status] => closed
+            [CreatedDate] => 2025-08-17 18:34:00
+            [CreatedByName] => James Best
+            [AssignedToName] => Annabel Mensah
+            [CategoryName] => Hardware
+        )
+
+    [3] => Array
+        (
+            [TicketID] => 45
+            [Description] => Emails are not being sent on time
+            [Priority] => high
+            [Status] => closed
+            [CreatedDate] => 2025-08-08 16:47:52
+            [CreatedByName] => James Best
+            [AssignedToName] => Raymond Adoe
+            [CategoryName] => Email/Notification
+        )
+
+    [4] => Array
+        (
+            [TicketID] => 43
+            [Description] => The bulbs in the washroom are faulty
+            [Priority] => high
+            [Status] => closed
+            [CreatedDate] => 2025-08-01 15:08:11
+            [CreatedByName] => Abena Banson
+            [AssignedToName] => Annabel Mensah
+            [CategoryName] => Facility Issues
+        )
+
+    [5] => Array
+        (
+            [TicketID] => 42
+            [Description] => Staff member cannot access the top floor
+            [Priority] => high
+            [Status] => closed
+            [CreatedDate] => 2025-08-01 09:11:12
+            [CreatedByName] => James Best
+            [AssignedToName] => 
+            [CategoryName] => Access
+        )
+
+    [6] => Array
+        (
+            [TicketID] => 35
+            [Description] => System allowed booking of two appointments for the same host at 2:00 PM today. Both visitors showed up and caused confusion. Need to fix scheduling conflict detection.
+            [Priority] => high
+            [Status] => closed
+            [CreatedDate] => 2025-07-26 15:50:35
+            [CreatedByName] => Annabel Mensah
+            [AssignedToName] => Lawrence Danso Abiam
+            [CategoryName] => Appointments
+        )
+
+    [7] => Array
+        (
+            [TicketID] => 55
+            [Description] => Appointment emails are not being sent
+            [Priority] => medium
+            [Status] => closed
+            [CreatedDate] => 2025-08-22 21:29:26
+            [CreatedByName] => Abena Banson
+            [AssignedToName] => Cyrus Kwame Blay
+            [CategoryName] => Email/Notification
+        )
+
+    [8] => Array
+        (
+            [TicketID] => 53
+            [Description] => In need of a password reset
+            [Priority] => medium
+            [Status] => closed
+            [CreatedDate] => 2025-08-19 13:46:02
+            [CreatedByName] => Raymond Adoe
+            [AssignedToName] => Cyrus Kwame Blay
+            [CategoryName] => Software
+        )
+
+    [9] => Array
+        (
+            [TicketID] => 51
+            [Description] => Operating system need an update
+            [Priority] => medium
+            [Status] => closed
+            [CreatedDate] => 2025-08-17 19:00:07
+            [CreatedByName] => James Best
+            [AssignedToName] => 
+            [CategoryName] => Software
+        )
+
+    [10] => Array
+        (
+            [TicketID] => 49
+            [Description] => Elevator have been made inaccessible
+            [Priority] => medium
+            [Status] => closed
+            [CreatedDate] => 2025-08-17 18:01:23
+            [CreatedByName] => James Best
+            [AssignedToName] => Lawrence Danso Abiam
+            [CategoryName] => Access
+        )
+
+    [11] => Array
+        (
+            [TicketID] => 44
+            [Description] => The top floor cannot be accessed at the moment
+            [Priority] => medium
+            [Status] => closed
+            [CreatedDate] => 2025-08-01 15:19:18
+            [CreatedByName] => Lawrence Danso Abiam
+            [AssignedToName] => 
+            [CategoryName] => Access
+        )
+
+    [12] => Array
+        (
+            [TicketID] => 40
+            [Description] => Washroom Leakage
+            [Priority] => medium
+            [Status] => closed
+            [CreatedDate] => 2025-07-28 18:28:55
+            [CreatedByName] => Abena Banson
+            [AssignedToName] => James Best
+            [CategoryName] => Facility Issues
+        )
+
+    [13] => Array
+        (
+            [TicketID] => 38
+            [Description] => Visitors are not receiving appointment confirmation emails. Checked spam folders and email logs show messages are being sent but not delivered.
+            [Priority] => medium
+            [Status] => closed
+            [CreatedDate] => 2025-07-26 15:55:06
+            [CreatedByName] => Abena Banson
+            [AssignedToName] => Cyrus Kwame Blay
+            [CategoryName] => Email/Notification
+        )
+
+    [14] => Array
+        (
+            [TicketID] => 37
+            [Description] => New front desk employee Jessica Brown started today but doesn't have access to the visitor management system. Need user account created with front desk permissions.
+            [Priority] => medium
+            [Status] => closed
+            [CreatedDate] => 2025-07-26 15:53:36
+            [CreatedByName] => James Best
+            [AssignedToName] => Cyrus Kwame Blay
+            [CategoryName] => Access
+        )
+
+    [15] => Array
+        (
+            [TicketID] => 36
+            [Description] => The HP LaserJet printer in the front lobby keeps jamming when printing visitor badges. Also noticing streaks and faded text on printed materials.
+            [Priority] => medium
+            [Status] => closed
+            [CreatedDate] => 2025-07-26 15:52:41
+            [CreatedByName] => Abena Banson
+            [AssignedToName] => James Best
+            [CategoryName] => Hardware
+        )
+
+    [16] => Array
+        (
+            [TicketID] => 54
+            [Description] => Doors at the reception are stuck
+            [Priority] => low
+            [Status] => closed
+            [CreatedDate] => 2025-08-19 14:55:06
+            [CreatedByName] => Abena Banson
+            [AssignedToName] => James Best
+            [CategoryName] => Facility Issues
+        )
+
+    [17] => Array
+        (
+            [TicketID] => 46
+            [Description] => A complaint of a missing black tote bag
+            [Priority] => low
+            [Status] => closed
+            [CreatedDate] => 2025-08-17 17:55:00
+            [CreatedByName] => James Best
+            [AssignedToName] => Lawrence Danso Abiam
+            [CategoryName] => Lost & Found
+        )
+
+    [18] => Array
+        (
+            [TicketID] => 39
+            [Description] => Appointment reminder emails have broken formatting - no line breaks and missing company logo. Text appears as one continuous paragraph.
+            [Priority] => low
+            [Status] => closed
+            [CreatedDate] => 2025-07-26 15:56:05
+            [CreatedByName] => James Best
+            [AssignedToName] => 
+            [CategoryName] => Email/Notification
+        )
+
+)
+
+[08-Sep-2025 10:19:30 Europe/Berlin] Checking for ticket creation POST data: Array
+(
+)
+
+[09-Sep-2025 15:48:35 Europe/Berlin] Checking for ticket creation POST data: Array
+(
+)
+
+[09-Sep-2025 15:56:19 Europe/Berlin] Checking for ticket creation POST data: Array
+(
+)
+
+[09-Sep-2025 22:56:49 Europe/Berlin] Checking for ticket creation POST data: Array
+(
+)
+
+[09-Sep-2025 22:56:49 Europe/Berlin] Retrieved tickets: Array
+(
+    [0] => Array
+        (
+            [TicketID] => 41
+            [Description] => WiFi  Access has been down 
+            [Priority] => critical
+            [Status] => closed
+            [CreatedDate] => 2025-07-30 05:57:12
+            [CreatedByName] => James Best
+            [AssignedToName] => Lawrence Danso Abiam
+            [CategoryName] => Network
+        )
+
+    [1] => Array
+        (
+            [TicketID] => 52
+            [Description] => Connectivity issues on the ground floor
+            [Priority] => high
+            [Status] => closed
+            [CreatedDate] => 2025-08-19 12:36:14
+            [CreatedByName] => Annabel Mensah
+            [AssignedToName] => Abena Banson
+            [CategoryName] => Network
+        )
+
+    [2] => Array
+        (
+            [TicketID] => 50
+            [Description] => the PCs at the front desk are faulty
+            [Priority] => high
+            [Status] => closed
+            [CreatedDate] => 2025-08-17 18:34:00
+            [CreatedByName] => James Best
+            [AssignedToName] => Annabel Mensah
+            [CategoryName] => Hardware
+        )
+
+    [3] => Array
+        (
+            [TicketID] => 45
+            [Description] => Emails are not being sent on time
+            [Priority] => high
+            [Status] => closed
+            [CreatedDate] => 2025-08-08 16:47:52
+            [CreatedByName] => James Best
+            [AssignedToName] => Raymond Adoe
+            [CategoryName] => Email/Notification
+        )
+
+    [4] => Array
+        (
+            [TicketID] => 43
+            [Description] => The bulbs in the washroom are faulty
+            [Priority] => high
+            [Status] => closed
+            [CreatedDate] => 2025-08-01 15:08:11
+            [CreatedByName] => Abena Banson
+            [AssignedToName] => Annabel Mensah
+            [CategoryName] => Facility Issues
+        )
+
+    [5] => Array
+        (
+            [TicketID] => 42
+            [Description] => Staff member cannot access the top floor
+            [Priority] => high
+            [Status] => closed
+            [CreatedDate] => 2025-08-01 09:11:12
+            [CreatedByName] => James Best
+            [AssignedToName] => 
+            [CategoryName] => Access
+        )
+
+    [6] => Array
+        (
+            [TicketID] => 35
+            [Description] => System allowed booking of two appointments for the same host at 2:00 PM today. Both visitors showed up and caused confusion. Need to fix scheduling conflict detection.
+            [Priority] => high
+            [Status] => closed
+            [CreatedDate] => 2025-07-26 15:50:35
+            [CreatedByName] => Annabel Mensah
+            [AssignedToName] => Lawrence Danso Abiam
+            [CategoryName] => Appointments
+        )
+
+    [7] => Array
+        (
+            [TicketID] => 55
+            [Description] => Appointment emails are not being sent
+            [Priority] => medium
+            [Status] => closed
+            [CreatedDate] => 2025-08-22 21:29:26
+            [CreatedByName] => Abena Banson
+            [AssignedToName] => Cyrus Kwame Blay
+            [CategoryName] => Email/Notification
+        )
+
+    [8] => Array
+        (
+            [TicketID] => 53
+            [Description] => In need of a password reset
+            [Priority] => medium
+            [Status] => closed
+            [CreatedDate] => 2025-08-19 13:46:02
+            [CreatedByName] => Raymond Adoe
+            [AssignedToName] => Cyrus Kwame Blay
+            [CategoryName] => Software
+        )
+
+    [9] => Array
+        (
+            [TicketID] => 51
+            [Description] => Operating system need an update
+            [Priority] => medium
+            [Status] => closed
+            [CreatedDate] => 2025-08-17 19:00:07
+            [CreatedByName] => James Best
+            [AssignedToName] => 
+            [CategoryName] => Software
+        )
+
+    [10] => Array
+        (
+            [TicketID] => 49
+            [Description] => Elevator have been made inaccessible
+            [Priority] => medium
+            [Status] => closed
+            [CreatedDate] => 2025-08-17 18:01:23
+            [CreatedByName] => James Best
+            [AssignedToName] => Lawrence Danso Abiam
+            [CategoryName] => Access
+        )
+
+    [11] => Array
+        (
+            [TicketID] => 44
+            [Description] => The top floor cannot be accessed at the moment
+            [Priority] => medium
+            [Status] => closed
+            [CreatedDate] => 2025-08-01 15:19:18
+            [CreatedByName] => Lawrence Danso Abiam
+            [AssignedToName] => 
+            [CategoryName] => Access
+        )
+
+    [12] => Array
+        (
+            [TicketID] => 40
+            [Description] => Washroom Leakage
+            [Priority] => medium
+            [Status] => closed
+            [CreatedDate] => 2025-07-28 18:28:55
+            [CreatedByName] => Abena Banson
+            [AssignedToName] => James Best
+            [CategoryName] => Facility Issues
+        )
+
+    [13] => Array
+        (
+            [TicketID] => 38
+            [Description] => Visitors are not receiving appointment confirmation emails. Checked spam folders and email logs show messages are being sent but not delivered.
+            [Priority] => medium
+            [Status] => closed
+            [CreatedDate] => 2025-07-26 15:55:06
+            [CreatedByName] => Abena Banson
+            [AssignedToName] => Cyrus Kwame Blay
+            [CategoryName] => Email/Notification
+        )
+
+    [14] => Array
+        (
+            [TicketID] => 37
+            [Description] => New front desk employee Jessica Brown started today but doesn't have access to the visitor management system. Need user account created with front desk permissions.
+            [Priority] => medium
+            [Status] => closed
+            [CreatedDate] => 2025-07-26 15:53:36
+            [CreatedByName] => James Best
+            [AssignedToName] => Cyrus Kwame Blay
+            [CategoryName] => Access
+        )
+
+    [15] => Array
+        (
+            [TicketID] => 36
+            [Description] => The HP LaserJet printer in the front lobby keeps jamming when printing visitor badges. Also noticing streaks and faded text on printed materials.
+            [Priority] => medium
+            [Status] => closed
+            [CreatedDate] => 2025-07-26 15:52:41
+            [CreatedByName] => Abena Banson
+            [AssignedToName] => James Best
+            [CategoryName] => Hardware
+        )
+
+    [16] => Array
+        (
+            [TicketID] => 54
+            [Description] => Doors at the reception are stuck
+            [Priority] => low
+            [Status] => closed
+            [CreatedDate] => 2025-08-19 14:55:06
+            [CreatedByName] => Abena Banson
+            [AssignedToName] => James Best
+            [CategoryName] => Facility Issues
+        )
+
+    [17] => Array
+        (
+            [TicketID] => 46
+            [Description] => A complaint of a missing black tote bag
+            [Priority] => low
+            [Status] => closed
+            [CreatedDate] => 2025-08-17 17:55:00
+            [CreatedByName] => James Best
+            [AssignedToName] => Lawrence Danso Abiam
+            [CategoryName] => Lost & Found
+        )
+
+    [18] => Array
+        (
+            [TicketID] => 39
+            [Description] => Appointment reminder emails have broken formatting - no line breaks and missing company logo. Text appears as one continuous paragraph.
+            [Priority] => low
+            [Status] => closed
+            [CreatedDate] => 2025-07-26 15:56:05
+            [CreatedByName] => James Best
+            [AssignedToName] => 
+            [CategoryName] => Email/Notification
+        )
+
+)
+
+[09-Sep-2025 23:43:47 Europe/Berlin] Checking for ticket creation POST data: Array
+(
+)
+
+[09-Sep-2025 23:43:47 Europe/Berlin] Retrieved tickets: Array
+(
+    [0] => Array
+        (
+            [TicketID] => 41
+            [Description] => WiFi  Access has been down 
+            [Priority] => critical
+            [Status] => closed
+            [CreatedDate] => 2025-07-30 05:57:12
+            [CreatedByName] => James Best
+            [AssignedToName] => Lawrence Danso Abiam
+            [CategoryName] => Network
+        )
+
+    [1] => Array
+        (
+            [TicketID] => 52
+            [Description] => Connectivity issues on the ground floor
+            [Priority] => high
+            [Status] => closed
+            [CreatedDate] => 2025-08-19 12:36:14
+            [CreatedByName] => Annabel Mensah
+            [AssignedToName] => Abena Banson
+            [CategoryName] => Network
+        )
+
+    [2] => Array
+        (
+            [TicketID] => 50
+            [Description] => the PCs at the front desk are faulty
+            [Priority] => high
+            [Status] => closed
+            [CreatedDate] => 2025-08-17 18:34:00
+            [CreatedByName] => James Best
+            [AssignedToName] => Annabel Mensah
+            [CategoryName] => Hardware
+        )
+
+    [3] => Array
+        (
+            [TicketID] => 45
+            [Description] => Emails are not being sent on time
+            [Priority] => high
+            [Status] => closed
+            [CreatedDate] => 2025-08-08 16:47:52
+            [CreatedByName] => James Best
+            [AssignedToName] => Raymond Adoe
+            [CategoryName] => Email/Notification
+        )
+
+    [4] => Array
+        (
+            [TicketID] => 43
+            [Description] => The bulbs in the washroom are faulty
+            [Priority] => high
+            [Status] => closed
+            [CreatedDate] => 2025-08-01 15:08:11
+            [CreatedByName] => Abena Banson
+            [AssignedToName] => Annabel Mensah
+            [CategoryName] => Facility Issues
+        )
+
+    [5] => Array
+        (
+            [TicketID] => 42
+            [Description] => Staff member cannot access the top floor
+            [Priority] => high
+            [Status] => closed
+            [CreatedDate] => 2025-08-01 09:11:12
+            [CreatedByName] => James Best
+            [AssignedToName] => 
+            [CategoryName] => Access
+        )
+
+    [6] => Array
+        (
+            [TicketID] => 35
+            [Description] => System allowed booking of two appointments for the same host at 2:00 PM today. Both visitors showed up and caused confusion. Need to fix scheduling conflict detection.
+            [Priority] => high
+            [Status] => closed
+            [CreatedDate] => 2025-07-26 15:50:35
+            [CreatedByName] => Annabel Mensah
+            [AssignedToName] => Lawrence Danso Abiam
+            [CategoryName] => Appointments
+        )
+
+    [7] => Array
+        (
+            [TicketID] => 55
+            [Description] => Appointment emails are not being sent
+            [Priority] => medium
+            [Status] => closed
+            [CreatedDate] => 2025-08-22 21:29:26
+            [CreatedByName] => Abena Banson
+            [AssignedToName] => Cyrus Kwame Blay
+            [CategoryName] => Email/Notification
+        )
+
+    [8] => Array
+        (
+            [TicketID] => 53
+            [Description] => In need of a password reset
+            [Priority] => medium
+            [Status] => closed
+            [CreatedDate] => 2025-08-19 13:46:02
+            [CreatedByName] => Raymond Adoe
+            [AssignedToName] => Cyrus Kwame Blay
+            [CategoryName] => Software
+        )
+
+    [9] => Array
+        (
+            [TicketID] => 51
+            [Description] => Operating system need an update
+            [Priority] => medium
+            [Status] => closed
+            [CreatedDate] => 2025-08-17 19:00:07
+            [CreatedByName] => James Best
+            [AssignedToName] => 
+            [CategoryName] => Software
+        )
+
+    [10] => Array
+        (
+            [TicketID] => 49
+            [Description] => Elevator have been made inaccessible
+            [Priority] => medium
+            [Status] => closed
+            [CreatedDate] => 2025-08-17 18:01:23
+            [CreatedByName] => James Best
+            [AssignedToName] => Lawrence Danso Abiam
+            [CategoryName] => Access
+        )
+
+    [11] => Array
+        (
+            [TicketID] => 44
+            [Description] => The top floor cannot be accessed at the moment
+            [Priority] => medium
+            [Status] => closed
+            [CreatedDate] => 2025-08-01 15:19:18
+            [CreatedByName] => Lawrence Danso Abiam
+            [AssignedToName] => 
+            [CategoryName] => Access
+        )
+
+    [12] => Array
+        (
+            [TicketID] => 40
+            [Description] => Washroom Leakage
+            [Priority] => medium
+            [Status] => closed
+            [CreatedDate] => 2025-07-28 18:28:55
+            [CreatedByName] => Abena Banson
+            [AssignedToName] => James Best
+            [CategoryName] => Facility Issues
+        )
+
+    [13] => Array
+        (
+            [TicketID] => 38
+            [Description] => Visitors are not receiving appointment confirmation emails. Checked spam folders and email logs show messages are being sent but not delivered.
+            [Priority] => medium
+            [Status] => closed
+            [CreatedDate] => 2025-07-26 15:55:06
+            [CreatedByName] => Abena Banson
+            [AssignedToName] => Cyrus Kwame Blay
+            [CategoryName] => Email/Notification
+        )
+
+    [14] => Array
+        (
+            [TicketID] => 37
+            [Description] => New front desk employee Jessica Brown started today but doesn't have access to the visitor management system. Need user account created with front desk permissions.
+            [Priority] => medium
+            [Status] => closed
+            [CreatedDate] => 2025-07-26 15:53:36
+            [CreatedByName] => James Best
+            [AssignedToName] => Cyrus Kwame Blay
+            [CategoryName] => Access
+        )
+
+    [15] => Array
+        (
+            [TicketID] => 36
+            [Description] => The HP LaserJet printer in the front lobby keeps jamming when printing visitor badges. Also noticing streaks and faded text on printed materials.
+            [Priority] => medium
+            [Status] => closed
+            [CreatedDate] => 2025-07-26 15:52:41
+            [CreatedByName] => Abena Banson
+            [AssignedToName] => James Best
+            [CategoryName] => Hardware
+        )
+
+    [16] => Array
+        (
+            [TicketID] => 54
+            [Description] => Doors at the reception are stuck
+            [Priority] => low
+            [Status] => closed
+            [CreatedDate] => 2025-08-19 14:55:06
+            [CreatedByName] => Abena Banson
+            [AssignedToName] => James Best
+            [CategoryName] => Facility Issues
+        )
+
+    [17] => Array
+        (
+            [TicketID] => 46
+            [Description] => A complaint of a missing black tote bag
+            [Priority] => low
+            [Status] => closed
+            [CreatedDate] => 2025-08-17 17:55:00
+            [CreatedByName] => James Best
+            [AssignedToName] => Lawrence Danso Abiam
+            [CategoryName] => Lost & Found
+        )
+
+    [18] => Array
+        (
+            [TicketID] => 39
+            [Description] => Appointment reminder emails have broken formatting - no line breaks and missing company logo. Text appears as one continuous paragraph.
+            [Priority] => low
+            [Status] => closed
+            [CreatedDate] => 2025-07-26 15:56:05
+            [CreatedByName] => James Best
+            [AssignedToName] => 
+            [CategoryName] => Email/Notification
+        )
+
+)
+
+[09-Sep-2025 23:45:28 Europe/Berlin] Checking for ticket creation POST data: Array
+(
+    [action] => create_ticket
+    [assigned_to] => 3
+    [category_id] => 5
+    [priority] => high
+    [description] => Many visitors are in a view waiting for you
+)
+
+[09-Sep-2025 23:45:28 Europe/Berlin] Session data: Array
+(
+    [userID] => 6
+    [name] => Annabel Mensah
+    [role] => Support Staff
+)
+
+[09-Sep-2025 23:45:28 Europe/Berlin] Created by user ID: 6
+[09-Sep-2025 23:45:28 Europe/Berlin] PHP Warning:  Undefined array key "error" in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\help_desk.php on line 23
+[09-Sep-2025 23:45:28 Europe/Berlin] PHP Stack trace:
+[09-Sep-2025 23:45:28 Europe/Berlin] PHP   1. {main}() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\help_desk.php:0
+[09-Sep-2025 23:45:29 Europe/Berlin] Checking for ticket creation POST data: Array
+(
+)
+
+[09-Sep-2025 23:45:29 Europe/Berlin] Retrieved tickets: Array
+(
+    [0] => Array
+        (
+            [TicketID] => 41
+            [Description] => WiFi  Access has been down 
+            [Priority] => critical
+            [Status] => closed
+            [CreatedDate] => 2025-07-30 05:57:12
+            [CreatedByName] => James Best
+            [AssignedToName] => Lawrence Danso Abiam
+            [CategoryName] => Network
+        )
+
+    [1] => Array
+        (
+            [TicketID] => 56
+            [Description] => Many visitors are in a view waiting for you
+            [Priority] => high
+            [Status] => in-progress
+            [CreatedDate] => 2025-09-09 21:45:28
+            [CreatedByName] => Annabel Mensah
+            [AssignedToName] => Lawrence Danso Abiam
+            [CategoryName] => Appointments
+        )
+
+    [2] => Array
+        (
+            [TicketID] => 52
+            [Description] => Connectivity issues on the ground floor
+            [Priority] => high
+            [Status] => closed
+            [CreatedDate] => 2025-08-19 12:36:14
+            [CreatedByName] => Annabel Mensah
+            [AssignedToName] => Abena Banson
+            [CategoryName] => Network
+        )
+
+    [3] => Array
+        (
+            [TicketID] => 50
+            [Description] => the PCs at the front desk are faulty
+            [Priority] => high
+            [Status] => closed
+            [CreatedDate] => 2025-08-17 18:34:00
+            [CreatedByName] => James Best
+            [AssignedToName] => Annabel Mensah
+            [CategoryName] => Hardware
+        )
+
+    [4] => Array
+        (
+            [TicketID] => 45
+            [Description] => Emails are not being sent on time
+            [Priority] => high
+            [Status] => closed
+            [CreatedDate] => 2025-08-08 16:47:52
+            [CreatedByName] => James Best
+            [AssignedToName] => Raymond Adoe
+            [CategoryName] => Email/Notification
+        )
+
+    [5] => Array
+        (
+            [TicketID] => 43
+            [Description] => The bulbs in the washroom are faulty
+            [Priority] => high
+            [Status] => closed
+            [CreatedDate] => 2025-08-01 15:08:11
+            [CreatedByName] => Abena Banson
+            [AssignedToName] => Annabel Mensah
+            [CategoryName] => Facility Issues
+        )
+
+    [6] => Array
+        (
+            [TicketID] => 42
+            [Description] => Staff member cannot access the top floor
+            [Priority] => high
+            [Status] => closed
+            [CreatedDate] => 2025-08-01 09:11:12
+            [CreatedByName] => James Best
+            [AssignedToName] => 
+            [CategoryName] => Access
+        )
+
+    [7] => Array
+        (
+            [TicketID] => 35
+            [Description] => System allowed booking of two appointments for the same host at 2:00 PM today. Both visitors showed up and caused confusion. Need to fix scheduling conflict detection.
+            [Priority] => high
+            [Status] => closed
+            [CreatedDate] => 2025-07-26 15:50:35
+            [CreatedByName] => Annabel Mensah
+            [AssignedToName] => Lawrence Danso Abiam
+            [CategoryName] => Appointments
+        )
+
+    [8] => Array
+        (
+            [TicketID] => 55
+            [Description] => Appointment emails are not being sent
+            [Priority] => medium
+            [Status] => closed
+            [CreatedDate] => 2025-08-22 21:29:26
+            [CreatedByName] => Abena Banson
+            [AssignedToName] => Cyrus Kwame Blay
+            [CategoryName] => Email/Notification
+        )
+
+    [9] => Array
+        (
+            [TicketID] => 53
+            [Description] => In need of a password reset
+            [Priority] => medium
+            [Status] => closed
+            [CreatedDate] => 2025-08-19 13:46:02
+            [CreatedByName] => Raymond Adoe
+            [AssignedToName] => Cyrus Kwame Blay
+            [CategoryName] => Software
+        )
+
+    [10] => Array
+        (
+            [TicketID] => 51
+            [Description] => Operating system need an update
+            [Priority] => medium
+            [Status] => closed
+            [CreatedDate] => 2025-08-17 19:00:07
+            [CreatedByName] => James Best
+            [AssignedToName] => 
+            [CategoryName] => Software
+        )
+
+    [11] => Array
+        (
+            [TicketID] => 49
+            [Description] => Elevator have been made inaccessible
+            [Priority] => medium
+            [Status] => closed
+            [CreatedDate] => 2025-08-17 18:01:23
+            [CreatedByName] => James Best
+            [AssignedToName] => Lawrence Danso Abiam
+            [CategoryName] => Access
+        )
+
+    [12] => Array
+        (
+            [TicketID] => 44
+            [Description] => The top floor cannot be accessed at the moment
+            [Priority] => medium
+            [Status] => closed
+            [CreatedDate] => 2025-08-01 15:19:18
+            [CreatedByName] => Lawrence Danso Abiam
+            [AssignedToName] => 
+            [CategoryName] => Access
+        )
+
+    [13] => Array
+        (
+            [TicketID] => 40
+            [Description] => Washroom Leakage
+            [Priority] => medium
+            [Status] => closed
+            [CreatedDate] => 2025-07-28 18:28:55
+            [CreatedByName] => Abena Banson
+            [AssignedToName] => James Best
+            [CategoryName] => Facility Issues
+        )
+
+    [14] => Array
+        (
+            [TicketID] => 38
+            [Description] => Visitors are not receiving appointment confirmation emails. Checked spam folders and email logs show messages are being sent but not delivered.
+            [Priority] => medium
+            [Status] => closed
+            [CreatedDate] => 2025-07-26 15:55:06
+            [CreatedByName] => Abena Banson
+            [AssignedToName] => Cyrus Kwame Blay
+            [CategoryName] => Email/Notification
+        )
+
+    [15] => Array
+        (
+            [TicketID] => 37
+            [Description] => New front desk employee Jessica Brown started today but doesn't have access to the visitor management system. Need user account created with front desk permissions.
+            [Priority] => medium
+            [Status] => closed
+            [CreatedDate] => 2025-07-26 15:53:36
+            [CreatedByName] => James Best
+            [AssignedToName] => Cyrus Kwame Blay
+            [CategoryName] => Access
+        )
+
+    [16] => Array
+        (
+            [TicketID] => 36
+            [Description] => The HP LaserJet printer in the front lobby keeps jamming when printing visitor badges. Also noticing streaks and faded text on printed materials.
+            [Priority] => medium
+            [Status] => closed
+            [CreatedDate] => 2025-07-26 15:52:41
+            [CreatedByName] => Abena Banson
+            [AssignedToName] => James Best
+            [CategoryName] => Hardware
+        )
+
+    [17] => Array
+        (
+            [TicketID] => 54
+            [Description] => Doors at the reception are stuck
+            [Priority] => low
+            [Status] => closed
+            [CreatedDate] => 2025-08-19 14:55:06
+            [CreatedByName] => Abena Banson
+            [AssignedToName] => James Best
+            [CategoryName] => Facility Issues
+        )
+
+    [18] => Array
+        (
+            [TicketID] => 46
+            [Description] => A complaint of a missing black tote bag
+            [Priority] => low
+            [Status] => closed
+            [CreatedDate] => 2025-08-17 17:55:00
+            [CreatedByName] => James Best
+            [AssignedToName] => Lawrence Danso Abiam
+            [CategoryName] => Lost & Found
+        )
+
+    [19] => Array
+        (
+            [TicketID] => 39
+            [Description] => Appointment reminder emails have broken formatting - no line breaks and missing company logo. Text appears as one continuous paragraph.
+            [Priority] => low
+            [Status] => closed
+            [CreatedDate] => 2025-07-26 15:56:05
+            [CreatedByName] => James Best
+            [AssignedToName] => 
+            [CategoryName] => Email/Notification
+        )
+
+)
+
+[09-Sep-2025 23:45:51 Europe/Berlin] Checking for ticket creation POST data: Array
+(
+)
+
+[09-Sep-2025 23:45:51 Europe/Berlin] Retrieved tickets: Array
+(
+    [0] => Array
+        (
+            [TicketID] => 41
+            [Description] => WiFi  Access has been down 
+            [Priority] => critical
+            [Status] => closed
+            [CreatedDate] => 2025-07-30 05:57:12
+            [CreatedByName] => James Best
+            [AssignedToName] => Lawrence Danso Abiam
+            [CategoryName] => Network
+        )
+
+    [1] => Array
+        (
+            [TicketID] => 56
+            [Description] => Many visitors are in a view waiting for you
+            [Priority] => high
+            [Status] => in-progress
+            [CreatedDate] => 2025-09-09 21:45:28
+            [CreatedByName] => Annabel Mensah
+            [AssignedToName] => Lawrence Danso Abiam
+            [CategoryName] => Appointments
+        )
+
+    [2] => Array
+        (
+            [TicketID] => 52
+            [Description] => Connectivity issues on the ground floor
+            [Priority] => high
+            [Status] => closed
+            [CreatedDate] => 2025-08-19 12:36:14
+            [CreatedByName] => Annabel Mensah
+            [AssignedToName] => Abena Banson
+            [CategoryName] => Network
+        )
+
+    [3] => Array
+        (
+            [TicketID] => 50
+            [Description] => the PCs at the front desk are faulty
+            [Priority] => high
+            [Status] => closed
+            [CreatedDate] => 2025-08-17 18:34:00
+            [CreatedByName] => James Best
+            [AssignedToName] => Annabel Mensah
+            [CategoryName] => Hardware
+        )
+
+    [4] => Array
+        (
+            [TicketID] => 45
+            [Description] => Emails are not being sent on time
+            [Priority] => high
+            [Status] => closed
+            [CreatedDate] => 2025-08-08 16:47:52
+            [CreatedByName] => James Best
+            [AssignedToName] => Raymond Adoe
+            [CategoryName] => Email/Notification
+        )
+
+    [5] => Array
+        (
+            [TicketID] => 43
+            [Description] => The bulbs in the washroom are faulty
+            [Priority] => high
+            [Status] => closed
+            [CreatedDate] => 2025-08-01 15:08:11
+            [CreatedByName] => Abena Banson
+            [AssignedToName] => Annabel Mensah
+            [CategoryName] => Facility Issues
+        )
+
+    [6] => Array
+        (
+            [TicketID] => 42
+            [Description] => Staff member cannot access the top floor
+            [Priority] => high
+            [Status] => closed
+            [CreatedDate] => 2025-08-01 09:11:12
+            [CreatedByName] => James Best
+            [AssignedToName] => 
+            [CategoryName] => Access
+        )
+
+    [7] => Array
+        (
+            [TicketID] => 35
+            [Description] => System allowed booking of two appointments for the same host at 2:00 PM today. Both visitors showed up and caused confusion. Need to fix scheduling conflict detection.
+            [Priority] => high
+            [Status] => closed
+            [CreatedDate] => 2025-07-26 15:50:35
+            [CreatedByName] => Annabel Mensah
+            [AssignedToName] => Lawrence Danso Abiam
+            [CategoryName] => Appointments
+        )
+
+    [8] => Array
+        (
+            [TicketID] => 55
+            [Description] => Appointment emails are not being sent
+            [Priority] => medium
+            [Status] => closed
+            [CreatedDate] => 2025-08-22 21:29:26
+            [CreatedByName] => Abena Banson
+            [AssignedToName] => Cyrus Kwame Blay
+            [CategoryName] => Email/Notification
+        )
+
+    [9] => Array
+        (
+            [TicketID] => 53
+            [Description] => In need of a password reset
+            [Priority] => medium
+            [Status] => closed
+            [CreatedDate] => 2025-08-19 13:46:02
+            [CreatedByName] => Raymond Adoe
+            [AssignedToName] => Cyrus Kwame Blay
+            [CategoryName] => Software
+        )
+
+    [10] => Array
+        (
+            [TicketID] => 51
+            [Description] => Operating system need an update
+            [Priority] => medium
+            [Status] => closed
+            [CreatedDate] => 2025-08-17 19:00:07
+            [CreatedByName] => James Best
+            [AssignedToName] => 
+            [CategoryName] => Software
+        )
+
+    [11] => Array
+        (
+            [TicketID] => 49
+            [Description] => Elevator have been made inaccessible
+            [Priority] => medium
+            [Status] => closed
+            [CreatedDate] => 2025-08-17 18:01:23
+            [CreatedByName] => James Best
+            [AssignedToName] => Lawrence Danso Abiam
+            [CategoryName] => Access
+        )
+
+    [12] => Array
+        (
+            [TicketID] => 44
+            [Description] => The top floor cannot be accessed at the moment
+            [Priority] => medium
+            [Status] => closed
+            [CreatedDate] => 2025-08-01 15:19:18
+            [CreatedByName] => Lawrence Danso Abiam
+            [AssignedToName] => 
+            [CategoryName] => Access
+        )
+
+    [13] => Array
+        (
+            [TicketID] => 40
+            [Description] => Washroom Leakage
+            [Priority] => medium
+            [Status] => closed
+            [CreatedDate] => 2025-07-28 18:28:55
+            [CreatedByName] => Abena Banson
+            [AssignedToName] => James Best
+            [CategoryName] => Facility Issues
+        )
+
+    [14] => Array
+        (
+            [TicketID] => 38
+            [Description] => Visitors are not receiving appointment confirmation emails. Checked spam folders and email logs show messages are being sent but not delivered.
+            [Priority] => medium
+            [Status] => closed
+            [CreatedDate] => 2025-07-26 15:55:06
+            [CreatedByName] => Abena Banson
+            [AssignedToName] => Cyrus Kwame Blay
+            [CategoryName] => Email/Notification
+        )
+
+    [15] => Array
+        (
+            [TicketID] => 37
+            [Description] => New front desk employee Jessica Brown started today but doesn't have access to the visitor management system. Need user account created with front desk permissions.
+            [Priority] => medium
+            [Status] => closed
+            [CreatedDate] => 2025-07-26 15:53:36
+            [CreatedByName] => James Best
+            [AssignedToName] => Cyrus Kwame Blay
+            [CategoryName] => Access
+        )
+
+    [16] => Array
+        (
+            [TicketID] => 36
+            [Description] => The HP LaserJet printer in the front lobby keeps jamming when printing visitor badges. Also noticing streaks and faded text on printed materials.
+            [Priority] => medium
+            [Status] => closed
+            [CreatedDate] => 2025-07-26 15:52:41
+            [CreatedByName] => Abena Banson
+            [AssignedToName] => James Best
+            [CategoryName] => Hardware
+        )
+
+    [17] => Array
+        (
+            [TicketID] => 54
+            [Description] => Doors at the reception are stuck
+            [Priority] => low
+            [Status] => closed
+            [CreatedDate] => 2025-08-19 14:55:06
+            [CreatedByName] => Abena Banson
+            [AssignedToName] => James Best
+            [CategoryName] => Facility Issues
+        )
+
+    [18] => Array
+        (
+            [TicketID] => 46
+            [Description] => A complaint of a missing black tote bag
+            [Priority] => low
+            [Status] => closed
+            [CreatedDate] => 2025-08-17 17:55:00
+            [CreatedByName] => James Best
+            [AssignedToName] => Lawrence Danso Abiam
+            [CategoryName] => Lost & Found
+        )
+
+    [19] => Array
+        (
+            [TicketID] => 39
+            [Description] => Appointment reminder emails have broken formatting - no line breaks and missing company logo. Text appears as one continuous paragraph.
+            [Priority] => low
+            [Status] => closed
+            [CreatedDate] => 2025-07-26 15:56:05
+            [CreatedByName] => James Best
+            [AssignedToName] => 
+            [CategoryName] => Email/Notification
+        )
+
+)
+
+[09-Sep-2025 23:45:57 Europe/Berlin] Checking for ticket creation POST data: Array
+(
+)
+
+[09-Sep-2025 23:45:57 Europe/Berlin] Retrieved tickets: Array
+(
+    [0] => Array
+        (
+            [TicketID] => 41
+            [Description] => WiFi  Access has been down 
+            [Priority] => critical
+            [Status] => closed
+            [CreatedDate] => 2025-07-30 05:57:12
+            [CreatedByName] => James Best
+            [AssignedToName] => Lawrence Danso Abiam
+            [CategoryName] => Network
+        )
+
+    [1] => Array
+        (
+            [TicketID] => 56
+            [Description] => Many visitors are in a view waiting for you
+            [Priority] => high
+            [Status] => in-progress
+            [CreatedDate] => 2025-09-09 21:45:28
+            [CreatedByName] => Annabel Mensah
+            [AssignedToName] => Lawrence Danso Abiam
+            [CategoryName] => Appointments
+        )
+
+    [2] => Array
+        (
+            [TicketID] => 52
+            [Description] => Connectivity issues on the ground floor
+            [Priority] => high
+            [Status] => closed
+            [CreatedDate] => 2025-08-19 12:36:14
+            [CreatedByName] => Annabel Mensah
+            [AssignedToName] => Abena Banson
+            [CategoryName] => Network
+        )
+
+    [3] => Array
+        (
+            [TicketID] => 50
+            [Description] => the PCs at the front desk are faulty
+            [Priority] => high
+            [Status] => closed
+            [CreatedDate] => 2025-08-17 18:34:00
+            [CreatedByName] => James Best
+            [AssignedToName] => Annabel Mensah
+            [CategoryName] => Hardware
+        )
+
+    [4] => Array
+        (
+            [TicketID] => 45
+            [Description] => Emails are not being sent on time
+            [Priority] => high
+            [Status] => closed
+            [CreatedDate] => 2025-08-08 16:47:52
+            [CreatedByName] => James Best
+            [AssignedToName] => Raymond Adoe
+            [CategoryName] => Email/Notification
+        )
+
+    [5] => Array
+        (
+            [TicketID] => 43
+            [Description] => The bulbs in the washroom are faulty
+            [Priority] => high
+            [Status] => closed
+            [CreatedDate] => 2025-08-01 15:08:11
+            [CreatedByName] => Abena Banson
+            [AssignedToName] => Annabel Mensah
+            [CategoryName] => Facility Issues
+        )
+
+    [6] => Array
+        (
+            [TicketID] => 42
+            [Description] => Staff member cannot access the top floor
+            [Priority] => high
+            [Status] => closed
+            [CreatedDate] => 2025-08-01 09:11:12
+            [CreatedByName] => James Best
+            [AssignedToName] => 
+            [CategoryName] => Access
+        )
+
+    [7] => Array
+        (
+            [TicketID] => 35
+            [Description] => System allowed booking of two appointments for the same host at 2:00 PM today. Both visitors showed up and caused confusion. Need to fix scheduling conflict detection.
+            [Priority] => high
+            [Status] => closed
+            [CreatedDate] => 2025-07-26 15:50:35
+            [CreatedByName] => Annabel Mensah
+            [AssignedToName] => Lawrence Danso Abiam
+            [CategoryName] => Appointments
+        )
+
+    [8] => Array
+        (
+            [TicketID] => 55
+            [Description] => Appointment emails are not being sent
+            [Priority] => medium
+            [Status] => closed
+            [CreatedDate] => 2025-08-22 21:29:26
+            [CreatedByName] => Abena Banson
+            [AssignedToName] => Cyrus Kwame Blay
+            [CategoryName] => Email/Notification
+        )
+
+    [9] => Array
+        (
+            [TicketID] => 53
+            [Description] => In need of a password reset
+            [Priority] => medium
+            [Status] => closed
+            [CreatedDate] => 2025-08-19 13:46:02
+            [CreatedByName] => Raymond Adoe
+            [AssignedToName] => Cyrus Kwame Blay
+            [CategoryName] => Software
+        )
+
+    [10] => Array
+        (
+            [TicketID] => 51
+            [Description] => Operating system need an update
+            [Priority] => medium
+            [Status] => closed
+            [CreatedDate] => 2025-08-17 19:00:07
+            [CreatedByName] => James Best
+            [AssignedToName] => 
+            [CategoryName] => Software
+        )
+
+    [11] => Array
+        (
+            [TicketID] => 49
+            [Description] => Elevator have been made inaccessible
+            [Priority] => medium
+            [Status] => closed
+            [CreatedDate] => 2025-08-17 18:01:23
+            [CreatedByName] => James Best
+            [AssignedToName] => Lawrence Danso Abiam
+            [CategoryName] => Access
+        )
+
+    [12] => Array
+        (
+            [TicketID] => 44
+            [Description] => The top floor cannot be accessed at the moment
+            [Priority] => medium
+            [Status] => closed
+            [CreatedDate] => 2025-08-01 15:19:18
+            [CreatedByName] => Lawrence Danso Abiam
+            [AssignedToName] => 
+            [CategoryName] => Access
+        )
+
+    [13] => Array
+        (
+            [TicketID] => 40
+            [Description] => Washroom Leakage
+            [Priority] => medium
+            [Status] => closed
+            [CreatedDate] => 2025-07-28 18:28:55
+            [CreatedByName] => Abena Banson
+            [AssignedToName] => James Best
+            [CategoryName] => Facility Issues
+        )
+
+    [14] => Array
+        (
+            [TicketID] => 38
+            [Description] => Visitors are not receiving appointment confirmation emails. Checked spam folders and email logs show messages are being sent but not delivered.
+            [Priority] => medium
+            [Status] => closed
+            [CreatedDate] => 2025-07-26 15:55:06
+            [CreatedByName] => Abena Banson
+            [AssignedToName] => Cyrus Kwame Blay
+            [CategoryName] => Email/Notification
+        )
+
+    [15] => Array
+        (
+            [TicketID] => 37
+            [Description] => New front desk employee Jessica Brown started today but doesn't have access to the visitor management system. Need user account created with front desk permissions.
+            [Priority] => medium
+            [Status] => closed
+            [CreatedDate] => 2025-07-26 15:53:36
+            [CreatedByName] => James Best
+            [AssignedToName] => Cyrus Kwame Blay
+            [CategoryName] => Access
+        )
+
+    [16] => Array
+        (
+            [TicketID] => 36
+            [Description] => The HP LaserJet printer in the front lobby keeps jamming when printing visitor badges. Also noticing streaks and faded text on printed materials.
+            [Priority] => medium
+            [Status] => closed
+            [CreatedDate] => 2025-07-26 15:52:41
+            [CreatedByName] => Abena Banson
+            [AssignedToName] => James Best
+            [CategoryName] => Hardware
+        )
+
+    [17] => Array
+        (
+            [TicketID] => 54
+            [Description] => Doors at the reception are stuck
+            [Priority] => low
+            [Status] => closed
+            [CreatedDate] => 2025-08-19 14:55:06
+            [CreatedByName] => Abena Banson
+            [AssignedToName] => James Best
+            [CategoryName] => Facility Issues
+        )
+
+    [18] => Array
+        (
+            [TicketID] => 46
+            [Description] => A complaint of a missing black tote bag
+            [Priority] => low
+            [Status] => closed
+            [CreatedDate] => 2025-08-17 17:55:00
+            [CreatedByName] => James Best
+            [AssignedToName] => Lawrence Danso Abiam
+            [CategoryName] => Lost & Found
+        )
+
+    [19] => Array
+        (
+            [TicketID] => 39
+            [Description] => Appointment reminder emails have broken formatting - no line breaks and missing company logo. Text appears as one continuous paragraph.
+            [Priority] => low
+            [Status] => closed
+            [CreatedDate] => 2025-07-26 15:56:05
+            [CreatedByName] => James Best
+            [AssignedToName] => 
+            [CategoryName] => Email/Notification
+        )
+
+)
+
+[09-Sep-2025 23:46:20 Europe/Berlin] Checking for ticket creation POST data: Array
+(
+)
+
+[09-Sep-2025 23:46:20 Europe/Berlin] Retrieved tickets: Array
+(
+    [0] => Array
+        (
+            [TicketID] => 41
+            [Description] => WiFi  Access has been down 
+            [Priority] => critical
+            [Status] => closed
+            [CreatedDate] => 2025-07-30 05:57:12
+            [CreatedByName] => James Best
+            [AssignedToName] => Lawrence Danso Abiam
+            [CategoryName] => Network
+        )
+
+    [1] => Array
+        (
+            [TicketID] => 56
+            [Description] => Many visitors are in a view waiting for you
+            [Priority] => high
+            [Status] => in-progress
+            [CreatedDate] => 2025-09-09 21:45:28
+            [CreatedByName] => Annabel Mensah
+            [AssignedToName] => Lawrence Danso Abiam
+            [CategoryName] => Appointments
+        )
+
+    [2] => Array
+        (
+            [TicketID] => 52
+            [Description] => Connectivity issues on the ground floor
+            [Priority] => high
+            [Status] => closed
+            [CreatedDate] => 2025-08-19 12:36:14
+            [CreatedByName] => Annabel Mensah
+            [AssignedToName] => Abena Banson
+            [CategoryName] => Network
+        )
+
+    [3] => Array
+        (
+            [TicketID] => 50
+            [Description] => the PCs at the front desk are faulty
+            [Priority] => high
+            [Status] => closed
+            [CreatedDate] => 2025-08-17 18:34:00
+            [CreatedByName] => James Best
+            [AssignedToName] => Annabel Mensah
+            [CategoryName] => Hardware
+        )
+
+    [4] => Array
+        (
+            [TicketID] => 45
+            [Description] => Emails are not being sent on time
+            [Priority] => high
+            [Status] => closed
+            [CreatedDate] => 2025-08-08 16:47:52
+            [CreatedByName] => James Best
+            [AssignedToName] => Raymond Adoe
+            [CategoryName] => Email/Notification
+        )
+
+    [5] => Array
+        (
+            [TicketID] => 43
+            [Description] => The bulbs in the washroom are faulty
+            [Priority] => high
+            [Status] => closed
+            [CreatedDate] => 2025-08-01 15:08:11
+            [CreatedByName] => Abena Banson
+            [AssignedToName] => Annabel Mensah
+            [CategoryName] => Facility Issues
+        )
+
+    [6] => Array
+        (
+            [TicketID] => 42
+            [Description] => Staff member cannot access the top floor
+            [Priority] => high
+            [Status] => closed
+            [CreatedDate] => 2025-08-01 09:11:12
+            [CreatedByName] => James Best
+            [AssignedToName] => 
+            [CategoryName] => Access
+        )
+
+    [7] => Array
+        (
+            [TicketID] => 35
+            [Description] => System allowed booking of two appointments for the same host at 2:00 PM today. Both visitors showed up and caused confusion. Need to fix scheduling conflict detection.
+            [Priority] => high
+            [Status] => closed
+            [CreatedDate] => 2025-07-26 15:50:35
+            [CreatedByName] => Annabel Mensah
+            [AssignedToName] => Lawrence Danso Abiam
+            [CategoryName] => Appointments
+        )
+
+    [8] => Array
+        (
+            [TicketID] => 55
+            [Description] => Appointment emails are not being sent
+            [Priority] => medium
+            [Status] => closed
+            [CreatedDate] => 2025-08-22 21:29:26
+            [CreatedByName] => Abena Banson
+            [AssignedToName] => Cyrus Kwame Blay
+            [CategoryName] => Email/Notification
+        )
+
+    [9] => Array
+        (
+            [TicketID] => 53
+            [Description] => In need of a password reset
+            [Priority] => medium
+            [Status] => closed
+            [CreatedDate] => 2025-08-19 13:46:02
+            [CreatedByName] => Raymond Adoe
+            [AssignedToName] => Cyrus Kwame Blay
+            [CategoryName] => Software
+        )
+
+    [10] => Array
+        (
+            [TicketID] => 51
+            [Description] => Operating system need an update
+            [Priority] => medium
+            [Status] => closed
+            [CreatedDate] => 2025-08-17 19:00:07
+            [CreatedByName] => James Best
+            [AssignedToName] => 
+            [CategoryName] => Software
+        )
+
+    [11] => Array
+        (
+            [TicketID] => 49
+            [Description] => Elevator have been made inaccessible
+            [Priority] => medium
+            [Status] => closed
+            [CreatedDate] => 2025-08-17 18:01:23
+            [CreatedByName] => James Best
+            [AssignedToName] => Lawrence Danso Abiam
+            [CategoryName] => Access
+        )
+
+    [12] => Array
+        (
+            [TicketID] => 44
+            [Description] => The top floor cannot be accessed at the moment
+            [Priority] => medium
+            [Status] => closed
+            [CreatedDate] => 2025-08-01 15:19:18
+            [CreatedByName] => Lawrence Danso Abiam
+            [AssignedToName] => 
+            [CategoryName] => Access
+        )
+
+    [13] => Array
+        (
+            [TicketID] => 40
+            [Description] => Washroom Leakage
+            [Priority] => medium
+            [Status] => closed
+            [CreatedDate] => 2025-07-28 18:28:55
+            [CreatedByName] => Abena Banson
+            [AssignedToName] => James Best
+            [CategoryName] => Facility Issues
+        )
+
+    [14] => Array
+        (
+            [TicketID] => 38
+            [Description] => Visitors are not receiving appointment confirmation emails. Checked spam folders and email logs show messages are being sent but not delivered.
+            [Priority] => medium
+            [Status] => closed
+            [CreatedDate] => 2025-07-26 15:55:06
+            [CreatedByName] => Abena Banson
+            [AssignedToName] => Cyrus Kwame Blay
+            [CategoryName] => Email/Notification
+        )
+
+    [15] => Array
+        (
+            [TicketID] => 37
+            [Description] => New front desk employee Jessica Brown started today but doesn't have access to the visitor management system. Need user account created with front desk permissions.
+            [Priority] => medium
+            [Status] => closed
+            [CreatedDate] => 2025-07-26 15:53:36
+            [CreatedByName] => James Best
+            [AssignedToName] => Cyrus Kwame Blay
+            [CategoryName] => Access
+        )
+
+    [16] => Array
+        (
+            [TicketID] => 36
+            [Description] => The HP LaserJet printer in the front lobby keeps jamming when printing visitor badges. Also noticing streaks and faded text on printed materials.
+            [Priority] => medium
+            [Status] => closed
+            [CreatedDate] => 2025-07-26 15:52:41
+            [CreatedByName] => Abena Banson
+            [AssignedToName] => James Best
+            [CategoryName] => Hardware
+        )
+
+    [17] => Array
+        (
+            [TicketID] => 54
+            [Description] => Doors at the reception are stuck
+            [Priority] => low
+            [Status] => closed
+            [CreatedDate] => 2025-08-19 14:55:06
+            [CreatedByName] => Abena Banson
+            [AssignedToName] => James Best
+            [CategoryName] => Facility Issues
+        )
+
+    [18] => Array
+        (
+            [TicketID] => 46
+            [Description] => A complaint of a missing black tote bag
+            [Priority] => low
+            [Status] => closed
+            [CreatedDate] => 2025-08-17 17:55:00
+            [CreatedByName] => James Best
+            [AssignedToName] => Lawrence Danso Abiam
+            [CategoryName] => Lost & Found
+        )
+
+    [19] => Array
+        (
+            [TicketID] => 39
+            [Description] => Appointment reminder emails have broken formatting - no line breaks and missing company logo. Text appears as one continuous paragraph.
+            [Priority] => low
+            [Status] => closed
+            [CreatedDate] => 2025-07-26 15:56:05
+            [CreatedByName] => James Best
+            [AssignedToName] => 
+            [CategoryName] => Email/Notification
+        )
+
+)
+
