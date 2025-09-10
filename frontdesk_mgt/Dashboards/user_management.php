@@ -1,5 +1,6 @@
 <?php
 require_once '../dbConfig.php';
+require_once 'NotificationCreator.php';
 global $conn;
 session_start();
 

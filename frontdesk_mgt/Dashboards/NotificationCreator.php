@@ -406,6 +406,27 @@ class NotificationCreator {
             ];
         }
     }
+    /**
+     * Create ticket assignment notification
+     */
+    public function notifyTicketAssignment($UserID, $ticketId, $ticketDescription, $assignedByName) {
+        $title = "New Ticket Assigned to You";
+        $message = "You have been assigned to ticket #{$ticketId}: " .
+            (strlen($ticketDescription) > 50 ?
+                substr($ticketDescription, 0, 50) . '...' : $ticketDescription);
+
+        $options = [
+            'priority' => 'normal',
+            'related_entity_type' => 'ticket',
+            'related_entity_id' => $ticketId,
+            'metadata' => [
+                'assigned_by' => $assignedByName,
+                'assigned_at' => date('Y-m-d H:i:s')
+            ]
+        ];
+
+        return $this->createNotification([$UserID], $title, $message, 'ticket', $options);
+    }
 }
 
 // Example usage functions for easy integration:

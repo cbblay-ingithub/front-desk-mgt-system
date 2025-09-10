@@ -358,7 +358,6 @@ function checkTimeConflict($hostId, $appointmentTime, $excludeAppointmentId = nu
     <link rel="stylesheet" href="../../Sneat/assets/vendor/css/core.css" />
     <link rel="stylesheet" href="../../Sneat/assets/css/demo.css" />
     <link rel="stylesheet" href="../../Sneat/assets/vendor/libs/flatpickr/flatpickr.css" />
-    <link rel="stylesheet" href="notification.css">
     <style>
         body {
             min-height: 100vh;

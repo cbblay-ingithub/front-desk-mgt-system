@@ -12,7 +12,8 @@ require_once '../dbConfig.php';
 require_once 'ticket_functions.php';
 require_once 'ticket_ops.php';
 require_once 'view_ticket.php';
-
+require_once 'NotificationCreator.php';
+$notificationCreator = new NotificationCreator($conn);
 
 $userRole = $_SESSION['role'] ?? 'host'; // Default to host if role not set
 $userId = $_SESSION['userID'] ?? null;
@@ -96,6 +97,34 @@ if ($userRole == 'Front Desk Staff') {
     if ($autoCloseMessage) {
         $message = isset($message) ? $message . "<br>" . $autoCloseMessage : $autoCloseMessage;
     }
+}
+// Get ticket details for the notification
+$ticketStmt = $conn->prepare("SELECT Description FROM Help_Desk WHERE TicketID = ?");
+$ticketStmt->bind_param("i", $ticketId);
+$ticketStmt->execute();
+$ticketResult = $ticketStmt->get_result();
+$ticket = $ticketResult->fetch_assoc();
+$ticketStmt->close();
+
+// Get assigner name
+$assignerStmt = $conn->prepare("SELECT Name FROM users WHERE UserID = ?");
+$assignerStmt->bind_param("i", $_SESSION['userID']);
+$assignerStmt->execute();
+$assignerResult = $assignerStmt->get_result();
+$assigner = $assignerResult->fetch_assoc();
+$assignerStmt->close();
+
+// Create the notification
+$UserID = '';
+$notificationResult = $notificationCreator->notifyTicketAssignment(
+    $UserID,
+    $ticketId,
+    $ticket['Description'],
+    $assigner['Name']
+);
+
+if (!$notificationResult['success']) {
+    error_log("Failed to create assignment notification: " . $notificationResult['error']);
 }
 
 $conn->close();
@@ -1882,7 +1911,34 @@ RECENT TICKETS (Last 5):
             }
         }
     });
+    $(document).ready(function() {
+        // Initialize the global notification system for hosts
+        if (typeof GlobalNotificationSystem !== 'undefined') {
+            window.globalNotificationSystem = new GlobalNotificationSystem();
 
+            // Make it available globally for debugging
+            window.testNotification = () => window.globalNotificationSystem.testNotification();
+            window.notificationStatus = () => console.log(window.globalNotificationSystem.getStatus());
+        }
+    });
+    // Add this to your help_desk.php JavaScript for testing
+    function testTicketAssignmentNotification() {
+        const testNotification = {
+            id: Date.now(),
+            title: 'New Ticket Assigned to You',
+            message: 'You have been assigned to ticket #123: Test ticket description...',
+            type: 'ticket',
+            related_entity_type: 'ticket',
+            related_entity_id: 123,
+            created_at: new Date().toISOString()
+        };
+
+        if (window.globalNotificationSystem) {
+            window.globalNotificationSystem.showNotificationAlert(testNotification);
+        } else {
+            alert('Notification system not initialized. Please refresh the page.');
+        }
+    }
 
 </script>
 </html>

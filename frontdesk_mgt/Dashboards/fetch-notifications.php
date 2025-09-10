@@ -1,4 +1,5 @@
 <?php
+global $conn;
 require_once '../dbConfig.php';
 
 // Start session if not already started
