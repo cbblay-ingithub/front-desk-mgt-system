@@ -664,6 +664,150 @@ echo "<!-- Debug: " . count($appointments) . " appointments loaded -->";
             background-color: var(--bs-primary-light);
             border-color: var(--bs-primary-light);
         }
+        /* Enhanced Visitor Search Styles - Add this to your existing styles */
+        .visitor-search-container {
+            position: relative;
+        }
+
+        .visitor-search-input {
+            padding-right: 40px;
+        }
+
+        .search-dropdown {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border: 1px solid #dee2e6;
+            border-top: none;
+            border-radius: 0 0 6px 6px;
+            max-height: 300px;
+            overflow-y: auto;
+            z-index: 1050;
+            display: none;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .search-dropdown.show {
+            display: block;
+        }
+
+        .visitor-item {
+            padding: 12px 16px;
+            cursor: pointer;
+            border-bottom: 1px solid #f8f9fa;
+            transition: background-color 0.2s;
+        }
+
+        .visitor-item:hover, .visitor-item.highlighted {
+            background-color: #f8f9fa;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+
+        .visitor-name {
+            font-weight: 500;
+            color: #212529;
+        }
+
+        .visitor-email {
+            font-size: 0.875rem;
+            color: #6c757d;
+        }
+
+        .visitor-phone {
+            font-size: 0.8rem;
+            color: #868e96;
+        }
+
+        .add-new-visitor {
+            padding: 12px 16px;
+            background-color: #e3f2fd;
+            border-top: 2px solid #2196f3;
+            color: #1976d2;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .add-new-visitor:hover {
+            background-color: #bbdefb;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .search-icon {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #6c757d;
+            pointer-events: none;
+        }
+
+        .clear-search {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: #6c757d;
+            cursor: pointer;
+            padding: 4px;
+            border-radius: 50%;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+
+        .clear-search.show {
+            opacity: 1;
+        }
+
+        .clear-search:hover {
+            background-color: #f8f9fa;
+            color: #495057;
+        }
+
+        .selected-visitor {
+            display: none;
+            padding: 12px 16px;
+            background-color: #e8f5e8;
+            border: 1px solid #28a745;
+            border-radius: 6px;
+            margin-top: 8px;
+        }
+
+        .selected-visitor.show {
+            display: block;
+        }
+
+        .recent-visitors-header {
+            padding: 8px 16px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #495057;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            background-color: #f8f9fa;
+        }
+
+        .loading-spinner {
+            padding: 16px;
+            text-align: center;
+        }
+
+        .highlight {
+            background-color: #fff3cd;
+            font-weight: bold;
+        }
+
+        .no-results {
+            padding: 16px;
+            text-align: center;
+            color: #6c757d;
+            font-style: italic;
+        }
     </style>
 </head>
 <body>
@@ -915,25 +1059,63 @@ echo "<!-- Debug: " . count($appointments) . " appointments loaded -->";
                     <input type="hidden" name="action" value="schedule">
                     <input type="hidden" name="hostId" value="<?= $hostId ?>">
                     <input type="hidden" name="isNewVisitor" id="isNewVisitor" value="0">
-                    <div class="mb-3" id="visitorSelectContainer">
-                        <label for="visitorSelect" class="form-label">Select Visitor</label>
-                        <select class="form-select" id="visitorSelect" name="visitorId">
-                            <option value="">-- Select Visitor --</option>
-                            <option value="new">-- Add New Visitor --</option>
-                        </select>
+                    <div class="mb-3">
+                        <label class="form-label">Select or Add Visitor</label>
+                        <div class="visitor-search-container">
+                            <input
+                                    type="text"
+                                    class="form-control visitor-search-input"
+                                    id="visitorSearch"
+                                    placeholder="Search by name, email, or phone..."
+                                    autocomplete="on"
+                            >
+                            <i class="fas fa-search search-icon"></i>
+                            <button class="clear-search" id="clearSearch" type="button">
+                                <i class="fas fa-times"></i>
+                            </button>
+
+                            <div class="search-dropdown" id="searchDropdown">
+                                <div class="loading-spinner" id="loadingSpinner" style="display: none;">
+                                    <i class="fas fa-spinner fa-spin"></i> Loading...
+                                </div>
+                                <div id="visitorResults"></div>
+                            </div>
+                        </div>
+
+                        <div class="selected-visitor" id="selectedVisitor">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <div class="visitor-name" id="selectedName"></div>
+                                    <div class="visitor-email" id="selectedEmail"></div>
+                                    <div class="visitor-phone" id="selectedPhone"></div>
+                                </div>
+                                <button class="btn btn-sm btn-outline-secondary" id="changeVisitor">
+                                    <i class="fas fa-edit"></i> Change
+                                </button>
+                            </div>
+                        </div>
+
+                        <input type="hidden" id="selectedVisitorId" name="visitorId">
                     </div>
+
                     <div id="newVisitorFields" style="display: none;">
+                        <h6 class="text-primary mb-3">Add New Visitor</h6>
                         <div class="mb-3">
-                            <label for="newVisitorName" class="form-label">Visitor Name</label>
+                            <label class="form-label">Name <span class="text-danger">*</span></label>
                             <input type="text" class="form-control" id="newVisitorName" name="newVisitorName">
                         </div>
                         <div class="mb-3">
-                            <label for="newVisitorEmail" class="form-label">Visitor Email</label>
+                            <label class="form-label">Email <span class="text-danger">*</span></label>
                             <input type="email" class="form-control" id="newVisitorEmail" name="newVisitorEmail">
                         </div>
                         <div class="mb-3">
-                            <label for="newVisitorPhone" class="form-label">Visitor Phone (Optional)</label>
+                            <label class="form-label">Phone</label>
                             <input type="tel" class="form-control" id="newVisitorPhone" name="newVisitorPhone">
+                        </div>
+                        <div class="mb-3">
+                            <button class="btn btn-secondary btn-sm me-2" id="cancelNewVisitor">
+                                <i class="fas fa-times"></i> Cancel
+                            </button>
                         </div>
                     </div>
                     <div class="mb-3">
@@ -982,7 +1164,6 @@ echo "<!-- Debug: " . count($appointments) . " appointments loaded -->";
         </div>
     </div>
 </div>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.6.13/flatpickr.min.js"></script>
 <script src="../../Sneat/assets/vendor/libs/moment/moment.js"></script>
@@ -997,6 +1178,7 @@ echo "<!-- Debug: " . count($appointments) . " appointments loaded -->";
 <script src="../../Sneat/assets/js/main.js"></script>
 <script>
     $(document).ready(function() {
+
         let calendar; // Declare calendar variable
         let appointmentsData = <?php echo json_encode($appointments); ?>;
 
@@ -1017,34 +1199,375 @@ echo "<!-- Debug: " . count($appointments) . " appointments loaded -->";
             time_24hr: true
         });
 
-        // Load visitors for dropdown
-        $.ajax({
-            url: 'appointments.php',
-            type: 'POST',
-            data: { action: 'getVisitors' },
-            success: function(response) {
-                if (response.length > 0) {
-                    response.forEach(function(visitor) {
-                        $('#visitorSelect').append(
-                            $('<option></option>').val(visitor.VisitorID).text(visitor.Name + ' (' + visitor.Email + ')')
-                        );
+        // Enhanced Visitor Search Class
+        class EnhancedVisitorSearch {
+            constructor() {
+                this.selectedVisitor = null;
+                this.highlightedIndex = -1;
+                this.searchTimeout = null;
+                this.currentResults = []; // Store current search results
+                this.recentVisitors = []; // Initialize recent visitors array
+
+                this.initializeElements();
+                this.attachEventListeners();
+                this.loadRecentVisitors();
+            }
+
+            initializeElements() {
+                this.searchInput = document.getElementById('visitorSearch');
+                this.searchDropdown = document.getElementById('searchDropdown');
+                this.visitorResults = document.getElementById('visitorResults');
+                this.clearButton = document.getElementById('clearSearch');
+                this.selectedVisitorDiv = document.getElementById('selectedVisitor');
+                this.newVisitorForm = document.getElementById('newVisitorFields');
+                this.loadingSpinner = document.getElementById('loadingSpinner');
+            }
+
+            attachEventListeners() {
+                this.searchInput.addEventListener('input', (e) => this.handleSearch(e.target.value));
+                this.searchInput.addEventListener('focus', () => this.showDropdown());
+                this.searchInput.addEventListener('blur', (e) => {
+                    setTimeout(() => {
+                        if (!this.searchDropdown.contains(document.activeElement)) {
+                            this.hideDropdown();
+                        }
+                    }, 150);
+                });
+
+                this.searchInput.addEventListener('keydown', (e) => this.handleKeyboard(e));
+                this.clearButton.addEventListener('click', () => this.clearSearch());
+                document.getElementById('changeVisitor').addEventListener('click', () => this.changeVisitor());
+                document.getElementById('cancelNewVisitor').addEventListener('click', () => this.cancelNewVisitor());
+            }
+
+            async loadRecentVisitors() {
+                try {
+                    const response = await $.ajax({
+                        url: 'appointments.php',
+                        type: 'POST',
+                        data: { action: 'getRecentVisitors', limit: 5 },
+                        dataType: 'json'
                     });
+
+                    this.recentVisitors = response || [];
+
+                    if (this.searchInput.value.trim() === '') {
+                        this.displayRecentVisitors();
+                    }
+                } catch (error) {
+                    console.error('Error loading recent visitors:', error);
                 }
             }
+
+            handleSearch(query) {
+                clearTimeout(this.searchTimeout);
+                this.clearButton.classList.toggle('show', query.length > 0);
+
+                if (query.trim() === '') {
+                    this.displayRecentVisitors();
+                    return;
+                }
+
+                if (query.length < 2) {
+                    this.hideDropdown();
+                    return;
+                }
+
+                this.searchTimeout = setTimeout(() => {
+                    this.performSearch(query);
+                }, 300);
+            }
+
+            async performSearch(query) {
+                this.showLoading();
+
+                try {
+                    const response = await $.ajax({
+                        url: 'appointments.php',
+                        type: 'POST',
+                        data: {
+                            action: 'searchVisitors',
+                            query: query,
+                            limit: 10
+                        },
+                        dataType: 'json'
+                    });
+
+                    this.currentResults = response || [];
+                    this.displayResults(this.currentResults, query);
+                    this.showDropdown();
+                } catch (error) {
+                    console.error('Search error:', error);
+                    this.displayError('Search failed. Please try again.');
+                } finally {
+                    this.hideLoading();
+                }
+            }
+
+            displayResults(results, query = '') {
+                this.visitorResults.innerHTML = '';
+                this.highlightedIndex = -1;
+
+                if (results.length === 0) {
+                    this.visitorResults.innerHTML = `
+                <div class="no-results">No visitors found</div>
+                <div class="add-new-visitor" data-action="new">
+                    <i class="fas fa-plus-circle me-2"></i>
+                    Add "${query}" as new visitor
+                </div>
+            `;
+                } else {
+                    results.forEach((visitor, index) => {
+                        const visitorElement = this.createVisitorElement(visitor, query, index);
+                        this.visitorResults.appendChild(visitorElement);
+                    });
+
+                    this.visitorResults.innerHTML += `
+                <div class="add-new-visitor" data-action="new">
+                    <i class="fas fa-plus-circle me-2"></i>
+                    Add new visitor
+                </div>
+            `;
+                }
+
+                this.addResultClickListeners();
+            }
+
+            displayRecentVisitors() {
+                if (this.recentVisitors.length === 0) {
+                    this.displayResults([]);
+                    return;
+                }
+
+                this.visitorResults.innerHTML = `
+            <div class="recent-visitors-header">
+                <i class="fas fa-clock me-2"></i>Recent Visitors
+            </div>
+        `;
+
+                this.recentVisitors.forEach((visitor, index) => {
+                    const visitorElement = this.createVisitorElement(visitor, '', index);
+                    this.visitorResults.appendChild(visitorElement);
+                });
+
+                this.visitorResults.innerHTML += `
+            <div class="add-new-visitor" data-action="new">
+                <i class="fas fa-plus-circle me-2"></i>
+                Add new visitor
+            </div>
+        `;
+
+                this.addResultClickListeners();
+            }
+
+            createVisitorElement(visitor, query, index) {
+                const div = document.createElement('div');
+                div.className = 'visitor-item';
+                div.dataset.index = index;
+                div.dataset.visitorId = visitor.id;
+                div.style.cursor = 'pointer';
+
+                const highlightedName = this.highlightText(visitor.name, query);
+                const highlightedEmail = this.highlightText(visitor.email, query);
+                const highlightedPhone = visitor.phone ? this.highlightText(visitor.phone, query) : '';
+
+                div.innerHTML = `
+            <div class="visitor-name">${highlightedName}</div>
+            <div class="visitor-email">${highlightedEmail}</div>
+            ${highlightedPhone ? `<div class="visitor-phone">${highlightedPhone}</div>` : ''}
+        `;
+
+                return div;
+            }
+
+            highlightText(text, query) {
+                if (!query) return text;
+                const regex = new RegExp(`(${query})`, 'gi');
+                return text.replace(regex, '<span class="highlight">$1</span>');
+            }
+
+            addResultClickListeners() {
+                // Fix for visitor item clicks
+                this.visitorResults.querySelectorAll('.visitor-item').forEach(item => {
+                    item.addEventListener('click', (e) => {
+                        const visitorId = parseInt(e.currentTarget.dataset.visitorId);
+                        this.selectVisitor(visitorId);
+                    });
+                });
+
+                // Fix for add new visitor clicks
+                this.visitorResults.querySelectorAll('.add-new-visitor').forEach(item => {
+                    item.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        this.showNewVisitorForm();
+                    });
+                });
+            }
+
+            selectVisitor(visitorId) {
+                // Find the visitor in current results
+                const visitor = this.currentResults.find(v => v.id === visitorId);
+
+                if (!visitor) {
+                    console.error('Visitor not found:', visitorId);
+                    return;
+                }
+
+                this.selectedVisitor = visitor;
+                this.searchInput.value = visitor.name;
+
+                document.getElementById('selectedVisitorId').value = visitor.id;
+                document.getElementById('isNewVisitor').value = '0';
+
+                document.getElementById('selectedName').textContent = visitor.name;
+                document.getElementById('selectedEmail').textContent = visitor.email;
+                document.getElementById('selectedPhone').textContent = visitor.phone || '';
+
+                this.selectedVisitorDiv.classList.add('show');
+                this.hideDropdown();
+                this.clearButton.classList.remove('show');
+                this.newVisitorForm.style.display = 'none';
+            }
+
+            showNewVisitorForm() {
+                this.newVisitorForm.style.display = 'block';
+                this.hideDropdown();
+                this.selectedVisitorDiv.classList.remove('show');
+
+                document.getElementById('isNewVisitor').value = '1';
+                document.getElementById('selectedVisitorId').value = '';
+
+                // Pre-fill the name field with the search query if it exists
+                if (this.searchInput.value && !this.selectedVisitor) {
+                    document.getElementById('newVisitorName').value = this.searchInput.value;
+                }
+
+                document.getElementById('newVisitorName').focus();
+            }
+
+            cancelNewVisitor() {
+                this.newVisitorForm.style.display = 'none';
+                document.getElementById('isNewVisitor').value = '0';
+                this.clearNewVisitorForm();
+                this.searchInput.focus();
+                this.loadRecentVisitors();
+            }
+
+            clearNewVisitorForm() {
+                document.getElementById('newVisitorName').value = '';
+                document.getElementById('newVisitorEmail').value = '';
+                document.getElementById('newVisitorPhone').value = '';
+            }
+
+            handleKeyboard(e) {
+                const items = this.visitorResults.querySelectorAll('.visitor-item, .add-new-visitor');
+
+                switch (e.key) {
+                    case 'ArrowDown':
+                        e.preventDefault();
+                        this.highlightedIndex = Math.min(this.highlightedIndex + 1, items.length - 1);
+                        this.updateHighlight();
+                        break;
+                    case 'ArrowUp':
+                        e.preventDefault();
+                        this.highlightedIndex = Math.max(this.highlightedIndex - 1, -1);
+                        this.updateHighlight();
+                        break;
+                    case 'Enter':
+                        e.preventDefault();
+                        if (this.highlightedIndex >= 0 && items[this.highlightedIndex]) {
+                            items[this.highlightedIndex].click();
+                        }
+                        break;
+                    case 'Escape':
+                        this.hideDropdown();
+                        break;
+                }
+            }
+
+            updateHighlight() {
+                const items = this.visitorResults.querySelectorAll('.visitor-item, .add-new-visitor');
+                items.forEach((item, index) => {
+                    item.classList.toggle('highlighted', index === this.highlightedIndex);
+                });
+            }
+
+            changeVisitor() {
+                this.selectedVisitor = null;
+                this.selectedVisitorDiv.classList.remove('show');
+                this.newVisitorForm.style.display = 'none';
+                this.searchInput.value = '';
+                document.getElementById('selectedVisitorId').value = '';
+                document.getElementById('isNewVisitor').value = '0';
+                this.searchInput.focus();
+                this.loadRecentVisitors();
+                this.showDropdown();
+            }
+
+            clearSearch() {
+                this.searchInput.value = '';
+                this.clearButton.classList.remove('show');
+                this.loadRecentVisitors();
+                this.searchInput.focus();
+            }
+
+            showDropdown() {
+                this.searchDropdown.classList.add('show');
+            }
+
+            hideDropdown() {
+                this.searchDropdown.classList.remove('show');
+            }
+
+            showLoading() {
+                this.loadingSpinner.style.display = 'block';
+            }
+
+            hideLoading() {
+                this.loadingSpinner.style.display = 'none';
+            }
+
+            displayError(message) {
+                this.visitorResults.innerHTML = `
+            <div class="no-results text-danger">
+                <i class="fas fa-exclamation-triangle me-2"></i>
+                ${message}
+            </div>
+        `;
+            }
+
+            isValidSelection() {
+                const isNewVisitor = document.getElementById('isNewVisitor').value === '1';
+
+                if (isNewVisitor) {
+                    const name = document.getElementById('newVisitorName').value.trim();
+                    const email = document.getElementById('newVisitorEmail').value.trim();
+                    return name && email;
+                } else {
+                    return this.selectedVisitor !== null;
+                }
+            }
+        }
+
+// Initialize the visitor search when document is ready
+        $(document).ready(function() {
+            window.visitorSearch = new EnhancedVisitorSearch();
+
+            // Reinitialize when modal is shown (in case it was closed and reopened)
+            $('#scheduleModal').on('shown.bs.modal', function () {
+                if (!window.visitorSearch) {
+                    window.visitorSearch = new EnhancedVisitorSearch();
+                }
+            });
         });
 
-        // Visitor selection handling
-        $('#visitorSelect').change(function() {
-            if ($(this).val() === 'new') {
-                $('#newVisitorFields').show();
-                $('#isNewVisitor').val('1');
-                $('#newVisitorName, #newVisitorEmail').prop('required', true);
-                $(this).prop('required', false);
-            } else {
-                $('#newVisitorFields').hide();
-                $('#isNewVisitor').val('0');
-                $('#newVisitorName, #newVisitorEmail').prop('required', false);
-                $(this).prop('required', true);
+        window.visitorSearch = new EnhancedVisitorSearch();
+
+// Initialize when modal is shown
+        $('#scheduleModal').on('shown.bs.modal', function () {
+            if (!window.visitorSearch) {
+                window.visitorSearch = new EnhancedVisitorSearch();
             }
         });
 
@@ -1298,14 +1821,11 @@ echo "<!-- Debug: " . count($appointments) . " appointments loaded -->";
 
             if (status === 'Upcoming') {
                 buttons += `
-                if (status === 'Upcoming' && IsCheckedIn === 'TRUE') {
-                    echo '
                         <button class="btn btn-sm btn-success start-session-btn"
                                 data-id="'.$appointment['AppointmentID'].'">
                             <i class="fas fa-play-circle me-1"></i> Start Session
                         </button>
-                    ';
-                }
+
                 <button class="btn btn-sm btn-outline-primary reschedule-btn" data-id="${appointmentId}" data-bs-toggle="modal" data-bs-target="#rescheduleModal">
                     <i class="fas fa-calendar-alt me-1"></i> Reschedule
                 </button>
@@ -1376,17 +1896,25 @@ echo "<!-- Debug: " . count($appointments) . " appointments loaded -->";
 
         // ALL YOUR EXISTING AJAX HANDLERS (keep these as they are)
         $('#scheduleBtn').click(function() {
-            let valid = true;
-            if ($('#isNewVisitor').val() === '1') {
-                if (!$('#newVisitorName').val()) { alert('Please enter visitor name'); valid = false; }
-                if (!$('#newVisitorEmail').val()) { alert('Please enter visitor email'); valid = false; }
-            } else {
-                if (!$('#visitorSelect').val() || $('#visitorSelect').val() === '') { alert('Please select a visitor'); valid = false; }
+            // Validate visitor selection using the new search component
+            if (!window.visitorSearch || !window.visitorSearch.isValidSelection()) {
+                alert('Please select a visitor or fill in new visitor details');
+                return;
             }
-            if (!$('#appointmentDateTime').val()) { alert('Select appointment date and time'); valid = false; }
-            if (!valid) return;
+
+            // Validate other required fields
+            if (!$('#appointmentDateTime').val()) {
+                alert('Select appointment date and time');
+                return;
+            }
+
+            if (!$('#purpose').val().trim()) {
+                alert('Enter purpose of visit');
+                return;
+            }
 
             const formData = $('#scheduleForm').serialize();
+
             $.ajax({
                 url: 'appointments.php',
                 type: 'POST',
@@ -1395,6 +1923,7 @@ echo "<!-- Debug: " . count($appointments) . " appointments loaded -->";
                 success: function(response) {
                     if (response.status === 'success') {
                         alert(response.message);
+                        $('#scheduleModal').modal('hide');
                         location.reload();
                     } else {
                         alert(response.message || "Unknown error occurred");

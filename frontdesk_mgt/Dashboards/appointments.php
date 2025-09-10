@@ -1,5 +1,6 @@
 <?php
 // Include database connection
+global $conn;
 require_once '../dbConfig.php';
 error_reporting(E_ALL);
 ini_set('display_errors', 0);
@@ -587,6 +588,75 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
             case 'getVisitors':
                 echo json_encode(getVisitorsList());
+                break;
+            case 'searchVisitors':
+                $query = trim($_POST['query'] ?? '');
+                $limit = (int)($_POST['limit'] ?? 10);
+
+                if (strlen($query) < 2) {
+                    echo json_encode([]);
+                    break;
+                }
+
+                $sql = "SELECT v.VisitorID, v.Name, v.Email, v.Phone, 
+                   MAX(a.AppointmentTime) as LastVisit,
+                   COUNT(a.AppointmentID) as TotalAppointments
+            FROM visitors v
+            LEFT JOIN appointments a ON v.VisitorID = a.VisitorID
+            WHERE v.Name LIKE ? OR v.Email LIKE ? OR v.Phone LIKE ?
+            GROUP BY v.VisitorID, v.Name, v.Email, v.Phone
+            ORDER BY LastVisit DESC, v.Name ASC
+            LIMIT ?";
+
+                $searchTerm = "%{$query}%";
+                $stmt = $conn->prepare($sql);
+                $stmt->bind_param("sssi", $searchTerm, $searchTerm, $searchTerm, $limit);
+                $stmt->execute();
+                $result = $stmt->get_result();
+
+                $visitors = [];
+                while ($row = $result->fetch_assoc()) {
+                    $visitors[] = [
+                        'id' => (int)$row['VisitorID'],
+                        'name' => $row['Name'],
+                        'email' => $row['Email'],
+                        'phone' => $row['Phone'],
+                        'lastVisit' => $row['LastVisit'],
+                        'totalAppointments' => (int)$row['TotalAppointments']
+                    ];
+                }
+
+                echo json_encode($visitors);
+                break;
+
+            case 'getRecentVisitors':
+                $limit = (int)($_POST['limit'] ?? 5);
+
+                $sql = "SELECT v.VisitorID, v.Name, v.Email, v.Phone, 
+                   MAX(a.AppointmentTime) as LastVisit
+            FROM visitors v
+            INNER JOIN appointments a ON v.VisitorID = a.VisitorID
+            GROUP BY v.VisitorID, v.Name, v.Email, v.Phone
+            ORDER BY LastVisit DESC
+            LIMIT ?";
+
+                $stmt = $conn->prepare($sql);
+                $stmt->bind_param("i", $limit);
+                $stmt->execute();
+                $result = $stmt->get_result();
+
+                $visitors = [];
+                while ($row = $result->fetch_assoc()) {
+                    $visitors[] = [
+                        'id' => (int)$row['VisitorID'],
+                        'name' => $row['Name'],
+                        'email' => $row['Email'],
+                        'phone' => $row['Phone'],
+                        'lastVisit' => $row['LastVisit']
+                    ];
+                }
+
+                echo json_encode($visitors);
                 break;
 
             default:
