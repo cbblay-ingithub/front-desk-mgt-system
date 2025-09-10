@@ -313,7 +313,7 @@ while ($row = $result->fetch_assoc()) {
                                     <i class="fas fa-search text-muted"></i>
                                 </span>
                                 <input type="text" id="searchInput" class="form-control search-input border-start-0"
-                                       placeholder="Search by name, email, badge number, phone, or ID number...">
+                                       placeholder="Search by name, email, badge number or phone....">
                             </div>
                         </div>
                         <div class="col-md-6">
@@ -410,9 +410,6 @@ while ($row = $result->fetch_assoc()) {
                             </div>
                             <div class="col-6">
                                 <input class="form-control" name="id_type" placeholder="ID Type">
-                            </div>
-                            <div class="col-6">
-                                <input class="form-control" name="id_number" placeholder="ID Number">
                             </div>
                             <div class="col-6">
                                 <input class="form-control" name="visit_purpose" placeholder="Purpose of Visit">

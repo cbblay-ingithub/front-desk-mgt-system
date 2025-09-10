@@ -1020,7 +1020,7 @@ function checkTimeConflict($hostId, $appointmentTime, $excludeAppointmentId = nu
                                                 <?php if ($appointment['Status'] === 'Upcoming' || $appointment['Status'] === 'Overdue'): ?>
                                                     <?php if (isset($appointment['IsCheckedIn']) && $appointment['IsCheckedIn']): ?>
                                                         <div class="checked-in-status">
-                                                            <span class="badge-outline bg-info">
+                                                            <span class="badge text-white bg-info">
                                                                 <i class="fas fa-user-check me-1"></i> Checked In - Waiting for Host
                                                             </span>
                                                         </div>
