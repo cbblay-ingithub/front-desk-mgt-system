@@ -26,6 +26,14 @@ $result = $conn->query($sql);
 while ($row = $result->fetch_assoc()) {
     $visitors[] = $row;
 }
+
+// Get visitor names for autocomplete (last 100 visitors for performance)
+$autocomplete_sql = "SELECT DISTINCT Name, Email, Phone, IDType FROM visitors ORDER BY Name LIMIT 100";
+$autocomplete_result = $conn->query($autocomplete_sql);
+$visitor_suggestions = [];
+while ($row = $autocomplete_result->fetch_assoc()) {
+    $visitor_suggestions[] = $row;
+}
 ?>
 
 <!DOCTYPE html>
@@ -128,7 +136,7 @@ while ($row = $result->fetch_assoc()) {
             transition: none !important;
         }
 
-        /* Search and filter styles */
+        /* Better search and filter alignment */
         .search-filter-section {
             background: #f8f9fa;
             border-radius: 8px;
@@ -149,17 +157,121 @@ while ($row = $result->fetch_assoc()) {
             box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
         }
 
+        .filter-buttons-container {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: flex-end;
+        }
+
         .filter-btn {
             border-radius: 20px;
             padding: 8px 16px;
-            margin: 0 5px;
+            margin: 0;
             transition: all 0.3s ease;
+            white-space: nowrap;
+            font-size: 0.875rem;
+            min-height: 38px;
+            display: flex;
+            align-items: center;
         }
 
         .filter-btn.active {
             background-color: #007bff;
             color: white;
             border-color: #007bff;
+        }
+
+        .filter-btn:hover:not(.active) {
+            background-color: #f8f9fa;
+            border-color: #007bff;
+            color: #007bff;
+        }
+
+        /* Mobile responsive filters */
+        @media (max-width: 768px) {
+            .filter-buttons-container {
+                justify-content: center;
+            }
+
+            .filter-btn {
+                font-size: 0.8rem;
+                padding: 6px 12px;
+            }
+        }
+        /* Enhanced Search and Quick Actions */
+        .quick-actions-bar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 25px;
+            color: white;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .smart-search-container {
+            position: relative;
+            margin-bottom: 15px;
+
+
+        }
+
+        .smart-search {
+            border: none;
+            border-radius: 50px;
+            padding: 15px 25px 15px 55px;
+            font-size: 1.1rem;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            background: white;
+            color: #333;
+            align-items: center;
+        }
+
+        .smart-search:focus {
+            box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+            transform: translateY(-2px);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #666;
+            font-size: 1.2rem;
+        }
+
+        .autocomplete-dropdown {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            z-index: 1000;
+            max-height: 300px;
+            overflow-y: auto;
+            display: none;
+        }
+
+        .autocomplete-item {
+            padding: 12px 20px;
+            cursor: pointer;
+            border-bottom: 1px solid #f0f0f0;
+            transition: all 0.2s ease;
+        }
+
+        .autocomplete-item:hover,
+        .autocomplete-item.active {
+            background: #f8f9fa;
+            transform: translateX(5px);
+        }
+
+        .autocomplete-item:last-child {
+            border-bottom: none;
         }
 
         /* Table enhancements */
@@ -201,11 +313,32 @@ while ($row = $result->fetch_assoc()) {
             border: 1px solid #fada7d;
         }
 
+        /* Action Buttons */
         .action-btn {
             margin: 2px;
-            padding: 6px 10px;
-            border-radius: 6px;
+            padding: 8px 12px;
+            border-radius: 20px;
             font-size: 0.85rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        /* Bulk Selection */
+        .bulk-actions {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .visitor-checkbox {
+            transform: scale(1.2);
         }
 
         /* Modal enhancements */
@@ -259,9 +392,88 @@ while ($row = $result->fetch_assoc()) {
         .alert-danger {
             border-left: 4px solid #dc3545;
         }
+        /* Keyboard Shortcuts Indicator */
+        .keyboard-shortcuts {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(0,0,0,0.8);
+            color: white;
+            padding: 10px 15px;
+            border-radius: 25px;
+            font-size: 0.8rem;
+            z-index: 1001;
+        }
+
+        /* Loading States */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255,255,255,0.9);
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            display: none;
+        }
+
+        .loading-spinner {
+            width: 60px;
+            height: 60px;
+            border: 6px solid #f3f3f3;
+            border-top: 6px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Success Animation */
+        .success-checkmark {
+            display: inline-block;
+            width: 22px;
+            height: 22px;
+            transform: rotate(45deg);
+            margin-right: 10px;
+        }
+
+        .success-checkmark::before {
+            content: '';
+            position: absolute;
+            width: 3px;
+            height: 9px;
+            background-color: #28a745;
+            left: 11px;
+            top: 6px;
+        }
+
+        .success-checkmark::after {
+            content: '';
+            position: absolute;
+            width: 6px;
+            height: 3px;
+            background-color: #28a745;
+            left: 8px;
+            top: 12px;
+        }
     </style>
 </head>
 <body>
+<!-- Loading Overlay -->
+<div class="loading-overlay" id="loadingOverlay">
+    <div class="loading-spinner"></div>
+</div>
+
+<!-- Keyboard Shortcuts Indicator -->
+<div class="keyboard-shortcuts">
+    <i class="fas fa-keyboard me-2"></i>
+    Ctrl+O: Check-out | Ctrl+F: Search
+</div>
 <div class="layout-wrapper layout-content-navbar">
     <div class="layout-container">
         <?php include 'frontdesk-sidebar.php'; ?>
@@ -280,54 +492,73 @@ while ($row = $result->fetch_assoc()) {
                             <h4 class="mb-0 fw-bold ms-2"> Manage Visitors</h4>
                         </div>
                     </div>
-                    <!--Check-In button-->
+                    <!--Check-In button
                     <div class="navbar-nav align-items-center me-3">
-                        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#checkInModal">
+                        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#quickCheckinModal">
                             <i class="fas fa-plus-circle me-2"></i> Check-In Visitor
                         </button>
                     </div>
-
+                    -->
             </nav>
             <div class="container-fluid container-p-y">
                 <?php if (isset($_GET['msg'])): ?>
                     <div class="alert <?= $_GET['msg'] === 'error' ? 'alert-danger' : 'alert-success' ?> alert-dismissible fade show" role="alert">
                         <?php
                         if ($_GET['msg'] === 'checked-in') {
-                            echo "Visitor successfully checked in.";
+                            echo "<div class='success-checkmark'></div>Visitor successfully checked in.";
                         } elseif ($_GET['msg'] === 'checked-out') {
-                            echo "Visitor successfully checked out.";
+                            echo "<div class='success-checkmark'></div>Visitor successfully checked out.";
                         } elseif ($_GET['msg'] === 'error' && isset($_GET['error'])) {
-                            echo "Error: " . htmlspecialchars($_GET['error']);
+                            echo "<i class='fas fa-exclamation-triangle me-2'></i>Error: " . htmlspecialchars($_GET['error']);
                         }
                         ?>
                         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                     </div>
                 <?php endif; ?>
+                <!-- Bulk Actions Bar (Hidden by default) -->
+                <div class="bulk-actions" id="bulkActions">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span><span id="selectedCount">0</span> visitors selected</span>
+                        <div>
+                            <button class="btn btn-success me-2" id="bulkCheckinConfirm">
+                                <i class="fas fa-check me-2"></i>Check-in Selected
+                            </button>
+                            <button class="btn btn-danger me-2" id="bulkCheckoutConfirm">
+                                <i class="fas fa-sign-out-alt me-2"></i>Check-out Selected
+                            </button>
+                            <button class="btn btn-secondary" id="clearSelection">
+                                <i class="fas fa-times me-2"></i>Clear Selection
+                            </button>
+                        </div>
+                    </div>
+                </div>
 
                 <!-- Search and Filter Section -->
                 <div class="search-filter-section">
                     <div class="row align-items-center">
                         <div class="col-md-6 mb-3 mb-md-0">
-                            <div class="input-group">
-                                <span class="input-group-text bg-white border-end-0">
-                                    <i class="fas fa-search text-muted"></i>
-                                </span>
-                                <input type="text" id="searchInput" class="form-control search-input border-start-0"
-                                       placeholder="Search by name, email, badge number or phone....">
+                            <div class="smart-search-container">
+                                <input type="text" id="smartSearch" class="form-control smart-search"
+                                       placeholder="Start typing visitor name, email, or phone... (Ctrl+F)"
+                                       autocomplete="off">
+                                <div class="autocomplete-dropdown" id="autocompleteDropdown"></div>
                             </div>
                         </div>
                         <div class="col-md-6">
-                            <div class="d-flex justify-content-end flex-wrap">
-                                <button class="btn btn-outline-primary filter-btn active" data-filter="all">
-                                    <i class="fas fa-users me-1"></i> All (<span id="count-all">0</span>)
-                                </button>
-                                <button class="btn btn-outline-success filter-btn" data-filter="checked-in">
-                                    <i class="fas fa-check-circle me-1"></i> Checked In (<span id="count-checked-in">0</span>)
-                                </button>
-                                <button class="btn btn-outline-warning filter-btn" data-filter="not-checked-in">
-                                    <i class="fas fa-times-circle me-1"></i> Not Checked In (<span id="count-not-checked-in">0</span>)
-                                </button>
-                            </div>
+                                <div class="filter-buttons-container">
+                                    <button class="btn btn-outline-primary filter-btn active" data-filter="all">
+                                        <i class="fas fa-users me-1"></i> All (<span id="count-all">0</span>)
+                                    </button>
+                                    <button class="btn btn-outline-success filter-btn" data-filter="checked-in">
+                                        <i class="fas fa-check-circle me-1"></i> In (<span id="count-checked-in">0</span>)
+                                    </button>
+                                    <button class="btn btn-outline-warning filter-btn" data-filter="not-checked-in">
+                                        <i class="fas fa-times-circle me-1"></i> Not Checked In (<span id="count-not-checked-in">0</span>)
+                                    </button>
+                                    <button class="btn btn-outline-secondary filter-btn" data-filter="checked-out">
+                                        <i class="fas fa-sign-out-alt me-1"></i> Out (<span id="count-checked-out">0</span>)
+                                    </button>
+                                </div>
                         </div>
                     </div>
                 </div>
@@ -337,6 +568,9 @@ while ($row = $result->fetch_assoc()) {
                     <table class="table table-bordered table-striped align-middle" id="visitorsTable">
                         <thead class="table-dark">
                         <tr>
+                            <th width="50">
+                                <input type="checkbox" id="selectAll" class="visitor-checkbox">
+                            </th>
                             <th>Badge</th>
                             <th>Name</th>
                             <th>Email</th>
@@ -347,7 +581,13 @@ while ($row = $result->fetch_assoc()) {
                         </thead>
                         <tbody id="visitorsTableBody">
                         <?php foreach ($visitors as $v): ?>
-                            <tr data-status="<?= $v['is_checked_in'] > 0 ? 'checked-in' : 'not-checked-in' ?>">
+                            <tr data-status="<?= $v['is_checked_in'] > 0 ? 'checked-in' : 'not-checked-in' ?>"
+                                data-visitor-id="<?= $v['VisitorID'] ?>">
+                                <td>
+                                    <input type="checkbox" class="visitor-checkbox visitor-select"
+                                           value="<?= $v['VisitorID'] ?>">
+                                </td>
+
                                 <td>
                                     <span class="badge-number"><?= htmlspecialchars($v['BadgeNumber'] ?? 'N/A') ?></span>
                                 </td>
@@ -355,9 +595,9 @@ while ($row = $result->fetch_assoc()) {
                                 <td><?= htmlspecialchars($v['Email']) ?></td>
                                 <td><?= htmlspecialchars($v['Phone']) ?></td>
                                 <td>
-                                    <span class="status-badge <?= $v['is_checked_in'] > 0 ? 'status-checked-in' : 'status-not-checked-in' ?>">
-                                        <?= $v['is_checked_in'] > 0 ? 'Checked In' : 'Not Checked In' ?>
-                                    </span>
+                    <span class="status-badge <?= $v['is_checked_in'] > 0 ? 'status-checked-in' : 'status-not-checked-in' ?>">
+                        <?= $v['is_checked_in'] > 0 ? 'Checked In' : 'Not Checked In' ?>
+                    </span>
                                 </td>
                                 <td>
                                     <!-- View Details Button -->
@@ -369,8 +609,9 @@ while ($row = $result->fetch_assoc()) {
                                     </button>
 
                                     <?php if ($v['is_checked_in'] > 0): ?>
+                                        <!-- FIXED: Corrected function name to match JavaScript -->
                                         <button type="button" class="btn btn-danger action-btn"
-                                                onclick="return checkOutVisitor(<?= $v['VisitorID'] ?>, this)">
+                                                onclick="handleCheckOut(<?= $v['VisitorID'] ?>, this)">
                                             <i class="fas fa-sign-out-alt"></i> Check Out
                                         </button>
                                     <?php endif; ?>
@@ -381,42 +622,52 @@ while ($row = $result->fetch_assoc()) {
                     </table>
 
                     <!-- No Results Message -->
-                    <div id="noResults" class="no-results" style="display: none;">
+                    <div id="noResults" class="text-center py-5" style="display: none;">
                         <i class="fas fa-search fa-3x mb-3 text-muted"></i>
                         <h5>No visitors found</h5>
-                        <p>Try adjusting your search criteria or filters</p>
+                        <p class="text-muted">Try adjusting your search criteria or filters</p>
                     </div>
                 </div>
 
-            </div>
-
             <!-- Check In Modal -->
-            <div class="modal fade" id="checkInModal" tabindex="-1" aria-labelledby="checkInModalLabel" aria-hidden="true">
+            <div class="modal fade" id="quickCheckinModal" tabindex="-1" aria-labelledby="checkInModalLabel" aria-hidden="true">
                 <div class="modal-dialog">
-                    <form method="POST" action="process_visit.php" class="modal-content">
+                    <form method="POST" id="quickCheckinForm" action="process_visit.php" class="modal-content">
                         <div class="modal-header">
                             <h5 class="modal-title">Check In Visitor</h5>
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div class="modal-body row g-2">
-                            <div class="col-12">
-                                <input class="form-control" name="name" placeholder="Name" required>
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">Visitor Name *</label>
+                                <input class="form-control form-control-lg" name="name" id="checkinName"
+                                       placeholder="Enter visitor name" required>
                             </div>
-                            <div class="col-6">
-                                <input class="form-control" name="email" type="email" placeholder="Email" required>
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">Email *</label>
+                                <input class="form-control form-control-lg" name="email" id="checkinEmail"
+                                       type="email" placeholder="Enter email address" required>
                             </div>
-                            <div class="col-6">
-                                <input class="form-control" name="phone" placeholder="Phone">
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label fw-bold">Phone</label>
+                                    <input class="form-control" name="phone" id="checkinPhone"
+                                           placeholder="Phone number">
+                                </div>
+                                <div class="col-6">
+                                    <label class="form-label fw-bold">Purpose</label>
+                                    <input class="form-control" name="visit_purpose" placeholder="Purpose of Visit">
+                                </div>
                             </div>
-                            <div class="col-6">
-                                <input class="form-control" name="id_type" placeholder="ID Type">
-                            </div>
-                            <div class="col-6">
-                                <input class="form-control" name="visit_purpose" placeholder="Purpose of Visit">
-                            </div>
+                            <input type="hidden" name="action" value="check_in">
+                            <input type="hidden" name="visitor_id" id="existingVisitorId">
                         </div>
+
                         <div class="modal-footer">
-                            <button type="submit" name="action" value="check_in" class="btn btn-success">Check In</button>
+                            <button type="submit" name="action" id ="#quickCheckinForm" value="check_in" class="btn btn-success">Check In</button>
+                            <button type="button" class="btn btn-primary" id="modal-edit-btn">
+                                <i class="fas fa-edit me-2"></i>Edit Details
+                            </button>
                         </div>
                     </form>
                 </div>
@@ -503,14 +754,21 @@ while ($row = $result->fetch_assoc()) {
 <script src="../../Sneat/assets/js/main.js"></script>
 
 <script>
-    // Global variables for filtering and searching
+    // Global variables
     let currentFilter = 'all';
     let currentSearch = '';
+    let visitorSuggestions = <?= json_encode($visitor_suggestions) ?>;
+    let selectedVisitors = new Set();
+    let activeAutocompleteIndex = -1;
 
     $(document).ready(function() {
-        // Initialize counts
+        initializeApp();
+        setupEventListeners();
+        setupKeyboardShortcuts();
         updateCounts();
+    });
 
+    function initializeApp() {
         // Restore sidebar state
         const isCollapsed = localStorage.getItem('sidebarCollapsed') === 'true';
         if (isCollapsed) {
@@ -518,59 +776,186 @@ while ($row = $result->fetch_assoc()) {
             $('#toggleIcon').removeClass('bx-chevron-left').addClass('bx-chevron-right');
         }
 
-        // Handle sidebar toggle
-        $('#sidebarToggle').on('click', function(e) {
-            e.preventDefault();
-            e.stopPropagation();
+        // Setup autocomplete
+        setupSmartSearch();
 
-            const $html = $('html');
-            const $sidebar = $('#layout-menu');
-            const $toggleIcon = $('#toggleIcon');
+        // Auto-focus search on load
+        setTimeout(() => $('#smartSearch').focus(), 500);
+    }
 
-            $(this).css('pointer-events', 'none');
-            $html.toggleClass('layout-menu-collapsed');
-            const isCollapsed = $html.hasClass('layout-menu-collapsed');
-
-            // Update icon
-            if (isCollapsed) {
-                $toggleIcon.removeClass('bx-chevron-left').addClass('bx-chevron-right');
-            } else {
-                $toggleIcon.removeClass('bx-chevron-right').addClass('bx-chevron-left');
-            }
-
-            // Store state
-            localStorage.setItem('sidebarCollapsed', isCollapsed);
-
-            setTimeout(() => {
-                $(this).css('pointer-events', 'auto');
-            }, 300);
-        });
-
-        // Handle menu link tooltips in collapsed state
-        $(document).on('mouseenter', '.layout-menu-collapsed .menu-link', function() {
-            if ($('html').hasClass('layout-menu-collapsed')) {
-                $(this).attr('title', $(this).data('tooltip'));
-            }
-        }).on('mouseleave', '.layout-menu-collapsed .menu-link', function() {
-            $(this).removeAttr('title');
-        });
+    function setupEventListeners() {
+        // Sidebar toggle
+        $('#sidebarToggle').on('click', handleSidebarToggle);
 
         // Search functionality
-        $('#searchInput').on('input', function() {
-            currentSearch = $(this).val().toLowerCase();
-            filterAndSearch();
+        $('#smartSearch').on('input', debounce(handleSmartSearch, 300));
+        $('#smartSearch').on('keydown', handleSearchKeydown);
+
+        // Filter buttons
+        $('.filter-btn').on('click', handleFilterClick);
+
+        // Quick action buttons
+        $('#quickCheckinBtn').on('click', () => $('#quickCheckinModal').modal('show'));
+        $('#bulkCheckoutBtn').on('click', toggleBulkMode);
+
+        // Bulk actions
+        $('#selectAll').on('change', handleSelectAll);
+        $(document).on('change', '.visitor-select', handleVisitorSelect);
+        $('#bulkCheckinConfirm').on('click', () => performBulkAction('check_in'));
+        $('#bulkCheckoutConfirm').on('click', () => performBulkAction('check_out'));
+        $('#clearSelection').on('click', clearSelection);
+
+        // Form submission
+        $('#quickCheckinForm').on('submit', handleQuickCheckin);
+
+        // Click outside to close autocomplete
+        $(document).on('click', function(e) {
+            if (!$(e.target).closest('.smart-search-container').length) {
+                hideAutocomplete();
+            }
+        });
+    }
+
+    function setupKeyboardShortcuts() {
+        $(document).keydown(function(e) {
+            if (e.ctrlKey || e.metaKey) {
+                switch(e.key.toLowerCase()) {
+                    case 'i':
+                        e.preventDefault();
+                        $('#quickCheckinModal').modal('show');
+                        break;
+                    case 'o':
+                        e.preventDefault();
+                        toggleBulkMode();
+                        break;
+                    case 'f':
+                        e.preventDefault();
+                        $('#smartSearch').focus();
+                        break;
+                }
+            }
+
+            // Escape to clear search/close modals
+            if (e.key === 'Escape') {
+                if ($('#smartSearch').is(':focus')) {
+                    $('#smartSearch').val('').trigger('input');
+                    hideAutocomplete();
+                }
+            }
+        });
+    }
+
+    function setupSmartSearch() {
+        $('#smartSearch').attr('autocomplete', 'off');
+    }
+
+    function handleSmartSearch() {
+        const query = $('#smartSearch').val();
+        currentSearch = query.toLowerCase();
+
+        if (query.length >= 2) {
+            showAutocomplete(query);
+        } else {
+            hideAutocomplete();
+        }
+
+        filterAndSearch();
+    }
+
+    function showAutocomplete(query) {
+        const matches = visitorSuggestions.filter(visitor =>
+            visitor.Name.toLowerCase().includes(query.toLowerCase()) ||
+            visitor.Email.toLowerCase().includes(query.toLowerCase()) ||
+            (visitor.Phone && visitor.Phone.includes(query))
+        ).slice(0, 8); // Limit to 8 results
+
+        if (matches.length === 0) {
+            hideAutocomplete();
+            return;
+        }
+
+        let html = '';
+        matches.forEach((visitor, index) => {
+            html += `
+                <div class="autocomplete-item" data-index="${index}" onclick="selectAutocompleteItem(${JSON.stringify(visitor).replace(/"/g, '&quot;')})">
+                    <div class="fw-bold">${highlightMatch(visitor.Name, query)}</div>
+                    <div class="text-muted small">${highlightMatch(visitor.Email, query)}</div>
+                    ${visitor.Phone ? `<div class="text-muted small">${highlightMatch(visitor.Phone, query)}</div>` : ''}
+                </div>
+            `;
         });
 
-        // Filter functionality
-        $('.filter-btn').on('click', function() {
-            $('.filter-btn').removeClass('active');
-            $(this).addClass('active');
-            currentFilter = $(this).data('filter');
-            filterAndSearch();
-        });
-    });
+        $('#autocompleteDropdown').html(html).show();
+        activeAutocompleteIndex = -1;
+    }
 
-    // Function to filter and search visitors
+    function hideAutocomplete() {
+        $('#autocompleteDropdown').hide();
+        activeAutocompleteIndex = -1;
+    }
+
+    function highlightMatch(text, query) {
+        const regex = new RegExp(`(${query})`, 'gi');
+        return text.replace(regex, '<mark>$1</mark>');
+    }
+
+    function selectAutocompleteItem(visitor) {
+        $('#checkinName').val(visitor.Name);
+        $('#checkinEmail').val(visitor.Email);
+        $('#checkinPhone').val(visitor.Phone || '');
+        $('#existingVisitorId').val(''); // Will be determined on server side
+
+        hideAutocomplete();
+        $('#smartSearch').val(visitor.Name);
+        $('#quickCheckinModal').modal('show');
+    }
+
+    function handleSearchKeydown(e) {
+        const $dropdown = $('#autocompleteDropdown');
+        const $items = $dropdown.find('.autocomplete-item');
+
+        if (!$dropdown.is(':visible')) return;
+
+        switch(e.key) {
+            case 'ArrowDown':
+                e.preventDefault();
+                activeAutocompleteIndex = Math.min(activeAutocompleteIndex + 1, $items.length - 1);
+                updateAutocompleteSelection($items);
+                break;
+
+            case 'ArrowUp':
+                e.preventDefault();
+                activeAutocompleteIndex = Math.max(activeAutocompleteIndex - 1, -1);
+                updateAutocompleteSelection($items);
+                break;
+
+            case 'Enter':
+                e.preventDefault();
+                if (activeAutocompleteIndex >= 0) {
+                    $items.eq(activeAutocompleteIndex).click();
+                }
+                break;
+
+            case 'Escape':
+                hideAutocomplete();
+                break;
+        }
+    }
+
+    function updateAutocompleteSelection($items) {
+        $items.removeClass('active');
+        if (activeAutocompleteIndex >= 0) {
+            $items.eq(activeAutocompleteIndex).addClass('active');
+        }
+    }
+
+    function handleFilterClick() {
+        $('.filter-btn').removeClass('active');
+        $(this).addClass('active');
+        currentFilter = $(this).data('filter');
+        filterAndSearch();
+    }
+
     function filterAndSearch() {
         const rows = $('#visitorsTableBody tr');
         let visibleCount = 0;
@@ -587,13 +972,15 @@ while ($row = $result->fetch_assoc()) {
             } else if (currentFilter === 'checked-in') {
                 matchesFilter = status === 'checked-in';
             } else if (currentFilter === 'not-checked-in') {
-                matchesFilter = status === 'not-checked-in' || status === 'checked-out';
+                matchesFilter = status === 'not-checked-in';
+            } else if (currentFilter === 'checked-out') {
+                matchesFilter = status === 'checked-out';
             }
 
             // Check search
             const matchesSearch = currentSearch === '' || text.includes(currentSearch);
 
-            // Show/hide row
+            // Show/hide row with animation
             if (matchesFilter && matchesSearch) {
                 $row.show();
                 visibleCount++;
@@ -612,65 +999,78 @@ while ($row = $result->fetch_assoc()) {
         updateCounts();
     }
 
-    // Function to update counts in filter buttons
     function updateCounts() {
         const allRows = $('#visitorsTableBody tr');
         const checkedInRows = $('#visitorsTableBody tr[data-status="checked-in"]');
         const notCheckedInRows = $('#visitorsTableBody tr[data-status="not-checked-in"]');
+        const checkedOutRows = $('#visitorsTableBody tr[data-status="checked-out"]');
 
         $('#count-all').text(allRows.length);
         $('#count-checked-in').text(checkedInRows.length);
         $('#count-not-checked-in').text(notCheckedInRows.length);
+        $('#count-checked-out').text(checkedOutRows.length);
     }
 
-    // Function to show visitor details in modal
-    function showVisitorDetails(visitor) {
-        $('#modal-badge').text(visitor.BadgeNumber || 'N/A');
-        $('#modal-name').text(visitor.Name || 'N/A');
-        $('#modal-email').text(visitor.Email || 'N/A');
-        $('#modal-phone').text(visitor.Phone || 'N/A');
-        $('#modal-id-type').text(visitor.IDType || 'N/A');
-        $('#modal-id-number').text(visitor.IDNumber || 'N/A');
+    function handleSidebarToggle(e) {
+        e.preventDefault();
+        e.stopPropagation();
 
-        // Format status with badge
-        const isCheckedIn = visitor.is_checked_in > 0;
-        const statusHtml = `<span class="status-badge ${isCheckedIn ? 'status-checked-in' : 'status-not-checked-in'}">
-            ${isCheckedIn ? 'Checked In' : 'Not Checked In'}
-        </span>`;
-        $('#modal-status').html(statusHtml);
+        const $html = $('html');
+        const $toggleIcon = $('#toggleIcon');
 
-        // Format registration date if available
-        const regDate = visitor.CreatedAt || visitor.created_at || 'N/A';
-        if (regDate !== 'N/A') {
-            const formattedDate = new Date(regDate).toLocaleDateString('en-US', {
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric'
-            });
-            $('#modal-registration').text(formattedDate);
+        $(this).css('pointer-events', 'none');
+        $html.toggleClass('layout-menu-collapsed');
+        const isCollapsed = $html.hasClass('layout-menu-collapsed');
+
+        if (isCollapsed) {
+            $toggleIcon.removeClass('bx-chevron-left').addClass('bx-chevron-right');
         } else {
-            $('#modal-registration').text('N/A');
-        }
-    }
-
-    // Add some visual feedback for loading states
-    function showLoading() {
-        $('#visitorsTable').addClass('loading');
-    }
-
-    function hideLoading() {
-        $('#visitorsTable').removeClass('loading');
-    }
-    // Add this function to your existing JavaScript
-    // Add this function to handle check-outs
-    function checkOutVisitor(visitorId, buttonElement) {
-        if (!confirm('Are you sure you want to check out this visitor?')) {
-            return false;
+            $toggleIcon.removeClass('bx-chevron-right').addClass('bx-chevron-left');
         }
 
-        // Disable button during request
+        localStorage.setItem('sidebarCollapsed', isCollapsed);
+
+        setTimeout(() => {
+            $(this).css('pointer-events', 'auto');
+        }, 300);
+    }
+
+    // Quick Check-in Function
+    function quickCheckIn(visitorId, visitorName) {
+        if (!confirm(`Check in ${visitorName}?`)) return;
+
+        showLoading();
+
+        $.ajax({
+            url: 'process_visit.php',
+            method: 'POST',
+            data: {
+                action: 'quick_check_in',
+                visitor_id: visitorId
+            },
+            success: function(response) {
+                hideLoading();
+                if (response.success) {
+                    updateVisitorRow(visitorId, 'checked-in');
+                    showNotification(response.message, 'success');
+                } else {
+                    showNotification(response.message, 'error');
+                }
+            },
+            error: function() {
+                hideLoading();
+                showNotification('Error checking in visitor', 'error');
+            }
+        });
+    }
+
+    // Quick Check-out Function
+    function handleCheckOut(visitorId, buttonElement) {
+        const visitorName = $(buttonElement).closest('tr').find('td').eq(2).text();
+        if (!confirm(`Check out ${visitorName}?`)) return;
+
         const $button = $(buttonElement);
-        $button.prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> Processing...');
+        $button.prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> Checking out...');
 
         $.ajax({
             url: 'process_visit.php',
@@ -681,72 +1081,227 @@ while ($row = $result->fetch_assoc()) {
             },
             success: function(response) {
                 if (response.success) {
-                    // Find the row and update status to "Checked Out"
-                    const $row = $button.closest('tr');
-                    $row.attr('data-status', 'checked-out');
-
-                    // Update status badge
-                    $row.find('.status-badge')
-                        .removeClass('status-checked-in status-not-checked-in')
-                        .addClass('status-checked-out')
-                        .text('Checked Out');
-
-                    // Remove the check-out button since visitor is now checked out
-                    $button.remove();
-
-                    // Show success message
+                    updateVisitorRow(visitorId, 'checked-out');
                     showNotification(response.message, 'success');
-
-                    // Update filter counts
-                    updateCounts();
                 } else {
                     showNotification(response.message, 'error');
                     $button.prop('disabled', false).html('<i class="fas fa-sign-out-alt"></i> Check Out');
                 }
             },
-            error: function(xhr, status, error) {
-                console.error('AJAX Error:', error);
-                showNotification('Error checking out visitor: ' + error, 'error');
+            error: function() {
+                showNotification('Error checking out visitor', 'error');
                 $button.prop('disabled', false).html('<i class="fas fa-sign-out-alt"></i> Check Out');
             }
         });
-
-        return false; // Prevent default form submission
     }
 
-    // Update the notification function to handle both types
+    function updateVisitorRow(visitorId, newStatus) {
+        const $row = $(`tr[data-visitor-id="${visitorId}"]`);
+        $row.attr('data-status', newStatus);
+
+        const $statusBadge = $row.find('.status-badge');
+        const $actionTd = $row.find('td').last();
+
+        // Update status badge
+        $statusBadge.removeClass('status-checked-in status-not-checked-in status-checked-out');
+
+        if (newStatus === 'checked-in') {
+            $statusBadge.addClass('status-checked-in').text('Checked In');
+            // Replace check-in button with check-out button
+            const visitorId = $row.data('visitor-id');
+            const checkoutBtn = `<button type="button" class="btn btn-danger action-btn btn-sm" onclick="quickCheckOut(${visitorId}, this)">
+                                    <i class="fas fa-sign-out-alt"></i>
+                                 </button>`;
+            $actionTd.find('.btn-success').replaceWith(checkoutBtn);
+        } else if (newStatus === 'checked-out') {
+            $statusBadge.addClass('status-checked-out').text('Checked Out');
+            // Remove check-out button
+            $actionTd.find('.btn-danger').remove();
+        } else if (newStatus === 'not-checked-in') {
+            $statusBadge.addClass('status-not-checked-in').text('Not Checked In');
+            // Add check-in button
+            const visitorId = $row.data('visitor-id');
+            const visitorName = $row.find('td').eq(2).text();
+            const checkinBtn = `<button type="button" class="btn btn-success action-btn btn-sm" onclick="quickCheckIn(${visitorId}, '${visitorName}')">
+                                   <i class="fas fa-sign-in-alt"></i>
+                                </button>`;
+            $actionTd.find('.btn-info').after(checkinBtn);
+        }
+
+        updateCounts();
+
+        // Add visual feedback
+        $row.addClass('table-success');
+        setTimeout(() => $row.removeClass('table-success'), 2000);
+    }
+
+    // Bulk Operations
+    function toggleBulkMode() {
+        const $bulkActions = $('#bulkActions');
+        if ($bulkActions.is(':visible')) {
+            $bulkActions.slideUp();
+            clearSelection();
+        } else {
+            $bulkActions.slideDown();
+        }
+    }
+
+    function handleSelectAll() {
+        const isChecked = $('#selectAll').prop('checked');
+        $('.visitor-select:visible').prop('checked', isChecked);
+        updateSelectedVisitors();
+    }
+
+    function handleVisitorSelect() {
+        updateSelectedVisitors();
+    }
+
+    function updateSelectedVisitors() {
+        selectedVisitors.clear();
+        $('.visitor-select:checked').each(function() {
+            selectedVisitors.add($(this).val());
+        });
+
+        $('#selectedCount').text(selectedVisitors.size);
+
+        // Update select all checkbox
+        const totalVisible = $('.visitor-select:visible').length;
+        const totalSelected = $('.visitor-select:visible:checked').length;
+        $('#selectAll').prop('checked', totalVisible > 0 && totalSelected === totalVisible);
+    }
+
+    function clearSelection() {
+        selectedVisitors.clear();
+        $('.visitor-select, #selectAll').prop('checked', false);
+        $('#selectedCount').text('0');
+        $('#bulkActions').slideUp();
+    }
+
+    function performBulkAction(action) {
+        if (selectedVisitors.size === 0) {
+            showNotification('Please select visitors first', 'error');
+            return;
+        }
+
+        const actionText = action === 'check_in' ? 'check in' : 'check out';
+        if (!confirm(`${actionText} ${selectedVisitors.size} selected visitors?`)) return;
+
+        showLoading();
+
+        $.ajax({
+            url: 'process_visit.php',
+            method: 'POST',
+            data: {
+                action: `bulk_${action}`,
+                visitor_ids: Array.from(selectedVisitors)
+            },
+            success: function(response) {
+                hideLoading();
+                if (response.success) {
+                    // Update rows
+                    response.updated_visitors.forEach(visitorId => {
+                        updateVisitorRow(visitorId, action === 'check_in' ? 'checked-in' : 'checked-out');
+                    });
+                    showNotification(`Successfully ${actionText} ${response.updated_visitors.length} visitors`, 'success');
+                    clearSelection();
+                } else {
+                    showNotification(response.message, 'error');
+                }
+            },
+            error: function() {
+                hideLoading();
+                showNotification(`Error performing bulk ${actionText}`, 'error');
+            }
+        });
+    }
+
+    // Form Handlers
+    function handleQuickCheckin(e) {
+        e.preventDefault();
+
+        const formData = new FormData(this);
+        showLoading();
+
+        $.ajax({
+            url: 'process_visit.php',
+            method: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function(response) {
+                hideLoading();
+                if (response.success) {
+                    $('#quickCheckinModal').modal('hide');
+                    showNotification(response.message, 'success');
+                    // Optionally reload the page or update the table
+                    setTimeout(() => location.reload(), 1500);
+                } else {
+                    showNotification(response.message, 'error');
+                }
+            },
+            error: function() {
+                hideLoading();
+                showNotification('Error processing check-in', 'error');
+            }
+        });
+    }
+
+    // Modal Functions
+    function showVisitorDetails(visitor) {
+        $('#modal-badge').text(visitor.BadgeNumber || 'N/A');
+        $('#modal-name').text(visitor.Name || 'N/A');
+        $('#modal-email').text(visitor.Email || 'N/A');
+        $('#modal-phone').text(visitor.Phone || 'N/A');
+
+        const isCheckedIn = visitor.is_checked_in > 0;
+        const statusHtml = `<span class="status-badge ${isCheckedIn ? 'status-checked-in' : 'status-not-checked-in'}">
+            ${isCheckedIn ? 'Checked In' : 'Not Checked In'}
+        </span>`;
+        $('#modal-status').html(statusHtml);
+
+        const checkinTime = visitor.LastCheckIn || 'Never';
+        $('#modal-checkin-time').text(checkinTime !== 'Never' ?
+            new Date(checkinTime).toLocaleString() : 'Never');
+
+        $('#modal-purpose').text(visitor.Visit_Purpose || 'Not specified');
+    }
+
+    // Utility Functions
+    function showLoading() {
+        $('#loadingOverlay').show();
+    }
+
+    function hideLoading() {
+        $('#loadingOverlay').hide();
+    }
+
     function showNotification(message, type = 'success') {
         const alertClass = type === 'success' ? 'alert-success' : 'alert-danger';
         const icon = type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle';
 
         const $alert = $(`<div class="alert ${alertClass} alert-dismissible fade show" role="alert">
-        <i class="fas ${icon} me-2"></i>${message}
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-    </div>`);
+            <i class="fas ${icon} me-2"></i>${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>`);
 
-        // Prepend to container
         $('.container-p-y').prepend($alert);
 
-        // Auto-remove after 5 seconds
         setTimeout(() => {
             $alert.alert('close');
         }, 5000);
     }
 
-
-
-    // Enhanced search with debouncing for better performance
-    let searchTimeout;
-    $('#searchInput').on('input', function() {
-        clearTimeout(searchTimeout);
-        showLoading();
-
-        searchTimeout = setTimeout(function() {
-            currentSearch = $('#searchInput').val().toLowerCase();
-            filterAndSearch();
-            hideLoading();
-        }, 300); // Wait 300ms after user stops typing
-    });
+    function debounce(func, wait) {
+        let timeout;
+        return function executedFunction(...args) {
+            const later = () => {
+                clearTimeout(timeout);
+                func(...args);
+            };
+            clearTimeout(timeout);
+            timeout = setTimeout(later, wait);
+        };
+    }
 </script>
 </body>
 </html>
