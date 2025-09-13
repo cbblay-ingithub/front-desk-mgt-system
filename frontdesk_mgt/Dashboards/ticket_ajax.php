@@ -1,4 +1,10 @@
 <?php
+ob_start(); // Start output buffering
+ini_set('display_errors', 0);
+ini_set('log_errors', 1);
+ini_set('error_log', 'php_errors.log');
+
+
 // Include your database configuration
 global $conn;
 require_once '../dbConfig.php';
@@ -14,6 +20,9 @@ session_start();
 // Enable error logging for debugging
 ini_set('log_errors', 1);
 ini_set('error_log', 'php_errors.log');
+
+// Clear any previous output
+ob_clean();
 
 header('Content-Type: application/json');
 $response = ['success' => false, 'message' => 'Invalid request', 'html' => ''];
@@ -142,16 +151,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 if (isset($_POST['ticket_id']) && is_numeric($_POST['ticket_id'])) {
                     $ticketId = $_POST['ticket_id'];
                     error_log("Reopen ticket attempt: ticket_id=$ticketId");
+
                     // Use a placeholder user ID since authentication is bypassed
-                    $userId = 0; // Placeholder; adjust if reopenTicket requires a valid user
+                    $userId = $_SESSION['user_id'] ?? 0; // Use session user ID if available
+
                     $result = reopenTicket($conn, $ticketId, $userId);
-                    if ($result['success']) {
-                        $response['success'] = true;
-                        $response['message'] = $result['message'];
+
+                    // Ensure consistent response format
+                    $response['success'] = $result['success'] ?? false;
+                    if ($response['success']) {
+                        $response['message'] = $result['message'] ?? 'Ticket reopened successfully';
                     } else {
-                        $response['success'] = false;
-                        $response['message'] = $result['error'];
+                        $response['message'] = $result['error'] ?? 'Unknown error occurred';
                     }
+
+                    error_log("Reopen ticket result: " . json_encode($result));
                 } else {
                     $response['success'] = false;
                     $response['message'] = 'Invalid ticket ID';

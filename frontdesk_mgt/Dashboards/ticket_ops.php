@@ -292,23 +292,35 @@ function generateResolveTicketModalHTML($ticketId): string
 }
 // Function to reopen a closed ticket
 function reopenTicket($conn, $ticketId, $userId) {
+    error_log("reopenTicket called with ticketId: $ticketId, userId: $userId");
+
     // Check if the ticket exists and is closed
-    $sql = "SELECT Status FROM Help_Desk WHERE TicketID = ?";
+    $sql = "SELECT Status, CreatedBy, AssignedTo FROM Help_Desk WHERE TicketID = ?";
     $stmt = $conn->prepare($sql);
+    if (!$stmt) {
+        error_log("Prepare failed: " . $conn->error);
+        return ['success' => false, 'error' => 'Database error'];
+    }
+
     $stmt->bind_param("i", $ticketId);
-    $stmt->execute();
+    if (!$stmt->execute()) {
+        error_log("Execute failed: " . $stmt->error);
+        $stmt->close();
+        return ['success' => false, 'error' => 'Database error'];
+    }
+
     $result = $stmt->get_result();
+    $stmt->close();
 
     if ($row = $result->fetch_assoc()) {
         if ($row['Status'] != 'closed') {
-            $stmt->close();
+            error_log("Ticket $ticketId is not closed (status: {$row['Status']})");
             return ['success' => false, 'error' => 'Ticket is not closed'];
         }
     } else {
-        $stmt->close();
+        error_log("Ticket $ticketId not found");
         return ['success' => false, 'error' => 'Ticket not found'];
     }
-    $stmt->close();
 
     // Update ticket status to 'open' and log the reopening
     $sql = "UPDATE Help_Desk 
@@ -316,37 +328,22 @@ function reopenTicket($conn, $ticketId, $userId) {
                 LastUpdated = NOW(), 
                 ResolutionNotes = CONCAT(IFNULL(ResolutionNotes, ''), ' [Reopened by user #$userId on ', NOW(), ']') 
             WHERE TicketID = ?";
+
     $stmt = $conn->prepare($sql);
+    if (!$stmt) {
+        error_log("Prepare failed: " . $conn->error);
+        return ['success' => false, 'error' => 'Database error'];
+    }
+
     $stmt->bind_param("i", $ticketId);
 
     if ($stmt->execute()) {
-        // Notify creator and assignee
-        $usersQuery = "SELECT CreatedBy, AssignedTo FROM Help_Desk WHERE TicketID = ?";
-        $usersStmt = $conn->prepare($usersQuery);
-        $usersStmt->bind_param("i", $ticketId);
-        $usersStmt->execute();
-        $result = $usersStmt->get_result();
-
-        if ($row = $result->fetch_assoc()) {
-            // Assume getUserName function exists or replace with direct query if needed
-            $reopenerName = $_SESSION['username'] ?? "User #$userId";
-            createNotification($conn, $row['CreatedBy'], $ticketId, 'reopen', [
-                'reopened_by' => $userId,
-                'reopened_by_name' => $reopenerName
-            ]);
-            if ($row['AssignedTo']) {
-                createNotification($conn, $row['AssignedTo'], $ticketId, 'reopen', [
-                    'reopened_by' => $userId,
-                    'reopened_by_name' => $reopenerName
-                ]);
-            }
-        }
-        $usersStmt->close();
+        error_log("Ticket $ticketId reopened successfully");
         $stmt->close();
         return ['success' => true, 'message' => 'Ticket reopened successfully'];
     } else {
+        error_log("Execute failed: " . $stmt->error);
         $stmt->close();
         return ['success' => false, 'error' => 'Error reopening ticket: ' . $conn->error];
     }
 }
-?>
