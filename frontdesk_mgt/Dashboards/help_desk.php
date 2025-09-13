@@ -1195,7 +1195,7 @@ $conn->close();
                         .then(data => {
                             console.log('Reopen ticket response:', data);
                             if (data && data.success) {
-                                alert(data.message || 'Ticket reopened successfully');
+                                alert(data.message || 'Ticket reopened successfully. Assignment has been reset.');
                                 window.location.reload();
                             } else {
                                 alert(data?.message || 'Error reopening ticket');

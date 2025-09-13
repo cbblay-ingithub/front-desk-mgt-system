@@ -322,11 +322,12 @@ function reopenTicket($conn, $ticketId, $userId) {
         return ['success' => false, 'error' => 'Ticket not found'];
     }
 
-    // Update ticket status to 'open' and log the reopening
+    // Update ticket status to 'open', remove assignment, and log the reopening
     $sql = "UPDATE Help_Desk 
             SET Status = 'open', 
+                AssignedTo = NULL,  -- Remove assignment
                 LastUpdated = NOW(), 
-                ResolutionNotes = CONCAT(IFNULL(ResolutionNotes, ''), ' [Reopened by user #$userId on ', NOW(), ']') 
+                ResolutionNotes = CONCAT(IFNULL(ResolutionNotes, ''), ' [Reopened by user #$userId on ', NOW(), ' - Assignment reset]') 
             WHERE TicketID = ?";
 
     $stmt = $conn->prepare($sql);
@@ -338,9 +339,30 @@ function reopenTicket($conn, $ticketId, $userId) {
     $stmt->bind_param("i", $ticketId);
 
     if ($stmt->execute()) {
-        error_log("Ticket $ticketId reopened successfully");
+        error_log("Ticket $ticketId reopened successfully and assignment reset");
+
+        // Notify the previous assignee (if any) that they've been unassigned
+        if (!empty($row['AssignedTo'])) {
+            $reopenerName = $_SESSION['username'] ?? "User #$userId";
+            createNotification($conn, $row['AssignedTo'], $ticketId, 'unassignment', [
+                'unassigned_by' => $userId,
+                'unassigned_by_name' => $reopenerName,
+                'reason' => 'Ticket reopened - assignment reset'
+            ]);
+        }
+
+        // Notify the ticket creator
+        if (!empty($row['CreatedBy'])) {
+            $reopenerName = $_SESSION['username'] ?? "User #$userId";
+            createNotification($conn, $row['CreatedBy'], $ticketId, 'reopen', [
+                'reopened_by' => $userId,
+                'reopened_by_name' => $reopenerName,
+                'assignment_reset' => true
+            ]);
+        }
+
         $stmt->close();
-        return ['success' => true, 'message' => 'Ticket reopened successfully'];
+        return ['success' => true, 'message' => 'Ticket reopened successfully. Assignment has been reset.'];
     } else {
         error_log("Execute failed: " . $stmt->error);
         $stmt->close();

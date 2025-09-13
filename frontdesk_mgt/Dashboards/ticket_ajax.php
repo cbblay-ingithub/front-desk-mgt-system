@@ -152,15 +152,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $ticketId = $_POST['ticket_id'];
                     error_log("Reopen ticket attempt: ticket_id=$ticketId");
 
-                    // Use a placeholder user ID since authentication is bypassed
-                    $userId = $_SESSION['user_id'] ?? 0; // Use session user ID if available
+                    // Use the session user ID
+                    $userId = $_SESSION['user_id'] ?? 0;
 
                     $result = reopenTicket($conn, $ticketId, $userId);
 
                     // Ensure consistent response format
                     $response['success'] = $result['success'] ?? false;
                     if ($response['success']) {
-                        $response['message'] = $result['message'] ?? 'Ticket reopened successfully';
+                        $response['message'] = $result['message'] ?? 'Ticket reopened successfully and assignment reset';
                     } else {
                         $response['message'] = $result['error'] ?? 'Unknown error occurred';
                     }
