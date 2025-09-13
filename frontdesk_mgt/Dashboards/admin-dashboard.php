@@ -845,27 +845,27 @@ $conn->close();
                                         </a>
                                     </div>
                                     <div class="col-lg-2 col-md-4 col-6 mb-3">
-                                        <a href="help_desk.php" class="quick-action-btn">
+                                        <a href="audit_logs.php" class="quick-action-btn">
                                             <i class="fas fa-ticket-alt"></i>
-                                            <span>View Tickets</span>
+                                            <span>View Logs</span>
                                         </a>
                                     </div>
                                     <div class="col-lg-2 col-md-4 col-6 mb-3">
-                                        <a href="visitor-mgt.php" class="quick-action-btn">
+                                        <a href="admin-reports.php" class="quick-action-btn">
                                             <i class="fas fa-user-friends"></i>
-                                            <span>Manage Visitors</span>
+                                            <span>Visitor Reports</span>
                                         </a>
                                     </div>
                                     <div class="col-lg-2 col-md-4 col-6 mb-3">
-                                        <a href="FD_frontend_dash.php" class="quick-action-btn">
+                                        <a href="admin-reports.php" class="quick-action-btn">
                                             <i class="fas fa-search"></i>
-                                            <span>Manage Appointments</span>
+                                            <span>Appointments Reports</span>
                                         </a>
                                     </div>
                                     <div class="col-lg-2 col-md-4 col-6 mb-3">
                                         <a href="admin-reports.php" class="quick-action-btn">
                                             <i class="fas fa-chart-bar"></i>
-                                            <span>Reports</span>
+                                            <span>All Reports</span>
                                         </a>
                                     </div>
                                     <div class="col-lg-2 col-md-4 col-6 mb-3">

@@ -320,7 +320,7 @@ $currentPage = basename($_SERVER['PHP_SELF']);
         </li>
 
         <!-- Settings -->
-        <li class="menu-item <?= ($currentPage == 'settings.php') ? 'active' : '' ?>">
+        <li class="menu-item <?= ($currentPage == 'admin_settings.php') ? 'active' : '' ?>">
             <a href="admin_settings.php" class="menu-link" data-tooltip="Settings">
                 <i class="menu-icon icon-base bx bx-cog"></i>
                 <div data-i18n="Settings">Settings</div>

@@ -372,8 +372,8 @@ $conn->close();
                                         <i class="icon-base bx bx-dots-vertical-rounded"></i>
                                     </button>
                                     <div class="dropdown-menu dropdown-menu-end" aria-labelledby="visitorsDropdown">
-                                        <a class="dropdown-item" href="visitor-mgt.php">View All Visitors</a>
-                                        <a class="dropdown-item" href="visitor_logs.php">View Logs</a>
+                                        <a class="dropdown-item" href="visitor-mgt.php">View Visitors</a>
+                                        <a class="dropdown-item" href="visitor-mgt.php">View Checkins</a>
                                     </div>
                                 </div>
                             </div>
