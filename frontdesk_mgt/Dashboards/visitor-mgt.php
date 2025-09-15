@@ -781,6 +781,9 @@ while ($row = $autocomplete_result->fetch_assoc()) {
                         <?php endforeach ?>
                         </tbody>
                     </table>
+                    <button class="btn btn-dark" data-bs-toggle="modal" data-bs-target="#reportModal">
+                        <i class="fas fa-file-pdf me-2"></i>Generate Report
+                    </button>
 
                     <!-- No Results Message -->
                     <div id="noResults" class="text-center py-5" style="display: none;">
@@ -910,7 +913,44 @@ while ($row = $autocomplete_result->fetch_assoc()) {
                         </div>
                     </div>
                 </div>
-
+                <!-- Report Generation Modal -->
+                <div class="modal fade" id="reportModal" tabindex="-1" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Generate Visitor Report</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <form id="reportForm" method="GET" action="generate_visitor_logs.php" target="_blank">
+                                    <div class="mb-3">
+                                        <label class="form-label">Start Date</label>
+                                        <input type="date" class="form-control" name="start_date"
+                                               value="<?= date('Y-m-01') ?>">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">End Date</label>
+                                        <input type="date" class="form-control" name="end_date"
+                                               value="<?= date('Y-m-d') ?>">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Report Type</label>
+                                        <select class="form-select" name="report_type">
+                                            <option value="detailed">Detailed Report</option>
+                                            <option value="summary">Summary Report</option>
+                                        </select>
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                <button type="submit" form="reportForm" class="btn btn-primary">
+                                    <i class="fas fa-download me-2"></i>Generate Report
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             <!-- Visitor Details Modal -->
             <div class="modal fade visitor-detail-modal" id="visitorDetailModal" tabindex="-1" aria-labelledby="visitorDetailModalLabel" aria-hidden="true">
                 <div class="modal-dialog modal-lg">
@@ -1783,6 +1823,31 @@ while ($row = $autocomplete_result->fetch_assoc()) {
 
     window.addEventListener('afterprint', function() {
         document.body.classList.remove('printing-mode');
+    });
+    // Add to your existing JavaScript
+    function generateReport(type) {
+        const startDate = $('#reportStartDate').val();
+        const endDate = $('#reportEndDate').val();
+
+        if (!startDate || !endDate) {
+            showNotification('Please select both start and end dates', 'error');
+            return;
+        }
+
+        const url = `generate_visitor_logs.php?start_date=${startDate}&end_date=${endDate}&report_type=${type}`;
+        window.open(url, '_blank');
+    }
+
+    // Add event listeners for quick report buttons
+    $('#quickDailyReport').on('click', function() {
+        const today = new Date().toISOString().split('T')[0];
+        window.open(`generate_visitor_logs.php?start_date=${today}&end_date=${today}`, '_blank');
+    });
+
+    $('#quickMonthlyReport').on('click', function() {
+        const today = new Date();
+        const firstDay = new Date(today.getFullYear(), today.getMonth(), 1).toISOString().split('T')[0];
+        window.open(`generate_visitor_logs.php?start_date=${firstDay}&end_date=${today.toISOString().split('T')[0]}`, '_blank');
     });
 </script>
 </body>

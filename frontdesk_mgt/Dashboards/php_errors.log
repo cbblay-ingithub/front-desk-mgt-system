@@ -14169,3 +14169,49 @@ Stack trace:
 [15-Sep-2025 14:30:10 Europe/Berlin] PHP   1. {main}() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\help_desk.php:0
 [15-Sep-2025 14:30:10 Europe/Berlin] Failed to create notification: Cannot add or update a child row: a foreign key constraint fails (`frontdesk`.`notifications`, CONSTRAINT `fk_notifications_user_id` FOREIGN KEY (`user_id`) REFERENCES `users` (`UserID`) ON DELETE CASCADE)
 [15-Sep-2025 14:30:10 Europe/Berlin] Failed to create assignment notification: Cannot add or update a child row: a foreign key constraint fails (`frontdesk`.`notifications`, CONSTRAINT `fk_notifications_user_id` FOREIGN KEY (`user_id`) REFERENCES `users` (`UserID`) ON DELETE CASCADE)
+[15-Sep-2025 17:28:23 Europe/Berlin] Checking for ticket creation POST data: Array
+(
+)
+
+[15-Sep-2025 17:57:37 Europe/Berlin] Checking for ticket creation POST data: Array
+(
+)
+
+[15-Sep-2025 17:57:48 Europe/Berlin] Checking for ticket creation POST data: Array
+(
+)
+
+[15-Sep-2025 17:57:55 Europe/Berlin] Session data in ticket_ajax.php: {"user_id":"not set","userID":2,"role":"Front Desk Staff"}
+[15-Sep-2025 17:58:18 Europe/Berlin] Session data in ticket_ajax.php: {"user_id":"not set","userID":2,"role":"Front Desk Staff"}
+[15-Sep-2025 17:58:20 Europe/Berlin] Checking for ticket creation POST data: Array
+(
+)
+
+[15-Sep-2025 17:58:43 Europe/Berlin] Session data in ticket_ajax.php: {"user_id":"not set","userID":2,"role":"Front Desk Staff"}
+[15-Sep-2025 17:58:57 Europe/Berlin] Session data in ticket_ajax.php: {"user_id":"not set","userID":2,"role":"Front Desk Staff"}
+[15-Sep-2025 17:58:58 Europe/Berlin] Checking for ticket creation POST data: Array
+(
+)
+
+[15-Sep-2025 17:59:05 Europe/Berlin] Checking for ticket creation POST data: Array
+(
+)
+
+[15-Sep-2025 17:59:20 Europe/Berlin] Session data in ticket_ajax.php: {"user_id":"not set","userID":2,"role":"Front Desk Staff"}
+[15-Sep-2025 17:59:31 Europe/Berlin] Session data in ticket_ajax.php: {"user_id":"not set","userID":2,"role":"Front Desk Staff"}
+[15-Sep-2025 17:59:33 Europe/Berlin] Checking for ticket creation POST data: Array
+(
+)
+
+[15-Sep-2025 17:59:53 Europe/Berlin] Checking for ticket creation POST data: Array
+(
+)
+
+[15-Sep-2025 18:25:10 Europe/Berlin] Checking for ticket creation POST data: Array
+(
+)
+
+[15-Sep-2025 18:25:18 Europe/Berlin] Checking for ticket creation POST data: Array
+(
+)
+

@@ -383,7 +383,6 @@ $conn->close();
                                         <h3 class="mb-0"><?= $stats['total_visitors'] ?></h3>
                                         <small class="text-muted">Total Visitors</small>
                                     </div>
-                                    <div class="badge bg-label-success rounded-pill">+12.6%</div>
                                 </div>
                                 <div class="row g-4">
                                     <div class="col-6">
@@ -441,7 +440,6 @@ $conn->close();
                                         <h3 class="mb-0"><?= $stats['total'] ?></h3>
                                         <small class="text-muted">Today's Appointments</small>
                                     </div>
-                                    <div class="badge bg-label-warning rounded-pill">-2.4%</div>
                                 </div>
                                 <div class="row g-4">
                                     <div class="col-4">
@@ -495,7 +493,6 @@ $conn->close();
                                         <h3 class="mb-0"><?= $stats['total_tickets'] ?></h3>
                                         <small class="text-muted">Recent (7 days)</small>
                                     </div>
-                                    <div class="badge bg-label-success rounded-pill">+18.2%</div>
                                 </div>
                                 <div class="row g-4">
                                     <div class="col-4">
