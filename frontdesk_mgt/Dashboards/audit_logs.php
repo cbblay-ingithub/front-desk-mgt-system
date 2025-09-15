@@ -567,7 +567,7 @@
                 </div>
 
                 <div class="filter-actions">
-                    <button class="btn btn-primary" onclick="applyFilters()">Apply Filters</button>
+                    <button class="btn btn-primary" onclick="applyFilters()">Apply </button>
                     <button class="btn btn-secondary" onclick="clearFilters()">Clear</button>
                 </div>
             </div>

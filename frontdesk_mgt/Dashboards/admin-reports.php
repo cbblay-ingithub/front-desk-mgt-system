@@ -947,7 +947,7 @@ $conn->close();
                                                 <div>
                                                     <h5 class="mb-1">Avg Check-In</h5>
                                                     <div class="metric-value"><?= $teamReports['visitor_metrics']['avg_checkin_time'] ? round($teamReports['visitor_metrics']['avg_checkin_time']) : 'N/A' ?> min</div>
-                                                    <small class="text-danger">-1.2 min from last period</small>
+
                                                 </div>
                                                 <div class="avatar">
                                     <span class="avatar-initial rounded bg-label-info">

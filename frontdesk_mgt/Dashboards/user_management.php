@@ -426,7 +426,7 @@ $conn->close();
                             </div>
                             <div class="col-md-3">
                                 <select name="bulk_action" class="form-select" required>
-                                    <option value="">Bulk Actions</option>
+                                    <option value="">--Select Action--</option>
                                     <option value="activate">Activate Accounts</option>
                                     <option value="deactivate">Deactivate Accounts</option>
                                     <option value="delete">Delete Users</option>
