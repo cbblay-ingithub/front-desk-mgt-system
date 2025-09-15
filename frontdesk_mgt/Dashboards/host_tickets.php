@@ -988,43 +988,68 @@ $conn->close();
         });
 
         // Reopen ticket action
-        document.querySelectorAll('.reopen-ticket').forEach(btn => {
-            btn.addEventListener('click', function() {
-                const ticketId = this.getAttribute('data-id');
+        document.addEventListener('click', function(e) {
+            if (e.target.closest('.reopen-ticket')) {
+                const btn = e.target.closest('.reopen-ticket');
+                const ticketId = btn.getAttribute('data-id');
                 console.log('Attempting to reopen ticket ID:', ticketId);
+
                 if (confirm(`Are you sure you want to reopen ticket #${ticketId}?`)) {
                     const formData = new FormData();
                     formData.append('action', 'reopen_ticket');
                     formData.append('ticket_id', ticketId);
+
                     fetch('ticket_ajax.php', {
                         method: 'POST',
                         body: formData,
-                        credentials: 'same-origin' // Ensure cookies are sent, though not required
+                        credentials: 'same-origin'
                     })
                         .then(response => {
                             console.log('Reopen ticket response status:', response.status);
-                            if (!response.ok) {
+
+                            // Check if response has content
+                            if (response.status === 204 || response.headers.get('content-length') === '0') {
+                                throw new Error('Empty response from server');
+                            }
+
+                            // Check content type
+                            const contentType = response.headers.get('content-type');
+                            if (contentType && contentType.includes('application/json')) {
+                                return response.json();
+                            } else {
                                 return response.text().then(text => {
-                                    throw new Error(`HTTP error ${response.status}: ${text}`);
+                                    console.error('Non-JSON response:', text);
+                                    // Try to parse as JSON anyway in case content-type is wrong
+                                    try {
+                                        return JSON.parse(text);
+                                    } catch (e) {
+                                        throw new Error('Server returned non-JSON response: ' + text.substring(0, 100));
+                                    }
                                 });
                             }
-                            return response.json();
                         })
                         .then(data => {
                             console.log('Reopen ticket response:', data);
-                            if (data.success) {
-                                alert(data.message);
+                            if (data && data.success) {
+                                alert(data.message || 'Ticket reopened successfully. Assignment has been reset.');
                                 window.location.reload();
                             } else {
-                                alert(data.message || 'Error reopening ticket');
+                                alert(data?.message || 'Error reopening ticket');
                             }
                         })
                         .catch(error => {
                             console.error('Error reopening ticket:', error);
-                            alert('Error reopening ticket: ' + error.message);
+                            // If we get an empty response error but the operation might have succeeded
+                            if (error.message.includes('Empty response') || error.message.includes('Unexpected end of JSON')) {
+                                if (confirm('Ticket may have been reopened. Refresh page to check?')) {
+                                    window.location.reload();
+                                }
+                            } else {
+                                alert('Error reopening ticket: ' + error.message);
+                            }
                         });
                 }
-            });
+            }
         });
 
         // Close ticket

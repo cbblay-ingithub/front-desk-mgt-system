@@ -11,6 +11,9 @@ require_once 'ticket_functions.php';
 require_once 'ticket_ops.php';
 require_once 'view_ticket.php';
 
+require_once 'NotificationCreator.php';
+$notificationCreator = new NotificationCreator($conn);
+
 // Start session to access user role and ID
 session_start();
 $userRole = $_SESSION['role'] ?? 'host'; // Default to host if role not set
@@ -82,7 +85,7 @@ $conn->close();
     <!-- Main CSS Libraries -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="notification.css">
+
 
     <!-- Sneat CSS (same as visitor-mgt.php) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -1149,44 +1152,145 @@ $conn->close();
             });
         });
 
-        // Reopen ticket action
-        document.querySelectorAll('.reopen-ticket').forEach(btn => {
-            btn.addEventListener('click', function() {
-                const ticketId = this.getAttribute('data-id');
+        document.addEventListener('click', function(e) {
+            if (e.target.closest('.reopen-ticket')) {
+                const btn = e.target.closest('.reopen-ticket');
+                const ticketId = btn.getAttribute('data-id');
                 console.log('Attempting to reopen ticket ID:', ticketId);
+
                 if (confirm(`Are you sure you want to reopen ticket #${ticketId}?`)) {
+                    // Show loading state
+                    const originalText = btn.innerHTML;
+                    btn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Reopening...';
+                    btn.disabled = true;
+
                     const formData = new FormData();
                     formData.append('action', 'reopen_ticket');
                     formData.append('ticket_id', ticketId);
+
                     fetch('ticket_ajax.php', {
                         method: 'POST',
                         body: formData,
-                        credentials: 'same-origin' // Ensure cookies are sent, though not required
+                        credentials: 'same-origin',
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest'
+                        }
                     })
                         .then(response => {
                             console.log('Reopen ticket response status:', response.status);
-                            if (!response.ok) {
-                                return response.text().then(text => {
-                                    throw new Error(`HTTP error ${response.status}: ${text}`);
-                                });
-                            }
-                            return response.json();
+                            console.log('Response headers:', [...response.headers.entries()]);
+
+                            // Log the raw response for debugging
+                            return response.text().then(text => {
+                                console.log('Raw response:', text);
+
+                                // Check if response is empty
+                                if (!text.trim()) {
+                                    throw new Error('Empty response from server. The ticket may have been reopened, but confirmation failed.');
+                                }
+
+                                // Check if response looks like JSON
+                                if (!text.trim().startsWith('{') && !text.trim().startsWith('[')) {
+                                    console.error('Non-JSON response received:', text.substring(0, 200));
+                                    throw new Error(`Server returned non-JSON response. Status: ${response.status}. The ticket may have been reopened.`);
+                                }
+
+                                // Try to parse JSON
+                                try {
+                                    return JSON.parse(text);
+                                } catch (parseError) {
+                                    console.error('JSON parse error:', parseError);
+                                    console.error('Failed to parse:', text.substring(0, 200));
+                                    throw new Error(`Invalid JSON response from server. The ticket may have been reopened despite this error.`);
+                                }
+                            });
                         })
                         .then(data => {
-                            console.log('Reopen ticket response:', data);
-                            if (data.success) {
-                                alert(data.message);
-                                window.location.reload();
+                            console.log('Parsed reopen ticket response:', data);
+
+                            // Reset button state
+                            btn.innerHTML = originalText;
+                            btn.disabled = false;
+
+                            if (data && data.success) {
+                                // Show success message
+                                const alertDiv = document.createElement('div');
+                                alertDiv.className = 'alert alert-success alert-dismissible fade show';
+                                alertDiv.innerHTML = `
+                        ${data.message || 'Ticket reopened successfully!'}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    `;
+
+                                // Insert alert at top of page
+                                const container = document.querySelector('.container-fluid.container-p-y');
+                                container.insertBefore(alertDiv, container.firstChild);
+
+                                // Refresh the page after showing message
+                                setTimeout(() => {
+                                    window.location.reload();
+                                }, 1500);
+
                             } else {
-                                alert(data.message || 'Error reopening ticket');
+                                // Show error but offer to refresh since operation might have succeeded
+                                const errorMessage = data?.message || data?.error || 'Unknown error occurred';
+                                const shouldRefresh = confirm(
+                                    `Error: ${errorMessage}\n\n` +
+                                    'The ticket may have been reopened despite this error. ' +
+                                    'Would you like to refresh the page to check?'
+                                );
+
+                                if (shouldRefresh) {
+                                    window.location.reload();
+                                }
                             }
                         })
                         .catch(error => {
                             console.error('Error reopening ticket:', error);
-                            alert('Error reopening ticket: ' + error.message);
+
+                            // Reset button state
+                            btn.innerHTML = originalText;
+                            btn.disabled = false;
+
+                            // Enhanced error handling with user-friendly messages
+                            let userMessage = 'An error occurred while reopening the ticket.';
+                            let shouldOfferRefresh = false;
+
+                            if (error.message.includes('Empty response') ||
+                                error.message.includes('non-JSON response') ||
+                                error.message.includes('Invalid JSON') ||
+                                error.message.includes('Unexpected end of JSON')) {
+
+                                userMessage = 'Communication error with server. The ticket may have been reopened successfully.';
+                                shouldOfferRefresh = true;
+
+                            } else if (error.message.includes('500')) {
+                                userMessage = 'Server error occurred. The ticket may have been reopened despite this error.';
+                                shouldOfferRefresh = true;
+
+                            } else if (error.message.includes('Network')) {
+                                userMessage = 'Network connection error. Please check your connection and try again.';
+
+                            } else {
+                                userMessage = `Error: ${error.message}`;
+                                // For unknown errors, also offer refresh since operation might have succeeded
+                                shouldOfferRefresh = true;
+                            }
+
+                            if (shouldOfferRefresh) {
+                                const shouldRefresh = confirm(
+                                    `${userMessage}\n\n` +
+                                    'Would you like to refresh the page to check if the ticket was reopened?'
+                                );
+
+                                if (shouldRefresh) {
+                                    window.location.reload();
+                                }
+                            } else {
+                                alert(userMessage);
+                            }
                         });
                 }
-            });
+            }
         });
 
         // Close ticket
