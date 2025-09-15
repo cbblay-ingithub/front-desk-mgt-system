@@ -531,7 +531,13 @@ $conn->close();
                                         </div>
                                         <div class="col-md-6">
                                             <label class="form-label">Password</label>
-                                            <input type="password" name="password" class="form-control" required>
+                                            <div class="input-group">
+                                                <input type="password" name="password" class="form-control" id="addPassword" required>
+                                                <button type="button" class="btn btn-outline-secondary" id="toggleAddPassword">
+                                                    <i class="fas fa-eye"></i>
+                                                </button>
+                                            </div>
+                                            <small class="text-muted">Must meet current password policy requirements</small>
                                         </div>
                                         <div class="col-md-6">
                                             <label class="form-label">Status</label>
@@ -831,6 +837,33 @@ $conn->close();
             updateFilterBadge();
         });
 
+    });
+    // Simple individual handlers
+    $('#toggleAddPassword').on('click', function() {
+        const passwordField = $('#addPassword');
+        const icon = $(this).find('i');
+
+        if (passwordField.attr('type') === 'password') {
+            passwordField.attr('type', 'text');
+            icon.removeClass('fa-eye').addClass('fa-eye-slash');
+        } else {
+            passwordField.attr('type', 'password');
+            icon.removeClass('fa-eye-slash').addClass('fa-eye');
+        }
+    });
+
+    // For dynamically loaded edit modal
+    $(document).on('click', '#toggleEditPassword', function() {
+        const passwordField = $('#editPassword');
+        const icon = $(this).find('i');
+
+        if (passwordField.attr('type') === 'password') {
+            passwordField.attr('type', 'text');
+            icon.removeClass('fa-eye').addClass('fa-eye-slash');
+        } else {
+            passwordField.attr('type', 'password');
+            icon.removeClass('fa-eye-slash').addClass('fa-eye');
+        }
     });
 
 </script>

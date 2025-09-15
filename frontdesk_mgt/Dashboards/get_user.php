@@ -52,8 +52,14 @@ $roles = $conn->query("SELECT DISTINCT Role FROM users")->fetch_all(MYSQLI_ASSOC
                 </select>
             </div>
             <div class="col-md-6">
-                <label class="form-label">Password (leave blank to keep current)</label>
-                <input type="password" name="password" class="form-control">
+                <label class="form-label">New Password (leave blank to keep current)</label>
+                <div class="input-group">
+                    <input type="password" name="password" class="form-control" id="editPassword">
+                    <button type="button" class="btn btn-outline-secondary" id="toggleEditPassword">
+                        <i class="fas fa-eye"></i>
+                    </button>
+                </div>
+                <small class="text-muted">Must meet current password policy requirements</small>
             </div>
             <div class="col-md-6">
                 <label class="form-label">Status</label>

@@ -11,7 +11,7 @@ switch ($page) {
         include 'appointments.php';
         break;
     case 'helpdesk':
-        include 'helpdesk.php';
+        include 'help_desk.php';
         break;
     case 'lost_found':
         include 'lost_found.php';
