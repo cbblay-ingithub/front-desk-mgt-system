@@ -125,7 +125,7 @@ CREATE TABLE Help_Desk(
     FOREIGN KEY (AssignedTo) REFERENCES Users(UserID) ON DELETE SET NULL,
     FOREIGN KEY (CategoryID) REFERENCES TicketCategories (CategoryID)
 );
--- 11. Notifications table
+-- 10. Notifications table
 CREATE TABLE notifications (
    id INT NOT NULL AUTO_INCREMENT,
    user_id INT NOT NULL, -- The admin user ID who should see this notification
@@ -140,7 +140,7 @@ CREATE TABLE notifications (
    KEY user_id (user_id),
    KEY is_read (is_read),
    CONSTRAINT fk_notifications_user_id FOREIGN KEY (user_id) REFERENCES users (UserID) ON DELETE CASCADE
-)
+);
 
 
 -- 11. Student-Visitor Junction table
@@ -190,6 +190,7 @@ CREATE TABLE audit_logs
     created_at      TIMESTAMP                            DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(UserID)
 );
+-- 15. password_policy table
 CREATE TABLE `password_policy` (
    `id` CHAR(6) NOT NULL PRIMARY KEY,
     -- Settings for USER-CHOSEN permanent passwords
@@ -205,6 +206,8 @@ CREATE TABLE `password_policy` (
 
    `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
+-- 16. password_reset_log table
 CREATE TABLE `password_reset_log` (
   `id` int NOT NULL AUTO_INCREMENT,
   `user_id` int NOT NULL,
@@ -220,4 +223,22 @@ CREATE TABLE `password_reset_log` (
   CONSTRAINT `password_reset_log_ibfk_2` FOREIGN KEY (`handled_by_admin_id`) REFERENCES `users` (`UserID`) ON DELETE SET NULL
 );
 
+-- 17. badge_print_logs
+CREATE TABLE IF NOT EXISTS badge_print_logs (
+    LogID INT PRIMARY KEY AUTO_INCREMENT,
+    VisitorID INT NOT NULL,
+    BadgeNumber VARCHAR(20) NOT NULL,
+    Copies INT DEFAULT 1,
+    PrintedBy INT NOT NULL,
+    PrintTime TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+    -- Foreign key constraints
+    FOREIGN KEY (VisitorID) REFERENCES visitors(VisitorID) ON DELETE CASCADE,
+    FOREIGN KEY (PrintedBy) REFERENCES users(UserID) ON DELETE CASCADE,
+
+    -- Index for performance
+    INDEX idx_visitor_badge (VisitorID, BadgeNumber),
+    INDEX idx_print_time (PrintTime),
+    INDEX idx_printed_by (PrintedBy)
+);
 
