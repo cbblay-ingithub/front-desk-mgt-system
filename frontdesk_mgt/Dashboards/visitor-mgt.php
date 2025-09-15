@@ -461,6 +461,158 @@ while ($row = $autocomplete_result->fetch_assoc()) {
             left: 8px;
             top: 12px;
         }
+        /* Badge Print Button Styling */
+        .btn-secondary.action-btn {
+            background-color: #6c757d;
+            border-color: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary.action-btn:hover {
+            background-color: #545b62;
+            border-color: #4e555b;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        /* Badge Print Modal Styles */
+        .badge-print-modal .modal-content {
+            border-radius: 15px;
+            border: none;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .badge-print-modal .modal-header {
+            background: linear-gradient(45deg, #6c757d, #495057);
+            color: white;
+            border-radius: 15px 15px 0 0;
+        }
+
+        /* Badge Preview Styles */
+        .badge-preview {
+            width: 350px;
+            height: 220px;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border: 2px solid #dee2e6;
+            border-radius: 15px;
+            margin: 20px auto;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .badge-preview::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 40px;
+            background: linear-gradient(45deg, #007bff, #0056b3);
+            border-radius: 13px 13px 0 0;
+        }
+
+        .badge-content {
+            padding-top: 30px;
+            text-align: center;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .badge-logo {
+            font-size: 2rem;
+            color: #007bff;
+            margin-bottom: 10px;
+        }
+
+        .badge-title {
+            font-size: 0.8rem;
+            font-weight: bold;
+            color: white;
+            position: absolute;
+            top: 12px;
+            left: 20px;
+            right: 20px;
+            text-align: center;
+        }
+
+        .badge-name {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #212529;
+            margin-bottom: 8px;
+            word-wrap: break-word;
+        }
+
+        .badge-number-display {
+            font-size: 1.4rem;
+            font-weight: bold;
+            color: #007bff;
+            background: white;
+            padding: 8px 15px;
+            border-radius: 25px;
+            display: inline-block;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .badge-footer {
+            font-size: 0.7rem;
+            color: #6c757d;
+            margin-top: auto;
+            padding-top: 10px;
+        }
+
+        .print-options {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 15px 0;
+        }
+
+        .print-option-item {
+            margin-bottom: 10px;
+        }
+
+        /* Print-specific styles */
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+
+            .badge-print-content,
+            .badge-print-content * {
+                visibility: visible;
+            }
+
+            .badge-print-content {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+            }
+
+            .badge-preview {
+                width: 3.5in;
+                height: 2.2in;
+                page-break-after: always;
+                margin: 0;
+                box-shadow: none;
+                border: 1px solid #000;
+            }
+        }
+
+        /* Loading state for print button */
+        .printing {
+            pointer-events: none;
+            opacity: 0.7;
+        }
+
+        .printing .fas {
+            animation: spin 1s linear infinite;
+        }
     </style>
 </head>
 <body>
@@ -595,9 +747,9 @@ while ($row = $autocomplete_result->fetch_assoc()) {
                                 <td><?= htmlspecialchars($v['Email']) ?></td>
                                 <td><?= htmlspecialchars($v['Phone']) ?></td>
                                 <td>
-                    <span class="status-badge <?= $v['is_checked_in'] > 0 ? 'status-checked-in' : 'status-not-checked-in' ?>">
-                        <?= $v['is_checked_in'] > 0 ? 'Checked In' : 'Not Checked In' ?>
-                    </span>
+            <span class="status-badge <?= $v['is_checked_in'] > 0 ? 'status-checked-in' : 'status-not-checked-in' ?>">
+                <?= $v['is_checked_in'] > 0 ? 'Checked In' : 'Not Checked In' ?>
+            </span>
                                 </td>
                                 <td>
                                     <!-- View Details Button -->
@@ -608,11 +760,20 @@ while ($row = $autocomplete_result->fetch_assoc()) {
                                         <i class="fas fa-eye"></i>
                                     </button>
 
+                                    <!-- Badge Print Button - Only show if visitor has a badge number -->
+                                    <?php if (!empty($v['BadgeNumber']) && $v['BadgeNumber'] !== 'N/A'): ?>
+                                        <button class="btn btn-secondary action-btn"
+                                                onclick="printBadge('<?= htmlspecialchars($v['BadgeNumber']) ?>', '<?= htmlspecialchars($v['Name']) ?>', <?= $v['VisitorID'] ?>)"
+                                                title="Print Badge">
+                                            <i class="fas fa-print"></i>
+                                        </button>
+                                    <?php endif; ?>
+
                                     <?php if ($v['is_checked_in'] > 0): ?>
-                                        <!-- FIXED: Corrected function name to match JavaScript -->
+                                        <!-- Check Out Button -->
                                         <button type="button" class="btn btn-danger action-btn"
                                                 onclick="handleCheckOut(<?= $v['VisitorID'] ?>, this)">
-                                            <i class="fas fa-sign-out-alt"></i> Check Out
+                                            <i class="fas fa-sign-out-alt"></i>
                                         </button>
                                     <?php endif; ?>
                                 </td>
@@ -671,7 +832,84 @@ while ($row = $autocomplete_result->fetch_assoc()) {
                         </div>
                     </form>
                 </div>
+                <!-- Print Badge Modal-->
             </div>
+                <div class="modal fade badge-print-modal" id="badgePrintModal" tabindex="-1" aria-labelledby="badgePrintModalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title text-white" id="badgePrintModalLabel">
+                                    <i class="fas fa-id-badge me-2"></i>Print Badge
+                                </h5>
+                                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <!-- Badge Preview -->
+                                <div class="badge-print-content">
+                                    <div class="badge-preview">
+                                        <div class="badge-title">VISITOR BADGE</div>
+                                        <div class="badge-content">
+                                            <div class="badge-logo">
+                                                <i class="fas fa-building"></i>
+                                            </div>
+                                            <div class="badge-name" id="print-visitor-name">Visitor Name</div>
+                                            <div class="badge-number-display" id="print-badge-number">000000</div>
+                                            <div class="badge-footer">
+                                                <div><strong>Valid for today only</strong></div>
+                                                <div id="print-date"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Print Options -->
+                                <div class="print-options">
+                                    <h6 class="mb-3"><i class="fas fa-cog me-2"></i>Print Options</h6>
+
+                                    <div class="print-option-item">
+                                        <label class="form-label">Number of copies:</label>
+                                        <select class="form-select form-select-sm" id="print-copies">
+                                            <option value="1" selected>1 copy</option>
+                                            <option value="2">2 copies</option>
+                                            <option value="3">3 copies</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="print-option-item">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" id="include-photo" checked>
+                                            <label class="form-check-label" for="include-photo">
+                                                Include photo placeholder
+                                            </label>
+                                        </div>
+                                    </div>
+
+                                    <div class="print-option-item">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" id="include-qr" checked>
+                                            <label class="form-check-label" for="include-qr">
+                                                Exclude span of validity
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="alert alert-info">
+                                    <i class="fas fa-info-circle me-2"></i>
+                                    <strong>Note:</strong> Ensure your printer is set to landscape orientation for best results. Standard badge size is 3.5" x 2.2".
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                                    <i class="fas fa-times me-2"></i>Cancel
+                                </button>
+                                <button type="button" class="btn btn-primary" id="confirmPrintBadge">
+                                    <i class="fas fa-print me-2"></i>Print Badge
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
             <!-- Visitor Details Modal -->
             <div class="modal fade visitor-detail-modal" id="visitorDetailModal" tabindex="-1" aria-labelledby="visitorDetailModalLabel" aria-hidden="true">
@@ -1302,6 +1540,250 @@ while ($row = $autocomplete_result->fetch_assoc()) {
             timeout = setTimeout(later, wait);
         };
     }
+    // Global variables for badge printing
+    let currentPrintData = {};
+
+    /**
+     * Initialize badge printing functionality
+     */
+    function printBadge(badgeNumber, visitorName, visitorId) {
+        // Store current print data
+        currentPrintData = {
+            badgeNumber: badgeNumber,
+            visitorName: visitorName,
+            visitorId: visitorId
+        };
+
+        // Populate the badge preview
+        updateBadgePreview();
+
+        // Show the print modal
+        $('#badgePrintModal').modal('show');
+    }
+
+    /**
+     * Update the badge preview with current visitor data
+     */
+    function updateBadgePreview() {
+        $('#print-visitor-name').text(currentPrintData.visitorName);
+        $('#print-badge-number').text(currentPrintData.badgeNumber);
+        $('#print-date').text(new Date().toLocaleDateString());
+
+        // Add photo placeholder if enabled
+        updateBadgeFeatures();
+    }
+
+    /**
+     * Update badge features based on selected options
+     */
+    function updateBadgeFeatures() {
+        const includePhoto = $('#include-photo').is(':checked');
+        const includeQR = $('#include-qr').is(':checked');
+
+        // Add or remove photo placeholder
+        let photoElement = $('.badge-preview .photo-placeholder');
+        if (includePhoto && photoElement.length === 0) {
+            $('.badge-logo').after(`
+                <div class="photo-placeholder" style="
+                    width: 60px;
+                    height: 60px;
+                    background: #dee2e6;
+                    border: 2px dashed #6c757d;
+                    border-radius: 50%;
+                    margin: 0 auto 10px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    font-size: 0.7rem;
+                    color: #6c757d;
+                ">PHOTO</div>
+            `);
+        } else if (!includePhoto && photoElement.length > 0) {
+            photoElement.remove();
+        }
+
+        // Add or remove QR code
+        let qrElement = $('.badge-preview .qr-code');
+        if (includeQR && qrElement.length === 0) {
+            $('.badge-footer').before(`
+                <div class="qr-code" style="
+                    width: 40px;
+                    height: 40px;
+                    background: #212529;
+                    margin: 10px auto;
+                    position: relative;
+                ">
+                    <div style="
+                        position: absolute;
+                        top: 2px; left: 2px; right: 2px; bottom: 2px;
+                        background: repeating-conic-gradient(#000 0% 25%, transparent 0% 50%) 50% / 8px 8px;
+                    "></div>
+                </div>
+            `);
+        } else if (!includeQR && qrElement.length > 0) {
+            qrElement.remove();
+        }
+    }
+
+    /**
+     * Handle the actual printing process
+     */
+    function handleBadgePrint() {
+        const $printButton = $('#confirmPrintBadge');
+        const copies = parseInt($('#print-copies').val());
+
+        // Show loading state
+        $printButton.addClass('printing')
+            .html('<i class="fas fa-spinner fa-spin me-2"></i>Printing...');
+
+        // Log the print action
+        logBadgePrint(currentPrintData.visitorId, currentPrintData.badgeNumber, copies);
+
+        // Simulate printing delay
+        setTimeout(() => {
+            try {
+                // Trigger browser print
+                window.print();
+
+                // Show success notification
+                showNotification(`Badge printed successfully for ${currentPrintData.visitorName}`, 'success');
+
+                // Close modal
+                $('#badgePrintModal').modal('hide');
+
+            } catch (error) {
+                showNotification('Error occurred while printing badge', 'error');
+                console.error('Print error:', error);
+            } finally {
+                // Reset button state
+                $printButton.removeClass('printing')
+                    .html('<i class="fas fa-print me-2"></i>Print Badge');
+            }
+        }, 1000);
+    }
+
+    /**
+     * Log badge printing activity
+     */
+    function logBadgePrint(visitorId, badgeNumber, copies) {
+        $.ajax({
+            url: 'badge_print_log.php', // You'll need to create this endpoint
+            method: 'POST',
+            data: {
+                action: 'log_print',
+                visitor_id: visitorId,
+                badge_number: badgeNumber,
+                copies: copies,
+                printed_by: <?= $_SESSION['userID'] ?? 'null' ?>,
+                print_time: new Date().toISOString()
+            },
+            success: function(response) {
+                console.log('Badge print logged successfully');
+            },
+            error: function() {
+                console.warn('Failed to log badge print');
+            }
+        });
+    }
+
+    /**
+     * Bulk print badges for selected visitors
+     */
+    function printSelectedBadges() {
+        const selectedVisitors = [];
+        $('.visitor-select:checked').each(function() {
+            const $row = $(this).closest('tr');
+            const visitorId = $(this).val();
+            const badgeNumber = $row.find('.badge-number').text().trim();
+            const visitorName = $row.find('td').eq(2).text().trim();
+
+            if (badgeNumber && badgeNumber !== 'N/A') {
+                selectedVisitors.push({
+                    id: visitorId,
+                    name: visitorName,
+                    badge: badgeNumber
+                });
+            }
+        });
+
+        if (selectedVisitors.length === 0) {
+            showNotification('Please select visitors with badge numbers', 'error');
+            return;
+        }
+
+        if (confirm(`Print badges for ${selectedVisitors.length} selected visitors?`)) {
+            selectedVisitors.forEach(visitor => {
+                logBadgePrint(visitor.id, visitor.badge, 1);
+            });
+
+            // Here you could implement batch printing logic
+            showNotification(`Printing ${selectedVisitors.length} badges...`, 'success');
+
+            // For now, just print each one
+            selectedVisitors.forEach((visitor, index) => {
+                setTimeout(() => {
+                    currentPrintData = {
+                        badgeNumber: visitor.badge,
+                        visitorName: visitor.name,
+                        visitorId: visitor.id
+                    };
+                    updateBadgePreview();
+                    window.print();
+                }, index * 1000); // Stagger prints by 1 second
+            });
+        }
+    }
+
+    // Event listeners
+    $(document).ready(function() {
+        // Print options change handlers
+        $('#include-photo, #include-qr').on('change', updateBadgeFeatures);
+
+        // Print confirmation
+        $('#confirmPrintBadge').on('click', handleBadgePrint);
+
+        // Add bulk print button to bulk actions if needed
+        if ($('#bulkActions .btn-group').length === 0) {
+            $('#bulkActions .d-flex > div').append(`
+                <button class="btn btn-info me-2" id="bulkPrintBadges" onclick="printSelectedBadges()">
+                    <i class="fas fa-print me-2"></i>Print Badges
+                </button>
+            `);
+        }
+
+        // Hide badge print button in bulk actions initially
+        $('#bulkPrintBadges').hide();
+
+        // Show/hide bulk print button based on selection
+        $(document).on('change', '.visitor-select', function() {
+            const selectedWithBadges = $('.visitor-select:checked').filter(function() {
+                const badgeNumber = $(this).closest('tr').find('.badge-number').text().trim();
+                return badgeNumber && badgeNumber !== 'N/A';
+            });
+
+            if (selectedWithBadges.length > 0) {
+                $('#bulkPrintBadges').show();
+            } else {
+                $('#bulkPrintBadges').hide();
+            }
+        });
+
+        // Handle select all for badge printing
+        $('#selectAll').on('change', function() {
+            setTimeout(() => {
+                $(document).trigger('change', '.visitor-select');
+            }, 100);
+        });
+    });
+
+    // Print media query handling
+    window.addEventListener('beforeprint', function() {
+        document.body.classList.add('printing-mode');
+    });
+
+    window.addEventListener('afterprint', function() {
+        document.body.classList.remove('printing-mode');
+    });
 </script>
 </body>
 </html>

@@ -437,7 +437,7 @@ $conn->close();
                                                     <h2 class="mb-0"><?= $teamReports['appointment_metrics']['cancelled'] ?? 0 ?></h2>
                                                 </div>
                                                 <div class="avatar flex-shrink-0">
-                                </span>
+
                                                 </div>
                                             </div>
                                         </div>
