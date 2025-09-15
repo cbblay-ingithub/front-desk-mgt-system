@@ -556,13 +556,13 @@ $conn->close();
                                         </a>
                                     </div>
                                     <div class="col-lg-2 col-md-4 col-6 mb-3">
-                                        <a href="visitor_logs.php" class="quick-action-btn">
+                                        <a href="visitor-mgt.php" class="quick-action-btn">
                                             <i class="fas fa-history"></i>
                                             <span>Visitor Logs</span>
                                         </a>
                                     </div>
                                     <div class="col-lg-2 col-md-4 col-6 mb-3">
-                                        <a href="help_desk.php" class="quick-action-btn">
+                                        <a href="FD_tickets.php" class="quick-action-btn">
                                             <i class="fas fa-question-circle"></i>
                                             <span>Help Desk</span>
                                         </a>

@@ -1340,6 +1340,13 @@ function checkTimeConflict($hostId, $appointmentTime, $excludeAppointmentId = nu
                             <input type="text" class="form-control" id="appointmentTime" name="appointmentTime" required>
                         </div>
                     </div>
+                    <!-- Add the allowed hours note here -->
+                    <div class="alert alert-info py-2 mt-2 mb-0">
+                        <small>
+                            <i class="fas fa-info-circle me-1"></i>
+                            Appointment times are allowed within these hours (9:30 AM—11:30 AM or 1:00 PM—4:30 PM).
+                        </small>
+                    </div>
                     <div class="mb-3">
                         <label class="form-label">Select or Add Visitor</label>
                         <div class="visitor-search-container">
@@ -2163,8 +2170,8 @@ function checkTimeConflict($hostId, $appointmentTime, $excludeAppointmentId = nu
             const classes = {
                 'Cancelled': 'danger',
                 'Ongoing': 'primary',
-                'Upcoming': 'success',
-                'Completed': 'secondary',
+                'Upcoming': 'primary',
+                'Completed': 'success',
                 'Overdue': 'warning'
             };
             return classes[status] || 'secondary';

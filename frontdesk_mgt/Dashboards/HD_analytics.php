@@ -579,7 +579,7 @@ $conn->close();
                                             </a>
                                         </div>
                                         <div class="col-lg-2 col-md-4 col-6 mb-3">
-                                            <a href="reports.php" class="quick-action-btn">
+                                            <a href="HD_analytics.php" class="quick-action-btn">
                                                 <i class="fas fa-chart-bar"></i>
                                                 <span>Reports</span>
                                             </a>

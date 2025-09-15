@@ -85,6 +85,40 @@
             margin-right: 8px;
             vertical-align: middle;
         }
+        .processing {
+            background-color: #8592a3 !important;
+            cursor: not-allowed !important;
+        }
+
+        .processing:hover {
+            background-color: #8592a3 !important;
+        }
+
+        .spinner {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+            margin-right: 8px;
+            vertical-align: middle;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .btn-content {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
     </style>
 </head>
 <body>
@@ -129,18 +163,19 @@
 
                     <form id="formAuthentication" method="POST" action="Login.php">
                         <div class="mb-6 form-control-validation">
-                            <label for="email" class="form-label">Email</label>
+                            <label for="email" class="form-label">Email or Username</label>
                             <input
                                     type="text"
                                     class="form-control"
                                     id="email"
                                     name="email-username"
-                                    placeholder="Enter your email address"
+                                    autocomplete="username"
+                                    placeholder="Enter your email or username"
                                     autofocus />
                             <div class="invalid-feedback" id="emailError"></div>
                         </div>
                         <div class="mb-6 form-password-toggle form-control-validation">
-                            <label class="form-label" for="password">Password</label>
+                            <label class="form-label" for="password" >Password</label>
                             <div class="input-group input-group-merge">
                                 <input
                                         type="password"
@@ -148,7 +183,8 @@
                                         class="form-control"
                                         name="password"
                                         placeholder="&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;"
-                                        aria-describedby="password" />
+                                        aria-describedby="password"
+                                        autocomplete="current-password"/>
                                 <span class="input-group-text cursor-pointer"><i class="bx bx-hide"></i></span>
                             </div>
                             <div class="invalid-feedback" id="passwordError"></div>
@@ -165,7 +201,12 @@
                             </div>
                         </div>
                         <div class="mb-6">
-                            <button class="btn btn-primary d-grid w-100" type="submit">Login</button>
+                            <button id="login-btn" class="btn btn-primary d-grid w-100" type="submit">
+                                <span class="btn-content">
+                                    <span id="btn-spinner" class="spinner hidden"></span>
+                                    <span id="btn-text">Sign in</span>
+                                </span>
+                            </button>
                         </div>
                     </form>
 
@@ -191,7 +232,7 @@
                         </a>
                         <a href="#" class="btn btn-icon btn-outline-primary">
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path>
+                                <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77a5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path>
                             </svg>
                         </a>
                         <a href="#" class="btn btn-icon btn-outline-primary">
@@ -229,7 +270,6 @@
         // Wait for pages-auth.js to initialize
         setTimeout(function() {
             // Pages-auth.js handles the password toggle functionality
-            // We'll just enhance the validation
             // Check for URL parameters with error messages
             const urlParams = new URLSearchParams(window.location.search);
             const error = urlParams.get('error');
@@ -260,7 +300,12 @@
                 const newUrl = window.location.pathname;
                 window.history.replaceState({}, document.title, newUrl);
             }
+
             const form = document.getElementById('formAuthentication');
+            const loginBtn = document.getElementById('login-btn');
+            const btnText = document.getElementById('btn-text');
+            const btnSpinner = document.getElementById('btn-spinner');
+
             if (form) {
                 // Store the original submit handler
                 const originalSubmit = form.onsubmit;
@@ -311,10 +356,33 @@
                         return false;
                     }
 
-                    // If valid, allow the original form validation to proceed
+                    // If valid, show processing state
+                    loginBtn.classList.add('processing');
+                    loginBtn.disabled = true;
+                    btnText.textContent = 'Processing...';
+                    btnSpinner.classList.remove('hidden');
+
+                    // If there's an original submit handler, call it
                     if (originalSubmit) {
                         return originalSubmit.call(this, e);
                     }
+
+                    // For demo purposes, simulate a login process
+                    e.preventDefault();
+                    setTimeout(function() {
+                        // This would normally be handled by the form submission to Login.php
+                        // For demo, we'll just reset after 2 seconds
+                        loginBtn.classList.remove('processing');
+                        loginBtn.disabled = false;
+                        btnText.textContent = 'Sign in';
+                        btnSpinner.classList.add('hidden');
+
+                        // Show a message that this is a demo
+                        const errorAlert = document.getElementById('errorAlert');
+                        const errorMessageElement = document.getElementById('errorMessage');
+                        errorMessageElement.textContent = 'This is a demo. In a real application, the form would submit to the server.';
+                        errorAlert.classList.add('show');
+                    }, 2000);
                 });
             }
         }, 100);
