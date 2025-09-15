@@ -433,7 +433,7 @@ $conn->close();
                     <div class="navbar-nav-right d-flex align-items-center justify-content-end" id="navbar-collapse">
                         <div class="navbar-nav align-items-center me-auto">
                             <div class="nav-item">
-                                <h4 class="mb-0 fw-bold ms-2">Dashboard</h4>
+                                <h4 class="mb-0 fw-bold ms-2">Support Staff Dashboard</h4>
                             </div>
                         </div>
 
@@ -539,7 +539,7 @@ $conn->close();
                         </div>
                     </div>
 
-                    <!-- Quick Actions -->
+                    <!-- Quick Actions
                     <div class="row mb-4">
                         <div class="col-12">
                             <div class="card">
@@ -589,7 +589,7 @@ $conn->close();
                             </div>
                         </div>
                     </div>
-
+        -->
                     <!-- Charts Row -->
                     <div class="row mb-4">
                         <!-- Ticket Status Distribution -->
@@ -699,7 +699,7 @@ $conn->close();
                                                     <div class="text-end">
                                                         <small class="text-muted"><?= date('M j, h:i A', strtotime($ticket['CreatedDate'])) ?></small>
                                                         <div class="mt-2">
-                                                            <a href="ticket.php?id=<?= $ticket['TicketID'] ?>" class="btn btn-sm btn-outline-primary">View</a>
+                                                            <a href="help_desk.php?id=<?= $ticket['TicketID'] ?>" class="btn btn-sm btn-outline-primary">View</a>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -715,7 +715,7 @@ $conn->close();
                             <div class="card">
                                 <div class="card-header d-flex justify-content-between align-items-center">
                                     <h5 class="card-title mb-0">Your Assigned Tickets</h5>
-                                    <a href="tickets.php?assignee=me" class="btn btn-sm btn-outline-primary">View All</a>
+                                    <a href="help_desk.php?assignee=me" class="btn btn-sm btn-outline-primary">View All</a>
                                 </div>
                                 <div class="card-body">
                                     <?php if (empty($ticketData['your_tickets'])): ?>
@@ -863,7 +863,7 @@ $conn->close();
                         '#f5576c',
                         '#00f2fe',
                         '#ffc107',
-                        '#38f9d7',
+                        '#62f938',
                         '#6c757d'
                     ],
                     borderWidth: 0

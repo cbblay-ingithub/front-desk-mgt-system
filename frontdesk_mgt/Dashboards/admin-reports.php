@@ -398,9 +398,7 @@ $conn->close();
                                                     <h2 class="mb-0"><?= $teamReports['appointment_metrics']['total_appointments'] ?? 0 ?></h2>
                                                 </div>
                                                 <div class="avatar flex-shrink-0">
-                                                    <span class="avatar-initial rounded bg-label-primary">
-                                                        <i class="bx bx-trending-up bx-sm"></i>
-                                                    </span>
+
                                                 </div>
                                             </div>
                                         </div>
@@ -420,9 +418,7 @@ $conn->close();
                                                     <h2 class="mb-0"><?= $teamReports['appointment_metrics']['completed'] ?? 0 ?></h2>
                                                 </div>
                                                 <div class="avatar flex-shrink-0">
-                                                    <span class="avatar-initial rounded bg-label-success">
-                                                        <i class="bx bx-trending-up bx-sm"></i>
-                                                    </span>
+
                                                 </div>
                                             </div>
                                         </div>
@@ -441,8 +437,6 @@ $conn->close();
                                                     <h2 class="mb-0"><?= $teamReports['appointment_metrics']['cancelled'] ?? 0 ?></h2>
                                                 </div>
                                                 <div class="avatar flex-shrink-0">
-                                <span class="avatar-initial rounded bg-label-danger">
-                                    <i class="bx bx-trending-down bx-sm"></i>
                                 </span>
                                                 </div>
                                             </div>
@@ -462,8 +456,7 @@ $conn->close();
                                                     <h2 class="mb-0"><?= $teamReports['appointment_metrics']['upcoming'] ?? 0 ?></h2>
                                                 </div>
                                                 <div class="avatar flex-shrink-0">
-                                <span class="avatar-initial rounded bg-label-warning">
-                                    <i class="bx bx-trending-up bx-sm"></i>
+
                                 </span>
                                                 </div>
                                             </div>
@@ -569,11 +562,13 @@ $conn->close();
                                                 <button class="btn p-0" type="button" id="completionRate" data-bs-toggle="dropdown">
                                                     <i class="bx bx-dots-vertical-rounded"></i>
                                                 </button>
+                                                <!--
                                                 <div class="dropdown-menu dropdown-menu-end">
                                                     <a class="dropdown-item" href="javascript:void(0);">Last 7 Days</a>
                                                     <a class="dropdown-item" href="javascript:void(0);">Last 30 Days</a>
                                                     <a class="dropdown-item" href="javascript:void(0);">Last 90 Days</a>
                                                 </div>
+                                                -->
                                             </div>
                                         </div>
                                         <div class="card-body">
@@ -883,16 +878,20 @@ $conn->close();
                                     <h5 class="m-0 me-2">Front Desk Performance Overview</h5>
                                     <p class="card-subtitle">Key metrics for front desk operations</p>
                                 </div>
+                                <!--
                                 <div class="dropdown">
                                     <button class="btn p-0" type="button" id="frontDeskDropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                         <i class="icon-base bx bx-dots-vertical-rounded icon-lg text-body-secondary"></i>
                                     </button>
-                                    <div class="dropdown-menu dropdown-menu-end" aria-labelledby="frontDeskDropdown">
+
+                                    <div class="dropdown-menu dropdown-menu-end">
+                                        <a class="dropdown-item" href="javascript:void(0);">Last 7 Days</a>
                                         <a class="dropdown-item" href="javascript:void(0);">Last 30 Days</a>
-                                        <a class="dropdown-item" href="javascript:void(0);">Last Quarter</a>
-                                        <a class="dropdown-item" href="javascript:void(0);">Last Year</a>
+                                        <a class="dropdown-item" href="javascript:void(0);">Last 90 Days</a>
                                     </div>
+
                                 </div>
+                                -->
                                 <form method="POST" action="generate_report.php" style="display: inline;">
                                     <input type="hidden" name="report_type" value="frontdesk">
                                     <input type="hidden" name="start_date" value="<?= $startDate ?>">
