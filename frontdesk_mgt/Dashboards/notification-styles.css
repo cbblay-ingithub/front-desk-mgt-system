@@ -353,4 +353,48 @@
         background: #4b5563;
         color: #e5e7eb;
     }
+    .priority-high {
+        border-left: 4px solid #dc3545;
+    }
+
+    .priority-normal {
+        border-left: 4px solid #ffc107;
+    }
+
+    .priority-low {
+        border-left: 4px solid #28a745;
+    }
+
+    .priority-badge {
+        font-size: 0.7rem;
+        padding: 0.2rem 0.4rem;
+    }
+
+    .priority-badge.priority-high {
+        background-color: #dc3545;
+        color: white;
+    }
+
+    .priority-badge.priority-normal {
+        background-color: #ffc107;
+        color: black;
+    }
+
+    .priority-badge.priority-low {
+        background-color: #28a745;
+        color: white;
+    }
+
+    .toast-metadata {
+        margin-top: 8px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        align-items: center;
+    }
+
+    .toast-metadata small {
+        color: #6c757d;
+        font-size: 0.75rem;
+    }
 }

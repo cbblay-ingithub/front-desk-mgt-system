@@ -503,12 +503,10 @@ class GlobalNotificationSystem {
 
 // Initialize the global notification system
 $(document).ready(function() {
-    // Only initialize if we're on an admin page
-    if ($('body').hasClass('admin-page') || window.location.pathname.includes('admin')) {
-        window.globalNotificationSystem = new GlobalNotificationSystem();
+    // Initialize on all pages
+    window.globalNotificationSystem = new GlobalNotificationSystem();
 
-        // Make it available globally for debugging
-        window.testNotification = () => window.globalNotificationSystem.testNotification();
-        window.notificationStatus = () => console.log(window.globalNotificationSystem.getStatus());
-    }
+    // Make it available globally for debugging
+    window.testNotification = () => window.globalNotificationSystem.testNotification();
+    window.notificationStatus = () => console.log(window.globalNotificationSystem.getStatus());
 });

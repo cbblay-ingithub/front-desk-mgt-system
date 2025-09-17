@@ -184,6 +184,37 @@ class NotificationCreator {
                 'message' => 'A support ticket has been resolved.',
                 'type' => 'ticket',
                 'priority' => 'low'
+            ],
+            // New ticket event types from ticket_ops.php
+            'resolution' => [
+                'title' => 'Ticket Resolved',
+                'message' => 'A ticket you created has been resolved.',
+                'type' => 'ticket',
+                'priority' => 'normal'
+            ],
+            'closure' => [
+                'title' => 'Ticket Closed',
+                'message' => 'A ticket you were involved with has been closed.',
+                'type' => 'ticket',
+                'priority' => 'normal'
+            ],
+            'auto_closure' => [
+                'title' => 'Ticket Auto-Closed',
+                'message' => 'A ticket has been automatically closed due to inactivity.',
+                'type' => 'ticket',
+                'priority' => 'low'
+            ],
+            'reopen' => [
+                'title' => 'Ticket Reopened',
+                'message' => 'A ticket has been reopened.',
+                'type' => 'ticket',
+                'priority' => 'normal'
+            ],
+            'unassignment' => [
+                'title' => 'Ticket Unassigned',
+                'message' => 'You have been unassigned from a ticket.',
+                'type' => 'ticket',
+                'priority' => 'normal'
             ]
         ];
 
@@ -198,6 +229,11 @@ class NotificationCreator {
             'related_entity_id' => $ticketId,
             'metadata' => $metadata
         ];
+
+        // For certain events, notify specific users instead of all admins
+        if (in_array($event, ['resolution', 'closure', 'auto_closure', 'reopen', 'unassignment'])) {
+            return $this->createNotification([$userId], $template['title'], $template['message'], $template['type'], $options);
+        }
 
         return $this->notifyAllAdmins($template['title'], $template['message'], $template['type'], $options);
     }
@@ -406,6 +442,7 @@ class NotificationCreator {
             ];
         }
     }
+
     /**
      * Create ticket assignment notification
      */
@@ -426,6 +463,109 @@ class NotificationCreator {
         ];
 
         return $this->createNotification([$UserID], $title, $message, 'ticket', $options);
+    }
+
+    /**
+     * Create ticket resolution notification
+     */
+    public function notifyTicketResolution($userId, $ticketId, $resolvedByName, $resolution) {
+        $title = "Ticket #{$ticketId} Resolved";
+        $message = "Your ticket has been resolved by {$resolvedByName}";
+
+        $options = [
+            'priority' => 'normal',
+            'related_entity_type' => 'ticket',
+            'related_entity_id' => $ticketId,
+            'metadata' => [
+                'resolved_by' => $resolvedByName,
+                'resolution' => $resolution,
+                'resolved_at' => date('Y-m-d H:i:s')
+            ]
+        ];
+
+        return $this->createNotification([$userId], $title, $message, 'ticket', $options);
+    }
+
+    /**
+     * Create ticket closure notification
+     */
+    public function notifyTicketClosure($userId, $ticketId, $closedByName) {
+        $title = "Ticket #{$ticketId} Closed";
+        $message = "A ticket you were involved with has been closed by {$closedByName}";
+
+        $options = [
+            'priority' => 'normal',
+            'related_entity_type' => 'ticket',
+            'related_entity_id' => $ticketId,
+            'metadata' => [
+                'closed_by' => $closedByName,
+                'closed_at' => date('Y-m-d H:i:s')
+            ]
+        ];
+
+        return $this->createNotification([$userId], $title, $message, 'ticket', $options);
+    }
+
+    /**
+     * Create ticket auto-closure notification
+     */
+    public function notifyTicketAutoClosure($userId, $ticketId, $reason) {
+        $title = "Ticket #{$ticketId} Auto-Closed";
+        $message = "A ticket has been automatically closed: {$reason}";
+
+        $options = [
+            'priority' => 'low',
+            'related_entity_type' => 'ticket',
+            'related_entity_id' => $ticketId,
+            'metadata' => [
+                'reason' => $reason,
+                'closed_at' => date('Y-m-d H:i:s')
+            ]
+        ];
+
+        return $this->createNotification([$userId], $title, $message, 'ticket', $options);
+    }
+
+    /**
+     * Create ticket reopening notification
+     */
+    public function notifyTicketReopening($userId, $ticketId, $reopenedByName) {
+        $title = "Ticket #{$ticketId} Reopened";
+        $message = "A ticket has been reopened by {$reopenedByName}";
+
+        $options = [
+            'priority' => 'normal',
+            'related_entity_type' => 'ticket',
+            'related_entity_id' => $ticketId,
+            'metadata' => [
+                'reopened_by' => $reopenedByName,
+                'reopened_at' => date('Y-m-d H:i:s'),
+                'assignment_reset' => true
+            ]
+        ];
+
+        return $this->createNotification([$userId], $title, $message, 'ticket', $options);
+    }
+
+    /**
+     * Create ticket unassignment notification
+     */
+    public function notifyTicketUnassignment($userId, $ticketId, $unassignedByName, $reason) {
+        $title = "Unassigned from Ticket #{$ticketId}";
+        $message = "You have been unassigned from a ticket by {$unassignedByName}: {$reason}";
+
+        $options = [
+            'priority' => 'normal',
+            'related_entity_type' => 'ticket',
+            'related_entity_id' => $ticketId,
+            'metadata' => [
+                'unassigned_by' => $unassignedByName,
+                'reason' => $reason,
+                'unassigned_at' => date('Y-m-d H:i:s')
+            ]
+        ];
+
+        return $this->createNotification([$userId], $title, $message, 'ticket', $options);
     }
 }
 
@@ -461,5 +601,53 @@ function notifyUserEvent($conn, $event, $targetUserId = null, $metadata = []) {
 function notifyTicketEvent($conn, $event, $ticketId, $metadata = []) {
     $notificationCreator = new NotificationCreator($conn);
     return $notificationCreator->notifyTicketEvent(null, $event, $ticketId, $metadata);
+}
+
+/**
+ * Quick function for ticket assignment
+ */
+function notifyTicketAssignment($conn, $userId, $ticketId, $ticketDescription, $assignedByName) {
+    $notificationCreator = new NotificationCreator($conn);
+    return $notificationCreator->notifyTicketAssignment($userId, $ticketId, $ticketDescription, $assignedByName);
+}
+
+/**
+ * Quick function for ticket resolution
+ */
+function notifyTicketResolution($conn, $userId, $ticketId, $resolvedByName, $resolution) {
+    $notificationCreator = new NotificationCreator($conn);
+    return $notificationCreator->notifyTicketResolution($userId, $ticketId, $resolvedByName, $resolution);
+}
+
+/**
+ * Quick function for ticket closure
+ */
+function notifyTicketClosure($conn, $userId, $ticketId, $closedByName) {
+    $notificationCreator = new NotificationCreator($conn);
+    return $notificationCreator->notifyTicketClosure($userId, $ticketId, $closedByName);
+}
+
+/**
+ * Quick function for ticket auto-closure
+ */
+function notifyTicketAutoClosure($conn, $userId, $ticketId, $reason) {
+    $notificationCreator = new NotificationCreator($conn);
+    return $notificationCreator->notifyTicketAutoClosure($userId, $ticketId, $reason);
+}
+
+/**
+ * Quick function for ticket reopening
+ */
+function notifyTicketReopening($conn, $userId, $ticketId, $reopenedByName) {
+    $notificationCreator = new NotificationCreator($conn);
+    return $notificationCreator->notifyTicketReopening($userId, $ticketId, $reopenedByName);
+}
+
+/**
+ * Quick function for ticket unassignment
+ */
+function notifyTicketUnassignment($conn, $userId, $ticketId, $unassignedByName, $reason) {
+    $notificationCreator = new NotificationCreator($conn);
+    return $notificationCreator->notifyTicketUnassignment($userId, $ticketId, $unassignedByName, $reason);
 }
 ?>

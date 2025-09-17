@@ -14219,3 +14219,5213 @@ Stack trace:
 (
 )
 
+[16-Sep-2025 01:41:11 Europe/Berlin] Checking for ticket creation POST data: Array
+(
+)
+
+[16-Sep-2025 01:44:56 Europe/Berlin] Checking for ticket creation POST data: Array
+(
+)
+
+[16-Sep-2025 01:44:56 Europe/Berlin] Retrieved tickets: Array
+(
+    [0] => Array
+        (
+            [TicketID] => 41
+            [Description] => WiFi  Access has been down 
+            [Priority] => critical
+            [Status] => in-progress
+            [CreatedDate] => 2025-07-30 05:57:12
+            [CreatedByName] => James Best
+            [AssignedToName] => Annabel Mensah
+            [CategoryName] => Network
+        )
+
+    [1] => Array
+        (
+            [TicketID] => 42
+            [Description] => Staff member cannot access the top floor
+            [Priority] => high
+            [Status] => open
+            [CreatedDate] => 2025-08-01 09:11:12
+            [CreatedByName] => James Best
+            [AssignedToName] => 
+            [CategoryName] => Access
+        )
+
+    [2] => Array
+        (
+            [TicketID] => 58
+            [Description] => The software is not working as it should
+            [Priority] => high
+            [Status] => in-progress
+            [CreatedDate] => 2025-09-13 12:55:22
+            [CreatedByName] => Adwoa Millicent
+            [AssignedToName] => James Best
+            [CategoryName] => Software
+        )
+
+    [3] => Array
+        (
+            [TicketID] => 57
+            [Description] => The front doors are not working
+            [Priority] => high
+            [Status] => in-progress
+            [CreatedDate] => 2025-09-10 10:09:47
+            [CreatedByName] => James Best
+            [AssignedToName] => Annabel Mensah
+            [CategoryName] => Facility Issues
+        )
+
+    [4] => Array
+        (
+            [TicketID] => 50
+            [Description] => the PCs at the front desk are faulty
+            [Priority] => high
+            [Status] => in-progress
+            [CreatedDate] => 2025-08-17 18:34:00
+            [CreatedByName] => James Best
+            [AssignedToName] => Annabel Mensah
+            [CategoryName] => Hardware
+        )
+
+    [5] => Array
+        (
+            [TicketID] => 56
+            [Description] => Many visitors are in a view waiting for you
+            [Priority] => high
+            [Status] => resolved
+            [CreatedDate] => 2025-09-09 21:45:28
+            [CreatedByName] => Annabel Mensah
+            [AssignedToName] => Lawrence Danso Abiam
+            [CategoryName] => Appointments
+        )
+
+    [6] => Array
+        (
+            [TicketID] => 52
+            [Description] => Connectivity issues on the ground floor
+            [Priority] => high
+            [Status] => resolved
+            [CreatedDate] => 2025-08-19 12:36:14
+            [CreatedByName] => Annabel Mensah
+            [AssignedToName] => Annabel Mensah
+            [CategoryName] => Network
+        )
+
+    [7] => Array
+        (
+            [TicketID] => 45
+            [Description] => Emails are not being sent on time
+            [Priority] => high
+            [Status] => resolved
+            [CreatedDate] => 2025-08-08 16:47:52
+            [CreatedByName] => James Best
+            [AssignedToName] => Raymond Adoe
+            [CategoryName] => Email/Notification
+        )
+
+    [8] => Array
+        (
+            [TicketID] => 43
+            [Description] => The bulbs in the washroom are faulty
+            [Priority] => high
+            [Status] => closed
+            [CreatedDate] => 2025-08-01 15:08:11
+            [CreatedByName] => Abena Banson
+            [AssignedToName] => Annabel Mensah
+            [CategoryName] => Facility Issues
+        )
+
+    [9] => Array
+        (
+            [TicketID] => 35
+            [Description] => System allowed booking of two appointments for the same host at 2:00 PM today. Both visitors showed up and caused confusion. Need to fix scheduling conflict detection.
+            [Priority] => high
+            [Status] => closed
+            [CreatedDate] => 2025-07-26 15:50:35
+            [CreatedByName] => Annabel Mensah
+            [AssignedToName] => Lawrence Danso Abiam
+            [CategoryName] => Appointments
+        )
+
+    [10] => Array
+        (
+            [TicketID] => 51
+            [Description] => Operating system need an update
+            [Priority] => medium
+            [Status] => open
+            [CreatedDate] => 2025-08-17 19:00:07
+            [CreatedByName] => James Best
+            [AssignedToName] => 
+            [CategoryName] => Software
+        )
+
+    [11] => Array
+        (
+            [TicketID] => 49
+            [Description] => Elevator have been made inaccessible
+            [Priority] => medium
+            [Status] => open
+            [CreatedDate] => 2025-08-17 18:01:23
+            [CreatedByName] => James Best
+            [AssignedToName] => 
+            [CategoryName] => Access
+        )
+
+    [12] => Array
+        (
+            [TicketID] => 38
+            [Description] => Visitors are not receiving appointment confirmation emails. Checked spam folders and email logs show messages are being sent but not delivered.
+            [Priority] => medium
+            [Status] => open
+            [CreatedDate] => 2025-07-26 15:55:06
+            [CreatedByName] => Abena Banson
+            [AssignedToName] => 
+            [CategoryName] => Email/Notification
+        )
+
+    [13] => Array
+        (
+            [TicketID] => 44
+            [Description] => The top floor cannot be accessed at the moment
+            [Priority] => medium
+            [Status] => resolved
+            [CreatedDate] => 2025-08-01 15:19:18
+            [CreatedByName] => Lawrence Danso Abiam
+            [AssignedToName] => Annabel Mensah
+            [CategoryName] => Access
+        )
+
+    [14] => Array
+        (
+            [TicketID] => 37
+            [Description] => New front desk employee Jessica Brown started today but doesn't have access to the visitor management system. Need user account created with front desk permissions.
+            [Priority] => medium
+            [Status] => resolved
+            [CreatedDate] => 2025-07-26 15:53:36
+            [CreatedByName] => James Best
+            [AssignedToName] => Cyrus Kwame Blay
+            [CategoryName] => Access
+        )
+
+    [15] => Array
+        (
+            [TicketID] => 55
+            [Description] => Appointment emails are not being sent
+            [Priority] => medium
+            [Status] => closed
+            [CreatedDate] => 2025-08-22 21:29:26
+            [CreatedByName] => Abena Banson
+            [AssignedToName] => 
+            [CategoryName] => Email/Notification
+        )
+
+    [16] => Array
+        (
+            [TicketID] => 53
+            [Description] => In need of a password reset
+            [Priority] => medium
+            [Status] => closed
+            [CreatedDate] => 2025-08-19 13:46:02
+            [CreatedByName] => Raymond Adoe
+            [AssignedToName] => Cyrus Kwame Blay
+            [CategoryName] => Software
+        )
+
+    [17] => Array
+        (
+            [TicketID] => 40
+            [Description] => Washroom Leakage
+            [Priority] => medium
+            [Status] => closed
+            [CreatedDate] => 2025-07-28 18:28:55
+            [CreatedByName] => Abena Banson
+            [AssignedToName] => 
+            [CategoryName] => Facility Issues
+        )
+
+    [18] => Array
+        (
+            [TicketID] => 36
+            [Description] => The HP LaserJet printer in the front lobby keeps jamming when printing visitor badges. Also noticing streaks and faded text on printed materials.
+            [Priority] => medium
+            [Status] => closed
+            [CreatedDate] => 2025-07-26 15:52:41
+            [CreatedByName] => Abena Banson
+            [AssignedToName] => James Best
+            [CategoryName] => Hardware
+        )
+
+    [19] => Array
+        (
+            [TicketID] => 46
+            [Description] => A complaint of a missing black tote bag
+            [Priority] => low
+            [Status] => open
+            [CreatedDate] => 2025-08-17 17:55:00
+            [CreatedByName] => James Best
+            [AssignedToName] => 
+            [CategoryName] => Lost & Found
+        )
+
+    [20] => Array
+        (
+            [TicketID] => 39
+            [Description] => Appointment reminder emails have broken formatting - no line breaks and missing company logo. Text appears as one continuous paragraph.
+            [Priority] => low
+            [Status] => open
+            [CreatedDate] => 2025-07-26 15:56:05
+            [CreatedByName] => James Best
+            [AssignedToName] => 
+            [CategoryName] => Email/Notification
+        )
+
+    [21] => Array
+        (
+            [TicketID] => 54
+            [Description] => Doors at the reception are stuck
+            [Priority] => low
+            [Status] => in-progress
+            [CreatedDate] => 2025-08-19 14:55:06
+            [CreatedByName] => Abena Banson
+            [AssignedToName] => James Best
+            [CategoryName] => Facility Issues
+        )
+
+)
+
+[16-Sep-2025 01:44:56 Europe/Berlin] PHP Warning:  Trying to access array offset on value of type null in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\help_desk.php on line 122
+[16-Sep-2025 01:44:56 Europe/Berlin] PHP Stack trace:
+[16-Sep-2025 01:44:56 Europe/Berlin] PHP   1. {main}() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\help_desk.php:0
+[16-Sep-2025 01:44:56 Europe/Berlin] Failed to create notification: Cannot add or update a child row: a foreign key constraint fails (`frontdesk`.`notifications`, CONSTRAINT `fk_notifications_user_id` FOREIGN KEY (`user_id`) REFERENCES `users` (`UserID`) ON DELETE CASCADE)
+[16-Sep-2025 01:44:56 Europe/Berlin] Failed to create assignment notification: Cannot add or update a child row: a foreign key constraint fails (`frontdesk`.`notifications`, CONSTRAINT `fk_notifications_user_id` FOREIGN KEY (`user_id`) REFERENCES `users` (`UserID`) ON DELETE CASCADE)
+[16-Sep-2025 01:54:51 Europe/Berlin] Checking for ticket creation POST data: Array
+(
+)
+
+[16-Sep-2025 01:55:00 Europe/Berlin] Checking for ticket creation POST data: Array
+(
+)
+
+[16-Sep-2025 06:06:58 Europe/Berlin] Checking for ticket creation POST data: Array
+(
+)
+
+[17-Sep-2025 02:59:43 Europe/Berlin] Checking for ticket creation POST data: Array
+(
+)
+
+[17-Sep-2025 03:01:34 Europe/Berlin] Checking for ticket creation POST data: Array
+(
+)
+
+[17-Sep-2025 03:29:21 Europe/Berlin] Checking for ticket creation POST data: Array
+(
+)
+
+[17-Sep-2025 03:29:23 Europe/Berlin] Checking for ticket creation POST data: Array
+(
+)
+
+[17-Sep-2025 03:30:35 Europe/Berlin] Checking for ticket creation POST data: Array
+(
+    [action] => create_ticket
+    [assigned_to] => 1
+    [category_id] => 4
+    [priority] => critical
+    [description] => A host is not able to access his panel
+)
+
+[17-Sep-2025 03:30:35 Europe/Berlin] Session data: Array
+(
+    [userID] => 4
+    [name] => Raymond Adoe
+    [role] => Host
+)
+
+[17-Sep-2025 03:30:35 Europe/Berlin] Created by user ID: 4
+[17-Sep-2025 03:30:35 Europe/Berlin] PHP Warning:  Undefined array key "error" in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\host_tickets.php on line 24
+[17-Sep-2025 03:30:35 Europe/Berlin] PHP Stack trace:
+[17-Sep-2025 03:30:35 Europe/Berlin] PHP   1. {main}() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\host_tickets.php:0
+[17-Sep-2025 03:30:36 Europe/Berlin] Checking for ticket creation POST data: Array
+(
+)
+
+[17-Sep-2025 03:30:51 Europe/Berlin] Checking for ticket creation POST data: Array
+(
+)
+
+[17-Sep-2025 03:30:51 Europe/Berlin] Retrieved tickets: Array
+(
+    [0] => Array
+        (
+            [TicketID] => 60
+            [Description] => A host is not able to access his panel
+            [Priority] => critical
+            [Status] => in-progress
+            [CreatedDate] => 2025-09-17 01:30:35
+            [CreatedByName] => Raymond Adoe
+            [AssignedToName] => Cyrus Kwame Blay
+            [CategoryName] => Access
+        )
+
+    [1] => Array
+        (
+            [TicketID] => 41
+            [Description] => WiFi  Access has been down 
+            [Priority] => critical
+            [Status] => in-progress
+            [CreatedDate] => 2025-07-30 05:57:12
+            [CreatedByName] => James Best
+            [AssignedToName] => Annabel Mensah
+            [CategoryName] => Network
+        )
+
+    [2] => Array
+        (
+            [TicketID] => 43
+            [Description] => The bulbs in the washroom are faulty
+            [Priority] => high
+            [Status] => open
+            [CreatedDate] => 2025-08-01 15:08:11
+            [CreatedByName] => Abena Banson
+            [AssignedToName] => 
+            [CategoryName] => Facility Issues
+        )
+
+    [3] => Array
+        (
+            [TicketID] => 42
+            [Description] => Staff member cannot access the top floor
+            [Priority] => high
+            [Status] => open
+            [CreatedDate] => 2025-08-01 09:11:12
+            [CreatedByName] => James Best
+            [AssignedToName] => 
+            [CategoryName] => Access
+        )
+
+    [4] => Array
+        (
+            [TicketID] => 59
+            [Description] => The top is inaccessible to staff members
+            [Priority] => high
+            [Status] => in-progress
+            [CreatedDate] => 2025-09-16 20:49:52
+            [CreatedByName] => Abena Banson
+            [AssignedToName] => Annabel Mensah
+            [CategoryName] => Access
+        )
+
+    [5] => Array
+        (
+            [TicketID] => 58
+            [Description] => The software is not working as it should
+            [Priority] => high
+            [Status] => in-progress
+            [CreatedDate] => 2025-09-13 12:55:22
+            [CreatedByName] => Adwoa Millicent
+            [AssignedToName] => James Best
+            [CategoryName] => Software
+        )
+
+    [6] => Array
+        (
+            [TicketID] => 57
+            [Description] => The front doors are not working
+            [Priority] => high
+            [Status] => in-progress
+            [CreatedDate] => 2025-09-10 10:09:47
+            [CreatedByName] => James Best
+            [AssignedToName] => Annabel Mensah
+            [CategoryName] => Facility Issues
+        )
+
+    [7] => Array
+        (
+            [TicketID] => 50
+            [Description] => the PCs at the front desk are faulty
+            [Priority] => high
+            [Status] => in-progress
+            [CreatedDate] => 2025-08-17 18:34:00
+            [CreatedByName] => James Best
+            [AssignedToName] => Annabel Mensah
+            [CategoryName] => Hardware
+        )
+
+    [8] => Array
+        (
+            [TicketID] => 52
+            [Description] => Connectivity issues on the ground floor
+            [Priority] => high
+            [Status] => resolved
+            [CreatedDate] => 2025-08-19 12:36:14
+            [CreatedByName] => Annabel Mensah
+            [AssignedToName] => Annabel Mensah
+            [CategoryName] => Network
+        )
+
+    [9] => Array
+        (
+            [TicketID] => 45
+            [Description] => Emails are not being sent on time
+            [Priority] => high
+            [Status] => resolved
+            [CreatedDate] => 2025-08-08 16:47:52
+            [CreatedByName] => James Best
+            [AssignedToName] => Raymond Adoe
+            [CategoryName] => Email/Notification
+        )
+
+    [10] => Array
+        (
+            [TicketID] => 56
+            [Description] => Many visitors are in a view waiting for you
+            [Priority] => high
+            [Status] => closed
+            [CreatedDate] => 2025-09-09 21:45:28
+            [CreatedByName] => Annabel Mensah
+            [AssignedToName] => Lawrence Danso Abiam
+            [CategoryName] => Appointments
+        )
+
+    [11] => Array
+        (
+            [TicketID] => 35
+            [Description] => System allowed booking of two appointments for the same host at 2:00 PM today. Both visitors showed up and caused confusion. Need to fix scheduling conflict detection.
+            [Priority] => high
+            [Status] => closed
+            [CreatedDate] => 2025-07-26 15:50:35
+            [CreatedByName] => Annabel Mensah
+            [AssignedToName] => Lawrence Danso Abiam
+            [CategoryName] => Appointments
+        )
+
+    [12] => Array
+        (
+            [TicketID] => 51
+            [Description] => Operating system need an update
+            [Priority] => medium
+            [Status] => open
+            [CreatedDate] => 2025-08-17 19:00:07
+            [CreatedByName] => James Best
+            [AssignedToName] => 
+            [CategoryName] => Software
+        )
+
+    [13] => Array
+        (
+            [TicketID] => 49
+            [Description] => Elevator have been made inaccessible
+            [Priority] => medium
+            [Status] => open
+            [CreatedDate] => 2025-08-17 18:01:23
+            [CreatedByName] => James Best
+            [AssignedToName] => 
+            [CategoryName] => Access
+        )
+
+    [14] => Array
+        (
+            [TicketID] => 38
+            [Description] => Visitors are not receiving appointment confirmation emails. Checked spam folders and email logs show messages are being sent but not delivered.
+            [Priority] => medium
+            [Status] => open
+            [CreatedDate] => 2025-07-26 15:55:06
+            [CreatedByName] => Abena Banson
+            [AssignedToName] => 
+            [CategoryName] => Email/Notification
+        )
+
+    [15] => Array
+        (
+            [TicketID] => 44
+            [Description] => The top floor cannot be accessed at the moment
+            [Priority] => medium
+            [Status] => resolved
+            [CreatedDate] => 2025-08-01 15:19:18
+            [CreatedByName] => Lawrence Danso Abiam
+            [AssignedToName] => Annabel Mensah
+            [CategoryName] => Access
+        )
+
+    [16] => Array
+        (
+            [TicketID] => 37
+            [Description] => New front desk employee Jessica Brown started today but doesn't have access to the visitor management system. Need user account created with front desk permissions.
+            [Priority] => medium
+            [Status] => resolved
+            [CreatedDate] => 2025-07-26 15:53:36
+            [CreatedByName] => James Best
+            [AssignedToName] => Cyrus Kwame Blay
+            [CategoryName] => Access
+        )
+
+    [17] => Array
+        (
+            [TicketID] => 55
+            [Description] => Appointment emails are not being sent
+            [Priority] => medium
+            [Status] => closed
+            [CreatedDate] => 2025-08-22 21:29:26
+            [CreatedByName] => Abena Banson
+            [AssignedToName] => 
+            [CategoryName] => Email/Notification
+        )
+
+    [18] => Array
+        (
+            [TicketID] => 53
+            [Description] => In need of a password reset
+            [Priority] => medium
+            [Status] => closed
+            [CreatedDate] => 2025-08-19 13:46:02
+            [CreatedByName] => Raymond Adoe
+            [AssignedToName] => Cyrus Kwame Blay
+            [CategoryName] => Software
+        )
+
+    [19] => Array
+        (
+            [TicketID] => 40
+            [Description] => Washroom Leakage
+            [Priority] => medium
+            [Status] => closed
+            [CreatedDate] => 2025-07-28 18:28:55
+            [CreatedByName] => Abena Banson
+            [AssignedToName] => 
+            [CategoryName] => Facility Issues
+        )
+
+    [20] => Array
+        (
+            [TicketID] => 36
+            [Description] => The HP LaserJet printer in the front lobby keeps jamming when printing visitor badges. Also noticing streaks and faded text on printed materials.
+            [Priority] => medium
+            [Status] => closed
+            [CreatedDate] => 2025-07-26 15:52:41
+            [CreatedByName] => Abena Banson
+            [AssignedToName] => James Best
+            [CategoryName] => Hardware
+        )
+
+    [21] => Array
+        (
+            [TicketID] => 46
+            [Description] => A complaint of a missing black tote bag
+            [Priority] => low
+            [Status] => open
+            [CreatedDate] => 2025-08-17 17:55:00
+            [CreatedByName] => James Best
+            [AssignedToName] => 
+            [CategoryName] => Lost & Found
+        )
+
+    [22] => Array
+        (
+            [TicketID] => 39
+            [Description] => Appointment reminder emails have broken formatting - no line breaks and missing company logo. Text appears as one continuous paragraph.
+            [Priority] => low
+            [Status] => open
+            [CreatedDate] => 2025-07-26 15:56:05
+            [CreatedByName] => James Best
+            [AssignedToName] => 
+            [CategoryName] => Email/Notification
+        )
+
+    [23] => Array
+        (
+            [TicketID] => 54
+            [Description] => Doors at the reception are stuck
+            [Priority] => low
+            [Status] => in-progress
+            [CreatedDate] => 2025-08-19 14:55:06
+            [CreatedByName] => Abena Banson
+            [AssignedToName] => James Best
+            [CategoryName] => Facility Issues
+        )
+
+)
+
+[17-Sep-2025 03:30:51 Europe/Berlin] PHP Warning:  Trying to access array offset on value of type null in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\help_desk.php on line 122
+[17-Sep-2025 03:30:51 Europe/Berlin] PHP Stack trace:
+[17-Sep-2025 03:30:51 Europe/Berlin] PHP   1. {main}() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\help_desk.php:0
+[17-Sep-2025 03:30:51 Europe/Berlin] Failed to create notification: Cannot add or update a child row: a foreign key constraint fails (`frontdesk`.`notifications`, CONSTRAINT `fk_notifications_user_id` FOREIGN KEY (`user_id`) REFERENCES `users` (`UserID`) ON DELETE CASCADE)
+[17-Sep-2025 03:30:51 Europe/Berlin] Failed to create assignment notification: Cannot add or update a child row: a foreign key constraint fails (`frontdesk`.`notifications`, CONSTRAINT `fk_notifications_user_id` FOREIGN KEY (`user_id`) REFERENCES `users` (`UserID`) ON DELETE CASCADE)
+[17-Sep-2025 03:45:11 Europe/Berlin] Checking for ticket creation POST data: Array
+(
+)
+
+[17-Sep-2025 03:45:52 Europe/Berlin] Checking for ticket creation POST data: Array
+(
+    [action] => create_ticket
+    [created_by] => 2
+    [assigned_to] => 3
+    [category_id] => 5
+    [priority] => medium
+    [description] => There a quite a number of visitors checked in who are here to see you
+)
+
+[17-Sep-2025 03:45:52 Europe/Berlin] Session data: Array
+(
+    [userID] => 2
+    [name] => Abena Banson
+    [role] => Front Desk Staff
+)
+
+[17-Sep-2025 03:45:52 Europe/Berlin] Created by user ID: 2
+[17-Sep-2025 03:45:52 Europe/Berlin] PHP Warning:  Undefined array key "error" in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_tickets.php on line 25
+[17-Sep-2025 03:45:52 Europe/Berlin] PHP Stack trace:
+[17-Sep-2025 03:45:52 Europe/Berlin] PHP   1. {main}() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_tickets.php:0
+[17-Sep-2025 03:45:52 Europe/Berlin] Ticket creation success: Ticket #61 created successfully!
+[17-Sep-2025 03:45:53 Europe/Berlin] Checking for ticket creation POST data: Array
+(
+)
+
+[17-Sep-2025 04:05:59 Europe/Berlin] Checking for ticket creation POST data: Array
+(
+)
+
+[17-Sep-2025 04:05:59 Europe/Berlin] Retrieved tickets: Array
+(
+    [0] => Array
+        (
+            [TicketID] => 60
+            [Description] => A host is not able to access his panel
+            [Priority] => critical
+            [Status] => in-progress
+            [CreatedDate] => 2025-09-17 01:30:35
+            [CreatedByName] => Raymond Adoe
+            [AssignedToName] => Cyrus Kwame Blay
+            [CategoryName] => Access
+        )
+
+    [1] => Array
+        (
+            [TicketID] => 41
+            [Description] => WiFi  Access has been down 
+            [Priority] => critical
+            [Status] => in-progress
+            [CreatedDate] => 2025-07-30 05:57:12
+            [CreatedByName] => James Best
+            [AssignedToName] => Annabel Mensah
+            [CategoryName] => Network
+        )
+
+    [2] => Array
+        (
+            [TicketID] => 43
+            [Description] => The bulbs in the washroom are faulty
+            [Priority] => high
+            [Status] => open
+            [CreatedDate] => 2025-08-01 15:08:11
+            [CreatedByName] => Abena Banson
+            [AssignedToName] => 
+            [CategoryName] => Facility Issues
+        )
+
+    [3] => Array
+        (
+            [TicketID] => 42
+            [Description] => Staff member cannot access the top floor
+            [Priority] => high
+            [Status] => open
+            [CreatedDate] => 2025-08-01 09:11:12
+            [CreatedByName] => James Best
+            [AssignedToName] => 
+            [CategoryName] => Access
+        )
+
+    [4] => Array
+        (
+            [TicketID] => 59
+            [Description] => The top is inaccessible to staff members
+            [Priority] => high
+            [Status] => in-progress
+            [CreatedDate] => 2025-09-16 20:49:52
+            [CreatedByName] => Abena Banson
+            [AssignedToName] => Annabel Mensah
+            [CategoryName] => Access
+        )
+
+    [5] => Array
+        (
+            [TicketID] => 58
+            [Description] => The software is not working as it should
+            [Priority] => high
+            [Status] => in-progress
+            [CreatedDate] => 2025-09-13 12:55:22
+            [CreatedByName] => Adwoa Millicent
+            [AssignedToName] => James Best
+            [CategoryName] => Software
+        )
+
+    [6] => Array
+        (
+            [TicketID] => 57
+            [Description] => The front doors are not working
+            [Priority] => high
+            [Status] => in-progress
+            [CreatedDate] => 2025-09-10 10:09:47
+            [CreatedByName] => James Best
+            [AssignedToName] => Annabel Mensah
+            [CategoryName] => Facility Issues
+        )
+
+    [7] => Array
+        (
+            [TicketID] => 50
+            [Description] => the PCs at the front desk are faulty
+            [Priority] => high
+            [Status] => in-progress
+            [CreatedDate] => 2025-08-17 18:34:00
+            [CreatedByName] => James Best
+            [AssignedToName] => Annabel Mensah
+            [CategoryName] => Hardware
+        )
+
+    [8] => Array
+        (
+            [TicketID] => 52
+            [Description] => Connectivity issues on the ground floor
+            [Priority] => high
+            [Status] => resolved
+            [CreatedDate] => 2025-08-19 12:36:14
+            [CreatedByName] => Annabel Mensah
+            [AssignedToName] => Annabel Mensah
+            [CategoryName] => Network
+        )
+
+    [9] => Array
+        (
+            [TicketID] => 45
+            [Description] => Emails are not being sent on time
+            [Priority] => high
+            [Status] => resolved
+            [CreatedDate] => 2025-08-08 16:47:52
+            [CreatedByName] => James Best
+            [AssignedToName] => Raymond Adoe
+            [CategoryName] => Email/Notification
+        )
+
+    [10] => Array
+        (
+            [TicketID] => 56
+            [Description] => Many visitors are in a view waiting for you
+            [Priority] => high
+            [Status] => closed
+            [CreatedDate] => 2025-09-09 21:45:28
+            [CreatedByName] => Annabel Mensah
+            [AssignedToName] => Lawrence Danso Abiam
+            [CategoryName] => Appointments
+        )
+
+    [11] => Array
+        (
+            [TicketID] => 35
+            [Description] => System allowed booking of two appointments for the same host at 2:00 PM today. Both visitors showed up and caused confusion. Need to fix scheduling conflict detection.
+            [Priority] => high
+            [Status] => closed
+            [CreatedDate] => 2025-07-26 15:50:35
+            [CreatedByName] => Annabel Mensah
+            [AssignedToName] => Lawrence Danso Abiam
+            [CategoryName] => Appointments
+        )
+
+    [12] => Array
+        (
+            [TicketID] => 51
+            [Description] => Operating system need an update
+            [Priority] => medium
+            [Status] => open
+            [CreatedDate] => 2025-08-17 19:00:07
+            [CreatedByName] => James Best
+            [AssignedToName] => 
+            [CategoryName] => Software
+        )
+
+    [13] => Array
+        (
+            [TicketID] => 49
+            [Description] => Elevator have been made inaccessible
+            [Priority] => medium
+            [Status] => open
+            [CreatedDate] => 2025-08-17 18:01:23
+            [CreatedByName] => James Best
+            [AssignedToName] => 
+            [CategoryName] => Access
+        )
+
+    [14] => Array
+        (
+            [TicketID] => 38
+            [Description] => Visitors are not receiving appointment confirmation emails. Checked spam folders and email logs show messages are being sent but not delivered.
+            [Priority] => medium
+            [Status] => open
+            [CreatedDate] => 2025-07-26 15:55:06
+            [CreatedByName] => Abena Banson
+            [AssignedToName] => 
+            [CategoryName] => Email/Notification
+        )
+
+    [15] => Array
+        (
+            [TicketID] => 61
+            [Description] => There a quite a number of visitors checked in who are here to see you
+            [Priority] => medium
+            [Status] => in-progress
+            [CreatedDate] => 2025-09-17 01:45:52
+            [CreatedByName] => Abena Banson
+            [AssignedToName] => Lawrence Danso Abiam
+            [CategoryName] => Appointments
+        )
+
+    [16] => Array
+        (
+            [TicketID] => 44
+            [Description] => The top floor cannot be accessed at the moment
+            [Priority] => medium
+            [Status] => resolved
+            [CreatedDate] => 2025-08-01 15:19:18
+            [CreatedByName] => Lawrence Danso Abiam
+            [AssignedToName] => Annabel Mensah
+            [CategoryName] => Access
+        )
+
+    [17] => Array
+        (
+            [TicketID] => 37
+            [Description] => New front desk employee Jessica Brown started today but doesn't have access to the visitor management system. Need user account created with front desk permissions.
+            [Priority] => medium
+            [Status] => resolved
+            [CreatedDate] => 2025-07-26 15:53:36
+            [CreatedByName] => James Best
+            [AssignedToName] => Cyrus Kwame Blay
+            [CategoryName] => Access
+        )
+
+    [18] => Array
+        (
+            [TicketID] => 55
+            [Description] => Appointment emails are not being sent
+            [Priority] => medium
+            [Status] => closed
+            [CreatedDate] => 2025-08-22 21:29:26
+            [CreatedByName] => Abena Banson
+            [AssignedToName] => 
+            [CategoryName] => Email/Notification
+        )
+
+    [19] => Array
+        (
+            [TicketID] => 53
+            [Description] => In need of a password reset
+            [Priority] => medium
+            [Status] => closed
+            [CreatedDate] => 2025-08-19 13:46:02
+            [CreatedByName] => Raymond Adoe
+            [AssignedToName] => Cyrus Kwame Blay
+            [CategoryName] => Software
+        )
+
+    [20] => Array
+        (
+            [TicketID] => 40
+            [Description] => Washroom Leakage
+            [Priority] => medium
+            [Status] => closed
+            [CreatedDate] => 2025-07-28 18:28:55
+            [CreatedByName] => Abena Banson
+            [AssignedToName] => 
+            [CategoryName] => Facility Issues
+        )
+
+    [21] => Array
+        (
+            [TicketID] => 36
+            [Description] => The HP LaserJet printer in the front lobby keeps jamming when printing visitor badges. Also noticing streaks and faded text on printed materials.
+            [Priority] => medium
+            [Status] => closed
+            [CreatedDate] => 2025-07-26 15:52:41
+            [CreatedByName] => Abena Banson
+            [AssignedToName] => James Best
+            [CategoryName] => Hardware
+        )
+
+    [22] => Array
+        (
+            [TicketID] => 46
+            [Description] => A complaint of a missing black tote bag
+            [Priority] => low
+            [Status] => open
+            [CreatedDate] => 2025-08-17 17:55:00
+            [CreatedByName] => James Best
+            [AssignedToName] => 
+            [CategoryName] => Lost & Found
+        )
+
+    [23] => Array
+        (
+            [TicketID] => 39
+            [Description] => Appointment reminder emails have broken formatting - no line breaks and missing company logo. Text appears as one continuous paragraph.
+            [Priority] => low
+            [Status] => open
+            [CreatedDate] => 2025-07-26 15:56:05
+            [CreatedByName] => James Best
+            [AssignedToName] => 
+            [CategoryName] => Email/Notification
+        )
+
+    [24] => Array
+        (
+            [TicketID] => 54
+            [Description] => Doors at the reception are stuck
+            [Priority] => low
+            [Status] => in-progress
+            [CreatedDate] => 2025-08-19 14:55:06
+            [CreatedByName] => Abena Banson
+            [AssignedToName] => James Best
+            [CategoryName] => Facility Issues
+        )
+
+)
+
+[17-Sep-2025 04:05:59 Europe/Berlin] PHP Warning:  Trying to access array offset on value of type null in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\help_desk.php on line 122
+[17-Sep-2025 04:05:59 Europe/Berlin] PHP Stack trace:
+[17-Sep-2025 04:05:59 Europe/Berlin] PHP   1. {main}() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\help_desk.php:0
+[17-Sep-2025 04:05:59 Europe/Berlin] Failed to create notification: Cannot add or update a child row: a foreign key constraint fails (`frontdesk`.`notifications`, CONSTRAINT `fk_notifications_user_id` FOREIGN KEY (`user_id`) REFERENCES `users` (`UserID`) ON DELETE CASCADE)
+[17-Sep-2025 04:05:59 Europe/Berlin] Failed to create assignment notification: Cannot add or update a child row: a foreign key constraint fails (`frontdesk`.`notifications`, CONSTRAINT `fk_notifications_user_id` FOREIGN KEY (`user_id`) REFERENCES `users` (`UserID`) ON DELETE CASCADE)
+[17-Sep-2025 04:07:46 Europe/Berlin] Checking for ticket creation POST data: Array
+(
+    [action] => create_ticket
+    [assigned_to] => 4
+    [category_id] => 5
+    [priority] => medium
+    [description] => Appointments are not being processed as fast as they should be
+)
+
+[17-Sep-2025 04:07:46 Europe/Berlin] Session data: Array
+(
+    [userID] => 6
+    [name] => Annabel Mensah
+    [role] => Support Staff
+)
+
+[17-Sep-2025 04:07:46 Europe/Berlin] Created by user ID: 6
+[17-Sep-2025 04:07:46 Europe/Berlin] PHP Warning:  Undefined array key "error" in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\help_desk.php on line 24
+[17-Sep-2025 04:07:46 Europe/Berlin] PHP Stack trace:
+[17-Sep-2025 04:07:46 Europe/Berlin] PHP   1. {main}() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\help_desk.php:0
+[17-Sep-2025 04:07:47 Europe/Berlin] Checking for ticket creation POST data: Array
+(
+)
+
+[17-Sep-2025 04:07:47 Europe/Berlin] Retrieved tickets: Array
+(
+    [0] => Array
+        (
+            [TicketID] => 60
+            [Description] => A host is not able to access his panel
+            [Priority] => critical
+            [Status] => in-progress
+            [CreatedDate] => 2025-09-17 01:30:35
+            [CreatedByName] => Raymond Adoe
+            [AssignedToName] => Cyrus Kwame Blay
+            [CategoryName] => Access
+        )
+
+    [1] => Array
+        (
+            [TicketID] => 41
+            [Description] => WiFi  Access has been down 
+            [Priority] => critical
+            [Status] => in-progress
+            [CreatedDate] => 2025-07-30 05:57:12
+            [CreatedByName] => James Best
+            [AssignedToName] => Annabel Mensah
+            [CategoryName] => Network
+        )
+
+    [2] => Array
+        (
+            [TicketID] => 43
+            [Description] => The bulbs in the washroom are faulty
+            [Priority] => high
+            [Status] => open
+            [CreatedDate] => 2025-08-01 15:08:11
+            [CreatedByName] => Abena Banson
+            [AssignedToName] => 
+            [CategoryName] => Facility Issues
+        )
+
+    [3] => Array
+        (
+            [TicketID] => 42
+            [Description] => Staff member cannot access the top floor
+            [Priority] => high
+            [Status] => open
+            [CreatedDate] => 2025-08-01 09:11:12
+            [CreatedByName] => James Best
+            [AssignedToName] => 
+            [CategoryName] => Access
+        )
+
+    [4] => Array
+        (
+            [TicketID] => 59
+            [Description] => The top is inaccessible to staff members
+            [Priority] => high
+            [Status] => in-progress
+            [CreatedDate] => 2025-09-16 20:49:52
+            [CreatedByName] => Abena Banson
+            [AssignedToName] => Annabel Mensah
+            [CategoryName] => Access
+        )
+
+    [5] => Array
+        (
+            [TicketID] => 58
+            [Description] => The software is not working as it should
+            [Priority] => high
+            [Status] => in-progress
+            [CreatedDate] => 2025-09-13 12:55:22
+            [CreatedByName] => Adwoa Millicent
+            [AssignedToName] => James Best
+            [CategoryName] => Software
+        )
+
+    [6] => Array
+        (
+            [TicketID] => 57
+            [Description] => The front doors are not working
+            [Priority] => high
+            [Status] => in-progress
+            [CreatedDate] => 2025-09-10 10:09:47
+            [CreatedByName] => James Best
+            [AssignedToName] => Annabel Mensah
+            [CategoryName] => Facility Issues
+        )
+
+    [7] => Array
+        (
+            [TicketID] => 50
+            [Description] => the PCs at the front desk are faulty
+            [Priority] => high
+            [Status] => in-progress
+            [CreatedDate] => 2025-08-17 18:34:00
+            [CreatedByName] => James Best
+            [AssignedToName] => Annabel Mensah
+            [CategoryName] => Hardware
+        )
+
+    [8] => Array
+        (
+            [TicketID] => 52
+            [Description] => Connectivity issues on the ground floor
+            [Priority] => high
+            [Status] => resolved
+            [CreatedDate] => 2025-08-19 12:36:14
+            [CreatedByName] => Annabel Mensah
+            [AssignedToName] => Annabel Mensah
+            [CategoryName] => Network
+        )
+
+    [9] => Array
+        (
+            [TicketID] => 45
+            [Description] => Emails are not being sent on time
+            [Priority] => high
+            [Status] => resolved
+            [CreatedDate] => 2025-08-08 16:47:52
+            [CreatedByName] => James Best
+            [AssignedToName] => Raymond Adoe
+            [CategoryName] => Email/Notification
+        )
+
+    [10] => Array
+        (
+            [TicketID] => 56
+            [Description] => Many visitors are in a view waiting for you
+            [Priority] => high
+            [Status] => closed
+            [CreatedDate] => 2025-09-09 21:45:28
+            [CreatedByName] => Annabel Mensah
+            [AssignedToName] => Lawrence Danso Abiam
+            [CategoryName] => Appointments
+        )
+
+    [11] => Array
+        (
+            [TicketID] => 35
+            [Description] => System allowed booking of two appointments for the same host at 2:00 PM today. Both visitors showed up and caused confusion. Need to fix scheduling conflict detection.
+            [Priority] => high
+            [Status] => closed
+            [CreatedDate] => 2025-07-26 15:50:35
+            [CreatedByName] => Annabel Mensah
+            [AssignedToName] => Lawrence Danso Abiam
+            [CategoryName] => Appointments
+        )
+
+    [12] => Array
+        (
+            [TicketID] => 51
+            [Description] => Operating system need an update
+            [Priority] => medium
+            [Status] => open
+            [CreatedDate] => 2025-08-17 19:00:07
+            [CreatedByName] => James Best
+            [AssignedToName] => 
+            [CategoryName] => Software
+        )
+
+    [13] => Array
+        (
+            [TicketID] => 49
+            [Description] => Elevator have been made inaccessible
+            [Priority] => medium
+            [Status] => open
+            [CreatedDate] => 2025-08-17 18:01:23
+            [CreatedByName] => James Best
+            [AssignedToName] => 
+            [CategoryName] => Access
+        )
+
+    [14] => Array
+        (
+            [TicketID] => 38
+            [Description] => Visitors are not receiving appointment confirmation emails. Checked spam folders and email logs show messages are being sent but not delivered.
+            [Priority] => medium
+            [Status] => open
+            [CreatedDate] => 2025-07-26 15:55:06
+            [CreatedByName] => Abena Banson
+            [AssignedToName] => 
+            [CategoryName] => Email/Notification
+        )
+
+    [15] => Array
+        (
+            [TicketID] => 62
+            [Description] => Appointments are not being processed as fast as they should be
+            [Priority] => medium
+            [Status] => in-progress
+            [CreatedDate] => 2025-09-17 02:07:46
+            [CreatedByName] => Annabel Mensah
+            [AssignedToName] => Raymond Adoe
+            [CategoryName] => Appointments
+        )
+
+    [16] => Array
+        (
+            [TicketID] => 61
+            [Description] => There a quite a number of visitors checked in who are here to see you
+            [Priority] => medium
+            [Status] => in-progress
+            [CreatedDate] => 2025-09-17 01:45:52
+            [CreatedByName] => Abena Banson
+            [AssignedToName] => Lawrence Danso Abiam
+            [CategoryName] => Appointments
+        )
+
+    [17] => Array
+        (
+            [TicketID] => 44
+            [Description] => The top floor cannot be accessed at the moment
+            [Priority] => medium
+            [Status] => resolved
+            [CreatedDate] => 2025-08-01 15:19:18
+            [CreatedByName] => Lawrence Danso Abiam
+            [AssignedToName] => Annabel Mensah
+            [CategoryName] => Access
+        )
+
+    [18] => Array
+        (
+            [TicketID] => 37
+            [Description] => New front desk employee Jessica Brown started today but doesn't have access to the visitor management system. Need user account created with front desk permissions.
+            [Priority] => medium
+            [Status] => resolved
+            [CreatedDate] => 2025-07-26 15:53:36
+            [CreatedByName] => James Best
+            [AssignedToName] => Cyrus Kwame Blay
+            [CategoryName] => Access
+        )
+
+    [19] => Array
+        (
+            [TicketID] => 55
+            [Description] => Appointment emails are not being sent
+            [Priority] => medium
+            [Status] => closed
+            [CreatedDate] => 2025-08-22 21:29:26
+            [CreatedByName] => Abena Banson
+            [AssignedToName] => 
+            [CategoryName] => Email/Notification
+        )
+
+    [20] => Array
+        (
+            [TicketID] => 53
+            [Description] => In need of a password reset
+            [Priority] => medium
+            [Status] => closed
+            [CreatedDate] => 2025-08-19 13:46:02
+            [CreatedByName] => Raymond Adoe
+            [AssignedToName] => Cyrus Kwame Blay
+            [CategoryName] => Software
+        )
+
+    [21] => Array
+        (
+            [TicketID] => 40
+            [Description] => Washroom Leakage
+            [Priority] => medium
+            [Status] => closed
+            [CreatedDate] => 2025-07-28 18:28:55
+            [CreatedByName] => Abena Banson
+            [AssignedToName] => 
+            [CategoryName] => Facility Issues
+        )
+
+    [22] => Array
+        (
+            [TicketID] => 36
+            [Description] => The HP LaserJet printer in the front lobby keeps jamming when printing visitor badges. Also noticing streaks and faded text on printed materials.
+            [Priority] => medium
+            [Status] => closed
+            [CreatedDate] => 2025-07-26 15:52:41
+            [CreatedByName] => Abena Banson
+            [AssignedToName] => James Best
+            [CategoryName] => Hardware
+        )
+
+    [23] => Array
+        (
+            [TicketID] => 46
+            [Description] => A complaint of a missing black tote bag
+            [Priority] => low
+            [Status] => open
+            [CreatedDate] => 2025-08-17 17:55:00
+            [CreatedByName] => James Best
+            [AssignedToName] => 
+            [CategoryName] => Lost & Found
+        )
+
+    [24] => Array
+        (
+            [TicketID] => 39
+            [Description] => Appointment reminder emails have broken formatting - no line breaks and missing company logo. Text appears as one continuous paragraph.
+            [Priority] => low
+            [Status] => open
+            [CreatedDate] => 2025-07-26 15:56:05
+            [CreatedByName] => James Best
+            [AssignedToName] => 
+            [CategoryName] => Email/Notification
+        )
+
+    [25] => Array
+        (
+            [TicketID] => 54
+            [Description] => Doors at the reception are stuck
+            [Priority] => low
+            [Status] => in-progress
+            [CreatedDate] => 2025-08-19 14:55:06
+            [CreatedByName] => Abena Banson
+            [AssignedToName] => James Best
+            [CategoryName] => Facility Issues
+        )
+
+)
+
+[17-Sep-2025 04:07:47 Europe/Berlin] PHP Warning:  Trying to access array offset on value of type null in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\help_desk.php on line 122
+[17-Sep-2025 04:07:47 Europe/Berlin] PHP Stack trace:
+[17-Sep-2025 04:07:47 Europe/Berlin] PHP   1. {main}() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\help_desk.php:0
+[17-Sep-2025 04:07:47 Europe/Berlin] Failed to create notification: Cannot add or update a child row: a foreign key constraint fails (`frontdesk`.`notifications`, CONSTRAINT `fk_notifications_user_id` FOREIGN KEY (`user_id`) REFERENCES `users` (`UserID`) ON DELETE CASCADE)
+[17-Sep-2025 04:07:47 Europe/Berlin] Failed to create assignment notification: Cannot add or update a child row: a foreign key constraint fails (`frontdesk`.`notifications`, CONSTRAINT `fk_notifications_user_id` FOREIGN KEY (`user_id`) REFERENCES `users` (`UserID`) ON DELETE CASCADE)
+[17-Sep-2025 04:32:12 Europe/Berlin] Checking for ticket creation POST data: Array
+(
+)
+
+[17-Sep-2025 04:32:37 Europe/Berlin] Session data in ticket_ajax.php: {"user_id":"not set","userID":2,"role":"Front Desk Staff"}
+[17-Sep-2025 04:32:41 Europe/Berlin] Session data in ticket_ajax.php: {"user_id":"not set","userID":2,"role":"Front Desk Staff"}
+[17-Sep-2025 04:32:42 Europe/Berlin] Checking for ticket creation POST data: Array
+(
+)
+
+[17-Sep-2025 04:33:08 Europe/Berlin] Checking for ticket creation POST data: Array
+(
+)
+
+[17-Sep-2025 04:33:54 Europe/Berlin] Checking for ticket creation POST data: Array
+(
+    [action] => create_ticket
+    [created_by] => 2
+    [assigned_to] => 4
+    [category_id] => 5
+    [priority] => medium
+    [description] => Appointments have been delayed till further notice
+)
+
+[17-Sep-2025 04:33:54 Europe/Berlin] Session data: Array
+(
+    [userID] => 2
+    [name] => Abena Banson
+    [role] => Front Desk Staff
+)
+
+[17-Sep-2025 04:33:54 Europe/Berlin] Created by user ID: 2
+[17-Sep-2025 04:33:54 Europe/Berlin] PHP Warning:  Undefined array key "error" in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_tickets.php on line 25
+[17-Sep-2025 04:33:54 Europe/Berlin] PHP Stack trace:
+[17-Sep-2025 04:33:54 Europe/Berlin] PHP   1. {main}() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\FD_tickets.php:0
+[17-Sep-2025 04:33:54 Europe/Berlin] Ticket creation success: Ticket #63 created successfully!
+[17-Sep-2025 04:33:56 Europe/Berlin] Checking for ticket creation POST data: Array
+(
+)
+
+[17-Sep-2025 04:48:37 Europe/Berlin] Checking for ticket creation POST data: Array
+(
+)
+
+[17-Sep-2025 04:48:37 Europe/Berlin] Retrieved tickets: Array
+(
+    [0] => Array
+        (
+            [TicketID] => 60
+            [Description] => A host is not able to access his panel
+            [Priority] => critical
+            [Status] => in-progress
+            [CreatedDate] => 2025-09-17 01:30:35
+            [CreatedByName] => Raymond Adoe
+            [AssignedToName] => Cyrus Kwame Blay
+            [CategoryName] => Access
+        )
+
+    [1] => Array
+        (
+            [TicketID] => 41
+            [Description] => WiFi  Access has been down 
+            [Priority] => critical
+            [Status] => in-progress
+            [CreatedDate] => 2025-07-30 05:57:12
+            [CreatedByName] => James Best
+            [AssignedToName] => Annabel Mensah
+            [CategoryName] => Network
+        )
+
+    [2] => Array
+        (
+            [TicketID] => 43
+            [Description] => The bulbs in the washroom are faulty
+            [Priority] => high
+            [Status] => open
+            [CreatedDate] => 2025-08-01 15:08:11
+            [CreatedByName] => Abena Banson
+            [AssignedToName] => 
+            [CategoryName] => Facility Issues
+        )
+
+    [3] => Array
+        (
+            [TicketID] => 42
+            [Description] => Staff member cannot access the top floor
+            [Priority] => high
+            [Status] => open
+            [CreatedDate] => 2025-08-01 09:11:12
+            [CreatedByName] => James Best
+            [AssignedToName] => 
+            [CategoryName] => Access
+        )
+
+    [4] => Array
+        (
+            [TicketID] => 59
+            [Description] => The top is inaccessible to staff members
+            [Priority] => high
+            [Status] => in-progress
+            [CreatedDate] => 2025-09-16 20:49:52
+            [CreatedByName] => Abena Banson
+            [AssignedToName] => Annabel Mensah
+            [CategoryName] => Access
+        )
+
+    [5] => Array
+        (
+            [TicketID] => 58
+            [Description] => The software is not working as it should
+            [Priority] => high
+            [Status] => in-progress
+            [CreatedDate] => 2025-09-13 12:55:22
+            [CreatedByName] => Adwoa Millicent
+            [AssignedToName] => James Best
+            [CategoryName] => Software
+        )
+
+    [6] => Array
+        (
+            [TicketID] => 57
+            [Description] => The front doors are not working
+            [Priority] => high
+            [Status] => in-progress
+            [CreatedDate] => 2025-09-10 10:09:47
+            [CreatedByName] => James Best
+            [AssignedToName] => Annabel Mensah
+            [CategoryName] => Facility Issues
+        )
+
+    [7] => Array
+        (
+            [TicketID] => 50
+            [Description] => the PCs at the front desk are faulty
+            [Priority] => high
+            [Status] => in-progress
+            [CreatedDate] => 2025-08-17 18:34:00
+            [CreatedByName] => James Best
+            [AssignedToName] => Annabel Mensah
+            [CategoryName] => Hardware
+        )
+
+    [8] => Array
+        (
+            [TicketID] => 52
+            [Description] => Connectivity issues on the ground floor
+            [Priority] => high
+            [Status] => resolved
+            [CreatedDate] => 2025-08-19 12:36:14
+            [CreatedByName] => Annabel Mensah
+            [AssignedToName] => Annabel Mensah
+            [CategoryName] => Network
+        )
+
+    [9] => Array
+        (
+            [TicketID] => 45
+            [Description] => Emails are not being sent on time
+            [Priority] => high
+            [Status] => resolved
+            [CreatedDate] => 2025-08-08 16:47:52
+            [CreatedByName] => James Best
+            [AssignedToName] => Raymond Adoe
+            [CategoryName] => Email/Notification
+        )
+
+    [10] => Array
+        (
+            [TicketID] => 56
+            [Description] => Many visitors are in a view waiting for you
+            [Priority] => high
+            [Status] => closed
+            [CreatedDate] => 2025-09-09 21:45:28
+            [CreatedByName] => Annabel Mensah
+            [AssignedToName] => Lawrence Danso Abiam
+            [CategoryName] => Appointments
+        )
+
+    [11] => Array
+        (
+            [TicketID] => 35
+            [Description] => System allowed booking of two appointments for the same host at 2:00 PM today. Both visitors showed up and caused confusion. Need to fix scheduling conflict detection.
+            [Priority] => high
+            [Status] => closed
+            [CreatedDate] => 2025-07-26 15:50:35
+            [CreatedByName] => Annabel Mensah
+            [AssignedToName] => Lawrence Danso Abiam
+            [CategoryName] => Appointments
+        )
+
+    [12] => Array
+        (
+            [TicketID] => 51
+            [Description] => Operating system need an update
+            [Priority] => medium
+            [Status] => open
+            [CreatedDate] => 2025-08-17 19:00:07
+            [CreatedByName] => James Best
+            [AssignedToName] => 
+            [CategoryName] => Software
+        )
+
+    [13] => Array
+        (
+            [TicketID] => 49
+            [Description] => Elevator have been made inaccessible
+            [Priority] => medium
+            [Status] => open
+            [CreatedDate] => 2025-08-17 18:01:23
+            [CreatedByName] => James Best
+            [AssignedToName] => 
+            [CategoryName] => Access
+        )
+
+    [14] => Array
+        (
+            [TicketID] => 38
+            [Description] => Visitors are not receiving appointment confirmation emails. Checked spam folders and email logs show messages are being sent but not delivered.
+            [Priority] => medium
+            [Status] => open
+            [CreatedDate] => 2025-07-26 15:55:06
+            [CreatedByName] => Abena Banson
+            [AssignedToName] => 
+            [CategoryName] => Email/Notification
+        )
+
+    [15] => Array
+        (
+            [TicketID] => 63
+            [Description] => Appointments have been delayed till further notice
+            [Priority] => medium
+            [Status] => in-progress
+            [CreatedDate] => 2025-09-17 02:33:54
+            [CreatedByName] => Abena Banson
+            [AssignedToName] => Raymond Adoe
+            [CategoryName] => Appointments
+        )
+
+    [16] => Array
+        (
+            [TicketID] => 62
+            [Description] => Appointments are not being processed as fast as they should be
+            [Priority] => medium
+            [Status] => in-progress
+            [CreatedDate] => 2025-09-17 02:07:46
+            [CreatedByName] => Annabel Mensah
+            [AssignedToName] => Raymond Adoe
+            [CategoryName] => Appointments
+        )
+
+    [17] => Array
+        (
+            [TicketID] => 61
+            [Description] => There a quite a number of visitors checked in who are here to see you
+            [Priority] => medium
+            [Status] => in-progress
+            [CreatedDate] => 2025-09-17 01:45:52
+            [CreatedByName] => Abena Banson
+            [AssignedToName] => Raymond Adoe
+            [CategoryName] => Appointments
+        )
+
+    [18] => Array
+        (
+            [TicketID] => 44
+            [Description] => The top floor cannot be accessed at the moment
+            [Priority] => medium
+            [Status] => resolved
+            [CreatedDate] => 2025-08-01 15:19:18
+            [CreatedByName] => Lawrence Danso Abiam
+            [AssignedToName] => Annabel Mensah
+            [CategoryName] => Access
+        )
+
+    [19] => Array
+        (
+            [TicketID] => 37
+            [Description] => New front desk employee Jessica Brown started today but doesn't have access to the visitor management system. Need user account created with front desk permissions.
+            [Priority] => medium
+            [Status] => resolved
+            [CreatedDate] => 2025-07-26 15:53:36
+            [CreatedByName] => James Best
+            [AssignedToName] => Cyrus Kwame Blay
+            [CategoryName] => Access
+        )
+
+    [20] => Array
+        (
+            [TicketID] => 55
+            [Description] => Appointment emails are not being sent
+            [Priority] => medium
+            [Status] => closed
+            [CreatedDate] => 2025-08-22 21:29:26
+            [CreatedByName] => Abena Banson
+            [AssignedToName] => 
+            [CategoryName] => Email/Notification
+        )
+
+    [21] => Array
+        (
+            [TicketID] => 53
+            [Description] => In need of a password reset
+            [Priority] => medium
+            [Status] => closed
+            [CreatedDate] => 2025-08-19 13:46:02
+            [CreatedByName] => Raymond Adoe
+            [AssignedToName] => Cyrus Kwame Blay
+            [CategoryName] => Software
+        )
+
+    [22] => Array
+        (
+            [TicketID] => 40
+            [Description] => Washroom Leakage
+            [Priority] => medium
+            [Status] => closed
+            [CreatedDate] => 2025-07-28 18:28:55
+            [CreatedByName] => Abena Banson
+            [AssignedToName] => 
+            [CategoryName] => Facility Issues
+        )
+
+    [23] => Array
+        (
+            [TicketID] => 36
+            [Description] => The HP LaserJet printer in the front lobby keeps jamming when printing visitor badges. Also noticing streaks and faded text on printed materials.
+            [Priority] => medium
+            [Status] => closed
+            [CreatedDate] => 2025-07-26 15:52:41
+            [CreatedByName] => Abena Banson
+            [AssignedToName] => James Best
+            [CategoryName] => Hardware
+        )
+
+    [24] => Array
+        (
+            [TicketID] => 46
+            [Description] => A complaint of a missing black tote bag
+            [Priority] => low
+            [Status] => open
+            [CreatedDate] => 2025-08-17 17:55:00
+            [CreatedByName] => James Best
+            [AssignedToName] => 
+            [CategoryName] => Lost & Found
+        )
+
+    [25] => Array
+        (
+            [TicketID] => 39
+            [Description] => Appointment reminder emails have broken formatting - no line breaks and missing company logo. Text appears as one continuous paragraph.
+            [Priority] => low
+            [Status] => open
+            [CreatedDate] => 2025-07-26 15:56:05
+            [CreatedByName] => James Best
+            [AssignedToName] => 
+            [CategoryName] => Email/Notification
+        )
+
+    [26] => Array
+        (
+            [TicketID] => 54
+            [Description] => Doors at the reception are stuck
+            [Priority] => low
+            [Status] => in-progress
+            [CreatedDate] => 2025-08-19 14:55:06
+            [CreatedByName] => Abena Banson
+            [AssignedToName] => James Best
+            [CategoryName] => Facility Issues
+        )
+
+)
+
+[17-Sep-2025 04:48:37 Europe/Berlin] PHP Warning:  Trying to access array offset on value of type null in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\help_desk.php on line 122
+[17-Sep-2025 04:48:37 Europe/Berlin] PHP Stack trace:
+[17-Sep-2025 04:48:37 Europe/Berlin] PHP   1. {main}() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\help_desk.php:0
+[17-Sep-2025 04:48:37 Europe/Berlin] Failed to create notification: Cannot add or update a child row: a foreign key constraint fails (`frontdesk`.`notifications`, CONSTRAINT `fk_notifications_user_id` FOREIGN KEY (`user_id`) REFERENCES `users` (`UserID`) ON DELETE CASCADE)
+[17-Sep-2025 04:48:37 Europe/Berlin] Failed to create assignment notification: Cannot add or update a child row: a foreign key constraint fails (`frontdesk`.`notifications`, CONSTRAINT `fk_notifications_user_id` FOREIGN KEY (`user_id`) REFERENCES `users` (`UserID`) ON DELETE CASCADE)
+[17-Sep-2025 04:49:26 Europe/Berlin] Checking for ticket creation POST data: Array
+(
+    [action] => create_ticket
+    [assigned_to] => 2
+    [category_id] => 4
+    [priority] => medium
+    [description] => There is no one at the front desk 
+)
+
+[17-Sep-2025 04:49:26 Europe/Berlin] Session data: Array
+(
+    [userID] => 6
+    [name] => Annabel Mensah
+    [role] => Support Staff
+)
+
+[17-Sep-2025 04:49:26 Europe/Berlin] Created by user ID: 6
+[17-Sep-2025 04:49:26 Europe/Berlin] PHP Warning:  Undefined array key "error" in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\help_desk.php on line 24
+[17-Sep-2025 04:49:26 Europe/Berlin] PHP Stack trace:
+[17-Sep-2025 04:49:26 Europe/Berlin] PHP   1. {main}() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\help_desk.php:0
+[17-Sep-2025 04:49:27 Europe/Berlin] Checking for ticket creation POST data: Array
+(
+)
+
+[17-Sep-2025 04:49:27 Europe/Berlin] Retrieved tickets: Array
+(
+    [0] => Array
+        (
+            [TicketID] => 60
+            [Description] => A host is not able to access his panel
+            [Priority] => critical
+            [Status] => in-progress
+            [CreatedDate] => 2025-09-17 01:30:35
+            [CreatedByName] => Raymond Adoe
+            [AssignedToName] => Cyrus Kwame Blay
+            [CategoryName] => Access
+        )
+
+    [1] => Array
+        (
+            [TicketID] => 41
+            [Description] => WiFi  Access has been down 
+            [Priority] => critical
+            [Status] => in-progress
+            [CreatedDate] => 2025-07-30 05:57:12
+            [CreatedByName] => James Best
+            [AssignedToName] => Annabel Mensah
+            [CategoryName] => Network
+        )
+
+    [2] => Array
+        (
+            [TicketID] => 43
+            [Description] => The bulbs in the washroom are faulty
+            [Priority] => high
+            [Status] => open
+            [CreatedDate] => 2025-08-01 15:08:11
+            [CreatedByName] => Abena Banson
+            [AssignedToName] => 
+            [CategoryName] => Facility Issues
+        )
+
+    [3] => Array
+        (
+            [TicketID] => 42
+            [Description] => Staff member cannot access the top floor
+            [Priority] => high
+            [Status] => open
+            [CreatedDate] => 2025-08-01 09:11:12
+            [CreatedByName] => James Best
+            [AssignedToName] => 
+            [CategoryName] => Access
+        )
+
+    [4] => Array
+        (
+            [TicketID] => 59
+            [Description] => The top is inaccessible to staff members
+            [Priority] => high
+            [Status] => in-progress
+            [CreatedDate] => 2025-09-16 20:49:52
+            [CreatedByName] => Abena Banson
+            [AssignedToName] => Annabel Mensah
+            [CategoryName] => Access
+        )
+
+    [5] => Array
+        (
+            [TicketID] => 58
+            [Description] => The software is not working as it should
+            [Priority] => high
+            [Status] => in-progress
+            [CreatedDate] => 2025-09-13 12:55:22
+            [CreatedByName] => Adwoa Millicent
+            [AssignedToName] => James Best
+            [CategoryName] => Software
+        )
+
+    [6] => Array
+        (
+            [TicketID] => 57
+            [Description] => The front doors are not working
+            [Priority] => high
+            [Status] => in-progress
+            [CreatedDate] => 2025-09-10 10:09:47
+            [CreatedByName] => James Best
+            [AssignedToName] => Annabel Mensah
+            [CategoryName] => Facility Issues
+        )
+
+    [7] => Array
+        (
+            [TicketID] => 50
+            [Description] => the PCs at the front desk are faulty
+            [Priority] => high
+            [Status] => in-progress
+            [CreatedDate] => 2025-08-17 18:34:00
+            [CreatedByName] => James Best
+            [AssignedToName] => Annabel Mensah
+            [CategoryName] => Hardware
+        )
+
+    [8] => Array
+        (
+            [TicketID] => 52
+            [Description] => Connectivity issues on the ground floor
+            [Priority] => high
+            [Status] => resolved
+            [CreatedDate] => 2025-08-19 12:36:14
+            [CreatedByName] => Annabel Mensah
+            [AssignedToName] => Annabel Mensah
+            [CategoryName] => Network
+        )
+
+    [9] => Array
+        (
+            [TicketID] => 45
+            [Description] => Emails are not being sent on time
+            [Priority] => high
+            [Status] => resolved
+            [CreatedDate] => 2025-08-08 16:47:52
+            [CreatedByName] => James Best
+            [AssignedToName] => Raymond Adoe
+            [CategoryName] => Email/Notification
+        )
+
+    [10] => Array
+        (
+            [TicketID] => 56
+            [Description] => Many visitors are in a view waiting for you
+            [Priority] => high
+            [Status] => closed
+            [CreatedDate] => 2025-09-09 21:45:28
+            [CreatedByName] => Annabel Mensah
+            [AssignedToName] => Lawrence Danso Abiam
+            [CategoryName] => Appointments
+        )
+
+    [11] => Array
+        (
+            [TicketID] => 35
+            [Description] => System allowed booking of two appointments for the same host at 2:00 PM today. Both visitors showed up and caused confusion. Need to fix scheduling conflict detection.
+            [Priority] => high
+            [Status] => closed
+            [CreatedDate] => 2025-07-26 15:50:35
+            [CreatedByName] => Annabel Mensah
+            [AssignedToName] => Lawrence Danso Abiam
+            [CategoryName] => Appointments
+        )
+
+    [12] => Array
+        (
+            [TicketID] => 51
+            [Description] => Operating system need an update
+            [Priority] => medium
+            [Status] => open
+            [CreatedDate] => 2025-08-17 19:00:07
+            [CreatedByName] => James Best
+            [AssignedToName] => 
+            [CategoryName] => Software
+        )
+
+    [13] => Array
+        (
+            [TicketID] => 49
+            [Description] => Elevator have been made inaccessible
+            [Priority] => medium
+            [Status] => open
+            [CreatedDate] => 2025-08-17 18:01:23
+            [CreatedByName] => James Best
+            [AssignedToName] => 
+            [CategoryName] => Access
+        )
+
+    [14] => Array
+        (
+            [TicketID] => 38
+            [Description] => Visitors are not receiving appointment confirmation emails. Checked spam folders and email logs show messages are being sent but not delivered.
+            [Priority] => medium
+            [Status] => open
+            [CreatedDate] => 2025-07-26 15:55:06
+            [CreatedByName] => Abena Banson
+            [AssignedToName] => 
+            [CategoryName] => Email/Notification
+        )
+
+    [15] => Array
+        (
+            [TicketID] => 64
+            [Description] => There is no one at the front desk
+            [Priority] => medium
+            [Status] => in-progress
+            [CreatedDate] => 2025-09-17 02:49:26
+            [CreatedByName] => Annabel Mensah
+            [AssignedToName] => Abena Banson
+            [CategoryName] => Access
+        )
+
+    [16] => Array
+        (
+            [TicketID] => 63
+            [Description] => Appointments have been delayed till further notice
+            [Priority] => medium
+            [Status] => in-progress
+            [CreatedDate] => 2025-09-17 02:33:54
+            [CreatedByName] => Abena Banson
+            [AssignedToName] => Raymond Adoe
+            [CategoryName] => Appointments
+        )
+
+    [17] => Array
+        (
+            [TicketID] => 62
+            [Description] => Appointments are not being processed as fast as they should be
+            [Priority] => medium
+            [Status] => in-progress
+            [CreatedDate] => 2025-09-17 02:07:46
+            [CreatedByName] => Annabel Mensah
+            [AssignedToName] => Raymond Adoe
+            [CategoryName] => Appointments
+        )
+
+    [18] => Array
+        (
+            [TicketID] => 61
+            [Description] => There a quite a number of visitors checked in who are here to see you
+            [Priority] => medium
+            [Status] => in-progress
+            [CreatedDate] => 2025-09-17 01:45:52
+            [CreatedByName] => Abena Banson
+            [AssignedToName] => Raymond Adoe
+            [CategoryName] => Appointments
+        )
+
+    [19] => Array
+        (
+            [TicketID] => 44
+            [Description] => The top floor cannot be accessed at the moment
+            [Priority] => medium
+            [Status] => resolved
+            [CreatedDate] => 2025-08-01 15:19:18
+            [CreatedByName] => Lawrence Danso Abiam
+            [AssignedToName] => Annabel Mensah
+            [CategoryName] => Access
+        )
+
+    [20] => Array
+        (
+            [TicketID] => 37
+            [Description] => New front desk employee Jessica Brown started today but doesn't have access to the visitor management system. Need user account created with front desk permissions.
+            [Priority] => medium
+            [Status] => resolved
+            [CreatedDate] => 2025-07-26 15:53:36
+            [CreatedByName] => James Best
+            [AssignedToName] => Cyrus Kwame Blay
+            [CategoryName] => Access
+        )
+
+    [21] => Array
+        (
+            [TicketID] => 55
+            [Description] => Appointment emails are not being sent
+            [Priority] => medium
+            [Status] => closed
+            [CreatedDate] => 2025-08-22 21:29:26
+            [CreatedByName] => Abena Banson
+            [AssignedToName] => 
+            [CategoryName] => Email/Notification
+        )
+
+    [22] => Array
+        (
+            [TicketID] => 53
+            [Description] => In need of a password reset
+            [Priority] => medium
+            [Status] => closed
+            [CreatedDate] => 2025-08-19 13:46:02
+            [CreatedByName] => Raymond Adoe
+            [AssignedToName] => Cyrus Kwame Blay
+            [CategoryName] => Software
+        )
+
+    [23] => Array
+        (
+            [TicketID] => 40
+            [Description] => Washroom Leakage
+            [Priority] => medium
+            [Status] => closed
+            [CreatedDate] => 2025-07-28 18:28:55
+            [CreatedByName] => Abena Banson
+            [AssignedToName] => 
+            [CategoryName] => Facility Issues
+        )
+
+    [24] => Array
+        (
+            [TicketID] => 36
+            [Description] => The HP LaserJet printer in the front lobby keeps jamming when printing visitor badges. Also noticing streaks and faded text on printed materials.
+            [Priority] => medium
+            [Status] => closed
+            [CreatedDate] => 2025-07-26 15:52:41
+            [CreatedByName] => Abena Banson
+            [AssignedToName] => James Best
+            [CategoryName] => Hardware
+        )
+
+    [25] => Array
+        (
+            [TicketID] => 46
+            [Description] => A complaint of a missing black tote bag
+            [Priority] => low
+            [Status] => open
+            [CreatedDate] => 2025-08-17 17:55:00
+            [CreatedByName] => James Best
+            [AssignedToName] => 
+            [CategoryName] => Lost & Found
+        )
+
+    [26] => Array
+        (
+            [TicketID] => 39
+            [Description] => Appointment reminder emails have broken formatting - no line breaks and missing company logo. Text appears as one continuous paragraph.
+            [Priority] => low
+            [Status] => open
+            [CreatedDate] => 2025-07-26 15:56:05
+            [CreatedByName] => James Best
+            [AssignedToName] => 
+            [CategoryName] => Email/Notification
+        )
+
+    [27] => Array
+        (
+            [TicketID] => 54
+            [Description] => Doors at the reception are stuck
+            [Priority] => low
+            [Status] => in-progress
+            [CreatedDate] => 2025-08-19 14:55:06
+            [CreatedByName] => Abena Banson
+            [AssignedToName] => James Best
+            [CategoryName] => Facility Issues
+        )
+
+)
+
+[17-Sep-2025 04:49:27 Europe/Berlin] PHP Warning:  Trying to access array offset on value of type null in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\help_desk.php on line 122
+[17-Sep-2025 04:49:27 Europe/Berlin] PHP Stack trace:
+[17-Sep-2025 04:49:27 Europe/Berlin] PHP   1. {main}() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\help_desk.php:0
+[17-Sep-2025 04:49:27 Europe/Berlin] Failed to create notification: Cannot add or update a child row: a foreign key constraint fails (`frontdesk`.`notifications`, CONSTRAINT `fk_notifications_user_id` FOREIGN KEY (`user_id`) REFERENCES `users` (`UserID`) ON DELETE CASCADE)
+[17-Sep-2025 04:49:27 Europe/Berlin] Failed to create assignment notification: Cannot add or update a child row: a foreign key constraint fails (`frontdesk`.`notifications`, CONSTRAINT `fk_notifications_user_id` FOREIGN KEY (`user_id`) REFERENCES `users` (`UserID`) ON DELETE CASCADE)
+[17-Sep-2025 05:01:11 Europe/Berlin] Checking for ticket creation POST data: Array
+(
+)
+
+[17-Sep-2025 05:01:11 Europe/Berlin] Retrieved tickets: Array
+(
+    [0] => Array
+        (
+            [TicketID] => 60
+            [Description] => A host is not able to access his panel
+            [Priority] => critical
+            [Status] => in-progress
+            [CreatedDate] => 2025-09-17 01:30:35
+            [CreatedByName] => Raymond Adoe
+            [AssignedToName] => Cyrus Kwame Blay
+            [CategoryName] => Access
+        )
+
+    [1] => Array
+        (
+            [TicketID] => 41
+            [Description] => WiFi  Access has been down 
+            [Priority] => critical
+            [Status] => in-progress
+            [CreatedDate] => 2025-07-30 05:57:12
+            [CreatedByName] => James Best
+            [AssignedToName] => Annabel Mensah
+            [CategoryName] => Network
+        )
+
+    [2] => Array
+        (
+            [TicketID] => 43
+            [Description] => The bulbs in the washroom are faulty
+            [Priority] => high
+            [Status] => open
+            [CreatedDate] => 2025-08-01 15:08:11
+            [CreatedByName] => Abena Banson
+            [AssignedToName] => 
+            [CategoryName] => Facility Issues
+        )
+
+    [3] => Array
+        (
+            [TicketID] => 42
+            [Description] => Staff member cannot access the top floor
+            [Priority] => high
+            [Status] => open
+            [CreatedDate] => 2025-08-01 09:11:12
+            [CreatedByName] => James Best
+            [AssignedToName] => 
+            [CategoryName] => Access
+        )
+
+    [4] => Array
+        (
+            [TicketID] => 59
+            [Description] => The top is inaccessible to staff members
+            [Priority] => high
+            [Status] => in-progress
+            [CreatedDate] => 2025-09-16 20:49:52
+            [CreatedByName] => Abena Banson
+            [AssignedToName] => Annabel Mensah
+            [CategoryName] => Access
+        )
+
+    [5] => Array
+        (
+            [TicketID] => 58
+            [Description] => The software is not working as it should
+            [Priority] => high
+            [Status] => in-progress
+            [CreatedDate] => 2025-09-13 12:55:22
+            [CreatedByName] => Adwoa Millicent
+            [AssignedToName] => James Best
+            [CategoryName] => Software
+        )
+
+    [6] => Array
+        (
+            [TicketID] => 57
+            [Description] => The front doors are not working
+            [Priority] => high
+            [Status] => in-progress
+            [CreatedDate] => 2025-09-10 10:09:47
+            [CreatedByName] => James Best
+            [AssignedToName] => Annabel Mensah
+            [CategoryName] => Facility Issues
+        )
+
+    [7] => Array
+        (
+            [TicketID] => 50
+            [Description] => the PCs at the front desk are faulty
+            [Priority] => high
+            [Status] => in-progress
+            [CreatedDate] => 2025-08-17 18:34:00
+            [CreatedByName] => James Best
+            [AssignedToName] => Annabel Mensah
+            [CategoryName] => Hardware
+        )
+
+    [8] => Array
+        (
+            [TicketID] => 52
+            [Description] => Connectivity issues on the ground floor
+            [Priority] => high
+            [Status] => resolved
+            [CreatedDate] => 2025-08-19 12:36:14
+            [CreatedByName] => Annabel Mensah
+            [AssignedToName] => Annabel Mensah
+            [CategoryName] => Network
+        )
+
+    [9] => Array
+        (
+            [TicketID] => 45
+            [Description] => Emails are not being sent on time
+            [Priority] => high
+            [Status] => resolved
+            [CreatedDate] => 2025-08-08 16:47:52
+            [CreatedByName] => James Best
+            [AssignedToName] => Raymond Adoe
+            [CategoryName] => Email/Notification
+        )
+
+    [10] => Array
+        (
+            [TicketID] => 56
+            [Description] => Many visitors are in a view waiting for you
+            [Priority] => high
+            [Status] => closed
+            [CreatedDate] => 2025-09-09 21:45:28
+            [CreatedByName] => Annabel Mensah
+            [AssignedToName] => Lawrence Danso Abiam
+            [CategoryName] => Appointments
+        )
+
+    [11] => Array
+        (
+            [TicketID] => 35
+            [Description] => System allowed booking of two appointments for the same host at 2:00 PM today. Both visitors showed up and caused confusion. Need to fix scheduling conflict detection.
+            [Priority] => high
+            [Status] => closed
+            [CreatedDate] => 2025-07-26 15:50:35
+            [CreatedByName] => Annabel Mensah
+            [AssignedToName] => Lawrence Danso Abiam
+            [CategoryName] => Appointments
+        )
+
+    [12] => Array
+        (
+            [TicketID] => 51
+            [Description] => Operating system need an update
+            [Priority] => medium
+            [Status] => open
+            [CreatedDate] => 2025-08-17 19:00:07
+            [CreatedByName] => James Best
+            [AssignedToName] => 
+            [CategoryName] => Software
+        )
+
+    [13] => Array
+        (
+            [TicketID] => 49
+            [Description] => Elevator have been made inaccessible
+            [Priority] => medium
+            [Status] => open
+            [CreatedDate] => 2025-08-17 18:01:23
+            [CreatedByName] => James Best
+            [AssignedToName] => 
+            [CategoryName] => Access
+        )
+
+    [14] => Array
+        (
+            [TicketID] => 38
+            [Description] => Visitors are not receiving appointment confirmation emails. Checked spam folders and email logs show messages are being sent but not delivered.
+            [Priority] => medium
+            [Status] => open
+            [CreatedDate] => 2025-07-26 15:55:06
+            [CreatedByName] => Abena Banson
+            [AssignedToName] => 
+            [CategoryName] => Email/Notification
+        )
+
+    [15] => Array
+        (
+            [TicketID] => 64
+            [Description] => There is no one at the front desk
+            [Priority] => medium
+            [Status] => in-progress
+            [CreatedDate] => 2025-09-17 02:49:26
+            [CreatedByName] => Annabel Mensah
+            [AssignedToName] => Abena Banson
+            [CategoryName] => Access
+        )
+
+    [16] => Array
+        (
+            [TicketID] => 63
+            [Description] => Appointments have been delayed till further notice
+            [Priority] => medium
+            [Status] => in-progress
+            [CreatedDate] => 2025-09-17 02:33:54
+            [CreatedByName] => Abena Banson
+            [AssignedToName] => Raymond Adoe
+            [CategoryName] => Appointments
+        )
+
+    [17] => Array
+        (
+            [TicketID] => 62
+            [Description] => Appointments are not being processed as fast as they should be
+            [Priority] => medium
+            [Status] => in-progress
+            [CreatedDate] => 2025-09-17 02:07:46
+            [CreatedByName] => Annabel Mensah
+            [AssignedToName] => Raymond Adoe
+            [CategoryName] => Appointments
+        )
+
+    [18] => Array
+        (
+            [TicketID] => 61
+            [Description] => There a quite a number of visitors checked in who are here to see you
+            [Priority] => medium
+            [Status] => in-progress
+            [CreatedDate] => 2025-09-17 01:45:52
+            [CreatedByName] => Abena Banson
+            [AssignedToName] => Raymond Adoe
+            [CategoryName] => Appointments
+        )
+
+    [19] => Array
+        (
+            [TicketID] => 44
+            [Description] => The top floor cannot be accessed at the moment
+            [Priority] => medium
+            [Status] => resolved
+            [CreatedDate] => 2025-08-01 15:19:18
+            [CreatedByName] => Lawrence Danso Abiam
+            [AssignedToName] => Annabel Mensah
+            [CategoryName] => Access
+        )
+
+    [20] => Array
+        (
+            [TicketID] => 37
+            [Description] => New front desk employee Jessica Brown started today but doesn't have access to the visitor management system. Need user account created with front desk permissions.
+            [Priority] => medium
+            [Status] => resolved
+            [CreatedDate] => 2025-07-26 15:53:36
+            [CreatedByName] => James Best
+            [AssignedToName] => Cyrus Kwame Blay
+            [CategoryName] => Access
+        )
+
+    [21] => Array
+        (
+            [TicketID] => 55
+            [Description] => Appointment emails are not being sent
+            [Priority] => medium
+            [Status] => closed
+            [CreatedDate] => 2025-08-22 21:29:26
+            [CreatedByName] => Abena Banson
+            [AssignedToName] => 
+            [CategoryName] => Email/Notification
+        )
+
+    [22] => Array
+        (
+            [TicketID] => 53
+            [Description] => In need of a password reset
+            [Priority] => medium
+            [Status] => closed
+            [CreatedDate] => 2025-08-19 13:46:02
+            [CreatedByName] => Raymond Adoe
+            [AssignedToName] => Cyrus Kwame Blay
+            [CategoryName] => Software
+        )
+
+    [23] => Array
+        (
+            [TicketID] => 40
+            [Description] => Washroom Leakage
+            [Priority] => medium
+            [Status] => closed
+            [CreatedDate] => 2025-07-28 18:28:55
+            [CreatedByName] => Abena Banson
+            [AssignedToName] => 
+            [CategoryName] => Facility Issues
+        )
+
+    [24] => Array
+        (
+            [TicketID] => 36
+            [Description] => The HP LaserJet printer in the front lobby keeps jamming when printing visitor badges. Also noticing streaks and faded text on printed materials.
+            [Priority] => medium
+            [Status] => closed
+            [CreatedDate] => 2025-07-26 15:52:41
+            [CreatedByName] => Abena Banson
+            [AssignedToName] => James Best
+            [CategoryName] => Hardware
+        )
+
+    [25] => Array
+        (
+            [TicketID] => 46
+            [Description] => A complaint of a missing black tote bag
+            [Priority] => low
+            [Status] => open
+            [CreatedDate] => 2025-08-17 17:55:00
+            [CreatedByName] => James Best
+            [AssignedToName] => 
+            [CategoryName] => Lost & Found
+        )
+
+    [26] => Array
+        (
+            [TicketID] => 39
+            [Description] => Appointment reminder emails have broken formatting - no line breaks and missing company logo. Text appears as one continuous paragraph.
+            [Priority] => low
+            [Status] => open
+            [CreatedDate] => 2025-07-26 15:56:05
+            [CreatedByName] => James Best
+            [AssignedToName] => 
+            [CategoryName] => Email/Notification
+        )
+
+    [27] => Array
+        (
+            [TicketID] => 54
+            [Description] => Doors at the reception are stuck
+            [Priority] => low
+            [Status] => in-progress
+            [CreatedDate] => 2025-08-19 14:55:06
+            [CreatedByName] => Abena Banson
+            [AssignedToName] => James Best
+            [CategoryName] => Facility Issues
+        )
+
+)
+
+[17-Sep-2025 05:01:11 Europe/Berlin] PHP Warning:  Trying to access array offset on value of type null in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\help_desk.php on line 122
+[17-Sep-2025 05:01:11 Europe/Berlin] PHP Stack trace:
+[17-Sep-2025 05:01:11 Europe/Berlin] PHP   1. {main}() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\help_desk.php:0
+[17-Sep-2025 05:01:11 Europe/Berlin] Failed to create notification: Cannot add or update a child row: a foreign key constraint fails (`frontdesk`.`notifications`, CONSTRAINT `fk_notifications_user_id` FOREIGN KEY (`user_id`) REFERENCES `users` (`UserID`) ON DELETE CASCADE)
+[17-Sep-2025 05:01:11 Europe/Berlin] Failed to create assignment notification: Cannot add or update a child row: a foreign key constraint fails (`frontdesk`.`notifications`, CONSTRAINT `fk_notifications_user_id` FOREIGN KEY (`user_id`) REFERENCES `users` (`UserID`) ON DELETE CASCADE)
+[17-Sep-2025 05:17:43 Europe/Berlin] Checking for ticket creation POST data: Array
+(
+)
+
+[17-Sep-2025 05:18:10 Europe/Berlin] Checking for ticket creation POST data: Array
+(
+    [action] => create_ticket
+    [assigned_to] => 5
+    [category_id] => 8
+    [priority] => high
+    [description] => The washroom is in a bad state
+)
+
+[17-Sep-2025 05:18:10 Europe/Berlin] Session data: Array
+(
+    [userID] => 4
+    [name] => Raymond Adoe
+    [role] => Host
+)
+
+[17-Sep-2025 05:18:10 Europe/Berlin] Created by user ID: 4
+[17-Sep-2025 05:18:11 Europe/Berlin] PHP Fatal error:  Uncaught ArgumentCountError: Too few arguments to function NotificationCreator::notifyTicketAssignment(), 4 passed in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\ticket_ops.php on line 67 and exactly 5 expected in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\NotificationCreator.php:412
+Stack trace:
+#0 C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\ticket_ops.php(67): NotificationCreator->notifyTicketAssignment(5, 65, 'The washroom is...', 'Raymond Adoe')
+#1 C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\host_tickets.php(22): createTicket(Object(mysqli))
+#2 {main}
+  thrown in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\NotificationCreator.php on line 412
+[17-Sep-2025 05:23:23 Europe/Berlin] Checking for ticket creation POST data: Array
+(
+)
+
+[17-Sep-2025 05:23:48 Europe/Berlin] Checking for ticket creation POST data: Array
+(
+    [action] => create_ticket
+    [assigned_to] => 5
+    [category_id] => 8
+    [priority] => high
+    [description] => The washrooms are is a bad state
+)
+
+[17-Sep-2025 05:23:48 Europe/Berlin] Session data: Array
+(
+    [userID] => 4
+    [name] => Raymond Adoe
+    [role] => Host
+)
+
+[17-Sep-2025 05:23:48 Europe/Berlin] Created by user ID: 4
+[17-Sep-2025 05:23:48 Europe/Berlin] PHP Fatal error:  Uncaught ArgumentCountError: Too few arguments to function NotificationCreator::notifyTicketAssignment(), 4 passed in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\ticket_ops.php on line 65 and exactly 5 expected in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\NotificationCreator.php:412
+Stack trace:
+#0 C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\ticket_ops.php(65): NotificationCreator->notifyTicketAssignment(5, 66, 'The washrooms a...', 'Raymond Adoe')
+#1 C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\host_tickets.php(22): createTicket(Object(mysqli))
+#2 {main}
+  thrown in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\NotificationCreator.php on line 412
+[17-Sep-2025 05:26:11 Europe/Berlin] Checking for ticket creation POST data: Array
+(
+)
+
+[17-Sep-2025 05:26:37 Europe/Berlin] Checking for ticket creation POST data: Array
+(
+    [action] => create_ticket
+    [assigned_to] => 5
+    [category_id] => 8
+    [priority] => high
+    [description] => The washroom is in a bad state
+)
+
+[17-Sep-2025 05:26:37 Europe/Berlin] Session data: Array
+(
+    [userID] => 4
+    [name] => Raymond Adoe
+    [role] => Host
+)
+
+[17-Sep-2025 05:26:37 Europe/Berlin] Created by user ID: 4
+[17-Sep-2025 05:26:37 Europe/Berlin] PHP Warning:  Undefined array key "error" in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\host_tickets.php on line 24
+[17-Sep-2025 05:26:37 Europe/Berlin] PHP Stack trace:
+[17-Sep-2025 05:26:37 Europe/Berlin] PHP   1. {main}() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\host_tickets.php:0
+[17-Sep-2025 05:26:39 Europe/Berlin] Checking for ticket creation POST data: Array
+(
+)
+
+[17-Sep-2025 05:43:06 Europe/Berlin] Checking for ticket creation POST data: Array
+(
+)
+
+[17-Sep-2025 05:43:06 Europe/Berlin] Retrieved tickets: Array
+(
+    [0] => Array
+        (
+            [TicketID] => 60
+            [Description] => A host is not able to access his panel
+            [Priority] => critical
+            [Status] => in-progress
+            [CreatedDate] => 2025-09-17 01:30:35
+            [CreatedByName] => Raymond Adoe
+            [AssignedToName] => Cyrus Kwame Blay
+            [CategoryName] => Access
+        )
+
+    [1] => Array
+        (
+            [TicketID] => 41
+            [Description] => WiFi  Access has been down 
+            [Priority] => critical
+            [Status] => in-progress
+            [CreatedDate] => 2025-07-30 05:57:12
+            [CreatedByName] => James Best
+            [AssignedToName] => Annabel Mensah
+            [CategoryName] => Network
+        )
+
+    [2] => Array
+        (
+            [TicketID] => 43
+            [Description] => The bulbs in the washroom are faulty
+            [Priority] => high
+            [Status] => open
+            [CreatedDate] => 2025-08-01 15:08:11
+            [CreatedByName] => Abena Banson
+            [AssignedToName] => 
+            [CategoryName] => Facility Issues
+        )
+
+    [3] => Array
+        (
+            [TicketID] => 42
+            [Description] => Staff member cannot access the top floor
+            [Priority] => high
+            [Status] => open
+            [CreatedDate] => 2025-08-01 09:11:12
+            [CreatedByName] => James Best
+            [AssignedToName] => 
+            [CategoryName] => Access
+        )
+
+    [4] => Array
+        (
+            [TicketID] => 67
+            [Description] => The washroom is in a bad state
+            [Priority] => high
+            [Status] => in-progress
+            [CreatedDate] => 2025-09-17 03:26:37
+            [CreatedByName] => Raymond Adoe
+            [AssignedToName] => James Best
+            [CategoryName] => Facility Issues
+        )
+
+    [5] => Array
+        (
+            [TicketID] => 66
+            [Description] => The washrooms are is a bad state
+            [Priority] => high
+            [Status] => in-progress
+            [CreatedDate] => 2025-09-17 03:23:48
+            [CreatedByName] => Raymond Adoe
+            [AssignedToName] => James Best
+            [CategoryName] => Facility Issues
+        )
+
+    [6] => Array
+        (
+            [TicketID] => 65
+            [Description] => The washroom is in a bad state
+            [Priority] => high
+            [Status] => in-progress
+            [CreatedDate] => 2025-09-17 03:18:10
+            [CreatedByName] => Raymond Adoe
+            [AssignedToName] => James Best
+            [CategoryName] => Facility Issues
+        )
+
+    [7] => Array
+        (
+            [TicketID] => 59
+            [Description] => The top is inaccessible to staff members
+            [Priority] => high
+            [Status] => in-progress
+            [CreatedDate] => 2025-09-16 20:49:52
+            [CreatedByName] => Abena Banson
+            [AssignedToName] => Annabel Mensah
+            [CategoryName] => Access
+        )
+
+    [8] => Array
+        (
+            [TicketID] => 58
+            [Description] => The software is not working as it should
+            [Priority] => high
+            [Status] => in-progress
+            [CreatedDate] => 2025-09-13 12:55:22
+            [CreatedByName] => Adwoa Millicent
+            [AssignedToName] => James Best
+            [CategoryName] => Software
+        )
+
+    [9] => Array
+        (
+            [TicketID] => 57
+            [Description] => The front doors are not working
+            [Priority] => high
+            [Status] => in-progress
+            [CreatedDate] => 2025-09-10 10:09:47
+            [CreatedByName] => James Best
+            [AssignedToName] => Annabel Mensah
+            [CategoryName] => Facility Issues
+        )
+
+    [10] => Array
+        (
+            [TicketID] => 50
+            [Description] => the PCs at the front desk are faulty
+            [Priority] => high
+            [Status] => in-progress
+            [CreatedDate] => 2025-08-17 18:34:00
+            [CreatedByName] => James Best
+            [AssignedToName] => Annabel Mensah
+            [CategoryName] => Hardware
+        )
+
+    [11] => Array
+        (
+            [TicketID] => 52
+            [Description] => Connectivity issues on the ground floor
+            [Priority] => high
+            [Status] => resolved
+            [CreatedDate] => 2025-08-19 12:36:14
+            [CreatedByName] => Annabel Mensah
+            [AssignedToName] => Annabel Mensah
+            [CategoryName] => Network
+        )
+
+    [12] => Array
+        (
+            [TicketID] => 45
+            [Description] => Emails are not being sent on time
+            [Priority] => high
+            [Status] => resolved
+            [CreatedDate] => 2025-08-08 16:47:52
+            [CreatedByName] => James Best
+            [AssignedToName] => Raymond Adoe
+            [CategoryName] => Email/Notification
+        )
+
+    [13] => Array
+        (
+            [TicketID] => 56
+            [Description] => Many visitors are in a view waiting for you
+            [Priority] => high
+            [Status] => closed
+            [CreatedDate] => 2025-09-09 21:45:28
+            [CreatedByName] => Annabel Mensah
+            [AssignedToName] => Lawrence Danso Abiam
+            [CategoryName] => Appointments
+        )
+
+    [14] => Array
+        (
+            [TicketID] => 35
+            [Description] => System allowed booking of two appointments for the same host at 2:00 PM today. Both visitors showed up and caused confusion. Need to fix scheduling conflict detection.
+            [Priority] => high
+            [Status] => closed
+            [CreatedDate] => 2025-07-26 15:50:35
+            [CreatedByName] => Annabel Mensah
+            [AssignedToName] => Lawrence Danso Abiam
+            [CategoryName] => Appointments
+        )
+
+    [15] => Array
+        (
+            [TicketID] => 51
+            [Description] => Operating system need an update
+            [Priority] => medium
+            [Status] => open
+            [CreatedDate] => 2025-08-17 19:00:07
+            [CreatedByName] => James Best
+            [AssignedToName] => 
+            [CategoryName] => Software
+        )
+
+    [16] => Array
+        (
+            [TicketID] => 49
+            [Description] => Elevator have been made inaccessible
+            [Priority] => medium
+            [Status] => open
+            [CreatedDate] => 2025-08-17 18:01:23
+            [CreatedByName] => James Best
+            [AssignedToName] => 
+            [CategoryName] => Access
+        )
+
+    [17] => Array
+        (
+            [TicketID] => 38
+            [Description] => Visitors are not receiving appointment confirmation emails. Checked spam folders and email logs show messages are being sent but not delivered.
+            [Priority] => medium
+            [Status] => open
+            [CreatedDate] => 2025-07-26 15:55:06
+            [CreatedByName] => Abena Banson
+            [AssignedToName] => 
+            [CategoryName] => Email/Notification
+        )
+
+    [18] => Array
+        (
+            [TicketID] => 64
+            [Description] => There is no one at the front desk
+            [Priority] => medium
+            [Status] => in-progress
+            [CreatedDate] => 2025-09-17 02:49:26
+            [CreatedByName] => Annabel Mensah
+            [AssignedToName] => Abena Banson
+            [CategoryName] => Access
+        )
+
+    [19] => Array
+        (
+            [TicketID] => 63
+            [Description] => Appointments have been delayed till further notice
+            [Priority] => medium
+            [Status] => in-progress
+            [CreatedDate] => 2025-09-17 02:33:54
+            [CreatedByName] => Abena Banson
+            [AssignedToName] => Raymond Adoe
+            [CategoryName] => Appointments
+        )
+
+    [20] => Array
+        (
+            [TicketID] => 62
+            [Description] => Appointments are not being processed as fast as they should be
+            [Priority] => medium
+            [Status] => in-progress
+            [CreatedDate] => 2025-09-17 02:07:46
+            [CreatedByName] => Annabel Mensah
+            [AssignedToName] => Raymond Adoe
+            [CategoryName] => Appointments
+        )
+
+    [21] => Array
+        (
+            [TicketID] => 61
+            [Description] => There a quite a number of visitors checked in who are here to see you
+            [Priority] => medium
+            [Status] => in-progress
+            [CreatedDate] => 2025-09-17 01:45:52
+            [CreatedByName] => Abena Banson
+            [AssignedToName] => Raymond Adoe
+            [CategoryName] => Appointments
+        )
+
+    [22] => Array
+        (
+            [TicketID] => 44
+            [Description] => The top floor cannot be accessed at the moment
+            [Priority] => medium
+            [Status] => resolved
+            [CreatedDate] => 2025-08-01 15:19:18
+            [CreatedByName] => Lawrence Danso Abiam
+            [AssignedToName] => Annabel Mensah
+            [CategoryName] => Access
+        )
+
+    [23] => Array
+        (
+            [TicketID] => 37
+            [Description] => New front desk employee Jessica Brown started today but doesn't have access to the visitor management system. Need user account created with front desk permissions.
+            [Priority] => medium
+            [Status] => resolved
+            [CreatedDate] => 2025-07-26 15:53:36
+            [CreatedByName] => James Best
+            [AssignedToName] => Cyrus Kwame Blay
+            [CategoryName] => Access
+        )
+
+    [24] => Array
+        (
+            [TicketID] => 55
+            [Description] => Appointment emails are not being sent
+            [Priority] => medium
+            [Status] => closed
+            [CreatedDate] => 2025-08-22 21:29:26
+            [CreatedByName] => Abena Banson
+            [AssignedToName] => 
+            [CategoryName] => Email/Notification
+        )
+
+    [25] => Array
+        (
+            [TicketID] => 53
+            [Description] => In need of a password reset
+            [Priority] => medium
+            [Status] => closed
+            [CreatedDate] => 2025-08-19 13:46:02
+            [CreatedByName] => Raymond Adoe
+            [AssignedToName] => Cyrus Kwame Blay
+            [CategoryName] => Software
+        )
+
+    [26] => Array
+        (
+            [TicketID] => 40
+            [Description] => Washroom Leakage
+            [Priority] => medium
+            [Status] => closed
+            [CreatedDate] => 2025-07-28 18:28:55
+            [CreatedByName] => Abena Banson
+            [AssignedToName] => 
+            [CategoryName] => Facility Issues
+        )
+
+    [27] => Array
+        (
+            [TicketID] => 36
+            [Description] => The HP LaserJet printer in the front lobby keeps jamming when printing visitor badges. Also noticing streaks and faded text on printed materials.
+            [Priority] => medium
+            [Status] => closed
+            [CreatedDate] => 2025-07-26 15:52:41
+            [CreatedByName] => Abena Banson
+            [AssignedToName] => James Best
+            [CategoryName] => Hardware
+        )
+
+    [28] => Array
+        (
+            [TicketID] => 46
+            [Description] => A complaint of a missing black tote bag
+            [Priority] => low
+            [Status] => open
+            [CreatedDate] => 2025-08-17 17:55:00
+            [CreatedByName] => James Best
+            [AssignedToName] => 
+            [CategoryName] => Lost & Found
+        )
+
+    [29] => Array
+        (
+            [TicketID] => 39
+            [Description] => Appointment reminder emails have broken formatting - no line breaks and missing company logo. Text appears as one continuous paragraph.
+            [Priority] => low
+            [Status] => open
+            [CreatedDate] => 2025-07-26 15:56:05
+            [CreatedByName] => James Best
+            [AssignedToName] => 
+            [CategoryName] => Email/Notification
+        )
+
+    [30] => Array
+        (
+            [TicketID] => 54
+            [Description] => Doors at the reception are stuck
+            [Priority] => low
+            [Status] => in-progress
+            [CreatedDate] => 2025-08-19 14:55:06
+            [CreatedByName] => Abena Banson
+            [AssignedToName] => James Best
+            [CategoryName] => Facility Issues
+        )
+
+)
+
+[17-Sep-2025 05:43:06 Europe/Berlin] PHP Warning:  Trying to access array offset on value of type null in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\help_desk.php on line 122
+[17-Sep-2025 05:43:06 Europe/Berlin] PHP Stack trace:
+[17-Sep-2025 05:43:06 Europe/Berlin] PHP   1. {main}() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\help_desk.php:0
+[17-Sep-2025 05:43:06 Europe/Berlin] Failed to create notification: Cannot add or update a child row: a foreign key constraint fails (`frontdesk`.`notifications`, CONSTRAINT `fk_notifications_user_id` FOREIGN KEY (`user_id`) REFERENCES `users` (`UserID`) ON DELETE CASCADE)
+[17-Sep-2025 05:43:06 Europe/Berlin] Failed to create assignment notification: Cannot add or update a child row: a foreign key constraint fails (`frontdesk`.`notifications`, CONSTRAINT `fk_notifications_user_id` FOREIGN KEY (`user_id`) REFERENCES `users` (`UserID`) ON DELETE CASCADE)
+[17-Sep-2025 05:43:18 Europe/Berlin] Checking for ticket creation POST data: Array
+(
+)
+
+[17-Sep-2025 05:43:18 Europe/Berlin] Retrieved tickets: Array
+(
+    [0] => Array
+        (
+            [TicketID] => 60
+            [Description] => A host is not able to access his panel
+            [Priority] => critical
+            [Status] => in-progress
+            [CreatedDate] => 2025-09-17 01:30:35
+            [CreatedByName] => Raymond Adoe
+            [AssignedToName] => Cyrus Kwame Blay
+            [CategoryName] => Access
+        )
+
+    [1] => Array
+        (
+            [TicketID] => 41
+            [Description] => WiFi  Access has been down 
+            [Priority] => critical
+            [Status] => in-progress
+            [CreatedDate] => 2025-07-30 05:57:12
+            [CreatedByName] => James Best
+            [AssignedToName] => Annabel Mensah
+            [CategoryName] => Network
+        )
+
+    [2] => Array
+        (
+            [TicketID] => 43
+            [Description] => The bulbs in the washroom are faulty
+            [Priority] => high
+            [Status] => open
+            [CreatedDate] => 2025-08-01 15:08:11
+            [CreatedByName] => Abena Banson
+            [AssignedToName] => 
+            [CategoryName] => Facility Issues
+        )
+
+    [3] => Array
+        (
+            [TicketID] => 42
+            [Description] => Staff member cannot access the top floor
+            [Priority] => high
+            [Status] => open
+            [CreatedDate] => 2025-08-01 09:11:12
+            [CreatedByName] => James Best
+            [AssignedToName] => 
+            [CategoryName] => Access
+        )
+
+    [4] => Array
+        (
+            [TicketID] => 67
+            [Description] => The washroom is in a bad state
+            [Priority] => high
+            [Status] => in-progress
+            [CreatedDate] => 2025-09-17 03:26:37
+            [CreatedByName] => Raymond Adoe
+            [AssignedToName] => James Best
+            [CategoryName] => Facility Issues
+        )
+
+    [5] => Array
+        (
+            [TicketID] => 66
+            [Description] => The washrooms are is a bad state
+            [Priority] => high
+            [Status] => in-progress
+            [CreatedDate] => 2025-09-17 03:23:48
+            [CreatedByName] => Raymond Adoe
+            [AssignedToName] => James Best
+            [CategoryName] => Facility Issues
+        )
+
+    [6] => Array
+        (
+            [TicketID] => 65
+            [Description] => The washroom is in a bad state
+            [Priority] => high
+            [Status] => in-progress
+            [CreatedDate] => 2025-09-17 03:18:10
+            [CreatedByName] => Raymond Adoe
+            [AssignedToName] => James Best
+            [CategoryName] => Facility Issues
+        )
+
+    [7] => Array
+        (
+            [TicketID] => 59
+            [Description] => The top is inaccessible to staff members
+            [Priority] => high
+            [Status] => in-progress
+            [CreatedDate] => 2025-09-16 20:49:52
+            [CreatedByName] => Abena Banson
+            [AssignedToName] => Annabel Mensah
+            [CategoryName] => Access
+        )
+
+    [8] => Array
+        (
+            [TicketID] => 58
+            [Description] => The software is not working as it should
+            [Priority] => high
+            [Status] => in-progress
+            [CreatedDate] => 2025-09-13 12:55:22
+            [CreatedByName] => Adwoa Millicent
+            [AssignedToName] => James Best
+            [CategoryName] => Software
+        )
+
+    [9] => Array
+        (
+            [TicketID] => 57
+            [Description] => The front doors are not working
+            [Priority] => high
+            [Status] => in-progress
+            [CreatedDate] => 2025-09-10 10:09:47
+            [CreatedByName] => James Best
+            [AssignedToName] => Annabel Mensah
+            [CategoryName] => Facility Issues
+        )
+
+    [10] => Array
+        (
+            [TicketID] => 50
+            [Description] => the PCs at the front desk are faulty
+            [Priority] => high
+            [Status] => in-progress
+            [CreatedDate] => 2025-08-17 18:34:00
+            [CreatedByName] => James Best
+            [AssignedToName] => Annabel Mensah
+            [CategoryName] => Hardware
+        )
+
+    [11] => Array
+        (
+            [TicketID] => 52
+            [Description] => Connectivity issues on the ground floor
+            [Priority] => high
+            [Status] => resolved
+            [CreatedDate] => 2025-08-19 12:36:14
+            [CreatedByName] => Annabel Mensah
+            [AssignedToName] => Annabel Mensah
+            [CategoryName] => Network
+        )
+
+    [12] => Array
+        (
+            [TicketID] => 45
+            [Description] => Emails are not being sent on time
+            [Priority] => high
+            [Status] => resolved
+            [CreatedDate] => 2025-08-08 16:47:52
+            [CreatedByName] => James Best
+            [AssignedToName] => Raymond Adoe
+            [CategoryName] => Email/Notification
+        )
+
+    [13] => Array
+        (
+            [TicketID] => 56
+            [Description] => Many visitors are in a view waiting for you
+            [Priority] => high
+            [Status] => closed
+            [CreatedDate] => 2025-09-09 21:45:28
+            [CreatedByName] => Annabel Mensah
+            [AssignedToName] => Lawrence Danso Abiam
+            [CategoryName] => Appointments
+        )
+
+    [14] => Array
+        (
+            [TicketID] => 35
+            [Description] => System allowed booking of two appointments for the same host at 2:00 PM today. Both visitors showed up and caused confusion. Need to fix scheduling conflict detection.
+            [Priority] => high
+            [Status] => closed
+            [CreatedDate] => 2025-07-26 15:50:35
+            [CreatedByName] => Annabel Mensah
+            [AssignedToName] => Lawrence Danso Abiam
+            [CategoryName] => Appointments
+        )
+
+    [15] => Array
+        (
+            [TicketID] => 51
+            [Description] => Operating system need an update
+            [Priority] => medium
+            [Status] => open
+            [CreatedDate] => 2025-08-17 19:00:07
+            [CreatedByName] => James Best
+            [AssignedToName] => 
+            [CategoryName] => Software
+        )
+
+    [16] => Array
+        (
+            [TicketID] => 49
+            [Description] => Elevator have been made inaccessible
+            [Priority] => medium
+            [Status] => open
+            [CreatedDate] => 2025-08-17 18:01:23
+            [CreatedByName] => James Best
+            [AssignedToName] => 
+            [CategoryName] => Access
+        )
+
+    [17] => Array
+        (
+            [TicketID] => 38
+            [Description] => Visitors are not receiving appointment confirmation emails. Checked spam folders and email logs show messages are being sent but not delivered.
+            [Priority] => medium
+            [Status] => open
+            [CreatedDate] => 2025-07-26 15:55:06
+            [CreatedByName] => Abena Banson
+            [AssignedToName] => 
+            [CategoryName] => Email/Notification
+        )
+
+    [18] => Array
+        (
+            [TicketID] => 64
+            [Description] => There is no one at the front desk
+            [Priority] => medium
+            [Status] => in-progress
+            [CreatedDate] => 2025-09-17 02:49:26
+            [CreatedByName] => Annabel Mensah
+            [AssignedToName] => Abena Banson
+            [CategoryName] => Access
+        )
+
+    [19] => Array
+        (
+            [TicketID] => 63
+            [Description] => Appointments have been delayed till further notice
+            [Priority] => medium
+            [Status] => in-progress
+            [CreatedDate] => 2025-09-17 02:33:54
+            [CreatedByName] => Abena Banson
+            [AssignedToName] => Raymond Adoe
+            [CategoryName] => Appointments
+        )
+
+    [20] => Array
+        (
+            [TicketID] => 62
+            [Description] => Appointments are not being processed as fast as they should be
+            [Priority] => medium
+            [Status] => in-progress
+            [CreatedDate] => 2025-09-17 02:07:46
+            [CreatedByName] => Annabel Mensah
+            [AssignedToName] => Raymond Adoe
+            [CategoryName] => Appointments
+        )
+
+    [21] => Array
+        (
+            [TicketID] => 61
+            [Description] => There a quite a number of visitors checked in who are here to see you
+            [Priority] => medium
+            [Status] => in-progress
+            [CreatedDate] => 2025-09-17 01:45:52
+            [CreatedByName] => Abena Banson
+            [AssignedToName] => Raymond Adoe
+            [CategoryName] => Appointments
+        )
+
+    [22] => Array
+        (
+            [TicketID] => 44
+            [Description] => The top floor cannot be accessed at the moment
+            [Priority] => medium
+            [Status] => resolved
+            [CreatedDate] => 2025-08-01 15:19:18
+            [CreatedByName] => Lawrence Danso Abiam
+            [AssignedToName] => Annabel Mensah
+            [CategoryName] => Access
+        )
+
+    [23] => Array
+        (
+            [TicketID] => 37
+            [Description] => New front desk employee Jessica Brown started today but doesn't have access to the visitor management system. Need user account created with front desk permissions.
+            [Priority] => medium
+            [Status] => resolved
+            [CreatedDate] => 2025-07-26 15:53:36
+            [CreatedByName] => James Best
+            [AssignedToName] => Cyrus Kwame Blay
+            [CategoryName] => Access
+        )
+
+    [24] => Array
+        (
+            [TicketID] => 55
+            [Description] => Appointment emails are not being sent
+            [Priority] => medium
+            [Status] => closed
+            [CreatedDate] => 2025-08-22 21:29:26
+            [CreatedByName] => Abena Banson
+            [AssignedToName] => 
+            [CategoryName] => Email/Notification
+        )
+
+    [25] => Array
+        (
+            [TicketID] => 53
+            [Description] => In need of a password reset
+            [Priority] => medium
+            [Status] => closed
+            [CreatedDate] => 2025-08-19 13:46:02
+            [CreatedByName] => Raymond Adoe
+            [AssignedToName] => Cyrus Kwame Blay
+            [CategoryName] => Software
+        )
+
+    [26] => Array
+        (
+            [TicketID] => 40
+            [Description] => Washroom Leakage
+            [Priority] => medium
+            [Status] => closed
+            [CreatedDate] => 2025-07-28 18:28:55
+            [CreatedByName] => Abena Banson
+            [AssignedToName] => 
+            [CategoryName] => Facility Issues
+        )
+
+    [27] => Array
+        (
+            [TicketID] => 36
+            [Description] => The HP LaserJet printer in the front lobby keeps jamming when printing visitor badges. Also noticing streaks and faded text on printed materials.
+            [Priority] => medium
+            [Status] => closed
+            [CreatedDate] => 2025-07-26 15:52:41
+            [CreatedByName] => Abena Banson
+            [AssignedToName] => James Best
+            [CategoryName] => Hardware
+        )
+
+    [28] => Array
+        (
+            [TicketID] => 46
+            [Description] => A complaint of a missing black tote bag
+            [Priority] => low
+            [Status] => open
+            [CreatedDate] => 2025-08-17 17:55:00
+            [CreatedByName] => James Best
+            [AssignedToName] => 
+            [CategoryName] => Lost & Found
+        )
+
+    [29] => Array
+        (
+            [TicketID] => 39
+            [Description] => Appointment reminder emails have broken formatting - no line breaks and missing company logo. Text appears as one continuous paragraph.
+            [Priority] => low
+            [Status] => open
+            [CreatedDate] => 2025-07-26 15:56:05
+            [CreatedByName] => James Best
+            [AssignedToName] => 
+            [CategoryName] => Email/Notification
+        )
+
+    [30] => Array
+        (
+            [TicketID] => 54
+            [Description] => Doors at the reception are stuck
+            [Priority] => low
+            [Status] => in-progress
+            [CreatedDate] => 2025-08-19 14:55:06
+            [CreatedByName] => Abena Banson
+            [AssignedToName] => James Best
+            [CategoryName] => Facility Issues
+        )
+
+)
+
+[17-Sep-2025 05:43:18 Europe/Berlin] PHP Warning:  Trying to access array offset on value of type null in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\help_desk.php on line 122
+[17-Sep-2025 05:43:18 Europe/Berlin] PHP Stack trace:
+[17-Sep-2025 05:43:18 Europe/Berlin] PHP   1. {main}() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\help_desk.php:0
+[17-Sep-2025 05:43:18 Europe/Berlin] Failed to create notification: Cannot add or update a child row: a foreign key constraint fails (`frontdesk`.`notifications`, CONSTRAINT `fk_notifications_user_id` FOREIGN KEY (`user_id`) REFERENCES `users` (`UserID`) ON DELETE CASCADE)
+[17-Sep-2025 05:43:18 Europe/Berlin] Failed to create assignment notification: Cannot add or update a child row: a foreign key constraint fails (`frontdesk`.`notifications`, CONSTRAINT `fk_notifications_user_id` FOREIGN KEY (`user_id`) REFERENCES `users` (`UserID`) ON DELETE CASCADE)
+[17-Sep-2025 05:43:52 Europe/Berlin] Session data in ticket_ajax.php: {"user_id":"not set","userID":5,"role":"Support Staff"}
+[17-Sep-2025 05:44:18 Europe/Berlin] Session data in ticket_ajax.php: {"user_id":"not set","userID":5,"role":"Support Staff"}
+[17-Sep-2025 05:44:19 Europe/Berlin] Checking for ticket creation POST data: Array
+(
+)
+
+[17-Sep-2025 05:44:19 Europe/Berlin] Retrieved tickets: Array
+(
+    [0] => Array
+        (
+            [TicketID] => 60
+            [Description] => A host is not able to access his panel
+            [Priority] => critical
+            [Status] => in-progress
+            [CreatedDate] => 2025-09-17 01:30:35
+            [CreatedByName] => Raymond Adoe
+            [AssignedToName] => Cyrus Kwame Blay
+            [CategoryName] => Access
+        )
+
+    [1] => Array
+        (
+            [TicketID] => 41
+            [Description] => WiFi  Access has been down 
+            [Priority] => critical
+            [Status] => in-progress
+            [CreatedDate] => 2025-07-30 05:57:12
+            [CreatedByName] => James Best
+            [AssignedToName] => Annabel Mensah
+            [CategoryName] => Network
+        )
+
+    [2] => Array
+        (
+            [TicketID] => 43
+            [Description] => The bulbs in the washroom are faulty
+            [Priority] => high
+            [Status] => open
+            [CreatedDate] => 2025-08-01 15:08:11
+            [CreatedByName] => Abena Banson
+            [AssignedToName] => 
+            [CategoryName] => Facility Issues
+        )
+
+    [3] => Array
+        (
+            [TicketID] => 42
+            [Description] => Staff member cannot access the top floor
+            [Priority] => high
+            [Status] => open
+            [CreatedDate] => 2025-08-01 09:11:12
+            [CreatedByName] => James Best
+            [AssignedToName] => 
+            [CategoryName] => Access
+        )
+
+    [4] => Array
+        (
+            [TicketID] => 67
+            [Description] => The washroom is in a bad state
+            [Priority] => high
+            [Status] => in-progress
+            [CreatedDate] => 2025-09-17 03:26:37
+            [CreatedByName] => Raymond Adoe
+            [AssignedToName] => James Best
+            [CategoryName] => Facility Issues
+        )
+
+    [5] => Array
+        (
+            [TicketID] => 65
+            [Description] => The washroom is in a bad state
+            [Priority] => high
+            [Status] => in-progress
+            [CreatedDate] => 2025-09-17 03:18:10
+            [CreatedByName] => Raymond Adoe
+            [AssignedToName] => James Best
+            [CategoryName] => Facility Issues
+        )
+
+    [6] => Array
+        (
+            [TicketID] => 59
+            [Description] => The top is inaccessible to staff members
+            [Priority] => high
+            [Status] => in-progress
+            [CreatedDate] => 2025-09-16 20:49:52
+            [CreatedByName] => Abena Banson
+            [AssignedToName] => Annabel Mensah
+            [CategoryName] => Access
+        )
+
+    [7] => Array
+        (
+            [TicketID] => 58
+            [Description] => The software is not working as it should
+            [Priority] => high
+            [Status] => in-progress
+            [CreatedDate] => 2025-09-13 12:55:22
+            [CreatedByName] => Adwoa Millicent
+            [AssignedToName] => James Best
+            [CategoryName] => Software
+        )
+
+    [8] => Array
+        (
+            [TicketID] => 57
+            [Description] => The front doors are not working
+            [Priority] => high
+            [Status] => in-progress
+            [CreatedDate] => 2025-09-10 10:09:47
+            [CreatedByName] => James Best
+            [AssignedToName] => Annabel Mensah
+            [CategoryName] => Facility Issues
+        )
+
+    [9] => Array
+        (
+            [TicketID] => 50
+            [Description] => the PCs at the front desk are faulty
+            [Priority] => high
+            [Status] => in-progress
+            [CreatedDate] => 2025-08-17 18:34:00
+            [CreatedByName] => James Best
+            [AssignedToName] => Annabel Mensah
+            [CategoryName] => Hardware
+        )
+
+    [10] => Array
+        (
+            [TicketID] => 66
+            [Description] => The washrooms are is a bad state
+            [Priority] => high
+            [Status] => resolved
+            [CreatedDate] => 2025-09-17 03:23:48
+            [CreatedByName] => Raymond Adoe
+            [AssignedToName] => James Best
+            [CategoryName] => Facility Issues
+        )
+
+    [11] => Array
+        (
+            [TicketID] => 52
+            [Description] => Connectivity issues on the ground floor
+            [Priority] => high
+            [Status] => resolved
+            [CreatedDate] => 2025-08-19 12:36:14
+            [CreatedByName] => Annabel Mensah
+            [AssignedToName] => Annabel Mensah
+            [CategoryName] => Network
+        )
+
+    [12] => Array
+        (
+            [TicketID] => 45
+            [Description] => Emails are not being sent on time
+            [Priority] => high
+            [Status] => resolved
+            [CreatedDate] => 2025-08-08 16:47:52
+            [CreatedByName] => James Best
+            [AssignedToName] => Raymond Adoe
+            [CategoryName] => Email/Notification
+        )
+
+    [13] => Array
+        (
+            [TicketID] => 56
+            [Description] => Many visitors are in a view waiting for you
+            [Priority] => high
+            [Status] => closed
+            [CreatedDate] => 2025-09-09 21:45:28
+            [CreatedByName] => Annabel Mensah
+            [AssignedToName] => Lawrence Danso Abiam
+            [CategoryName] => Appointments
+        )
+
+    [14] => Array
+        (
+            [TicketID] => 35
+            [Description] => System allowed booking of two appointments for the same host at 2:00 PM today. Both visitors showed up and caused confusion. Need to fix scheduling conflict detection.
+            [Priority] => high
+            [Status] => closed
+            [CreatedDate] => 2025-07-26 15:50:35
+            [CreatedByName] => Annabel Mensah
+            [AssignedToName] => Lawrence Danso Abiam
+            [CategoryName] => Appointments
+        )
+
+    [15] => Array
+        (
+            [TicketID] => 51
+            [Description] => Operating system need an update
+            [Priority] => medium
+            [Status] => open
+            [CreatedDate] => 2025-08-17 19:00:07
+            [CreatedByName] => James Best
+            [AssignedToName] => 
+            [CategoryName] => Software
+        )
+
+    [16] => Array
+        (
+            [TicketID] => 49
+            [Description] => Elevator have been made inaccessible
+            [Priority] => medium
+            [Status] => open
+            [CreatedDate] => 2025-08-17 18:01:23
+            [CreatedByName] => James Best
+            [AssignedToName] => 
+            [CategoryName] => Access
+        )
+
+    [17] => Array
+        (
+            [TicketID] => 38
+            [Description] => Visitors are not receiving appointment confirmation emails. Checked spam folders and email logs show messages are being sent but not delivered.
+            [Priority] => medium
+            [Status] => open
+            [CreatedDate] => 2025-07-26 15:55:06
+            [CreatedByName] => Abena Banson
+            [AssignedToName] => 
+            [CategoryName] => Email/Notification
+        )
+
+    [18] => Array
+        (
+            [TicketID] => 64
+            [Description] => There is no one at the front desk
+            [Priority] => medium
+            [Status] => in-progress
+            [CreatedDate] => 2025-09-17 02:49:26
+            [CreatedByName] => Annabel Mensah
+            [AssignedToName] => Abena Banson
+            [CategoryName] => Access
+        )
+
+    [19] => Array
+        (
+            [TicketID] => 63
+            [Description] => Appointments have been delayed till further notice
+            [Priority] => medium
+            [Status] => in-progress
+            [CreatedDate] => 2025-09-17 02:33:54
+            [CreatedByName] => Abena Banson
+            [AssignedToName] => Raymond Adoe
+            [CategoryName] => Appointments
+        )
+
+    [20] => Array
+        (
+            [TicketID] => 62
+            [Description] => Appointments are not being processed as fast as they should be
+            [Priority] => medium
+            [Status] => in-progress
+            [CreatedDate] => 2025-09-17 02:07:46
+            [CreatedByName] => Annabel Mensah
+            [AssignedToName] => Raymond Adoe
+            [CategoryName] => Appointments
+        )
+
+    [21] => Array
+        (
+            [TicketID] => 61
+            [Description] => There a quite a number of visitors checked in who are here to see you
+            [Priority] => medium
+            [Status] => in-progress
+            [CreatedDate] => 2025-09-17 01:45:52
+            [CreatedByName] => Abena Banson
+            [AssignedToName] => Raymond Adoe
+            [CategoryName] => Appointments
+        )
+
+    [22] => Array
+        (
+            [TicketID] => 44
+            [Description] => The top floor cannot be accessed at the moment
+            [Priority] => medium
+            [Status] => resolved
+            [CreatedDate] => 2025-08-01 15:19:18
+            [CreatedByName] => Lawrence Danso Abiam
+            [AssignedToName] => Annabel Mensah
+            [CategoryName] => Access
+        )
+
+    [23] => Array
+        (
+            [TicketID] => 37
+            [Description] => New front desk employee Jessica Brown started today but doesn't have access to the visitor management system. Need user account created with front desk permissions.
+            [Priority] => medium
+            [Status] => resolved
+            [CreatedDate] => 2025-07-26 15:53:36
+            [CreatedByName] => James Best
+            [AssignedToName] => Cyrus Kwame Blay
+            [CategoryName] => Access
+        )
+
+    [24] => Array
+        (
+            [TicketID] => 55
+            [Description] => Appointment emails are not being sent
+            [Priority] => medium
+            [Status] => closed
+            [CreatedDate] => 2025-08-22 21:29:26
+            [CreatedByName] => Abena Banson
+            [AssignedToName] => 
+            [CategoryName] => Email/Notification
+        )
+
+    [25] => Array
+        (
+            [TicketID] => 53
+            [Description] => In need of a password reset
+            [Priority] => medium
+            [Status] => closed
+            [CreatedDate] => 2025-08-19 13:46:02
+            [CreatedByName] => Raymond Adoe
+            [AssignedToName] => Cyrus Kwame Blay
+            [CategoryName] => Software
+        )
+
+    [26] => Array
+        (
+            [TicketID] => 40
+            [Description] => Washroom Leakage
+            [Priority] => medium
+            [Status] => closed
+            [CreatedDate] => 2025-07-28 18:28:55
+            [CreatedByName] => Abena Banson
+            [AssignedToName] => 
+            [CategoryName] => Facility Issues
+        )
+
+    [27] => Array
+        (
+            [TicketID] => 36
+            [Description] => The HP LaserJet printer in the front lobby keeps jamming when printing visitor badges. Also noticing streaks and faded text on printed materials.
+            [Priority] => medium
+            [Status] => closed
+            [CreatedDate] => 2025-07-26 15:52:41
+            [CreatedByName] => Abena Banson
+            [AssignedToName] => James Best
+            [CategoryName] => Hardware
+        )
+
+    [28] => Array
+        (
+            [TicketID] => 46
+            [Description] => A complaint of a missing black tote bag
+            [Priority] => low
+            [Status] => open
+            [CreatedDate] => 2025-08-17 17:55:00
+            [CreatedByName] => James Best
+            [AssignedToName] => 
+            [CategoryName] => Lost & Found
+        )
+
+    [29] => Array
+        (
+            [TicketID] => 39
+            [Description] => Appointment reminder emails have broken formatting - no line breaks and missing company logo. Text appears as one continuous paragraph.
+            [Priority] => low
+            [Status] => open
+            [CreatedDate] => 2025-07-26 15:56:05
+            [CreatedByName] => James Best
+            [AssignedToName] => 
+            [CategoryName] => Email/Notification
+        )
+
+    [30] => Array
+        (
+            [TicketID] => 54
+            [Description] => Doors at the reception are stuck
+            [Priority] => low
+            [Status] => in-progress
+            [CreatedDate] => 2025-08-19 14:55:06
+            [CreatedByName] => Abena Banson
+            [AssignedToName] => James Best
+            [CategoryName] => Facility Issues
+        )
+
+)
+
+[17-Sep-2025 05:44:19 Europe/Berlin] PHP Warning:  Trying to access array offset on value of type null in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\help_desk.php on line 122
+[17-Sep-2025 05:44:19 Europe/Berlin] PHP Stack trace:
+[17-Sep-2025 05:44:19 Europe/Berlin] PHP   1. {main}() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\help_desk.php:0
+[17-Sep-2025 05:44:19 Europe/Berlin] Failed to create notification: Cannot add or update a child row: a foreign key constraint fails (`frontdesk`.`notifications`, CONSTRAINT `fk_notifications_user_id` FOREIGN KEY (`user_id`) REFERENCES `users` (`UserID`) ON DELETE CASCADE)
+[17-Sep-2025 05:44:19 Europe/Berlin] Failed to create assignment notification: Cannot add or update a child row: a foreign key constraint fails (`frontdesk`.`notifications`, CONSTRAINT `fk_notifications_user_id` FOREIGN KEY (`user_id`) REFERENCES `users` (`UserID`) ON DELETE CASCADE)
+[17-Sep-2025 05:51:54 Europe/Berlin] Checking for ticket creation POST data: Array
+(
+)
+
+[17-Sep-2025 05:52:08 Europe/Berlin] Session data in ticket_ajax.php: {"user_id":"not set","userID":2,"role":"Front Desk Staff"}
+[17-Sep-2025 05:52:11 Europe/Berlin] Session data in ticket_ajax.php: {"user_id":"not set","userID":2,"role":"Front Desk Staff"}
+[17-Sep-2025 05:52:13 Europe/Berlin] Checking for ticket creation POST data: Array
+(
+)
+
+[17-Sep-2025 06:03:07 Europe/Berlin] Checking for ticket creation POST data: Array
+(
+)
+
+[17-Sep-2025 06:03:07 Europe/Berlin] Retrieved tickets: Array
+(
+    [0] => Array
+        (
+            [TicketID] => 60
+            [Description] => A host is not able to access his panel
+            [Priority] => critical
+            [Status] => in-progress
+            [CreatedDate] => 2025-09-17 01:30:35
+            [CreatedByName] => Raymond Adoe
+            [AssignedToName] => Cyrus Kwame Blay
+            [CategoryName] => Access
+        )
+
+    [1] => Array
+        (
+            [TicketID] => 41
+            [Description] => WiFi  Access has been down 
+            [Priority] => critical
+            [Status] => in-progress
+            [CreatedDate] => 2025-07-30 05:57:12
+            [CreatedByName] => James Best
+            [AssignedToName] => Annabel Mensah
+            [CategoryName] => Network
+        )
+
+    [2] => Array
+        (
+            [TicketID] => 43
+            [Description] => The bulbs in the washroom are faulty
+            [Priority] => high
+            [Status] => open
+            [CreatedDate] => 2025-08-01 15:08:11
+            [CreatedByName] => Abena Banson
+            [AssignedToName] => 
+            [CategoryName] => Facility Issues
+        )
+
+    [3] => Array
+        (
+            [TicketID] => 42
+            [Description] => Staff member cannot access the top floor
+            [Priority] => high
+            [Status] => open
+            [CreatedDate] => 2025-08-01 09:11:12
+            [CreatedByName] => James Best
+            [AssignedToName] => 
+            [CategoryName] => Access
+        )
+
+    [4] => Array
+        (
+            [TicketID] => 67
+            [Description] => The washroom is in a bad state
+            [Priority] => high
+            [Status] => in-progress
+            [CreatedDate] => 2025-09-17 03:26:37
+            [CreatedByName] => Raymond Adoe
+            [AssignedToName] => James Best
+            [CategoryName] => Facility Issues
+        )
+
+    [5] => Array
+        (
+            [TicketID] => 65
+            [Description] => The washroom is in a bad state
+            [Priority] => high
+            [Status] => in-progress
+            [CreatedDate] => 2025-09-17 03:18:10
+            [CreatedByName] => Raymond Adoe
+            [AssignedToName] => James Best
+            [CategoryName] => Facility Issues
+        )
+
+    [6] => Array
+        (
+            [TicketID] => 59
+            [Description] => The top is inaccessible to staff members
+            [Priority] => high
+            [Status] => in-progress
+            [CreatedDate] => 2025-09-16 20:49:52
+            [CreatedByName] => Abena Banson
+            [AssignedToName] => Annabel Mensah
+            [CategoryName] => Access
+        )
+
+    [7] => Array
+        (
+            [TicketID] => 58
+            [Description] => The software is not working as it should
+            [Priority] => high
+            [Status] => in-progress
+            [CreatedDate] => 2025-09-13 12:55:22
+            [CreatedByName] => Adwoa Millicent
+            [AssignedToName] => James Best
+            [CategoryName] => Software
+        )
+
+    [8] => Array
+        (
+            [TicketID] => 57
+            [Description] => The front doors are not working
+            [Priority] => high
+            [Status] => in-progress
+            [CreatedDate] => 2025-09-10 10:09:47
+            [CreatedByName] => James Best
+            [AssignedToName] => Annabel Mensah
+            [CategoryName] => Facility Issues
+        )
+
+    [9] => Array
+        (
+            [TicketID] => 50
+            [Description] => the PCs at the front desk are faulty
+            [Priority] => high
+            [Status] => in-progress
+            [CreatedDate] => 2025-08-17 18:34:00
+            [CreatedByName] => James Best
+            [AssignedToName] => Annabel Mensah
+            [CategoryName] => Hardware
+        )
+
+    [10] => Array
+        (
+            [TicketID] => 66
+            [Description] => The washrooms are is a bad state
+            [Priority] => high
+            [Status] => resolved
+            [CreatedDate] => 2025-09-17 03:23:48
+            [CreatedByName] => Raymond Adoe
+            [AssignedToName] => James Best
+            [CategoryName] => Facility Issues
+        )
+
+    [11] => Array
+        (
+            [TicketID] => 52
+            [Description] => Connectivity issues on the ground floor
+            [Priority] => high
+            [Status] => resolved
+            [CreatedDate] => 2025-08-19 12:36:14
+            [CreatedByName] => Annabel Mensah
+            [AssignedToName] => Annabel Mensah
+            [CategoryName] => Network
+        )
+
+    [12] => Array
+        (
+            [TicketID] => 45
+            [Description] => Emails are not being sent on time
+            [Priority] => high
+            [Status] => resolved
+            [CreatedDate] => 2025-08-08 16:47:52
+            [CreatedByName] => James Best
+            [AssignedToName] => Raymond Adoe
+            [CategoryName] => Email/Notification
+        )
+
+    [13] => Array
+        (
+            [TicketID] => 56
+            [Description] => Many visitors are in a view waiting for you
+            [Priority] => high
+            [Status] => closed
+            [CreatedDate] => 2025-09-09 21:45:28
+            [CreatedByName] => Annabel Mensah
+            [AssignedToName] => Lawrence Danso Abiam
+            [CategoryName] => Appointments
+        )
+
+    [14] => Array
+        (
+            [TicketID] => 35
+            [Description] => System allowed booking of two appointments for the same host at 2:00 PM today. Both visitors showed up and caused confusion. Need to fix scheduling conflict detection.
+            [Priority] => high
+            [Status] => closed
+            [CreatedDate] => 2025-07-26 15:50:35
+            [CreatedByName] => Annabel Mensah
+            [AssignedToName] => Lawrence Danso Abiam
+            [CategoryName] => Appointments
+        )
+
+    [15] => Array
+        (
+            [TicketID] => 49
+            [Description] => Elevator have been made inaccessible
+            [Priority] => medium
+            [Status] => open
+            [CreatedDate] => 2025-08-17 18:01:23
+            [CreatedByName] => James Best
+            [AssignedToName] => 
+            [CategoryName] => Access
+        )
+
+    [16] => Array
+        (
+            [TicketID] => 38
+            [Description] => Visitors are not receiving appointment confirmation emails. Checked spam folders and email logs show messages are being sent but not delivered.
+            [Priority] => medium
+            [Status] => open
+            [CreatedDate] => 2025-07-26 15:55:06
+            [CreatedByName] => Abena Banson
+            [AssignedToName] => 
+            [CategoryName] => Email/Notification
+        )
+
+    [17] => Array
+        (
+            [TicketID] => 64
+            [Description] => There is no one at the front desk
+            [Priority] => medium
+            [Status] => in-progress
+            [CreatedDate] => 2025-09-17 02:49:26
+            [CreatedByName] => Annabel Mensah
+            [AssignedToName] => Abena Banson
+            [CategoryName] => Access
+        )
+
+    [18] => Array
+        (
+            [TicketID] => 63
+            [Description] => Appointments have been delayed till further notice
+            [Priority] => medium
+            [Status] => in-progress
+            [CreatedDate] => 2025-09-17 02:33:54
+            [CreatedByName] => Abena Banson
+            [AssignedToName] => Raymond Adoe
+            [CategoryName] => Appointments
+        )
+
+    [19] => Array
+        (
+            [TicketID] => 62
+            [Description] => Appointments are not being processed as fast as they should be
+            [Priority] => medium
+            [Status] => in-progress
+            [CreatedDate] => 2025-09-17 02:07:46
+            [CreatedByName] => Annabel Mensah
+            [AssignedToName] => Raymond Adoe
+            [CategoryName] => Appointments
+        )
+
+    [20] => Array
+        (
+            [TicketID] => 61
+            [Description] => There a quite a number of visitors checked in who are here to see you
+            [Priority] => medium
+            [Status] => in-progress
+            [CreatedDate] => 2025-09-17 01:45:52
+            [CreatedByName] => Abena Banson
+            [AssignedToName] => Raymond Adoe
+            [CategoryName] => Appointments
+        )
+
+    [21] => Array
+        (
+            [TicketID] => 51
+            [Description] => Operating system need an update
+            [Priority] => medium
+            [Status] => in-progress
+            [CreatedDate] => 2025-08-17 19:00:07
+            [CreatedByName] => James Best
+            [AssignedToName] => Cyrus Kwame Blay
+            [CategoryName] => Software
+        )
+
+    [22] => Array
+        (
+            [TicketID] => 44
+            [Description] => The top floor cannot be accessed at the moment
+            [Priority] => medium
+            [Status] => resolved
+            [CreatedDate] => 2025-08-01 15:19:18
+            [CreatedByName] => Lawrence Danso Abiam
+            [AssignedToName] => Annabel Mensah
+            [CategoryName] => Access
+        )
+
+    [23] => Array
+        (
+            [TicketID] => 37
+            [Description] => New front desk employee Jessica Brown started today but doesn't have access to the visitor management system. Need user account created with front desk permissions.
+            [Priority] => medium
+            [Status] => resolved
+            [CreatedDate] => 2025-07-26 15:53:36
+            [CreatedByName] => James Best
+            [AssignedToName] => Cyrus Kwame Blay
+            [CategoryName] => Access
+        )
+
+    [24] => Array
+        (
+            [TicketID] => 55
+            [Description] => Appointment emails are not being sent
+            [Priority] => medium
+            [Status] => closed
+            [CreatedDate] => 2025-08-22 21:29:26
+            [CreatedByName] => Abena Banson
+            [AssignedToName] => 
+            [CategoryName] => Email/Notification
+        )
+
+    [25] => Array
+        (
+            [TicketID] => 53
+            [Description] => In need of a password reset
+            [Priority] => medium
+            [Status] => closed
+            [CreatedDate] => 2025-08-19 13:46:02
+            [CreatedByName] => Raymond Adoe
+            [AssignedToName] => Cyrus Kwame Blay
+            [CategoryName] => Software
+        )
+
+    [26] => Array
+        (
+            [TicketID] => 40
+            [Description] => Washroom Leakage
+            [Priority] => medium
+            [Status] => closed
+            [CreatedDate] => 2025-07-28 18:28:55
+            [CreatedByName] => Abena Banson
+            [AssignedToName] => 
+            [CategoryName] => Facility Issues
+        )
+
+    [27] => Array
+        (
+            [TicketID] => 36
+            [Description] => The HP LaserJet printer in the front lobby keeps jamming when printing visitor badges. Also noticing streaks and faded text on printed materials.
+            [Priority] => medium
+            [Status] => closed
+            [CreatedDate] => 2025-07-26 15:52:41
+            [CreatedByName] => Abena Banson
+            [AssignedToName] => James Best
+            [CategoryName] => Hardware
+        )
+
+    [28] => Array
+        (
+            [TicketID] => 46
+            [Description] => A complaint of a missing black tote bag
+            [Priority] => low
+            [Status] => open
+            [CreatedDate] => 2025-08-17 17:55:00
+            [CreatedByName] => James Best
+            [AssignedToName] => 
+            [CategoryName] => Lost & Found
+        )
+
+    [29] => Array
+        (
+            [TicketID] => 39
+            [Description] => Appointment reminder emails have broken formatting - no line breaks and missing company logo. Text appears as one continuous paragraph.
+            [Priority] => low
+            [Status] => open
+            [CreatedDate] => 2025-07-26 15:56:05
+            [CreatedByName] => James Best
+            [AssignedToName] => 
+            [CategoryName] => Email/Notification
+        )
+
+    [30] => Array
+        (
+            [TicketID] => 54
+            [Description] => Doors at the reception are stuck
+            [Priority] => low
+            [Status] => in-progress
+            [CreatedDate] => 2025-08-19 14:55:06
+            [CreatedByName] => Abena Banson
+            [AssignedToName] => James Best
+            [CategoryName] => Facility Issues
+        )
+
+)
+
+[17-Sep-2025 06:03:07 Europe/Berlin] PHP Warning:  Trying to access array offset on value of type null in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\help_desk.php on line 122
+[17-Sep-2025 06:03:07 Europe/Berlin] PHP Stack trace:
+[17-Sep-2025 06:03:07 Europe/Berlin] PHP   1. {main}() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\help_desk.php:0
+[17-Sep-2025 06:03:07 Europe/Berlin] Failed to create notification: Cannot add or update a child row: a foreign key constraint fails (`frontdesk`.`notifications`, CONSTRAINT `fk_notifications_user_id` FOREIGN KEY (`user_id`) REFERENCES `users` (`UserID`) ON DELETE CASCADE)
+[17-Sep-2025 06:03:07 Europe/Berlin] Failed to create assignment notification: Cannot add or update a child row: a foreign key constraint fails (`frontdesk`.`notifications`, CONSTRAINT `fk_notifications_user_id` FOREIGN KEY (`user_id`) REFERENCES `users` (`UserID`) ON DELETE CASCADE)
+[17-Sep-2025 06:03:21 Europe/Berlin] Session data in ticket_ajax.php: {"user_id":"not set","userID":5,"role":"Support Staff"}
+[17-Sep-2025 06:03:31 Europe/Berlin] Session data in ticket_ajax.php: {"user_id":"not set","userID":5,"role":"Support Staff"}
+[17-Sep-2025 06:03:33 Europe/Berlin] Checking for ticket creation POST data: Array
+(
+)
+
+[17-Sep-2025 06:03:33 Europe/Berlin] Retrieved tickets: Array
+(
+    [0] => Array
+        (
+            [TicketID] => 60
+            [Description] => A host is not able to access his panel
+            [Priority] => critical
+            [Status] => in-progress
+            [CreatedDate] => 2025-09-17 01:30:35
+            [CreatedByName] => Raymond Adoe
+            [AssignedToName] => Cyrus Kwame Blay
+            [CategoryName] => Access
+        )
+
+    [1] => Array
+        (
+            [TicketID] => 41
+            [Description] => WiFi  Access has been down 
+            [Priority] => critical
+            [Status] => in-progress
+            [CreatedDate] => 2025-07-30 05:57:12
+            [CreatedByName] => James Best
+            [AssignedToName] => Annabel Mensah
+            [CategoryName] => Network
+        )
+
+    [2] => Array
+        (
+            [TicketID] => 43
+            [Description] => The bulbs in the washroom are faulty
+            [Priority] => high
+            [Status] => open
+            [CreatedDate] => 2025-08-01 15:08:11
+            [CreatedByName] => Abena Banson
+            [AssignedToName] => 
+            [CategoryName] => Facility Issues
+        )
+
+    [3] => Array
+        (
+            [TicketID] => 42
+            [Description] => Staff member cannot access the top floor
+            [Priority] => high
+            [Status] => open
+            [CreatedDate] => 2025-08-01 09:11:12
+            [CreatedByName] => James Best
+            [AssignedToName] => 
+            [CategoryName] => Access
+        )
+
+    [4] => Array
+        (
+            [TicketID] => 67
+            [Description] => The washroom is in a bad state
+            [Priority] => high
+            [Status] => in-progress
+            [CreatedDate] => 2025-09-17 03:26:37
+            [CreatedByName] => Raymond Adoe
+            [AssignedToName] => James Best
+            [CategoryName] => Facility Issues
+        )
+
+    [5] => Array
+        (
+            [TicketID] => 65
+            [Description] => The washroom is in a bad state
+            [Priority] => high
+            [Status] => in-progress
+            [CreatedDate] => 2025-09-17 03:18:10
+            [CreatedByName] => Raymond Adoe
+            [AssignedToName] => James Best
+            [CategoryName] => Facility Issues
+        )
+
+    [6] => Array
+        (
+            [TicketID] => 59
+            [Description] => The top is inaccessible to staff members
+            [Priority] => high
+            [Status] => in-progress
+            [CreatedDate] => 2025-09-16 20:49:52
+            [CreatedByName] => Abena Banson
+            [AssignedToName] => Annabel Mensah
+            [CategoryName] => Access
+        )
+
+    [7] => Array
+        (
+            [TicketID] => 58
+            [Description] => The software is not working as it should
+            [Priority] => high
+            [Status] => in-progress
+            [CreatedDate] => 2025-09-13 12:55:22
+            [CreatedByName] => Adwoa Millicent
+            [AssignedToName] => James Best
+            [CategoryName] => Software
+        )
+
+    [8] => Array
+        (
+            [TicketID] => 57
+            [Description] => The front doors are not working
+            [Priority] => high
+            [Status] => in-progress
+            [CreatedDate] => 2025-09-10 10:09:47
+            [CreatedByName] => James Best
+            [AssignedToName] => Annabel Mensah
+            [CategoryName] => Facility Issues
+        )
+
+    [9] => Array
+        (
+            [TicketID] => 50
+            [Description] => the PCs at the front desk are faulty
+            [Priority] => high
+            [Status] => in-progress
+            [CreatedDate] => 2025-08-17 18:34:00
+            [CreatedByName] => James Best
+            [AssignedToName] => Annabel Mensah
+            [CategoryName] => Hardware
+        )
+
+    [10] => Array
+        (
+            [TicketID] => 66
+            [Description] => The washrooms are is a bad state
+            [Priority] => high
+            [Status] => resolved
+            [CreatedDate] => 2025-09-17 03:23:48
+            [CreatedByName] => Raymond Adoe
+            [AssignedToName] => James Best
+            [CategoryName] => Facility Issues
+        )
+
+    [11] => Array
+        (
+            [TicketID] => 52
+            [Description] => Connectivity issues on the ground floor
+            [Priority] => high
+            [Status] => resolved
+            [CreatedDate] => 2025-08-19 12:36:14
+            [CreatedByName] => Annabel Mensah
+            [AssignedToName] => Annabel Mensah
+            [CategoryName] => Network
+        )
+
+    [12] => Array
+        (
+            [TicketID] => 45
+            [Description] => Emails are not being sent on time
+            [Priority] => high
+            [Status] => resolved
+            [CreatedDate] => 2025-08-08 16:47:52
+            [CreatedByName] => James Best
+            [AssignedToName] => Raymond Adoe
+            [CategoryName] => Email/Notification
+        )
+
+    [13] => Array
+        (
+            [TicketID] => 56
+            [Description] => Many visitors are in a view waiting for you
+            [Priority] => high
+            [Status] => closed
+            [CreatedDate] => 2025-09-09 21:45:28
+            [CreatedByName] => Annabel Mensah
+            [AssignedToName] => Lawrence Danso Abiam
+            [CategoryName] => Appointments
+        )
+
+    [14] => Array
+        (
+            [TicketID] => 35
+            [Description] => System allowed booking of two appointments for the same host at 2:00 PM today. Both visitors showed up and caused confusion. Need to fix scheduling conflict detection.
+            [Priority] => high
+            [Status] => closed
+            [CreatedDate] => 2025-07-26 15:50:35
+            [CreatedByName] => Annabel Mensah
+            [AssignedToName] => Lawrence Danso Abiam
+            [CategoryName] => Appointments
+        )
+
+    [15] => Array
+        (
+            [TicketID] => 49
+            [Description] => Elevator have been made inaccessible
+            [Priority] => medium
+            [Status] => open
+            [CreatedDate] => 2025-08-17 18:01:23
+            [CreatedByName] => James Best
+            [AssignedToName] => 
+            [CategoryName] => Access
+        )
+
+    [16] => Array
+        (
+            [TicketID] => 38
+            [Description] => Visitors are not receiving appointment confirmation emails. Checked spam folders and email logs show messages are being sent but not delivered.
+            [Priority] => medium
+            [Status] => open
+            [CreatedDate] => 2025-07-26 15:55:06
+            [CreatedByName] => Abena Banson
+            [AssignedToName] => 
+            [CategoryName] => Email/Notification
+        )
+
+    [17] => Array
+        (
+            [TicketID] => 64
+            [Description] => There is no one at the front desk
+            [Priority] => medium
+            [Status] => in-progress
+            [CreatedDate] => 2025-09-17 02:49:26
+            [CreatedByName] => Annabel Mensah
+            [AssignedToName] => Abena Banson
+            [CategoryName] => Access
+        )
+
+    [18] => Array
+        (
+            [TicketID] => 63
+            [Description] => Appointments have been delayed till further notice
+            [Priority] => medium
+            [Status] => in-progress
+            [CreatedDate] => 2025-09-17 02:33:54
+            [CreatedByName] => Abena Banson
+            [AssignedToName] => Raymond Adoe
+            [CategoryName] => Appointments
+        )
+
+    [19] => Array
+        (
+            [TicketID] => 62
+            [Description] => Appointments are not being processed as fast as they should be
+            [Priority] => medium
+            [Status] => in-progress
+            [CreatedDate] => 2025-09-17 02:07:46
+            [CreatedByName] => Annabel Mensah
+            [AssignedToName] => Raymond Adoe
+            [CategoryName] => Appointments
+        )
+
+    [20] => Array
+        (
+            [TicketID] => 61
+            [Description] => There a quite a number of visitors checked in who are here to see you
+            [Priority] => medium
+            [Status] => in-progress
+            [CreatedDate] => 2025-09-17 01:45:52
+            [CreatedByName] => Abena Banson
+            [AssignedToName] => Raymond Adoe
+            [CategoryName] => Appointments
+        )
+
+    [21] => Array
+        (
+            [TicketID] => 51
+            [Description] => Operating system need an update
+            [Priority] => medium
+            [Status] => resolved
+            [CreatedDate] => 2025-08-17 19:00:07
+            [CreatedByName] => James Best
+            [AssignedToName] => Cyrus Kwame Blay
+            [CategoryName] => Software
+        )
+
+    [22] => Array
+        (
+            [TicketID] => 44
+            [Description] => The top floor cannot be accessed at the moment
+            [Priority] => medium
+            [Status] => resolved
+            [CreatedDate] => 2025-08-01 15:19:18
+            [CreatedByName] => Lawrence Danso Abiam
+            [AssignedToName] => Annabel Mensah
+            [CategoryName] => Access
+        )
+
+    [23] => Array
+        (
+            [TicketID] => 37
+            [Description] => New front desk employee Jessica Brown started today but doesn't have access to the visitor management system. Need user account created with front desk permissions.
+            [Priority] => medium
+            [Status] => resolved
+            [CreatedDate] => 2025-07-26 15:53:36
+            [CreatedByName] => James Best
+            [AssignedToName] => Cyrus Kwame Blay
+            [CategoryName] => Access
+        )
+
+    [24] => Array
+        (
+            [TicketID] => 55
+            [Description] => Appointment emails are not being sent
+            [Priority] => medium
+            [Status] => closed
+            [CreatedDate] => 2025-08-22 21:29:26
+            [CreatedByName] => Abena Banson
+            [AssignedToName] => 
+            [CategoryName] => Email/Notification
+        )
+
+    [25] => Array
+        (
+            [TicketID] => 53
+            [Description] => In need of a password reset
+            [Priority] => medium
+            [Status] => closed
+            [CreatedDate] => 2025-08-19 13:46:02
+            [CreatedByName] => Raymond Adoe
+            [AssignedToName] => Cyrus Kwame Blay
+            [CategoryName] => Software
+        )
+
+    [26] => Array
+        (
+            [TicketID] => 40
+            [Description] => Washroom Leakage
+            [Priority] => medium
+            [Status] => closed
+            [CreatedDate] => 2025-07-28 18:28:55
+            [CreatedByName] => Abena Banson
+            [AssignedToName] => 
+            [CategoryName] => Facility Issues
+        )
+
+    [27] => Array
+        (
+            [TicketID] => 36
+            [Description] => The HP LaserJet printer in the front lobby keeps jamming when printing visitor badges. Also noticing streaks and faded text on printed materials.
+            [Priority] => medium
+            [Status] => closed
+            [CreatedDate] => 2025-07-26 15:52:41
+            [CreatedByName] => Abena Banson
+            [AssignedToName] => James Best
+            [CategoryName] => Hardware
+        )
+
+    [28] => Array
+        (
+            [TicketID] => 46
+            [Description] => A complaint of a missing black tote bag
+            [Priority] => low
+            [Status] => open
+            [CreatedDate] => 2025-08-17 17:55:00
+            [CreatedByName] => James Best
+            [AssignedToName] => 
+            [CategoryName] => Lost & Found
+        )
+
+    [29] => Array
+        (
+            [TicketID] => 39
+            [Description] => Appointment reminder emails have broken formatting - no line breaks and missing company logo. Text appears as one continuous paragraph.
+            [Priority] => low
+            [Status] => open
+            [CreatedDate] => 2025-07-26 15:56:05
+            [CreatedByName] => James Best
+            [AssignedToName] => 
+            [CategoryName] => Email/Notification
+        )
+
+    [30] => Array
+        (
+            [TicketID] => 54
+            [Description] => Doors at the reception are stuck
+            [Priority] => low
+            [Status] => in-progress
+            [CreatedDate] => 2025-08-19 14:55:06
+            [CreatedByName] => Abena Banson
+            [AssignedToName] => James Best
+            [CategoryName] => Facility Issues
+        )
+
+)
+
+[17-Sep-2025 06:03:33 Europe/Berlin] PHP Warning:  Trying to access array offset on value of type null in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\help_desk.php on line 122
+[17-Sep-2025 06:03:33 Europe/Berlin] PHP Stack trace:
+[17-Sep-2025 06:03:33 Europe/Berlin] PHP   1. {main}() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\help_desk.php:0
+[17-Sep-2025 06:03:33 Europe/Berlin] Failed to create notification: Cannot add or update a child row: a foreign key constraint fails (`frontdesk`.`notifications`, CONSTRAINT `fk_notifications_user_id` FOREIGN KEY (`user_id`) REFERENCES `users` (`UserID`) ON DELETE CASCADE)
+[17-Sep-2025 06:03:33 Europe/Berlin] Failed to create assignment notification: Cannot add or update a child row: a foreign key constraint fails (`frontdesk`.`notifications`, CONSTRAINT `fk_notifications_user_id` FOREIGN KEY (`user_id`) REFERENCES `users` (`UserID`) ON DELETE CASCADE)
+[17-Sep-2025 06:03:43 Europe/Berlin] Session data in ticket_ajax.php: {"user_id":"not set","userID":5,"role":"Support Staff"}
+[17-Sep-2025 06:03:54 Europe/Berlin] Session data in ticket_ajax.php: {"user_id":"not set","userID":5,"role":"Support Staff"}
+[17-Sep-2025 06:03:57 Europe/Berlin] Checking for ticket creation POST data: Array
+(
+)
+
+[17-Sep-2025 06:03:57 Europe/Berlin] Retrieved tickets: Array
+(
+    [0] => Array
+        (
+            [TicketID] => 60
+            [Description] => A host is not able to access his panel
+            [Priority] => critical
+            [Status] => in-progress
+            [CreatedDate] => 2025-09-17 01:30:35
+            [CreatedByName] => Raymond Adoe
+            [AssignedToName] => Cyrus Kwame Blay
+            [CategoryName] => Access
+        )
+
+    [1] => Array
+        (
+            [TicketID] => 41
+            [Description] => WiFi  Access has been down 
+            [Priority] => critical
+            [Status] => in-progress
+            [CreatedDate] => 2025-07-30 05:57:12
+            [CreatedByName] => James Best
+            [AssignedToName] => Annabel Mensah
+            [CategoryName] => Network
+        )
+
+    [2] => Array
+        (
+            [TicketID] => 43
+            [Description] => The bulbs in the washroom are faulty
+            [Priority] => high
+            [Status] => open
+            [CreatedDate] => 2025-08-01 15:08:11
+            [CreatedByName] => Abena Banson
+            [AssignedToName] => 
+            [CategoryName] => Facility Issues
+        )
+
+    [3] => Array
+        (
+            [TicketID] => 42
+            [Description] => Staff member cannot access the top floor
+            [Priority] => high
+            [Status] => open
+            [CreatedDate] => 2025-08-01 09:11:12
+            [CreatedByName] => James Best
+            [AssignedToName] => 
+            [CategoryName] => Access
+        )
+
+    [4] => Array
+        (
+            [TicketID] => 67
+            [Description] => The washroom is in a bad state
+            [Priority] => high
+            [Status] => in-progress
+            [CreatedDate] => 2025-09-17 03:26:37
+            [CreatedByName] => Raymond Adoe
+            [AssignedToName] => James Best
+            [CategoryName] => Facility Issues
+        )
+
+    [5] => Array
+        (
+            [TicketID] => 65
+            [Description] => The washroom is in a bad state
+            [Priority] => high
+            [Status] => in-progress
+            [CreatedDate] => 2025-09-17 03:18:10
+            [CreatedByName] => Raymond Adoe
+            [AssignedToName] => James Best
+            [CategoryName] => Facility Issues
+        )
+
+    [6] => Array
+        (
+            [TicketID] => 59
+            [Description] => The top is inaccessible to staff members
+            [Priority] => high
+            [Status] => in-progress
+            [CreatedDate] => 2025-09-16 20:49:52
+            [CreatedByName] => Abena Banson
+            [AssignedToName] => Annabel Mensah
+            [CategoryName] => Access
+        )
+
+    [7] => Array
+        (
+            [TicketID] => 58
+            [Description] => The software is not working as it should
+            [Priority] => high
+            [Status] => in-progress
+            [CreatedDate] => 2025-09-13 12:55:22
+            [CreatedByName] => Adwoa Millicent
+            [AssignedToName] => James Best
+            [CategoryName] => Software
+        )
+
+    [8] => Array
+        (
+            [TicketID] => 57
+            [Description] => The front doors are not working
+            [Priority] => high
+            [Status] => in-progress
+            [CreatedDate] => 2025-09-10 10:09:47
+            [CreatedByName] => James Best
+            [AssignedToName] => Annabel Mensah
+            [CategoryName] => Facility Issues
+        )
+
+    [9] => Array
+        (
+            [TicketID] => 50
+            [Description] => the PCs at the front desk are faulty
+            [Priority] => high
+            [Status] => in-progress
+            [CreatedDate] => 2025-08-17 18:34:00
+            [CreatedByName] => James Best
+            [AssignedToName] => Annabel Mensah
+            [CategoryName] => Hardware
+        )
+
+    [10] => Array
+        (
+            [TicketID] => 66
+            [Description] => The washrooms are is a bad state
+            [Priority] => high
+            [Status] => resolved
+            [CreatedDate] => 2025-09-17 03:23:48
+            [CreatedByName] => Raymond Adoe
+            [AssignedToName] => James Best
+            [CategoryName] => Facility Issues
+        )
+
+    [11] => Array
+        (
+            [TicketID] => 52
+            [Description] => Connectivity issues on the ground floor
+            [Priority] => high
+            [Status] => resolved
+            [CreatedDate] => 2025-08-19 12:36:14
+            [CreatedByName] => Annabel Mensah
+            [AssignedToName] => Annabel Mensah
+            [CategoryName] => Network
+        )
+
+    [12] => Array
+        (
+            [TicketID] => 45
+            [Description] => Emails are not being sent on time
+            [Priority] => high
+            [Status] => resolved
+            [CreatedDate] => 2025-08-08 16:47:52
+            [CreatedByName] => James Best
+            [AssignedToName] => Raymond Adoe
+            [CategoryName] => Email/Notification
+        )
+
+    [13] => Array
+        (
+            [TicketID] => 56
+            [Description] => Many visitors are in a view waiting for you
+            [Priority] => high
+            [Status] => closed
+            [CreatedDate] => 2025-09-09 21:45:28
+            [CreatedByName] => Annabel Mensah
+            [AssignedToName] => Lawrence Danso Abiam
+            [CategoryName] => Appointments
+        )
+
+    [14] => Array
+        (
+            [TicketID] => 35
+            [Description] => System allowed booking of two appointments for the same host at 2:00 PM today. Both visitors showed up and caused confusion. Need to fix scheduling conflict detection.
+            [Priority] => high
+            [Status] => closed
+            [CreatedDate] => 2025-07-26 15:50:35
+            [CreatedByName] => Annabel Mensah
+            [AssignedToName] => Lawrence Danso Abiam
+            [CategoryName] => Appointments
+        )
+
+    [15] => Array
+        (
+            [TicketID] => 49
+            [Description] => Elevator have been made inaccessible
+            [Priority] => medium
+            [Status] => open
+            [CreatedDate] => 2025-08-17 18:01:23
+            [CreatedByName] => James Best
+            [AssignedToName] => 
+            [CategoryName] => Access
+        )
+
+    [16] => Array
+        (
+            [TicketID] => 38
+            [Description] => Visitors are not receiving appointment confirmation emails. Checked spam folders and email logs show messages are being sent but not delivered.
+            [Priority] => medium
+            [Status] => open
+            [CreatedDate] => 2025-07-26 15:55:06
+            [CreatedByName] => Abena Banson
+            [AssignedToName] => 
+            [CategoryName] => Email/Notification
+        )
+
+    [17] => Array
+        (
+            [TicketID] => 64
+            [Description] => There is no one at the front desk
+            [Priority] => medium
+            [Status] => in-progress
+            [CreatedDate] => 2025-09-17 02:49:26
+            [CreatedByName] => Annabel Mensah
+            [AssignedToName] => Abena Banson
+            [CategoryName] => Access
+        )
+
+    [18] => Array
+        (
+            [TicketID] => 63
+            [Description] => Appointments have been delayed till further notice
+            [Priority] => medium
+            [Status] => in-progress
+            [CreatedDate] => 2025-09-17 02:33:54
+            [CreatedByName] => Abena Banson
+            [AssignedToName] => Raymond Adoe
+            [CategoryName] => Appointments
+        )
+
+    [19] => Array
+        (
+            [TicketID] => 62
+            [Description] => Appointments are not being processed as fast as they should be
+            [Priority] => medium
+            [Status] => in-progress
+            [CreatedDate] => 2025-09-17 02:07:46
+            [CreatedByName] => Annabel Mensah
+            [AssignedToName] => Raymond Adoe
+            [CategoryName] => Appointments
+        )
+
+    [20] => Array
+        (
+            [TicketID] => 61
+            [Description] => There a quite a number of visitors checked in who are here to see you
+            [Priority] => medium
+            [Status] => in-progress
+            [CreatedDate] => 2025-09-17 01:45:52
+            [CreatedByName] => Abena Banson
+            [AssignedToName] => Raymond Adoe
+            [CategoryName] => Appointments
+        )
+
+    [21] => Array
+        (
+            [TicketID] => 51
+            [Description] => Operating system need an update
+            [Priority] => medium
+            [Status] => resolved
+            [CreatedDate] => 2025-08-17 19:00:07
+            [CreatedByName] => James Best
+            [AssignedToName] => Cyrus Kwame Blay
+            [CategoryName] => Software
+        )
+
+    [22] => Array
+        (
+            [TicketID] => 44
+            [Description] => The top floor cannot be accessed at the moment
+            [Priority] => medium
+            [Status] => resolved
+            [CreatedDate] => 2025-08-01 15:19:18
+            [CreatedByName] => Lawrence Danso Abiam
+            [AssignedToName] => Annabel Mensah
+            [CategoryName] => Access
+        )
+
+    [23] => Array
+        (
+            [TicketID] => 37
+            [Description] => New front desk employee Jessica Brown started today but doesn't have access to the visitor management system. Need user account created with front desk permissions.
+            [Priority] => medium
+            [Status] => resolved
+            [CreatedDate] => 2025-07-26 15:53:36
+            [CreatedByName] => James Best
+            [AssignedToName] => Cyrus Kwame Blay
+            [CategoryName] => Access
+        )
+
+    [24] => Array
+        (
+            [TicketID] => 55
+            [Description] => Appointment emails are not being sent
+            [Priority] => medium
+            [Status] => closed
+            [CreatedDate] => 2025-08-22 21:29:26
+            [CreatedByName] => Abena Banson
+            [AssignedToName] => 
+            [CategoryName] => Email/Notification
+        )
+
+    [25] => Array
+        (
+            [TicketID] => 53
+            [Description] => In need of a password reset
+            [Priority] => medium
+            [Status] => closed
+            [CreatedDate] => 2025-08-19 13:46:02
+            [CreatedByName] => Raymond Adoe
+            [AssignedToName] => Cyrus Kwame Blay
+            [CategoryName] => Software
+        )
+
+    [26] => Array
+        (
+            [TicketID] => 40
+            [Description] => Washroom Leakage
+            [Priority] => medium
+            [Status] => closed
+            [CreatedDate] => 2025-07-28 18:28:55
+            [CreatedByName] => Abena Banson
+            [AssignedToName] => 
+            [CategoryName] => Facility Issues
+        )
+
+    [27] => Array
+        (
+            [TicketID] => 36
+            [Description] => The HP LaserJet printer in the front lobby keeps jamming when printing visitor badges. Also noticing streaks and faded text on printed materials.
+            [Priority] => medium
+            [Status] => closed
+            [CreatedDate] => 2025-07-26 15:52:41
+            [CreatedByName] => Abena Banson
+            [AssignedToName] => James Best
+            [CategoryName] => Hardware
+        )
+
+    [28] => Array
+        (
+            [TicketID] => 46
+            [Description] => A complaint of a missing black tote bag
+            [Priority] => low
+            [Status] => open
+            [CreatedDate] => 2025-08-17 17:55:00
+            [CreatedByName] => James Best
+            [AssignedToName] => 
+            [CategoryName] => Lost & Found
+        )
+
+    [29] => Array
+        (
+            [TicketID] => 39
+            [Description] => Appointment reminder emails have broken formatting - no line breaks and missing company logo. Text appears as one continuous paragraph.
+            [Priority] => low
+            [Status] => open
+            [CreatedDate] => 2025-07-26 15:56:05
+            [CreatedByName] => James Best
+            [AssignedToName] => 
+            [CategoryName] => Email/Notification
+        )
+
+    [30] => Array
+        (
+            [TicketID] => 54
+            [Description] => Doors at the reception are stuck
+            [Priority] => low
+            [Status] => resolved
+            [CreatedDate] => 2025-08-19 14:55:06
+            [CreatedByName] => Abena Banson
+            [AssignedToName] => James Best
+            [CategoryName] => Facility Issues
+        )
+
+)
+
+[17-Sep-2025 06:03:57 Europe/Berlin] PHP Warning:  Trying to access array offset on value of type null in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\help_desk.php on line 122
+[17-Sep-2025 06:03:57 Europe/Berlin] PHP Stack trace:
+[17-Sep-2025 06:03:57 Europe/Berlin] PHP   1. {main}() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\help_desk.php:0
+[17-Sep-2025 06:03:57 Europe/Berlin] Failed to create notification: Cannot add or update a child row: a foreign key constraint fails (`frontdesk`.`notifications`, CONSTRAINT `fk_notifications_user_id` FOREIGN KEY (`user_id`) REFERENCES `users` (`UserID`) ON DELETE CASCADE)
+[17-Sep-2025 06:03:57 Europe/Berlin] Failed to create assignment notification: Cannot add or update a child row: a foreign key constraint fails (`frontdesk`.`notifications`, CONSTRAINT `fk_notifications_user_id` FOREIGN KEY (`user_id`) REFERENCES `users` (`UserID`) ON DELETE CASCADE)
+[17-Sep-2025 06:21:16 Europe/Berlin] Checking for ticket creation POST data: Array
+(
+)
+
+[17-Sep-2025 06:21:16 Europe/Berlin] Retrieved tickets: Array
+(
+    [0] => Array
+        (
+            [TicketID] => 60
+            [Description] => A host is not able to access his panel
+            [Priority] => critical
+            [Status] => in-progress
+            [CreatedDate] => 2025-09-17 01:30:35
+            [CreatedByName] => Raymond Adoe
+            [AssignedToName] => Cyrus Kwame Blay
+            [CategoryName] => Access
+        )
+
+    [1] => Array
+        (
+            [TicketID] => 41
+            [Description] => WiFi  Access has been down 
+            [Priority] => critical
+            [Status] => in-progress
+            [CreatedDate] => 2025-07-30 05:57:12
+            [CreatedByName] => James Best
+            [AssignedToName] => Annabel Mensah
+            [CategoryName] => Network
+        )
+
+    [2] => Array
+        (
+            [TicketID] => 43
+            [Description] => The bulbs in the washroom are faulty
+            [Priority] => high
+            [Status] => open
+            [CreatedDate] => 2025-08-01 15:08:11
+            [CreatedByName] => Abena Banson
+            [AssignedToName] => 
+            [CategoryName] => Facility Issues
+        )
+
+    [3] => Array
+        (
+            [TicketID] => 42
+            [Description] => Staff member cannot access the top floor
+            [Priority] => high
+            [Status] => open
+            [CreatedDate] => 2025-08-01 09:11:12
+            [CreatedByName] => James Best
+            [AssignedToName] => 
+            [CategoryName] => Access
+        )
+
+    [4] => Array
+        (
+            [TicketID] => 67
+            [Description] => The washroom is in a bad state
+            [Priority] => high
+            [Status] => in-progress
+            [CreatedDate] => 2025-09-17 03:26:37
+            [CreatedByName] => Raymond Adoe
+            [AssignedToName] => James Best
+            [CategoryName] => Facility Issues
+        )
+
+    [5] => Array
+        (
+            [TicketID] => 65
+            [Description] => The washroom is in a bad state
+            [Priority] => high
+            [Status] => in-progress
+            [CreatedDate] => 2025-09-17 03:18:10
+            [CreatedByName] => Raymond Adoe
+            [AssignedToName] => James Best
+            [CategoryName] => Facility Issues
+        )
+
+    [6] => Array
+        (
+            [TicketID] => 59
+            [Description] => The top is inaccessible to staff members
+            [Priority] => high
+            [Status] => in-progress
+            [CreatedDate] => 2025-09-16 20:49:52
+            [CreatedByName] => Abena Banson
+            [AssignedToName] => Annabel Mensah
+            [CategoryName] => Access
+        )
+
+    [7] => Array
+        (
+            [TicketID] => 58
+            [Description] => The software is not working as it should
+            [Priority] => high
+            [Status] => in-progress
+            [CreatedDate] => 2025-09-13 12:55:22
+            [CreatedByName] => Adwoa Millicent
+            [AssignedToName] => James Best
+            [CategoryName] => Software
+        )
+
+    [8] => Array
+        (
+            [TicketID] => 57
+            [Description] => The front doors are not working
+            [Priority] => high
+            [Status] => in-progress
+            [CreatedDate] => 2025-09-10 10:09:47
+            [CreatedByName] => James Best
+            [AssignedToName] => Annabel Mensah
+            [CategoryName] => Facility Issues
+        )
+
+    [9] => Array
+        (
+            [TicketID] => 50
+            [Description] => the PCs at the front desk are faulty
+            [Priority] => high
+            [Status] => in-progress
+            [CreatedDate] => 2025-08-17 18:34:00
+            [CreatedByName] => James Best
+            [AssignedToName] => Annabel Mensah
+            [CategoryName] => Hardware
+        )
+
+    [10] => Array
+        (
+            [TicketID] => 66
+            [Description] => The washrooms are is a bad state
+            [Priority] => high
+            [Status] => resolved
+            [CreatedDate] => 2025-09-17 03:23:48
+            [CreatedByName] => Raymond Adoe
+            [AssignedToName] => James Best
+            [CategoryName] => Facility Issues
+        )
+
+    [11] => Array
+        (
+            [TicketID] => 52
+            [Description] => Connectivity issues on the ground floor
+            [Priority] => high
+            [Status] => resolved
+            [CreatedDate] => 2025-08-19 12:36:14
+            [CreatedByName] => Annabel Mensah
+            [AssignedToName] => Annabel Mensah
+            [CategoryName] => Network
+        )
+
+    [12] => Array
+        (
+            [TicketID] => 45
+            [Description] => Emails are not being sent on time
+            [Priority] => high
+            [Status] => resolved
+            [CreatedDate] => 2025-08-08 16:47:52
+            [CreatedByName] => James Best
+            [AssignedToName] => Raymond Adoe
+            [CategoryName] => Email/Notification
+        )
+
+    [13] => Array
+        (
+            [TicketID] => 56
+            [Description] => Many visitors are in a view waiting for you
+            [Priority] => high
+            [Status] => closed
+            [CreatedDate] => 2025-09-09 21:45:28
+            [CreatedByName] => Annabel Mensah
+            [AssignedToName] => Lawrence Danso Abiam
+            [CategoryName] => Appointments
+        )
+
+    [14] => Array
+        (
+            [TicketID] => 35
+            [Description] => System allowed booking of two appointments for the same host at 2:00 PM today. Both visitors showed up and caused confusion. Need to fix scheduling conflict detection.
+            [Priority] => high
+            [Status] => closed
+            [CreatedDate] => 2025-07-26 15:50:35
+            [CreatedByName] => Annabel Mensah
+            [AssignedToName] => Lawrence Danso Abiam
+            [CategoryName] => Appointments
+        )
+
+    [15] => Array
+        (
+            [TicketID] => 49
+            [Description] => Elevator have been made inaccessible
+            [Priority] => medium
+            [Status] => open
+            [CreatedDate] => 2025-08-17 18:01:23
+            [CreatedByName] => James Best
+            [AssignedToName] => 
+            [CategoryName] => Access
+        )
+
+    [16] => Array
+        (
+            [TicketID] => 38
+            [Description] => Visitors are not receiving appointment confirmation emails. Checked spam folders and email logs show messages are being sent but not delivered.
+            [Priority] => medium
+            [Status] => open
+            [CreatedDate] => 2025-07-26 15:55:06
+            [CreatedByName] => Abena Banson
+            [AssignedToName] => 
+            [CategoryName] => Email/Notification
+        )
+
+    [17] => Array
+        (
+            [TicketID] => 64
+            [Description] => There is no one at the front desk
+            [Priority] => medium
+            [Status] => in-progress
+            [CreatedDate] => 2025-09-17 02:49:26
+            [CreatedByName] => Annabel Mensah
+            [AssignedToName] => Abena Banson
+            [CategoryName] => Access
+        )
+
+    [18] => Array
+        (
+            [TicketID] => 63
+            [Description] => Appointments have been delayed till further notice
+            [Priority] => medium
+            [Status] => in-progress
+            [CreatedDate] => 2025-09-17 02:33:54
+            [CreatedByName] => Abena Banson
+            [AssignedToName] => Raymond Adoe
+            [CategoryName] => Appointments
+        )
+
+    [19] => Array
+        (
+            [TicketID] => 62
+            [Description] => Appointments are not being processed as fast as they should be
+            [Priority] => medium
+            [Status] => in-progress
+            [CreatedDate] => 2025-09-17 02:07:46
+            [CreatedByName] => Annabel Mensah
+            [AssignedToName] => Raymond Adoe
+            [CategoryName] => Appointments
+        )
+
+    [20] => Array
+        (
+            [TicketID] => 61
+            [Description] => There a quite a number of visitors checked in who are here to see you
+            [Priority] => medium
+            [Status] => in-progress
+            [CreatedDate] => 2025-09-17 01:45:52
+            [CreatedByName] => Abena Banson
+            [AssignedToName] => Raymond Adoe
+            [CategoryName] => Appointments
+        )
+
+    [21] => Array
+        (
+            [TicketID] => 51
+            [Description] => Operating system need an update
+            [Priority] => medium
+            [Status] => resolved
+            [CreatedDate] => 2025-08-17 19:00:07
+            [CreatedByName] => James Best
+            [AssignedToName] => Cyrus Kwame Blay
+            [CategoryName] => Software
+        )
+
+    [22] => Array
+        (
+            [TicketID] => 44
+            [Description] => The top floor cannot be accessed at the moment
+            [Priority] => medium
+            [Status] => resolved
+            [CreatedDate] => 2025-08-01 15:19:18
+            [CreatedByName] => Lawrence Danso Abiam
+            [AssignedToName] => Annabel Mensah
+            [CategoryName] => Access
+        )
+
+    [23] => Array
+        (
+            [TicketID] => 37
+            [Description] => New front desk employee Jessica Brown started today but doesn't have access to the visitor management system. Need user account created with front desk permissions.
+            [Priority] => medium
+            [Status] => resolved
+            [CreatedDate] => 2025-07-26 15:53:36
+            [CreatedByName] => James Best
+            [AssignedToName] => Cyrus Kwame Blay
+            [CategoryName] => Access
+        )
+
+    [24] => Array
+        (
+            [TicketID] => 55
+            [Description] => Appointment emails are not being sent
+            [Priority] => medium
+            [Status] => closed
+            [CreatedDate] => 2025-08-22 21:29:26
+            [CreatedByName] => Abena Banson
+            [AssignedToName] => 
+            [CategoryName] => Email/Notification
+        )
+
+    [25] => Array
+        (
+            [TicketID] => 53
+            [Description] => In need of a password reset
+            [Priority] => medium
+            [Status] => closed
+            [CreatedDate] => 2025-08-19 13:46:02
+            [CreatedByName] => Raymond Adoe
+            [AssignedToName] => Cyrus Kwame Blay
+            [CategoryName] => Software
+        )
+
+    [26] => Array
+        (
+            [TicketID] => 40
+            [Description] => Washroom Leakage
+            [Priority] => medium
+            [Status] => closed
+            [CreatedDate] => 2025-07-28 18:28:55
+            [CreatedByName] => Abena Banson
+            [AssignedToName] => 
+            [CategoryName] => Facility Issues
+        )
+
+    [27] => Array
+        (
+            [TicketID] => 36
+            [Description] => The HP LaserJet printer in the front lobby keeps jamming when printing visitor badges. Also noticing streaks and faded text on printed materials.
+            [Priority] => medium
+            [Status] => closed
+            [CreatedDate] => 2025-07-26 15:52:41
+            [CreatedByName] => Abena Banson
+            [AssignedToName] => James Best
+            [CategoryName] => Hardware
+        )
+
+    [28] => Array
+        (
+            [TicketID] => 46
+            [Description] => A complaint of a missing black tote bag
+            [Priority] => low
+            [Status] => open
+            [CreatedDate] => 2025-08-17 17:55:00
+            [CreatedByName] => James Best
+            [AssignedToName] => 
+            [CategoryName] => Lost & Found
+        )
+
+    [29] => Array
+        (
+            [TicketID] => 39
+            [Description] => Appointment reminder emails have broken formatting - no line breaks and missing company logo. Text appears as one continuous paragraph.
+            [Priority] => low
+            [Status] => open
+            [CreatedDate] => 2025-07-26 15:56:05
+            [CreatedByName] => James Best
+            [AssignedToName] => 
+            [CategoryName] => Email/Notification
+        )
+
+    [30] => Array
+        (
+            [TicketID] => 54
+            [Description] => Doors at the reception are stuck
+            [Priority] => low
+            [Status] => resolved
+            [CreatedDate] => 2025-08-19 14:55:06
+            [CreatedByName] => Abena Banson
+            [AssignedToName] => James Best
+            [CategoryName] => Facility Issues
+        )
+
+)
+
+[17-Sep-2025 06:21:16 Europe/Berlin] PHP Warning:  Trying to access array offset on value of type null in C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\help_desk.php on line 122
+[17-Sep-2025 06:21:16 Europe/Berlin] PHP Stack trace:
+[17-Sep-2025 06:21:16 Europe/Berlin] PHP   1. {main}() C:\Users\cyrus\PhpstormProjects\front-desk-mgt-system\frontdesk_mgt\Dashboards\help_desk.php:0
+[17-Sep-2025 06:21:16 Europe/Berlin] Failed to create notification: Cannot add or update a child row: a foreign key constraint fails (`frontdesk`.`notifications`, CONSTRAINT `fk_notifications_user_id` FOREIGN KEY (`user_id`) REFERENCES `users` (`UserID`) ON DELETE CASCADE)
+[17-Sep-2025 06:21:16 Europe/Berlin] Failed to create assignment notification: Cannot add or update a child row: a foreign key constraint fails (`frontdesk`.`notifications`, CONSTRAINT `fk_notifications_user_id` FOREIGN KEY (`user_id`) REFERENCES `users` (`UserID`) ON DELETE CASCADE)

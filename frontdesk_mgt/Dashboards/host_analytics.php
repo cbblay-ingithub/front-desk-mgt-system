@@ -1,6 +1,11 @@
 <?php
+
 require_once '../dbConfig.php';
+require_once 'NotificationCreator.php';
+
+
 global $conn;
+global $unreadCount;
 session_start();
 
 if (!isset($_SESSION['userID'])) {
@@ -174,6 +179,7 @@ $conn->close();
 
     <!-- Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="notification-styles.css">
 
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -443,6 +449,81 @@ $conn->close();
                 box-shadow: 0 0 5px rgba(255, 255, 255, 0.3);
             }
         }
+        /* Notification styles */
+        .notification-unread {
+            background-color: rgba(0, 123, 255, 0.05) !important;
+        }
+
+        .notification-unread:hover {
+            background-color: rgba(0, 123, 255, 0.1) !important;
+        }
+
+        .badge.dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            padding: 0;
+            margin-left: 5px;
+        }
+
+        .dropdown-menu-header {
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .dropdown-menu-footer {
+            border-top: 1px solid #dee2e6;
+        }
+
+        .avatar-initial {
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            font-weight: 600;
+        }
+
+        /* Notification trigger styling */
+        .notification-trigger {
+            position: relative;
+            background: none;
+            border: none;
+            color: #6c757d;
+            font-size: 1.25rem;
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 0.375rem;
+            transition: all 0.2s ease;
+        }
+
+        .notification-trigger:hover {
+            background: rgba(0, 0, 0, 0.05);
+            color: #495057;
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: -2px;
+            right: -2px;
+            background: #dc3545;
+            color: white;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.6875rem;
+            font-weight: 600;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(220, 53, 69, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(220, 53, 69, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(220, 53, 69, 0); }
+        }
     </style>
 </head>
 
@@ -477,6 +558,18 @@ $conn->close();
                             </ul>
                         </div>
                     </div>
+                    <ul class="navbar-nav">
+                        <!-- Notification dropdown -->
+                        <li class="nav-item me-3">
+                            <button class="notification-trigger" id="notificationTrigger">
+                                <i class="fas fa-bell"></i>
+                                <span class="notification-badge" id="notificationBadge"
+                                      style="display: <?= $unreadCount > 0 ? 'inline-flex' : 'none' ?>;">
+                                    <?= $unreadCount > 0 ? $unreadCount : '' ?>
+                                </span>
+                            </button>
+                        </li>
+                    </ul>
                 </div>
             </nav>
 
@@ -696,8 +789,7 @@ $conn->close();
 <script src="../../Sneat/assets/vendor/libs/popper/popper.js"></script>
 <script src="../../Sneat/assets/vendor/js/bootstrap.js"></script>
 <script src="../../Sneat/assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.js"></script>
-<script src="../../Sneat/assets/vendor/js/menu.js"></script>
-<script src="../../Sneat/assets/js/main.js"></script>
+
 
 <script>
     $(document).ready(function() {
@@ -931,6 +1023,195 @@ $conn->close();
             timeElement.textContent = now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
         }
     }
+    // Notification functions
+    let lastUnreadCount = 0;
+
+    function fetchNotifications() {
+        $.ajax({
+            url: 'fetch-notifications.php',
+            type: 'GET',
+            dataType: 'json',
+            success: function(response) {
+                if (response.success) {
+                    updateNotificationUI(response.notifications, response.unread_count);
+
+                    lastUnreadCount = response.unread_count;
+                } else {
+                    console.error('Notification error:', response.error);
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error('Failed to fetch notifications:', error);
+            }
+        });
+    }
+
+    function updateNotificationUI(notifications, unreadCount) {
+        const $notificationList = $('#notificationList');
+        const $badge = $('#notificationBadge');
+        const $markAllReadBtn = $('#markAllReadBtn');
+
+        // Update badge
+        if (unreadCount > 0) {
+            $badge.text(unreadCount).show();
+            if ($markAllReadBtn.length) $markAllReadBtn.show();
+        } else {
+            $badge.hide();
+            if ($markAllReadBtn.length) $markAllReadBtn.hide();
+        }
+
+        // Update notification list
+        if (!notifications || notifications.length === 0) {
+            $notificationList.html('<div class="text-center text-muted py-4">No notifications</div>');
+            return;
+        }
+
+        let html = '';
+        notifications.forEach(notif => {
+            const isUnread = !notif.is_read;
+            const timeAgo = formatTimeAgo(notif.created_at);
+
+            html += `
+            <a href="javascript:void(0)" class="dropdown-item py-3 ${isUnread ? 'notification-unread' : ''}"
+                 data-id="${notif.id}" data-entity-type="${notif.related_entity_type}"
+                 data-entity-id="${notif.related_entity_id}">
+                <div class="d-flex">
+                    <div class="flex-shrink-0 me-3">
+                        <div class="avatar">
+                            <span class="avatar-initial rounded-circle bg-label-primary">
+                                <i class="fas fa-bell"></i>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="flex-grow-1">
+                        <h6 class="mb-1">${escapeHtml(notif.title)}</h6>
+                        <p class="mb-0">${escapeHtml(notif.message)}</p>
+                        <small class="text-muted">${timeAgo}</small>
+                    </div>
+                    ${isUnread ? '<div class="flex-shrink-0"><span class="badge dot bg-danger"></span></div>' : ''}
+                </div>
+            </a>
+            <hr class="my-1">
+        `;
+        });
+
+        $notificationList.html(html);
+
+        // Add click handlers
+        $notificationList.find('.dropdown-item').on('click', function() {
+            const notifId = $(this).data('id');
+            markNotificationAsRead(notifId);
+            handleNotificationAction($(this));
+        });
+    }
+
+    function markNotificationAsRead(notifId) {
+        $.ajax({
+            url: 'mark-notification-read.php',
+            type: 'POST',
+            data: { notification_id: notifId },
+            dataType: 'json',
+            success: function(response) {
+                if (response.success) {
+                    fetchNotifications(); // Refresh notifications
+                } else {
+                    console.error('Failed to mark notification as read:', response.error);
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error('Failed to mark notification as read:', error);
+            }
+        });
+    }
+
+    function markAllNotificationsAsRead() {
+        $.ajax({
+            url: 'mark-all-notifications-read.php',
+            type: 'POST',
+            dataType: 'json',
+            success: function(response) {
+                if (response.success) {
+                    fetchNotifications(); // Refresh notifications
+                    $('#notificationBadge').hide();
+                    $('#markAllReadBtn').hide();
+                } else {
+                    console.error('Failed to mark all notifications as read:', response.error);
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error('Failed to mark all notifications as read:', error);
+            }
+        });
+    }
+
+    function handleNotificationAction($element) {
+        const entityType = $element.data('entity-type');
+        const entityId = $element.data('entity-id');
+
+        switch(entityType) {
+            case 'user':
+                window.location.href = `user_management.php?user_id=${entityId}`;
+                break;
+            case 'ticket':
+                window.location.href = `help_desk.php?ticket_id=${entityId}`;
+                break;
+            // Add more cases as needed
+            default:
+                // Do nothing for unknown types
+                break;
+        }
+    }
+
+    function formatTimeAgo(dateString) {
+        const date = new Date(dateString);
+        const now = new Date();
+        const diffInSeconds = Math.floor((now - date) / 1000);
+
+        if (diffInSeconds < 60) return 'Just now';
+        if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)}m ago`;
+        if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)}h ago`;
+        return `${Math.floor(diffInSeconds / 86400)}d ago`;
+    }
+
+    function escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
+
+
+    // Initialize notification system
+    $(document).ready(function() {
+        // Fetch notifications on page load
+        fetchNotifications();
+
+        // Set up periodic fetching
+        setInterval(fetchNotifications, 30000); // Every 30 seconds
+
+        // Mark all as read button
+        $('#markAllReadBtn').on('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            markAllNotificationsAsRead();
+        });
+
+        // Handle dropdown show event to refresh notifications
+        $('#notificationDropdown').on('show.bs.dropdown', function() {
+            fetchNotifications();
+        });
+
+        // Refresh notifications manually
+        $('#refreshNotificationsBtn').on('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            fetchNotifications();
+
+            // Show loading state
+            $('#notificationList').html('<div class="text-center py-4"><div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div></div>');
+        });
+    });
 </script>
+<script src="global-notification-system.js"></script>
+<?php include 'notification-panel.html'; ?>
 </body>
 </html>

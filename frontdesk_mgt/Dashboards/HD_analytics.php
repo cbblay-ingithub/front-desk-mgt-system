@@ -1,6 +1,9 @@
 <?php
 require_once '../dbConfig.php';
+require_once 'NotificationCreator.php';
+
 global $conn;
+global $unreadCount;
 session_start();
 
 if (isset($_SESSION['userID'])) {
@@ -159,6 +162,7 @@ $conn->close();
     <link rel="stylesheet" href="../../Sneat/assets/vendor/fonts/iconify-icons.css" />
     <link rel="stylesheet" href="../../Sneat/assets/vendor/css/core.css" />
     <link rel="stylesheet" href="../../Sneat/assets/css/demo.css" />
+    <link rel="stylesheet" href="notification-styles.css">
 
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -248,7 +252,10 @@ $conn->close();
             padding: 1rem 1.5rem;
             border-radius: 0.375rem;
             margin-bottom: 1.5rem;
+            z-index: 999;
+            position: relative;
         }
+
 
         .quick-action-btn {
             padding: 15px;
@@ -411,13 +418,88 @@ $conn->close();
             overflow-y: hidden !important;
             height: 100vh !important;
         }
+        /* Notification styles */
+        .notification-unread {
+            background-color: rgba(0, 123, 255, 0.05) !important;
+        }
+
+        .notification-unread:hover {
+            background-color: rgba(0, 123, 255, 0.1) !important;
+        }
+
+        .badge.dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            padding: 0;
+            margin-left: 5px;
+        }
+
+        .dropdown-menu-header {
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .dropdown-menu-footer {
+            border-top: 1px solid #dee2e6;
+        }
+
+        .avatar-initial {
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            font-weight: 600;
+        }
+
+        /* Notification trigger styling */
+        .notification-trigger {
+            position: relative;
+            background: none;
+            border: none;
+            color: #6c757d;
+            font-size: 1.25rem;
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 0.375rem;
+            transition: all 0.2s ease;
+        }
+
+        .notification-trigger:hover {
+            background: rgba(0, 0, 0, 0.05);
+            color: #495057;
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: -2px;
+            right: -2px;
+            background: #dc3545;
+            color: white;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.6875rem;
+            font-weight: 600;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(220, 53, 69, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(220, 53, 69, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(220, 53, 69, 0); }
+        }
 
 
     </style>
 </head>
 
 <body>
-<div data-user-id="<?php echo $_SESSION['userID'] ?? ''; ?>">
+
     <div class="layout-wrapper layout-content-navbar">
         <div class="layout-container">
             <?php include 'sidebar.php'; ?>
@@ -447,6 +529,18 @@ $conn->close();
                                 </ul>
                             </div>
                         </div>
+                        <ul class="navbar-nav">
+                            <!-- Notification dropdown -->
+                            <li class="nav-item me-3">
+                                <button class="notification-trigger" id="notificationTrigger">
+                                    <i class="fas fa-bell"></i>
+                                    <span class="notification-badge" id="notificationBadge"
+                                          style="display: <?= $unreadCount > 0 ? 'inline-flex' : 'none' ?>;">
+                        <?= $unreadCount > 0 ? $unreadCount : '' ?>
+                    </span>
+                                </button>
+                            </li>
+                        </ul>
                     </div>
                 </nav>
 
@@ -756,7 +850,7 @@ $conn->close();
             </div>
         </div>
     </div>
-</div>
+
 
 <!-- Scripts -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -863,7 +957,7 @@ $conn->close();
                         '#f5576c',
                         '#00f2fe',
                         '#ffc107',
-                        '#62f938',
+                        '#60a84a',
                         '#6c757d'
                     ],
                     borderWidth: 0
@@ -958,5 +1052,7 @@ $conn->close();
         });
     }
 </script>
+<script src="global-notification-system.js"></script>
+<?php include 'notification-panel.html'; ?>
 </body>
 </html>

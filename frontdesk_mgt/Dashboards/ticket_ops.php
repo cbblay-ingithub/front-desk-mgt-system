@@ -1,5 +1,6 @@
 <?php
 // Ticket operations for the Help Desk System
+require_once 'NotificationCreator.php';
 
 // Process ticket creation form submission
 function createTicket($conn) {
@@ -53,7 +54,24 @@ function createTicket($conn) {
                 $newTicketId = $conn->insert_id;
                 $message = "Ticket #$newTicketId created successfully!";
 
-                // Return success response without notification
+                // If ticket is assigned to someone, send notification
+                if ($assignedTo) {
+                    require_once 'NotificationCreator.php';
+                    $notificationCreator = new NotificationCreator($conn);
+
+                    // Get the name of the person who created the ticket
+                    $creatorName = $_SESSION['name'] ?? 'System';
+
+                    // Send notification to the assigned user
+                    $notificationCreator->notifyTicketAssignment(
+                        $assignedTo,
+                        $newTicketId,
+                        $description,
+                        $creatorName
+                    );
+                }
+
+                // Return success response
                 return ['success' => true, 'message' => $message];
             } else {
                 throw new Exception("Execute failed: " . $stmt->error);
@@ -96,11 +114,34 @@ function processTicketOperation($conn) {
         if ($stmt->execute()) {
             $message = "Ticket #$ticketId has been assigned and marked as in-progress!";
 
-            // Create notification for assigned user
-            createNotification($conn, $assignedTo, $ticketId, 'assignment', [
-                'assigned_by' => $_SESSION['user_id'],
-                'assigned_by_name' => $_SESSION['username'] ?? 'System'
-            ]);
+            // Create notification for assigned user using NotificationCreator
+            require_once 'NotificationCreator.php';
+            $notificationCreator = new NotificationCreator($conn);
+
+            // Get ticket description for notification
+            $ticketQuery = "SELECT Description FROM Help_Desk WHERE TicketID = ?";
+            $ticketStmt = $conn->prepare($ticketQuery);
+            $ticketStmt->bind_param("i", $ticketId);
+            $ticketStmt->execute();
+            $ticketResult = $ticketStmt->get_result();
+            $ticketDescription = "";
+
+
+            if ($row = $ticketResult->fetch_assoc()) {
+                $ticketDescription = $row['Description'];
+            }
+            $ticketStmt->close();
+
+            // Get the name of the person who assigned the ticket
+            $assignerName = $_SESSION['name'] ?? 'System';
+
+            // Send notification to the assigned user
+            $notificationCreator->notifyTicketAssignment(
+                $assignedTo,
+                $ticketId,
+                $ticketDescription,
+                $assignerName
+            );
         } else {
             $error = "Error assigning ticket: " . $conn->error;
         }
@@ -113,13 +154,12 @@ function processTicketOperation($conn) {
         $resolution = $_POST['resolution'];
 
         // Update ticket status to "resolved", set ResolvedDate, and calculate Time Spent
-        // TimeSpent is the difference in minutes between CreatedDate and now (ResolvedDate)
         $sql = "UPDATE Help_Desk 
-            SET Status = 'resolved', 
-                ResolutionNotes = ?, 
-                ResolvedDate = NOW(), 
-                TimeSpent = TIMESTAMPDIFF(MINUTE, CreatedDate, NOW()) 
-            WHERE TicketID = ?";
+        SET Status = 'resolved', 
+            ResolutionNotes = ?, 
+            ResolvedDate = NOW(), 
+            TimeSpent = TIMESTAMPDIFF(MINUTE, CreatedDate, NOW()) 
+        WHERE TicketID = ?";
         $stmt = $conn->prepare($sql);
         $stmt->bind_param("si", $resolution, $ticketId);
 
@@ -134,11 +174,8 @@ function processTicketOperation($conn) {
             $result = $creatorStmt->get_result();
             if ($row = $result->fetch_assoc()) {
                 // Notify the ticket creator
-                createNotification($conn, $row['CreatedBy'], $ticketId, 'resolution', [
-                    'resolved_by' => $_SESSION['user_id'],
-                    'resolved_by_name' => $_SESSION['username'] ?? 'System',
-                    'resolution' => $resolution
-                ]);
+                notifyTicketResolution($conn, $row['CreatedBy'], $ticketId,
+                    $_SESSION['username'] ?? 'System', $resolution);
             }
             $creatorStmt->close();
         } else {
@@ -153,10 +190,10 @@ function processTicketOperation($conn) {
 
         // Update ticket status to "closed" and set TimeSpent if not already set
         $sql = "UPDATE Help_Desk 
-            SET Status = 'closed', 
-                LastUpdated = NOW(), 
-                TimeSpent = IF(TimeSpent IS NULL, TIMESTAMPDIFF(MINUTE, CreatedDate, NOW()), TimeSpent)
-            WHERE TicketID = ?";
+        SET Status = 'closed', 
+            LastUpdated = NOW(), 
+            TimeSpent = IF(TimeSpent IS NULL, TIMESTAMPDIFF(MINUTE, CreatedDate, NOW()), TimeSpent)
+        WHERE TicketID = ?";
         $stmt = $conn->prepare($sql);
         $stmt->bind_param("i", $ticketId);
 
@@ -171,16 +208,12 @@ function processTicketOperation($conn) {
             $result = $usersStmt->get_result();
             if ($row = $result->fetch_assoc()) {
                 if ($row['CreatedBy'] != $_SESSION['user_id']) {
-                    createNotification($conn, $row['CreatedBy'], $ticketId, 'closure', [
-                        'closed_by' => $_SESSION['user_id'],
-                        'closed_by_name' => $_SESSION['username'] ?? 'System'
-                    ]);
+                    notifyTicketClosure($conn, $row['CreatedBy'], $ticketId,
+                        $_SESSION['username'] ?? 'System');
                 }
                 if ($row['AssignedTo'] && $row['AssignedTo'] != $_SESSION['user_id']) {
-                    createNotification($conn, $row['AssignedTo'], $ticketId, 'closure', [
-                        'closed_by' => $_SESSION['user_id'],
-                        'closed_by_name' => $_SESSION['username'] ?? 'System'
-                    ]);
+                    notifyTicketClosure($conn, $row['AssignedTo'], $ticketId,
+                        $_SESSION['username'] ?? 'System');
                 }
             }
             $usersStmt->close();
@@ -193,7 +226,8 @@ function processTicketOperation($conn) {
     return ['message' => $message, 'error' => $error];
 }
 
-// Check for tickets older than 14 days that need to be auto-closed
+
+// Modify autoCloseOldTickets function
 // Modify autoCloseOldTickets function
 function autoCloseOldTickets($conn) {
     // First, identify tickets that will be auto-closed
@@ -221,13 +255,11 @@ function autoCloseOldTickets($conn) {
 
         // Send notifications for auto-closed tickets
         foreach ($ticketsToClose as $ticket) {
-            createNotification($conn, $ticket['CreatedBy'], $ticket['TicketID'], 'auto_closure', [
-                'reason' => 'Inactivity for more than 14 days'
-            ]);
+            notifyTicketAutoClosure($conn, $ticket['CreatedBy'], $ticket['TicketID'],
+                'Inactivity for more than 30 days');
             if ($ticket['AssignedTo']) {
-                createNotification($conn, $ticket['AssignedTo'], $ticket['TicketID'], 'auto_closure', [
-                    'reason' => 'Inactivity for more than 14 days'
-                ]);
+                notifyTicketAutoClosure($conn, $ticket['AssignedTo'], $ticket['TicketID'],
+                    'Inactivity for more than 30 days');
             }
         }
 
@@ -237,6 +269,7 @@ function autoCloseOldTickets($conn) {
     }
     return null;
 }
+
 
 // Function to create the Assign Ticket modal HTML
 function generateAssignTicketModalHTML($ticketId, $users) {
@@ -291,6 +324,7 @@ function generateResolveTicketModalHTML($ticketId): string
     </div>';
 }
 // Function to reopen a closed ticket
+// Function to reopen a closed ticket
 function reopenTicket($conn, $ticketId, $userId) {
     error_log("reopenTicket called with ticketId: $ticketId, userId: $userId");
 
@@ -344,21 +378,14 @@ function reopenTicket($conn, $ticketId, $userId) {
         // Notify the previous assignee (if any) that they've been unassigned
         if (!empty($row['AssignedTo'])) {
             $reopenerName = $_SESSION['username'] ?? "User #$userId";
-            createNotification($conn, $row['AssignedTo'], $ticketId, 'unassignment', [
-                'unassigned_by' => $userId,
-                'unassigned_by_name' => $reopenerName,
-                'reason' => 'Ticket reopened - assignment reset'
-            ]);
+            notifyTicketUnassignment($conn, $row['AssignedTo'], $ticketId,
+                $reopenerName, 'Ticket reopened - assignment reset');
         }
 
         // Notify the ticket creator
         if (!empty($row['CreatedBy'])) {
             $reopenerName = $_SESSION['username'] ?? "User #$userId";
-            createNotification($conn, $row['CreatedBy'], $ticketId, 'reopen', [
-                'reopened_by' => $userId,
-                'reopened_by_name' => $reopenerName,
-                'assignment_reset' => true
-            ]);
+            notifyTicketReopening($conn, $row['CreatedBy'], $ticketId, $reopenerName);
         }
 
         $stmt->close();
